@@ -1,0 +1,231 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Chi Tiết Đơn Hàng {{ order.order_id }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📦 Chi Tiết Đơn Hàng</h1>
+    <p>Mã đơn hàng: <strong>{{ order.order_id }}</strong></p>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+    <!-- Thông tin đơn hàng -->
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h3>📋 Thông Tin Khách Hàng</h3>
+            </div>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="padding: 10px; font-weight: 600; width: 150px;">Họ Tên:</td>
+                    <td style="padding: 10px;">{{ order.customer_name }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; font-weight: 600;">Số Điện Thoại:</td>
+                    <td style="padding: 10px;">{{ order.phone }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; font-weight: 600;">Email:</td>
+                    <td style="padding: 10px;">{{ order.email if order.email else 'Không có' }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; font-weight: 600;">Địa Chỉ:</td>
+                    <td style="padding: 10px;">{{ order.address }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; font-weight: 600;">Ghi Chú:</td>
+                    <td style="padding: 10px;">{{ order.note if order.note else 'Không có' }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <h3>🛍️ Sản Phẩm Đã Đặt</h3>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Sản Phẩm</th>
+                        <th>Đơn Giá</th>
+                        <th>Số Lượng</th>
+                        <th>Thành Tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order['items'] %}
+                    <tr>
+                        <td>
+                            <strong>{{ item.product_name }}</strong><br>
+                            <small style="color: #666;">ID: {{ item.product_id }}</small>
+                        </td>
+                        <td>{{ "{:,.0f}".format(item.price) }} ₫</td>
+                        <td>{{ item.quantity }}</td>
+                        <td><strong>{{ "{:,.0f}".format(item.subtotal) }} ₫</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="text-align: right; padding: 10px; font-weight: 600;">Tạm tính:</td>
+                        <td style="padding: 10px;"><strong>{{ "{:,.0f}".format(order.subtotal) }} ₫</strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align: right; padding: 10px; font-weight: 600;">Phí vận chuyển:</td>
+                        <td style="padding: 10px;"><strong>{{ "{:,.0f}".format(order.shipping_fee) }} ₫</strong></td>
+                    </tr>
+                    <tr style="background: #f8f9fa;">
+                        <td colspan="3" style="text-align: right; padding: 15px; font-weight: 600; font-size: 18px;">Tổng cộng:</td>
+                        <td style="padding: 15px;"><strong style="font-size: 18px; color: #e74c3c;">{{ "{:,.0f}".format(order.total) }} ₫</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- Cập nhật trạng thái -->
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h3>⚙️ Thông Tin Đơn Hàng</h3>
+            </div>
+            <div style="padding: 20px;">
+                <div style="margin-bottom: 20px;">
+                    <strong>Ngày Đặt:</strong><br>
+                    {{ order.created_at.strftime('%d/%m/%Y %H:%M:%S') if order.created_at else 'N/A' }}
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <strong>Phương Thức Thanh Toán:</strong><br>
+                    {% if order.payment_method == 'cod' %}
+                        💵 Thanh toán khi nhận hàng (COD)
+                    {% elif order.payment_method == 'bank_transfer' %}
+                        🏦 Chuyển khoản ngân hàng
+                    {% elif order.payment_method == 'paypal' %}
+                        💳 PayPal
+                    {% elif order.payment_method == 'credit_card' %}
+                        💳 Thẻ tín dụng
+                    {% elif order.payment_method == 'usdt' %}
+                        💰 USDT
+                    {% else %}
+                        {{ order.payment_method }}
+                    {% endif %}
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <strong>Trạng Thái Hiện Tại:</strong><br>
+                    {% if order.status == 'pending' %}
+                        <span style="color: #f39c12; font-weight: bold; font-size: 16px;">⏳ Chờ xử lý</span>
+                    {% elif order.status == 'confirmed' %}
+                        <span style="color: #3498db; font-weight: bold; font-size: 16px;">✓ Đã xác nhận</span>
+                    {% elif order.status == 'shipping' %}
+                        <span style="color: #9b59b6; font-weight: bold; font-size: 16px;">🚚 Đang giao hàng</span>
+                    {% elif order.status == 'completed' %}
+                        <span style="color: #27ae60; font-weight: bold; font-size: 16px;">✓ Hoàn thành</span>
+                    {% elif order.status == 'cancelled' %}
+                        <span style="color: #e74c3c; font-weight: bold; font-size: 16px;">✗ Đã hủy</span>
+                    {% else %}
+                        {{ order.status }}
+                    {% endif %}
+                </div>
+
+                <div style="margin-bottom: 30px;">
+                    <strong>Trạng Thái Thanh Toán:</strong><br>
+                    {% if order.payment_status == 'pending' %}
+                        <span style="color: #f39c12; font-weight: bold; font-size: 16px;">⏳ Chưa thanh toán</span>
+                    {% elif order.payment_status == 'paid' %}
+                        <span style="color: #27ae60; font-weight: bold; font-size: 16px;">✓ Đã thanh toán</span>
+                    {% else %}
+                        {{ order.payment_status }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <h3>⚡ Hành Động Nhanh</h3>
+            </div>
+            <div style="padding: 20px;">
+                {% if order.status == 'pending' %}
+                    <!-- Đơn hàng chờ xử lý -->
+                    <form method="POST" action="{{ url_for('admin_update_order_status', order_id=order.order_id) }}" style="margin-bottom: 10px;">
+                        <input type="hidden" name="status" value="confirmed">
+                        <input type="hidden" name="payment_status" value="{{ order.payment_status }}">
+                        <button type="submit" class="btn" style="width: 100%; background: #27ae60; color: white; padding: 15px; font-size: 16px; font-weight: 600;">
+                            ✓ Xác Nhận Đơn Hàng
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin_update_order_status', order_id=order.order_id) }}" onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
+                        <input type="hidden" name="status" value="cancelled">
+                        <input type="hidden" name="payment_status" value="{{ order.payment_status }}">
+                        <button type="submit" class="btn" style="width: 100%; background: #e74c3c; color: white; padding: 12px;">
+                            ✗ Hủy Đơn Hàng
+                        </button>
+                    </form>
+                
+                {% elif order.status == 'confirmed' %}
+                    <!-- Đơn hàng đã xác nhận -->
+                    <form method="POST" action="{{ url_for('admin_update_order_status', order_id=order.order_id) }}" style="margin-bottom: 10px;">
+                        <input type="hidden" name="status" value="shipping">
+                        <input type="hidden" name="payment_status" value="{{ order.payment_status }}">
+                        <button type="submit" class="btn" style="width: 100%; background: #9b59b6; color: white; padding: 15px; font-size: 16px; font-weight: 600;">
+                            🚚 Chuyển Sang Giao Hàng
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin_update_order_status', order_id=order.order_id) }}" onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
+                        <input type="hidden" name="status" value="cancelled">
+                        <input type="hidden" name="payment_status" value="{{ order.payment_status }}">
+                        <button type="submit" class="btn" style="width: 100%; background: #e74c3c; color: white; padding: 12px;">
+                            ✗ Hủy Đơn Hàng
+                        </button>
+                    </form>
+                
+                {% elif order.status == 'shipping' %}
+                    <!-- Đang giao hàng -->
+                    <form method="POST" action="{{ url_for('admin_update_order_status', order_id=order.order_id) }}">
+                        <input type="hidden" name="status" value="completed">
+                        <input type="hidden" name="payment_status" value="paid">
+                        <button type="submit" class="btn" style="width: 100%; background: #27ae60; color: white; padding: 15px; font-size: 16px; font-weight: 600;">
+                            ✓ Hoàn Thành Giao Hàng
+                        </button>
+                    </form>
+                
+                {% elif order.status == 'completed' %}
+                    <!-- Đã hoàn thành -->
+                    <div style="text-align: center; padding: 20px; background: #d4edda; border-radius: 8px; color: #155724;">
+                        <i class="fas fa-check-circle" style="font-size: 48px; margin-bottom: 10px;"></i>
+                        <div style="font-weight: 600; font-size: 16px;">Đơn hàng đã hoàn thành</div>
+                        <small>Không thể thay đổi trạng thái</small>
+                    </div>
+                
+                {% elif order.status == 'cancelled' %}
+                    <!-- Đã hủy -->
+                    <div style="text-align: center; padding: 20px; background: #f8d7da; border-radius: 8px; color: #721c24;">
+                        <i class="fas fa-times-circle" style="font-size: 48px; margin-bottom: 10px;"></i>
+                        <div style="font-weight: 600; font-size: 16px;">Đơn hàng đã bị hủy</div>
+                        <small>Không thể thay đổi trạng thái</small>
+                    </div>
+                {% endif %}
+
+                <!-- Cập nhật trạng thái thanh toán cho COD -->
+                {% if order.status not in ['cancelled', 'completed'] and order.payment_method == 'cod' and order.payment_status == 'pending' %}
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
+                    <form method="POST" action="{{ url_for('admin_update_order_status', order_id=order.order_id) }}">
+                        <input type="hidden" name="status" value="{{ order.status }}">
+                        <input type="hidden" name="payment_status" value="paid">
+                        <button type="submit" class="btn" style="width: 100%; background: #3498db; color: white; padding: 12px;">
+                            💰 Xác Nhận Đã Thu Tiền COD
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <a href="{{ url_for('admin_orders') }}" class="btn btn-primary" style="width: 100%; text-align: center;">← Quay Lại Danh Sách</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

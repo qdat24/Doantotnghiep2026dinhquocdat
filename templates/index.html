@@ -1,0 +1,1587 @@
+{% extends "base.html" %}
+
+{% block title %}Trang Chủ - {{ site_settings.get('site_name', 'Nội Thất Sang Trọng') }}{% endblock %}
+{% block content %}
+<style>
+/* CSS bổ sung cho index page - tương thích với CSS hiện có */
+.hero-modern {
+    background: var(--gradient-hero), 
+                url('{{ site_settings.get('hero_banner_image', 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1920') }}') center/cover fixed;
+    color: white;
+    padding: clamp(100px, 18vh, 160px) 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .hero-modern {
+        padding: clamp(3rem, 8vh, 5rem) 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-modern {
+        padding: clamp(2.5rem, 6vh, 4rem) 0 !important;
+    }
+}
+
+.hero-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(157, 184, 146, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(212, 130, 111, 0.15) 0%, transparent 50%);
+    animation: gradient-shift 8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes gradient-shift {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+.hero-modern .container {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-modern h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 900;
+    margin-bottom: clamp(1.25rem, 3vh, 2rem);
+    text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    animation: fadeInUp 0.8s ease-out;
+    color: white;
+    line-height: 1.2;
+}
+
+.hero-modern p {
+    font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+    margin-bottom: clamp(2rem, 4vh, 3rem);
+    opacity: 0.95;
+    animation: fadeInUp 1s ease-out 0.2s both;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: clamp(0.875rem, 2vw, 1.25rem);
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeInUp 1.2s ease-out 0.4s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Search Bar */
+.search-section {
+    background: white;
+    padding: clamp(2rem, 4vh, 2.5rem) 0;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    z-index: 10;
+    margin-top: -2rem;
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+}
+
+@media (max-width: 768px) {
+    .search-section {
+        padding: clamp(1.25rem, 3vh, 1.75rem) 0 !important;
+        margin-top: -1rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-section {
+        padding: clamp(1rem, 2.5vh, 1.5rem) 0 !important;
+        margin-top: -0.75rem !important;
+    }
+}
+
+.search-wrapper {
+    display: flex;
+    gap: clamp(0.875rem, 2vw, 1.25rem);
+    max-width: 1000px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+.search-box-new {
+    flex: 2;
+    min-width: 280px;
+    position: relative;
+}
+
+.search-box-new i {
+    position: absolute;
+    left: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: 1.25rem;
+    transition: color 0.3s ease;
+    z-index: 1;
+}
+
+.search-box-new input {
+    width: 100%;
+    padding: clamp(14px, 2vw, 18px) 20px clamp(14px, 2vw, 18px) 56px;
+    border: 2px solid var(--border-color);
+    border-radius: 50px;
+    font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-white);
+}
+
+.search-box-new input:focus {
+    outline: none;
+    border-color: var(--sage-medium);
+    box-shadow: 0 0 0 4px var(--sage-light);
+    transform: translateY(-2px);
+}
+
+.search-box-new input:focus + i {
+    color: var(--sage-medium);
+}
+
+.filter-select-new {
+    flex: 1;
+    min-width: 180px;
+    padding: clamp(14px, 2vw, 18px) 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 50px;
+    font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    cursor: pointer;
+    background: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%233d3229' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    padding-right: 50px;
+}
+
+.filter-select-new:hover {
+    border-color: var(--sage-light);
+}
+
+.filter-select-new:focus {
+    outline: none;
+    border-color: var(--sage-medium);
+    box-shadow: 0 0 0 4px var(--sage-light);
+}
+
+/* Categories Grid */
+.categories-modern {
+    padding: clamp(60px, 10vh, 100px) 0;
+    background: var(--bg-cream);
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .categories-modern {
+        padding: clamp(2rem, 5vh, 3rem) 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .categories-modern {
+        padding: clamp(1.5rem, 4vh, 2.5rem) 0 !important;
+    }
+}
+
+.cat-grid {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    margin-top: clamp(2rem, 4vh, 3.5rem);
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .cat-grid {
+        margin-top: 1.5rem !important;
+    }
+    
+    .cat-item {
+        padding: 1.25rem 1rem !important;
+    }
+    
+    .cat-icon {
+        width: 55px !important;
+        height: 55px !important;
+        font-size: 1.5rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .cat-item h3 {
+        font-size: clamp(0.9375rem, 2.5vw, 1.125rem) !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .cat-item p {
+        font-size: clamp(0.8125rem, 2vw, 0.875rem) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .cat-grid {
+        margin-top: 1.25rem !important;
+    }
+    
+    .cat-item {
+        padding: 1rem 0.875rem !important;
+    }
+    
+    .cat-icon {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 1.375rem !important;
+        margin-bottom: 0.625rem !important;
+    }
+}
+
+.cat-item {
+    background: white;
+    padding: clamp(2rem, 4vw, 2.5rem) clamp(1.25rem, 2.5vw, 1.5rem);
+    border-radius: var(--radius-xl);
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text-dark);
+    border: 2px solid transparent;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+    flex: 0 0 auto !important;
+    flex-shrink: 0 !important;
+    min-width: 200px;
+    width: 200px;
+}
+
+.cat-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-sage);
+    opacity: 0.05;
+    transition: left 0.5s ease;
+    z-index: 0;
+}
+
+.cat-item:hover::before {
+    left: 0;
+}
+
+.cat-item:hover {
+    transform: translateY(-12px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--sage-light);
+}
+
+.cat-icon {
+    width: clamp(65px, 8vw, 80px);
+    height: clamp(65px, 8vw, 80px);
+    margin: 0 auto clamp(1rem, 2vh, 1.5rem);
+    background: var(--gradient-sage);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    color: white;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+    box-shadow: var(--shadow-md);
+}
+
+.cat-item:hover .cat-icon {
+    transform: scale(1.15) rotate(8deg);
+    box-shadow: var(--shadow-lg);
+}
+
+.cat-item h3 {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
+    font-weight: 600;
+    color: var(--text-dark);
+    position: relative;
+    z-index: 1;
+}
+
+.cat-item p {
+    color: var(--text-light);
+    font-size: clamp(0.875rem, 1.6vw, 0.9375rem);
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* Features Bar */
+.features-bar {
+    padding: clamp(2rem, 4vh, 3rem) 0;
+    background: white;
+}
+
+@media (max-width: 768px) {
+    .features-bar {
+        padding: clamp(1.5rem, 4vh, 2.5rem) 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .features-bar {
+        padding: clamp(1.25rem, 3vh, 2rem) 0 !important;
+    }
+}
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+}
+
+.features-flex {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.feat-item {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.875rem, 2vw, 1.25rem);
+    transition: transform 0.3s ease;
+    padding: 0.5rem;
+    border-radius: var(--radius-lg);
+}
+
+.feat-item:hover {
+    transform: translateX(8px);
+}
+
+.feat-icon {
+    width: clamp(50px, 6vw, 60px);
+    height: clamp(50px, 6vw, 60px);
+    background: var(--gradient-sage);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.375rem, 2.5vw, 1.75rem);
+    color: white;
+    flex-shrink: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-sm);
+}
+
+.feat-item:hover .feat-icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: var(--shadow-md);
+}
+
+.feat-text h4 {
+    font-size: clamp(0.9375rem, 1.8vw, 1.125rem);
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.feat-text p {
+    font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
+    color: var(--text-light);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Products Enhanced */
+.products-enhanced {
+    padding: clamp(60px, 10vh, 100px) 0;
+    background: var(--bg-white);
+}
+
+.section-head {
+    text-align: center;
+    margin-bottom: clamp(2.5rem, 5vh, 4rem);
+}
+
+.section-head h2 {
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
+    font-weight: 700;
+    color: var(--text-dark);
+    position: relative;
+    display: inline-block;
+    padding-bottom: 1rem;
+}
+
+.section-head h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: var(--gradient-sage);
+    border-radius: var(--radius-full);
+}
+
+.section-head p {
+    color: var(--text-light);
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    margin-top: 1rem;
+}
+
+.products-grid-new {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    margin-top: clamp(2rem, 4vh, 3rem);
+}
+
+.product-new {
+    background: white;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+}
+
+.product-new:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--sage-light);
+}
+
+.prod-img-wrap {
+    position: relative;
+    padding-top: 100%;
+    background: var(--bg-cream);
+    overflow: hidden;
+}
+
+.prod-img-wrap img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-new:hover .prod-img-wrap img {
+    transform: scale(1.1);
+}
+
+.disc-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--gradient-sunset);
+    color: white;
+    padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.875rem, 2vw, 1.125rem);
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
+    box-shadow: var(--shadow-md);
+    z-index: 2;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.prod-details {
+    padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.prod-cat {
+    display: inline-block;
+    padding: clamp(0.25rem, 0.5vw, 0.375rem) clamp(0.625rem, 1.2vw, 0.875rem);
+    background: var(--bg-sage);
+    color: var(--sage-dark);
+    border-radius: var(--radius-full);
+    font-size: clamp(0.625rem, 1.2vw, 0.75rem);
+    margin-bottom: clamp(0.375rem, 0.8vh, 0.625rem);
+    font-weight: 500;
+}
+
+.prod-name {
+    font-size: clamp(0.9375rem, 1.8vw, 1.125rem);
+    margin-bottom: clamp(0.375rem, 0.8vh, 0.625rem);
+    color: var(--text-dark);
+    font-weight: 600;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.prod-rating {
+    color: #ffa500;
+    font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
+    margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.prod-rating .review-cnt {
+    color: var(--text-light);
+    font-size: clamp(0.75rem, 1.4vw, 0.875rem);
+}
+
+.prod-price-new {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 1vw, 0.75rem);
+    margin-bottom: clamp(0.75rem, 1.2vh, 1rem);
+}
+
+.price-current {
+    font-size: clamp(1.125rem, 2.2vw, 1.5rem);
+    font-weight: 700;
+    color: var(--sage-dark);
+}
+
+.price-old {
+    font-size: clamp(0.875rem, 1.6vw, 1rem);
+    color: var(--text-light);
+    text-decoration: line-through;
+}
+
+/* Promo Boxes */
+.promo-section {
+    padding: clamp(60px, 10vh, 100px) 0;
+    background: var(--bg-cream);
+    position: relative;
+}
+
+.promo-grid-new {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.promo-box {
+    background: var(--gradient-wood);
+    border-radius: var(--radius-2xl);
+    padding: clamp(2.5rem, 5vw, 3.5rem);
+    color: white;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.promo-box::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    transition: transform 0.6s ease;
+    transform: scale(0);
+}
+
+.promo-box:hover::before {
+    transform: scale(1);
+}
+
+.promo-box:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-xl);
+}
+
+.promo-box h3 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin-bottom: clamp(0.875rem, 1.5vh, 1.25rem);
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+}
+
+.promo-box p {
+    margin-bottom: clamp(1.25rem, 2.5vh, 1.75rem);
+    opacity: 0.95;
+    font-size: clamp(0.9375rem, 1.8vw, 1.125rem);
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+}
+
+.promo-box.orange {
+    background: var(--gradient-sunset);
+}
+
+.promo-box.blue {
+    background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
+}
+
+.promo-box.crypto {
+    background: linear-gradient(135deg, var(--sage) 0%, var(--forest) 100%);
+}
+
+/* Testimonials */
+.testimonials {
+    padding: clamp(60px, 10vh, 100px) 0;
+    background: var(--bg-white);
+}
+
+@media (max-width: 768px) {
+    .testimonials {
+        padding: clamp(2rem, 5vh, 3rem) 0 !important;
+    }
+    
+    .testimonial-grid {
+        margin-top: 1.5rem !important;
+        gap: 1rem !important;
+    }
+    
+    .testi-card {
+        padding: 1.25rem 1rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .testimonials {
+        padding: clamp(1.5rem, 4vh, 2.5rem) 0 !important;
+    }
+    
+    .testimonial-grid {
+        margin-top: 1.25rem !important;
+        gap: 0.875rem !important;
+    }
+    
+    .testi-card {
+        padding: 1rem 0.875rem !important;
+    }
+}
+
+.testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    margin-top: clamp(2rem, 4vh, 3.5rem);
+}
+
+.testi-card {
+    background: white;
+    padding: clamp(1.75rem, 3.5vw, 2.5rem);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.testi-card::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    font-size: 80px;
+    color: var(--sage-light);
+    font-family: Georgia, serif;
+    line-height: 1;
+    opacity: 0.3;
+}
+
+.testi-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--sage-light);
+}
+
+.testi-stars {
+    color: #ffa500;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    margin-bottom: clamp(0.875rem, 1.5vh, 1.25rem);
+    display: flex;
+    gap: 0.25rem;
+}
+
+.testi-text {
+    font-style: italic;
+    margin-bottom: clamp(1.25rem, 2.5vh, 1.75rem);
+    line-height: 1.8;
+    color: var(--text-medium);
+    font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    position: relative;
+    z-index: 1;
+}
+
+.testi-author {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.875rem, 2vw, 1.25rem);
+}
+
+.testi-author img {
+    width: clamp(50px, 6vw, 60px);
+    height: clamp(50px, 6vw, 60px);
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--sage-light);
+    box-shadow: var(--shadow-sm);
+}
+
+.testi-author strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    color: var(--text-dark);
+}
+
+.testi-author span {
+    font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
+    color: var(--text-light);
+}
+
+/* CTA Section */
+.cta-section {
+    padding: clamp(60px, 12vh, 120px) 0;
+    background: var(--gradient-hero), 
+                url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1920') center/cover fixed;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(157, 184, 146, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(212, 130, 111, 0.15) 0%, transparent 50%);
+    animation: gradient-shift 8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.cta-section .container {
+    position: relative;
+    z-index: 2;
+}
+
+.cta-section h2 {
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    margin-bottom: clamp(1rem, 2vh, 1.5rem);
+    font-weight: 700;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.cta-section p {
+    font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+    margin-bottom: clamp(2rem, 4vh, 2.5rem);
+    opacity: 0.95;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+/* Utility Classes */
+.btn-white {
+    background: white;
+    color: var(--sage-dark);
+    border: 2px solid white;
+    box-shadow: var(--shadow-md);
+}
+
+.btn-white:hover {
+    background: var(--gradient-sage);
+    color: white;
+    border-color: transparent;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-outline-white {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    box-shadow: 0 0 0 0 rgba(255,255,255,0.3);
+}
+
+.btn-outline-white:hover {
+    background: white;
+    color: var(--sage-dark);
+    box-shadow: 0 0 0 8px rgba(255,255,255,0.2);
+    transform: translateY(-3px);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt-3 {
+    margin-top: clamp(2rem, 4vh, 3rem);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .cat-grid {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+    }
+    
+    .products-grid-new {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-modern {
+        padding: clamp(3rem, 8vh, 5rem) 0 !important;
+    }
+    
+    .hero-modern h1 {
+        font-size: clamp(1.75rem, 5vw, 2.25rem) !important;
+        margin-bottom: 1rem !important;
+        line-height: 1.3 !important;
+    }
+    
+    .hero-modern p {
+        font-size: clamp(0.9375rem, 2.5vw, 1.125rem) !important;
+        margin-bottom: 1.5rem !important;
+        line-height: 1.5 !important;
+    }
+    
+    .hero-buttons {
+        gap: 0.75rem !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    
+    .hero-buttons .btn {
+        width: 100% !important;
+        padding: 0.75rem 1.25rem !important;
+        font-size: 0.9375rem !important;
+    }
+    
+    .search-section {
+        margin-top: -1rem !important;
+        padding: clamp(1.25rem, 3vh, 1.75rem) 0 !important;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+    }
+    
+    .search-wrapper {
+        flex-direction: column;
+        gap: 0.75rem !important;
+    }
+    
+    .search-box-new,
+    .filter-select-new {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.75rem !important;
+        font-size: 0.9375rem !important;
+    }
+    
+    .categories-section {
+        padding: clamp(2rem, 5vh, 3rem) 0 !important;
+    }
+    
+    .cat-grid {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 1rem !important;
+        margin-top: 1.5rem !important;
+    }
+    
+    .products-enhanced {
+        padding: clamp(2rem, 5vh, 3rem) 0 !important;
+    }
+    
+    .section-head {
+        margin-bottom: clamp(1.5rem, 3vh, 2rem) !important;
+    }
+    
+    .section-head h2 {
+        font-size: clamp(1.5rem, 4vw, 1.875rem) !important;
+        margin-bottom: 0.5rem !important;
+        padding-bottom: 0.75rem !important;
+    }
+    
+    .section-head p {
+        font-size: clamp(0.875rem, 2vw, 1rem) !important;
+        margin-top: 0.5rem !important;
+    }
+    
+    .products-grid-new {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.875rem !important;
+        margin-top: 1.5rem !important;
+    }
+    
+    .product-new {
+        border-radius: var(--radius-lg) !important;
+        border-width: 1px !important;
+    }
+    
+    .prod-details {
+        padding: 0.875rem !important;
+    }
+    
+    .prod-cat {
+        padding: 0.25rem 0.625rem !important;
+        font-size: 0.625rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .prod-name {
+        font-size: 0.875rem !important;
+        margin-bottom: 0.5rem !important;
+        line-height: 1.3 !important;
+    }
+    
+    .prod-rating {
+        font-size: 0.75rem !important;
+        margin-bottom: 0.5rem !important;
+        gap: 0.25rem !important;
+    }
+    
+    .prod-rating .review-cnt {
+        font-size: 0.6875rem !important;
+    }
+    
+    .prod-price-new {
+        gap: 0.5rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .price-current {
+        font-size: 1rem !important;
+    }
+    
+    .price-old {
+        font-size: 0.8125rem !important;
+    }
+    
+    .prod-details .btn {
+        padding: 0.5rem 0.875rem !important;
+        font-size: 0.8125rem !important;
+        min-height: 36px !important;
+    }
+    
+    .promo-section {
+        padding: clamp(2rem, 5vh, 3rem) 0 !important;
+    }
+    
+    .promo-grid-new {
+        grid-template-columns: 1fr;
+        gap: 1rem !important;
+    }
+    
+    .promo-box {
+        padding: 1.5rem 1.25rem !important;
+        min-height: auto !important;
+    }
+    
+    .promo-box h3 {
+        font-size: clamp(1.125rem, 3vw, 1.375rem) !important;
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .promo-box p {
+        font-size: clamp(0.875rem, 2vw, 1rem) !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .features-bar {
+        padding: clamp(1.5rem, 4vh, 2.5rem) 0 !important;
+    }
+    
+    .features-flex {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+    
+    .feat-item {
+        padding: 0.875rem !important;
+    }
+    
+    .feat-icon {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 1.5rem !important;
+    }
+    
+    .feat-text h4 {
+        font-size: clamp(0.9375rem, 2.5vw, 1.0625rem) !important;
+        margin-bottom: 0.25rem !important;
+    }
+    
+    .feat-text p {
+        font-size: clamp(0.8125rem, 2vw, 0.9375rem) !important;
+    }
+    
+    .cta-section {
+        padding: clamp(2.5rem, 6vh, 4rem) 0 !important;
+    }
+    
+    .cta-section h2 {
+        font-size: clamp(1.5rem, 4vw, 2rem) !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .cta-section p {
+        font-size: clamp(0.9375rem, 2.5vw, 1.125rem) !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .testimonial-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem !important;
+    }
+    
+    .mt-3 {
+        margin-top: clamp(1.5rem, 3vh, 2rem) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-modern {
+        padding: clamp(2.5rem, 6vh, 4rem) 0 !important;
+    }
+    
+    .hero-modern h1 {
+        font-size: clamp(1.5rem, 4.5vw, 2rem) !important;
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .hero-modern p {
+        font-size: clamp(0.875rem, 2.5vw, 1rem) !important;
+        margin-bottom: 1.25rem !important;
+    }
+    
+    .search-section {
+        margin-top: -0.75rem !important;
+        padding: clamp(1rem, 2.5vh, 1.5rem) 0 !important;
+    }
+    
+    .categories-section {
+        padding: clamp(1.5rem, 4vh, 2.5rem) 0 !important;
+    }
+    
+    .cat-grid {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 0.875rem !important;
+    }
+    
+    .products-enhanced {
+        padding: clamp(1.5rem, 4vh, 2.5rem) 0 !important;
+    }
+    
+    .section-head {
+        margin-bottom: clamp(1.25rem, 2.5vh, 1.75rem) !important;
+    }
+    
+    .section-head h2 {
+        font-size: clamp(1.375rem, 3.5vw, 1.75rem) !important;
+    }
+    
+    .products-grid-new {
+        grid-template-columns: 1fr;
+        gap: 0.75rem !important;
+    }
+    
+    .product-new {
+        border-radius: var(--radius-md) !important;
+    }
+    
+    .prod-details {
+        padding: 0.75rem !important;
+    }
+    
+    .prod-cat {
+        padding: 0.25rem 0.5rem !important;
+        font-size: 0.5625rem !important;
+        margin-bottom: 0.375rem !important;
+    }
+    
+    .prod-name {
+        font-size: 0.8125rem !important;
+        margin-bottom: 0.375rem !important;
+        line-height: 1.25 !important;
+    }
+    
+    .prod-rating {
+        font-size: 0.6875rem !important;
+        margin-bottom: 0.375rem !important;
+        gap: 0.25rem !important;
+    }
+    
+    .prod-rating .review-cnt {
+        font-size: 0.625rem !important;
+    }
+    
+    .prod-price-new {
+        gap: 0.375rem !important;
+        margin-bottom: 0.625rem !important;
+    }
+    
+    .price-current {
+        font-size: 0.9375rem !important;
+    }
+    
+    .price-old {
+        font-size: 0.75rem !important;
+    }
+    
+    .prod-details .btn {
+        padding: 0.4375rem 0.75rem !important;
+        font-size: 0.75rem !important;
+        min-height: 34px !important;
+    }
+    
+    .promo-section {
+        padding: clamp(1.5rem, 4vh, 2.5rem) 0 !important;
+    }
+    
+    .promo-box {
+        padding: 1.25rem 1rem !important;
+    }
+    
+    .features-bar {
+        padding: clamp(1.25rem, 3vh, 2rem) 0 !important;
+    }
+    
+    .features-flex {
+        gap: 0.875rem !important;
+    }
+    
+    .feat-item {
+        padding: 0.75rem !important;
+    }
+    
+    .cta-section {
+        padding: clamp(2rem, 5vh, 3rem) 0 !important;
+    }
+    
+    .cta-section h2 {
+        font-size: clamp(1.375rem, 3.5vw, 1.75rem) !important;
+    }
+}
+</style>
+
+<!-- Hero Section -->
+<section class="hero-modern">
+    <div class="container">
+        <h1>{{ site_settings.get('hero_banner_title', 'Nội Thất Sang Trọng Cho Ngôi Nhà Của Bạn') }}</h1>
+        <p>{{ site_settings.get('hero_banner_subtitle', 'Khám phá bộ sưu tập nội thất hiện đại, chất lượng cao với giá tốt nhất') }}</p>
+        <div class="hero-buttons">
+            <a href="{{ site_settings.get('hero_banner_button_link', '/products') }}" class="btn" style="background: var(--secondary-color); color: white;">{{ site_settings.get('hero_banner_button_text', 'Khám Phá Ngay') }}</a>
+            <a href="#categories" class="btn btn-outline-white">Danh Mục</a>
+        </div>
+    </div>
+</section>
+
+<!-- Search & Filter Bar -->
+<section class="search-section">
+    <div class="container">
+        <div class="search-wrapper">
+            <div class="search-box-new">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Tìm kiếm sản phẩm..." onkeypress="if(event.key==='Enter') window.location.href='/products?search='+this.value">
+            </div>
+            <select class="filter-select-new" onchange="if(this.value) window.location.href='/products?category='+this.value">
+                <option value="">Tất cả danh mục</option>
+                <option value="Phòng Khách">Phòng Khách</option>
+                <option value="Phòng Ngủ">Phòng Ngủ</option>
+                <option value="Nhà Bếp">Nhà Bếp</option>
+                <option value="Văn Phòng">Văn Phòng</option>
+                <option value="Phòng Ăn">Phòng Ăn</option>
+            </select>
+            <select class="filter-select-new" onchange="if(this.value) window.location.href='/products?price='+this.value">
+                <option value="">Mức giá</option>
+                <option value="0-5000000">Dưới 5 triệu</option>
+                <option value="5000000-10000000">5 - 10 triệu</option>
+                <option value="10000000-20000000">10 - 20 triệu</option>
+                <option value="20000000-999999999">Trên 20 triệu</option>
+            </select>
+        </div>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="categories-modern" id="categories">
+    <div class="container">
+        <div class="section-head">
+            <h2>Danh Mục Sản Phẩm</h2>
+            <p>Lựa chọn theo phòng và phong cách</p>
+        </div>
+        <div class="cat-grid">
+            <a href="/products?category=Phòng%20Khách" class="cat-item">
+                <div class="cat-icon"><i class="fas fa-couch"></i></div>
+                <h3>Phòng Khách</h3>
+                <p>Sofa, bàn trà, kệ</p>
+            </a>
+            <a href="/products?category=Phòng%20Ngủ" class="cat-item">
+                <div class="cat-icon"><i class="fas fa-bed"></i></div>
+                <h3>Phòng Ngủ</h3>
+                <p>Giường, tủ quần áo</p>
+            </a>
+            <a href="/products?category=Nhà%20Bếp" class="cat-item">
+                <div class="cat-icon"><i class="fas fa-utensils"></i></div>
+                <h3>Nhà Bếp</h3>
+                <p>Tủ bếp, bàn đảo</p>
+            </a>
+            <a href="/products?category=Văn%20Phòng" class="cat-item">
+                <div class="cat-icon"><i class="fas fa-briefcase"></i></div>
+                <h3>Văn Phòng</h3>
+                <p>Bàn, ghế làm việc</p>
+            </a>
+            <a href="/products?category=Phòng%20Ăn" class="cat-item">
+                <div class="cat-icon"><i class="fas fa-chair"></i></div>
+                <h3>Phòng Ăn</h3>
+                <p>Bàn ăn, ghế ăn</p>
+            </a>
+            <a href="/products" class="cat-item">
+                <div class="cat-icon"><i class="fas fa-th"></i></div>
+                <h3>Tất Cả</h3>
+                <p>Xem toàn bộ</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Bar -->
+<section class="features-bar">
+    <div class="container">
+        <div class="features-flex">
+            <div class="feat-item">
+                <div class="feat-icon"><i class="fas fa-shipping-fast"></i></div>
+                <div class="feat-text">
+                    <h4>Miễn Phí Vận Chuyển</h4>
+                    <p>Đơn hàng từ 5 triệu</p>
+                </div>
+            </div>
+            <div class="feat-item">
+                <div class="feat-icon"><i class="fas fa-undo"></i></div>
+                <div class="feat-text">
+                    <h4>Đổi Trả 30 Ngày</h4>
+                    <p>Hoàn tiền 100%</p>
+                </div>
+            </div>
+            <div class="feat-item">
+                <div class="feat-icon"><i class="fas fa-shield-alt"></i></div>
+                <div class="feat-text">
+                    <h4>Bảo Hành Chính Hãng</h4>
+                    <p>Từ 1-3 năm</p>
+                </div>
+            </div>
+            <div class="feat-item">
+                <div class="feat-icon"><i class="fas fa-headset"></i></div>
+                <div class="feat-text">
+                    <h4>Hỗ Trợ 24/7</h4>
+                    <p>Tư vấn nhiệt tình</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="products-enhanced">
+    <div class="container">
+        <div class="section-head">
+            <h2>Sản Phẩm Nổi Bật</h2>
+            <p>Được khách hàng yêu thích nhất</p>
+        </div>
+        <div class="products-grid-new">
+            {% for product in featured_products %}
+            <div class="product-new" onclick="window.location.href='/product/{{ product.id }}'">
+                <div class="prod-img-wrap">
+                    <img src="{{ product.image }}" alt="{{ product.name }}">
+                    {% if product.original_price > product.price %}
+                    <div class="disc-badge">
+                        -{{ ((product.original_price - product.price) / product.original_price * 100) | int }}%
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="prod-details">
+                    <span class="prod-cat">{{ product.category }}</span>
+                    <h3 class="prod-name">{{ product.name }}</h3>
+                    <div class="prod-rating">
+                        {% for i in range(5) %}
+                            {% if i < product.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                        <span class="review-cnt">({{ product.reviews }})</span>
+                    </div>
+                    <div class="prod-price-new">
+                        <span class="price-current">{{ product.price | format_currency }}</span>
+                        {% if product.original_price > product.price %}
+                        <span class="price-old">{{ product.original_price | format_currency }}</span>
+                        {% endif %}
+                    </div>
+                    <button class="btn" onclick="event.stopPropagation(); addToCart({{ product.id }})" style="width: 100%; background: var(--primary-color); color: white;">
+                        <i class="fas fa-shopping-cart"></i> Thêm Vào Giỏ
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-3">
+            <a href="/products" class="btn" style="background: var(--primary-color); color: white; padding: 1rem 3rem; font-size: 1.1rem;">
+                Xem Tất Cả Sản Phẩm <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Promotional Boxes -->
+<section class="promo-section">
+    <div class="container">
+        <div class="promo-grid-new">
+            <div class="promo-box">
+                <h3>🎉 Bộ Sưu Tập Mới</h3>
+                <p>Giảm giá lên đến 35% cho toàn bộ sản phẩm mới ra mắt</p>
+                <a href="/products" class="btn btn-white">Khám Phá Ngay</a>
+            </div>
+            <div class="promo-box orange">
+                <h3>🚚 Freeship 0Đ</h3>
+                <p>Miễn phí vận chuyển toàn quốc cho mọi đơn hàng</p>
+                <a href="/products" class="btn btn-white">Mua Ngay</a>
+            </div>
+            <div class="promo-box blue">
+                <h3>🎨 Thiết Kế Miễn Phí</h3>
+                <p>Tư vấn thiết kế 3D không gian nội thất</p>
+                <a href="/contact" class="btn btn-white">Đăng Ký</a>
+            </div>
+            <div class="promo-box crypto">
+                <h3>💰 Thanh Toán Crypto</h3>
+                <p>Hỗ trợ thanh toán USDT qua Web3 - An toàn & nhanh chóng</p>
+                <a href="/checkout" class="btn btn-white">Tìm Hiểu Thêm</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials">
+    <div class="container">
+        <div class="section-head">
+            <h2>Khách Hàng Nói Gì</h2>
+            <p>Đánh giá từ hàng nghìn khách hàng hài lòng</p>
+        </div>
+        <div class="testimonial-grid">
+            <div class="testi-card">
+                <div class="testi-stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <p class="testi-text">"Sản phẩm chất lượng tuyệt vời, giao hàng nhanh chóng và đóng gói cẩn thận. Nhân viên tư vấn rất nhiệt tình!"</p>
+                <div class="testi-author">
+                    <img src="https://i.pravatar.cc/100?img=1" alt="Customer">
+                    <div>
+                        <strong>Nguyễn Văn An</strong>
+                        <span>Đã mua 3 sản phẩm</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testi-card">
+                <div class="testi-stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <p class="testi-text">"Thiết kế đẹp, chất liệu tốt, giá cả hợp lý. Đội ngũ lắp đặt chuyên nghiệp. Rất đáng để đầu tư!"</p>
+                <div class="testi-author">
+                    <img src="https://i.pravatar.cc/100?img=5" alt="Customer">
+                    <div>
+                        <strong>Trần Thị Bích</strong>
+                        <span>Khách hàng thân thiết</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testi-card">
+                <div class="testi-stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <p class="testi-text">"Mua sofa ở đây được 6 tháng rồi, chất lượng vẫn như mới. Bảo hành chu đáo, rất uy tín!"</p>
+                <div class="testi-author">
+                    <img src="https://i.pravatar.cc/100?img=12" alt="Customer">
+                    <div>
+                        <strong>Lê Minh Châu</strong>
+                        <span>Đã mua 5 sản phẩm</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Partners Logo Section -->
+<section class="partners-logo-section" style="background: var(--bg-cream); padding: clamp(3rem, 6vh, 5rem) 0;">
+    <div class="container">
+        <div class="section-head" style="text-align: center; margin-bottom: clamp(2rem, 4vh, 3rem);">
+            <h2 style="font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; color: var(--text-dark); margin-bottom: 0.75rem;">
+                <i class="fas fa-handshake"></i> Đối Tác Của Chúng Tôi
+            </h2>
+            <p style="font-size: clamp(1rem, 2vw, 1.125rem); color: var(--text-medium);">
+                Hợp tác cùng các đối tác uy tín trong lĩnh vực nội thất và công nghệ
+            </p>
+        </div>
+        
+        <div class="partners-logo-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: clamp(2rem, 4vw, 3rem); align-items: center; justify-items: center; max-width: 1200px; margin: 0 auto;">
+            <!-- Nội Thất Hoàng Gia -->
+            <div class="partner-logo-item" style="text-align: center; transition: transform 0.3s ease;">
+                <a href="/partners" style="text-decoration: none; display: block;">
+                    <div class="partner-logo-box" style="width: 150px; height: 150px; margin: 0 auto 1rem; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; padding: 20px;">
+                        <img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-6/368370209_671084131719706_4843289841186139566_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=YXEufYhOObEQ7kNvwGo19b_&_nc_oc=AdkvrCRQA1NAuBVLntrOBluzPtw-6QAKE4axwC1Y9qRibbclndRY9ODBHgBoAiADb-JfiMg8s5_J4eShIRuUnE3m&_nc_zt=23&_nc_ht=scontent.fhan15-1.fna&_nc_gid=iOOG2bwS6bBF7AL6K5xtmw&oh=00_AfkITWQyk1aVngGQvjKQmf3eAgjYAmL2F6FDjYRgb4AsVw&oe=69521E27" 
+                             alt="Nội Thất Hoàng Gia"
+                             style="max-width: 100%; max-height: 100%; object-fit: contain;"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fas fa-crown\' style=\'font-size: 3rem; color: #f6d365;\'></i>';">
+                    </div>
+                    <h4 style="font-size: clamp(0.9rem, 1.8vw, 1.1rem); color: var(--text-dark); font-weight: 600; margin-top: 0.5rem;">Nội Thất Hoàng Gia</h4>
+                </a>
+            </div>
+            
+            <!-- AIC Group -->
+            <div class="partner-logo-item" style="text-align: center; transition: transform 0.3s ease;">
+                <a href="/partners" style="text-decoration: none; display: block;">
+                    <div class="partner-logo-box" style="width: 150px; height: 150px; margin: 0 auto 1rem; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; padding: 20px;">
+                        <img src="https://office.aicjsc.com/wp-content/uploads/2023/10/LOGO-MOI-04-3.png" 
+                             alt="AIC Group"
+                             style="max-width: 100%; max-height: 100%; object-fit: contain;"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fas fa-building\' style=\'font-size: 3rem; color: #667eea;\'></i>';">
+                    </div>
+                    <h4 style="font-size: clamp(0.9rem, 1.8vw, 1.1rem); color: var(--text-dark); font-weight: 600; margin-top: 0.5rem;">AIC Group</h4>
+                </a>
+            </div>
+            
+            <!-- Nhà Xinh -->
+            <div class="partner-logo-item" style="text-align: center; transition: transform 0.3s ease;">
+                <a href="/partners" style="text-decoration: none; display: block;">
+                    <div class="partner-logo-box" style="width: 150px; height: 150px; margin: 0 auto 1rem; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; padding: 20px;">
+                        <img src="https://nhaxinh.com/wp-content/uploads/2025/07/logo-NX-moi-798x800.webp" 
+                             alt="Nhà Xinh"
+                             style="max-width: 100%; max-height: 100%; object-fit: contain;"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fas fa-home\' style=\'font-size: 3rem; color: #f093fb;\'></i>';">
+                    </div>
+                    <h4 style="font-size: clamp(0.9rem, 1.8vw, 1.1rem); color: var(--text-dark); font-weight: 600; margin-top: 0.5rem;">Nhà Xinh</h4>
+                </a>
+            </div>
+            
+            <!-- DevMaster -->
+            <div class="partner-logo-item" style="text-align: center; transition: transform 0.3s ease;">
+                <a href="/partners" style="text-decoration: none; display: block;">
+                    <div class="partner-logo-box devmaster-logo-box" id="devmaster-logo-home" style="width: 150px; height: 150px; margin: 0 auto 1rem; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; padding: 20px;">
+                        <img src="https://devmaster.edu.vn/logo.png" 
+                             alt="DevMaster"
+                             style="max-width: 100%; max-height: 100%; object-fit: contain;"
+                             onerror="this.onerror=null; this.src='https://devmaster.edu.vn/images/logo.png'; this.onerror=function(){this.style.display='none'; const logoDiv=document.getElementById('devmaster-logo-home'); if(logoDiv){logoDiv.innerHTML='<i class=\'fas fa-laptop-code\' style=\'font-size: 3rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;\'></i>'; logoDiv.style.background='white';}}">
+                    </div>
+                    <h4 style="font-size: clamp(0.9rem, 1.8vw, 1.1rem); color: var(--text-dark); font-weight: 600; margin-top: 0.5rem;">DevMaster</h4>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.partner-logo-item:hover {
+    transform: translateY(-5px);
+}
+
+.partner-logo-item:hover .partner-logo-box {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .partners-logo-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 2rem !important;
+    }
+    
+    .partner-logo-box {
+        width: 120px !important;
+        height: 120px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .partners-logo-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1.5rem !important;
+    }
+    
+    .partner-logo-box {
+        width: 100px !important;
+        height: 100px !important;
+        padding: 15px !important;
+    }
+    
+    .partner-logo-item h4 {
+        font-size: 0.85rem !important;
+    }
+}
+</style>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <h2>Tư Vấn Miễn Phí Thiết Kế Nội Thất</h2>
+        <p>Đội ngũ chuyên gia của chúng tôi sẵn sàng tư vấn và thiết kế không gian hoàn hảo cho bạn</p>
+        <a href="/contact" class="btn btn-white" style="padding: 1rem 3rem; font-size: 1.1rem;">
+            <i class="fas fa-phone-alt"></i> Liên Hệ Ngay
+        </a>
+    </div>
+</section>
+
+{% endblock %}

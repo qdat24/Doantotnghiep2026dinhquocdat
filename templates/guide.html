@@ -1,0 +1,561 @@
+{% extends "base.html" %}
+
+{% block title %}Hướng Dẫn Mua Hàng - HOMESTEAD{% endblock %}
+
+{% block content %}
+<style>
+    .guide-hero {
+        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
+        color: white;
+        padding: clamp(3rem, 6vh, 5rem) 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .guide-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
+        opacity: 0.3;
+        pointer-events: none;
+    }
+    
+    .guide-hero .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .guide-hero h1 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        margin-bottom: clamp(0.75rem, 1.5vh, 1rem);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .guide-hero p {
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        opacity: 0.95;
+        color: white;
+    }
+    
+    .guide-content {
+        padding: clamp(3rem, 6vh, 4rem) 0;
+        background: var(--bg-cream);
+    }
+    
+    .guide-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 clamp(1rem, 3vw, 2rem);
+    }
+    
+    .guide-step {
+        background: white;
+        padding: clamp(1.75rem, 3.5vw, 2.5rem);
+        border-radius: var(--radius-xl);
+        margin-bottom: clamp(1.5rem, 3vh, 2rem);
+        box-shadow: var(--shadow-md);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+        border-left: 4px solid;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .guide-step::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0.05;
+        background: var(--gradient-sage);
+        transition: opacity 0.3s ease;
+    }
+    
+    .guide-step:hover::before {
+        opacity: 0.1;
+    }
+    
+    .guide-step:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--sage-light);
+    }
+    
+    .guide-step.step-1 {
+        background: linear-gradient(135deg, rgba(157, 184, 146, 0.1) 0%, rgba(157, 184, 146, 0.05) 100%);
+        border-left-color: var(--sage-medium);
+    }
+    
+    .guide-step.step-2 {
+        background: linear-gradient(135deg, rgba(160, 137, 104, 0.1) 0%, rgba(160, 137, 104, 0.05) 100%);
+        border-left-color: var(--oak);
+    }
+    
+    .guide-step.step-3 {
+        background: linear-gradient(135deg, rgba(212, 130, 111, 0.1) 0%, rgba(212, 130, 111, 0.05) 100%);
+        border-left-color: var(--terracotta);
+    }
+    
+    .guide-step.step-4 {
+        background: linear-gradient(135deg, rgba(157, 184, 146, 0.1) 0%, rgba(157, 184, 146, 0.05) 100%);
+        border-left-color: var(--sage);
+    }
+    
+    .guide-step.step-5 {
+        background: linear-gradient(135deg, rgba(212, 130, 111, 0.1) 0%, rgba(212, 130, 111, 0.05) 100%);
+        border-left-color: var(--coral);
+    }
+    
+    .guide-step.step-6 {
+        background: linear-gradient(135deg, rgba(157, 184, 146, 0.1) 0%, rgba(157, 184, 146, 0.05) 100%);
+        border-left-color: var(--sage-dark);
+    }
+    
+    .guide-step h2 {
+        color: var(--text-dark);
+        margin-bottom: clamp(1rem, 2vh, 1.5rem);
+        font-size: clamp(1.375rem, 2.8vw, 1.75rem);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: clamp(0.75rem, 1.5vw, 1rem);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .step-number {
+        background: var(--gradient-sage);
+        color: white;
+        padding: clamp(6px, 1vw, 8px) clamp(14px, 2.5vw, 18px);
+        border-radius: var(--radius-full);
+        font-weight: 700;
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        box-shadow: var(--shadow-sm);
+        flex-shrink: 0;
+    }
+    
+    .guide-step.step-2 .step-number {
+        background: var(--gradient-wood);
+    }
+    
+    .guide-step.step-3 .step-number {
+        background: var(--gradient-sunset);
+    }
+    
+    .guide-step.step-5 .step-number {
+        background: var(--gradient-sunset);
+    }
+    
+    .guide-step ul {
+        color: var(--text-medium);
+        line-height: 1.8;
+        margin-left: clamp(1.5rem, 3vw, 2rem);
+        margin-bottom: 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .guide-step li {
+        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    }
+    
+    .guide-step strong {
+        color: var(--sage-dark);
+        font-weight: 600;
+    }
+    
+    .guide-step .payment-methods {
+        margin-left: clamp(1rem, 2vw, 1.5rem);
+        margin-top: clamp(0.875rem, 1.5vh, 1rem);
+    }
+    
+    .guide-step .payment-methods p {
+        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: clamp(1rem, 2vw, 1.125rem);
+    }
+    
+    .guide-step .payment-methods ul {
+        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
+    }
+    
+    .guide-note {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
+        padding: clamp(1.75rem, 3.5vw, 2.5rem);
+        border-radius: var(--radius-xl);
+        border: 2px dashed var(--terracotta);
+        margin-bottom: clamp(1.5rem, 3vh, 2rem);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .guide-note h3 {
+        color: var(--rust);
+        margin-bottom: clamp(1rem, 2vh, 1.5rem);
+        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .guide-note ul {
+        color: var(--text-medium);
+        line-height: 1.8;
+        margin-left: clamp(1.5rem, 3vw, 2rem);
+    }
+    
+    .guide-note li {
+        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    }
+    
+    .guide-note strong {
+        color: var(--rust);
+        font-weight: 600;
+    }
+    
+    .guide-cta {
+        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
+        color: white;
+        padding: clamp(2.5rem, 5vw, 3.5rem);
+        border-radius: var(--radius-xl);
+        text-align: center;
+        margin-top: clamp(2rem, 4vh, 3rem);
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .guide-cta::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: pulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    .guide-cta .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .guide-cta h3 {
+        margin-bottom: clamp(1rem, 2vh, 1.5rem);
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 700;
+        color: white;
+    }
+    
+    .guide-cta p {
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        margin-bottom: clamp(0.75rem, 1.5vh, 1rem);
+        opacity: 0.95;
+        color: white;
+    }
+    
+    .guide-cta strong {
+        font-weight: 700;
+    }
+    
+    .guide-search-section {
+        background: white;
+        padding: clamp(1.5rem, 3vh, 2rem) 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .guide-search-wrapper {
+        display: flex;
+        gap: 1rem;
+        max-width: 800px;
+        margin: 0 auto;
+        align-items: center;
+    }
+    
+    .guide-search-box {
+        flex: 1;
+        position: relative;
+    }
+    
+    .guide-search-box i {
+        position: absolute;
+        left: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-light);
+        font-size: 1.125rem;
+    }
+    
+    .guide-search-box input {
+        width: 100%;
+        padding: clamp(0.875rem, 1.5vw, 1rem) 1.25rem clamp(0.875rem, 1.5vw, 1rem) 3.5rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-full);
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+        transition: all 0.3s ease;
+        background: var(--bg-cream);
+    }
+    
+    .guide-search-box input:focus {
+        outline: none;
+        border-color: var(--sage-medium);
+        box-shadow: 0 0 0 4px var(--sage-light);
+        background: white;
+    }
+    
+    .guide-search-btn {
+        padding: clamp(0.875rem, 1.5vw, 1rem) clamp(1.5rem, 3vw, 2rem);
+        background: var(--gradient-sage);
+        color: white;
+        border: none;
+        border-radius: var(--radius-full);
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+    
+    .guide-search-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .guide-search-btn:active {
+        transform: translateY(0);
+    }
+    
+    @media (max-width: 768px) {
+        .guide-content {
+            padding: 2rem 0;
+        }
+        
+        .guide-step {
+            padding: 1.5rem;
+        }
+        
+        .guide-step h2 {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .guide-cta {
+            padding: 2rem 1.5rem;
+        }
+        
+        .guide-search-wrapper {
+            flex-direction: column;
+        }
+        
+        .guide-search-box {
+            width: 100%;
+        }
+        
+        .guide-search-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<!-- Page Header -->
+<section class="guide-hero">
+    <div class="container">
+        <h1>
+            <i class="fas fa-book-open"></i> Hướng Dẫn Mua Hàng
+        </h1>
+        <p>Quy trình mua hàng đơn giản, nhanh chóng tại HOMESTEAD</p>
+    </div>
+</section>
+
+<!-- Search Section -->
+<section class="guide-search-section">
+    <div class="container">
+        <div class="guide-search-wrapper">
+            <div class="guide-search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" 
+                       id="guideSearchInput"
+                       placeholder="Tìm kiếm sản phẩm..." 
+                       onkeypress="if(event.key === 'Enter') performGuideSearch()">
+            </div>
+            <button class="guide-search-btn" onclick="performGuideSearch()">
+                <i class="fas fa-search"></i> Tìm Kiếm
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Guide Content -->
+<section class="guide-content">
+    <div class="guide-wrapper">
+
+        <!-- Bước 1 -->
+        <div class="guide-step step-1">
+            <h2>
+                <span class="step-number">1</span>
+                Chọn Sản Phẩm
+            </h2>
+            <ul>
+                <li>Truy cập website HOMESTEAD</li>
+                <li>Xem danh mục sản phẩm: Phòng Khách, Phòng Ngủ, Nhà Bếp, Văn Phòng, Phòng Ăn</li>
+                <li>Click vào sản phẩm để xem chi tiết: Giá, tính năng, đánh giá</li>
+                <li>Chọn số lượng và click <strong>"Thêm Vào Giỏ"</strong></li>
+            </ul>
+        </div>
+
+        <!-- Bước 2 -->
+        <div class="guide-step step-2">
+            <h2>
+                <span class="step-number">2</span>
+                Kiểm Tra Giỏ Hàng
+            </h2>
+            <ul>
+                <li>Click vào biểu tượng <i class="fas fa-shopping-cart"></i> <strong>Giỏ Hàng</strong> ở góc trên</li>
+                <li>Kiểm tra lại danh sách sản phẩm đã chọn</li>
+                <li>Có thể thay đổi số lượng hoặc xóa sản phẩm</li>
+                <li>Xem tổng tiền và phí vận chuyển</li>
+                <li>Click <strong>"Tiến Hành Thanh Toán"</strong></li>
+            </ul>
+        </div>
+
+        <!-- Bước 3 -->
+        <div class="guide-step step-3">
+            <h2>
+                <span class="step-number">3</span>
+                Điền Thông Tin Giao Hàng
+            </h2>
+            <ul>
+                <li><strong>Họ và tên:</strong> Người nhận hàng</li>
+                <li><strong>Số điện thoại:</strong> Liên hệ khi giao hàng</li>
+                <li><strong>Email:</strong> Nhận thông tin đơn hàng</li>
+                <li><strong>Địa chỉ:</strong> Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố</li>
+                <li><strong>Ghi chú:</strong> Yêu cầu đặc biệt (nếu có)</li>
+            </ul>
+        </div>
+
+        <!-- Bước 4 -->
+        <div class="guide-step step-4">
+            <h2>
+                <span class="step-number">4</span>
+                Chọn Phương Thức Thanh Toán
+            </h2>
+            <p style="margin-bottom: clamp(1rem, 2vh, 1.25rem); color: var(--text-medium); font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);">Chúng tôi hỗ trợ 3 phương thức thanh toán:</p>
+            <div class="payment-methods">
+                <p><i class="fas fa-money-bill-wave"></i> <strong>COD (Thanh toán khi nhận hàng):</strong></p>
+                <ul>
+                    <li>Thanh toán bằng tiền mặt khi nhận hàng</li>
+                    <li>Kiểm tra hàng trước khi thanh toán</li>
+                </ul>
+
+                <p><i class="fas fa-university"></i> <strong>Chuyển khoản ngân hàng:</strong></p>
+                <ul>
+                    <li>Quét mã QR hoặc chuyển khoản thủ công</li>
+                    <li>Đơn hàng được xử lý sau khi nhận tiền</li>
+                </ul>
+
+                <p><i class="fas fa-credit-card"></i> <strong>Thẻ tín dụng/Ghi nợ:</strong></p>
+                <ul>
+                    <li>Thanh toán trực tuyến an toàn</li>
+                    <li>Hỗ trợ Visa, Mastercard, JCB, Amex</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Bước 5 -->
+        <div class="guide-step step-5">
+            <h2>
+                <span class="step-number">5</span>
+                Xác Nhận Đơn Hàng
+            </h2>
+            <ul>
+                <li>Nhận email xác nhận đơn hàng ngay lập tức</li>
+                <li>Email chứa: Mã đơn hàng, chi tiết sản phẩm, thông tin giao hàng</li>
+                <li>Chúng tôi sẽ gọi điện xác nhận trong vòng 1-2 giờ</li>
+                <li>Theo dõi tình trạng đơn hàng qua email hoặc hotline</li>
+            </ul>
+        </div>
+
+        <!-- Bước 6 -->
+        <div class="guide-step step-6">
+            <h2>
+                <span class="step-number">6</span>
+                Nhận Hàng & Kiểm Tra
+            </h2>
+            <ul>
+                <li><strong>Thời gian giao hàng:</strong> 2-5 ngày làm việc (nội thành), 5-7 ngày (ngoại thành)</li>
+                <li><strong>Miễn phí vận chuyển</strong> cho đơn hàng trên 5 triệu</li>
+                <li>Nhân viên giao hàng sẽ liên hệ trước khi đến</li>
+                <li>Kiểm tra kỹ sản phẩm trước khi nhận</li>
+                <li>Hỗ trợ lắp đặt miễn phí (một số sản phẩm)</li>
+            </ul>
+        </div>
+
+        <!-- Lưu ý -->
+        <div class="guide-note">
+            <h3>
+                <i class="fas fa-exclamation-triangle"></i> Lưu Ý Quan Trọng
+            </h3>
+            <ul>
+                <li>Kiểm tra kỹ thông tin đơn hàng trước khi xác nhận</li>
+                <li>Giữ lại email xác nhận để theo dõi đơn hàng</li>
+                <li>Liên hệ hotline <strong>0345211386</strong> nếu cần hỗ trợ</li>
+                <li>Có thể hủy/đổi đơn hàng trước khi giao (xem Chính Sách Đổi Trả)</li>
+            </ul>
+        </div>
+
+        <!-- Hotline -->
+        <div class="guide-cta">
+            <div class="container">
+                <h3>Cần Hỗ Trợ?</h3>
+                <p>
+                    <i class="fas fa-phone"></i> Hotline: <strong>0345211386</strong> (8:00 - 22:00 hàng ngày)
+                </p>
+                <p>
+                    <i class="fas fa-envelope"></i> Email: <strong>quocdat30075@gmail.com</strong>
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script>
+    function performGuideSearch() {
+        const searchInput = document.getElementById('guideSearchInput');
+        const searchValue = searchInput?.value?.trim() || '';
+        
+        if (searchValue) {
+            window.location.href = '/products?search=' + encodeURIComponent(searchValue);
+        } else {
+            window.location.href = '/products';
+        }
+    }
+</script>
+{% endblock %}

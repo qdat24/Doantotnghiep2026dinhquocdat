@@ -1,0 +1,298 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Báo Cáo Doanh Thu{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <h1>📊 Báo Cáo Doanh Thu</h1>
+        <p>Thống kê chi tiết doanh thu và đơn hàng</p>
+    </div>
+    <div>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">← Về Dashboard</a>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 20px;">
+    <div class="card-header">
+        <h3>🔍 Lọc Dữ Liệu</h3>
+    </div>
+    <div style="padding: 20px;">
+        <form method="GET" style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Khoảng thời gian:</label>
+                <select name="period" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px;">
+                    <option value="day" {% if period == 'day' %}selected{% endif %}>Theo Ngày</option>
+                    <option value="week" {% if period == 'week' %}selected{% endif %}>Theo Tuần</option>
+                    <option value="month" {% if period == 'month' %}selected{% endif %}>Theo Tháng</option>
+                </select>
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Số ngày gần đây:</label>
+                <input type="number" name="days" value="{{ days }}" min="7" max="365" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px; width: 100px;">
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary" style="padding: 8px 20px;">Áp Dụng</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px;">
+    <div class="card">
+        <div class="card-header">
+            <h3>📈 Biểu Đồ Doanh Thu</h3>
+        </div>
+        <div style="padding: 20px;">
+            {% if revenue_data %}
+            <canvas id="revenueChart" style="max-height: 400px;"></canvas>
+            {% else %}
+            <p style="text-align: center; color: #7f8c8d; padding: 40px;">Chưa có dữ liệu</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>💳 Doanh Thu Theo Phương Thức Thanh Toán</h3>
+        </div>
+        <div style="padding: 20px;">
+            {% if revenue_by_payment %}
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                {% for item in revenue_by_payment %}
+                <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #3498db;">
+                    <div style="font-weight: 600; color: #2c3e50; margin-bottom: 5px;">
+                        {% if item.payment_method == 'paypal' %}
+                            💳 PayPal
+                        {% elif item.payment_method == 'cod' %}
+                            💵 COD
+                        {% elif item.payment_method == 'bank_transfer' %}
+                            🏦 Chuyển Khoản
+                        {% elif item.payment_method == 'credit_card' %}
+                            💳 Thẻ
+                        {% elif item.payment_method == 'usdt' %}
+                            💰 USDT
+                        {% else %}
+                            {{ item.payment_method }}
+                        {% endif %}
+                    </div>
+                    <div style="font-size: 18px; font-weight: 700; color: #27ae60; margin-bottom: 3px;">
+                        {{ "{:,.0f}".format(item.revenue) }} ₫
+                    </div>
+                    <div style="font-size: 12px; color: #7f8c8d;">
+                        {{ item.orders }} đơn hàng
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="text-align: center; color: #7f8c8d; padding: 20px;">Chưa có dữ liệu</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>📊 Bảng Dữ Liệu Chi Tiết</h3>
+    </div>
+    <div style="padding: 20px;">
+        {% if revenue_data %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{% if period == 'day' %}Ngày{% elif period == 'week' %}Tuần{% else %}Tháng{% endif %}</th>
+                    <th>Doanh Thu</th>
+                    <th>Số Đơn Hàng</th>
+                    <th>Trung Bình/Đơn</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in revenue_data %}
+                <tr>
+                    <td>
+                        {% if period == 'day' %}
+                            {{ item.date.strftime('%d/%m/%Y') if item.date else item.date }}
+                        {% elif period == 'week' %}
+                            Tuần {{ item.week }} ({{ item.week_start.strftime('%d/%m/%Y') if item.week_start else '' }})
+                        {% else %}
+                            {{ item.month }}
+                        {% endif %}
+                    </td>
+                    <td style="font-weight: 600; color: #27ae60;">{{ "{:,.0f}".format(item.revenue) }} ₫</td>
+                    <td>{{ item.orders }}</td>
+                    <td>{{ "{:,.0f}".format(item.revenue / item.orders if item.orders > 0 else 0) }} ₫</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr style="background: #f8f9fa; font-weight: 700;">
+                    <td>Tổng Cộng</td>
+                    <td style="color: #27ae60;">{{ "{:,.0f}".format(revenue_data | sum(attribute='revenue')) }} ₫</td>
+                    <td>{{ revenue_data | sum(attribute='orders') }}</td>
+                    <td>{{ "{:,.0f}".format((revenue_data | sum(attribute='revenue')) / (revenue_data | sum(attribute='orders')) if (revenue_data | sum(attribute='orders')) > 0 else 0) }} ₫</td>
+                </tr>
+            </tfoot>
+        </table>
+        {% else %}
+        <p style="text-align: center; color: #7f8c8d; padding: 40px;">Chưa có dữ liệu</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card" style="margin-top: 20px;">
+    <div class="card-header">
+        <h3>🏆 Top 20 Sản Phẩm Bán Chạy</h3>
+    </div>
+    <div style="padding: 20px;">
+        {% if top_products %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Sản Phẩm</th>
+                    <th>Đã Bán</th>
+                    <th>Số Đơn</th>
+                    <th>Doanh Thu</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in top_products %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 50px; height: 50px; border-radius: 5px; overflow: hidden; background: #e0e0e0;">
+                                {% if product.image_url %}
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
+                                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #999;">📦</div>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <div style="font-weight: 600;">{{ product.name }}</div>
+                                <div style="font-size: 12px; color: #7f8c8d;">ID: {{ product.id }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><strong>{{ product.total_sold }}</strong></td>
+                    <td>{{ product.order_count }}</td>
+                    <td style="font-weight: 600; color: #27ae60;">{{ "{:,.0f}".format(product.revenue) }} ₫</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="text-align: center; color: #7f8c8d; padding: 40px;">Chưa có dữ liệu</p>
+        {% endif %}
+    </div>
+</div>
+
+{% if revenue_data %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+const ctx = document.getElementById('revenueChart').getContext('2d');
+const revenueData = {{ revenue_data | tojson | safe }};
+
+const labels = revenueData.map(item => {
+    {% if period == 'day' %}
+        const date = new Date(item.date);
+        return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+    {% elif period == 'week' %}
+        return 'Tuần ' + item.week;
+    {% else %}
+        return item.month;
+    {% endif %}
+});
+
+const revenues = revenueData.map(item => parseFloat(item.revenue || 0));
+const orders = revenueData.map(item => parseInt(item.orders || 0));
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Doanh Thu (₫)',
+            data: revenues,
+            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+            borderColor: 'rgb(75, 192, 192)',
+            borderWidth: 1,
+            yAxisID: 'y'
+        }, {
+            label: 'Số Đơn Hàng',
+            data: orders,
+            type: 'line',
+            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            tension: 0.1,
+            yAxisID: 'y1'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index',
+            intersect: false,
+        },
+        scales: {
+            y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                ticks: {
+                    callback: function(value) {
+                        return new Intl.NumberFormat('vi-VN').format(value) + ' ₫';
+                    }
+                }
+            },
+            y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                grid: {
+                    drawOnChartArea: false,
+                },
+            }
+        },
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        if (context.datasetIndex === 0) {
+                            return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' ₫';
+                        } else {
+                            return 'Số đơn: ' + context.parsed.y;
+                        }
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
+{% endif %}
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

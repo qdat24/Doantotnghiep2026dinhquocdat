@@ -1,0 +1,165 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if coupon %}Sửa Mã Giảm Giá{% else %}Thêm Mã Giảm Giá{% endif %}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{% if coupon %}✏️ Sửa Mã Giảm Giá{% else %}➕ Thêm Mã Giảm Giá Mới{% endif %}</h1>
+    <p>Điền thông tin mã giảm giá</p>
+</div>
+
+<div class="card">
+    <form method="POST" action="{% if coupon %}{{ url_for('admin_edit_coupon', coupon_id=coupon.id) }}{% else %}{{ url_for('admin_add_coupon') }}{% endif %}">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+            {% if not coupon %}
+            <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Mã Giảm Giá *</label>
+                <input type="text" name="code" value="{{ coupon.code if coupon else '' }}" required 
+                       placeholder="VD: SALE2024" 
+                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; text-transform: uppercase;"
+                       pattern="[A-Z0-9]+" title="Chỉ chấp nhận chữ in hoa và số">
+                <small style="color: #666; font-size: 12px;">Chỉ chấp nhận chữ in hoa và số, không có khoảng trắng</small>
+            </div>
+            {% endif %}
+
+            <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Tên Mã Giảm Giá *</label>
+                <input type="text" name="name" value="{{ coupon.name if coupon else '' }}" required 
+                       placeholder="VD: Giảm giá 20% cho đơn hàng đầu tiên"
+                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+            </div>
+
+            <div style="grid-column: 1 / -1;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Mô Tả</label>
+                <textarea name="description" rows="3" 
+                          placeholder="Mô tả chi tiết về mã giảm giá này..."
+                          style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">{{ coupon.description if coupon else '' }}</textarea>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Loại Giảm Giá *</label>
+                <select name="discount_type" required id="discount_type" 
+                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                    <option value="">-- Chọn loại --</option>
+                    <option value="percentage" {% if coupon and coupon.discount_type == 'percentage' %}selected{% endif %}>Phần trăm (%)</option>
+                    <option value="fixed" {% if coupon and coupon.discount_type == 'fixed' %}selected{% endif %}>Số tiền cố định (VNĐ)</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Giá Trị Giảm *</label>
+                <input type="number" name="discount_value" value="{{ coupon.discount_value if coupon else '' }}" required 
+                       min="0" step="0.01" id="discount_value"
+                       placeholder="VD: 20 (nếu %) hoặc 50000 (nếu VNĐ)"
+                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                <small style="color: #666; font-size: 12px;" id="discount_hint">Nhập số phần trăm (1-100) hoặc số tiền (VNĐ)</small>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Đơn Hàng Tối Thiểu (VNĐ)</label>
+                <input type="number" name="min_order_amount" value="{{ coupon.min_order_amount if coupon else '0' }}" 
+                       min="0" step="1000"
+                       placeholder="0"
+                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                <small style="color: #666; font-size: 12px;">Đơn hàng phải đạt số tiền này mới được áp dụng mã</small>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Giảm Tối Đa (VNĐ)</label>
+                <input type="number" name="max_discount_amount" value="{{ coupon.max_discount_amount if coupon else '' }}" 
+                       min="0" step="1000"
+                       placeholder="Không giới hạn"
+                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                <small style="color: #666; font-size: 12px;">Áp dụng cho giảm theo phần trăm (để trống = không giới hạn)</small>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Giới Hạn Sử Dụng</label>
+                <input type="number" name="usage_limit" value="{{ coupon.usage_limit if coupon else '' }}" 
+                       min="1"
+                       placeholder="Không giới hạn"
+                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                <small style="color: #666; font-size: 12px;">Số lần mã có thể được sử dụng (để trống = không giới hạn)</small>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Ngày Bắt Đầu *</label>
+                <input type="datetime-local" name="start_date" 
+                       value="{% if coupon and coupon.start_date %}{{ coupon.start_date.strftime('%Y-%m-%dT%H:%M') if coupon.start_date else '' }}{% endif %}" 
+                       required
+                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Ngày Kết Thúc *</label>
+                <input type="datetime-local" name="end_date" 
+                       value="{% if coupon and coupon.end_date %}{{ coupon.end_date.strftime('%Y-%m-%dT%H:%M') if coupon.end_date else '' }}{% endif %}" 
+                       required
+                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+            </div>
+
+            <div style="grid-column: 1 / -1;">
+                <label style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                    <input type="checkbox" name="is_active" value="true" 
+                           {% if coupon and coupon.is_active %}checked{% elif not coupon %}checked{% endif %}
+                           style="width: 20px; height: 20px;">
+                    <span style="font-weight: 600;">Kích hoạt mã giảm giá (hiển thị và có thể sử dụng)</span>
+                </label>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; display: flex; gap: 10px; padding-top: 20px; border-top: 1px solid #eee;">
+            <button type="submit" class="btn btn-success" style="padding: 12px 24px; font-size: 16px; font-weight: 600;">💾 Lưu Mã Giảm Giá</button>
+            <a href="{{ url_for('admin_coupons') }}" class="btn btn-danger" style="padding: 12px 24px; font-size: 16px; font-weight: 600; text-decoration: none; display: inline-block;">❌ Hủy</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Cập nhật hint khi thay đổi loại giảm giá
+    const discountType = document.getElementById('discount_type');
+    const discountValue = document.getElementById('discount_value');
+    const discountHint = document.getElementById('discount_hint');
+
+    discountType.addEventListener('change', function() {
+        if (this.value === 'percentage') {
+            discountValue.setAttribute('max', '100');
+            discountValue.setAttribute('step', '1');
+            discountHint.textContent = 'Nhập số phần trăm (1-100)';
+            discountValue.placeholder = 'VD: 20 (tức 20%)';
+        } else if (this.value === 'fixed') {
+            discountValue.removeAttribute('max');
+            discountValue.setAttribute('step', '1000');
+            discountHint.textContent = 'Nhập số tiền giảm (VNĐ)';
+            discountValue.placeholder = 'VD: 50000';
+        }
+    });
+
+    // Tự động chuyển mã code thành chữ in hoa
+    const codeInput = document.querySelector('input[name="code"]');
+    if (codeInput) {
+        codeInput.addEventListener('input', function() {
+            this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        });
+    }
+
+    // Validate ngày tháng
+    const startDate = document.querySelector('input[name="start_date"]');
+    const endDate = document.querySelector('input[name="end_date"]');
+
+    if (startDate && endDate) {
+        function validateDates() {
+            if (startDate.value && endDate.value) {
+                if (new Date(startDate.value) >= new Date(endDate.value)) {
+                    endDate.setCustomValidity('Ngày kết thúc phải sau ngày bắt đầu');
+                } else {
+                    endDate.setCustomValidity('');
+                }
+            }
+        }
+
+        startDate.addEventListener('change', validateDates);
+        endDate.addEventListener('change', validateDates);
+    }
+</script>
+{% endblock %}

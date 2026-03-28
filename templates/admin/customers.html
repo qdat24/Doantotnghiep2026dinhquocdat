@@ -1,0 +1,308 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản Lý Khách Hàng{% endblock %}
+
+{% block extra_css %}
+<style>
+    .customer-filters {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .filter-row {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .filter-item {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-item label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 14px;
+        color: #2c3e50;
+        font-weight: 500;
+    }
+
+    .filter-item input,
+    .filter-item select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .filter-item button {
+        margin-top: 22px;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-inactive {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .customer-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .customer-avatar {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .customer-details h4 {
+        margin: 0;
+        font-size: 14px;
+        color: #2c3e50;
+    }
+
+    .customer-details p {
+        margin: 2px 0 0 0;
+        font-size: 12px;
+        color: #7f8c8d;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        margin-top: 30px;
+    }
+
+    .pagination a,
+    .pagination span {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-decoration: none;
+        color: #2c3e50;
+    }
+
+    .pagination a:hover {
+        background: #3498db;
+        color: white;
+        border-color: #3498db;
+    }
+
+    .pagination .current {
+        background: #3498db;
+        color: white;
+        border-color: #3498db;
+    }
+
+    .stat-card-small {
+        background: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+
+    .stat-card-small h4 {
+        font-size: 24px;
+        margin: 0;
+        color: #2c3e50;
+    }
+
+    .stat-card-small p {
+        font-size: 12px;
+        color: #7f8c8d;
+        margin: 5px 0 0 0;
+        text-transform: uppercase;
+    }
+
+    .stats-mini-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>👥 Quản Lý Khách Hàng</h1>
+    <p>Quản lý thông tin khách hàng và đơn hàng</p>
+</div>
+
+<!-- Statistics -->
+<div class="stats-mini-grid">
+    <div class="stat-card-small">
+        <h4>{{ stats.total }}</h4>
+        <p>Tổng Khách Hàng</p>
+    </div>
+    <div class="stat-card-small">
+        <h4>{{ stats.active }}</h4>
+        <p>Đang Hoạt Động</p>
+    </div>
+    <div class="stat-card-small">
+        <h4>{{ stats.inactive }}</h4>
+        <p>Bị Khóa</p>
+    </div>
+    <div class="stat-card-small">
+        <h4>{{ stats.new_this_month }}</h4>
+        <p>Mới Tháng Này</p>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="customer-filters">
+    <form method="GET" action="{{ url_for('admin_customers') }}">
+        <div class="filter-row">
+            <div class="filter-item">
+                <label>🔍 Tìm kiếm</label>
+                <input type="text" name="search" placeholder="Tên, Email, SĐT..." value="{{ search }}">
+            </div>
+            <div class="filter-item">
+                <label>📊 Trạng thái</label>
+                <select name="status">
+                    <option value="">Tất cả</option>
+                    <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Đang hoạt động</option>
+                    <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Bị khóa</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                <a href="{{ url_for('admin_customers') }}" class="btn btn-warning">Reset</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Customer List -->
+<div class="card">
+    <div class="card-header">
+        <h3>Danh sách khách hàng ({{ total_customers }} khách hàng)</h3>
+    </div>
+
+    {% if customers %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Khách hàng</th>
+                <th>Số điện thoại</th>
+                <th>Địa chỉ</th>
+                <th>Trạng thái</th>
+                <th>Ngày tạo</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td>#{{ customer.id }}</td>
+                <td>
+                    <div class="customer-info">
+                        <div class="customer-avatar">
+                            {{ customer.full_name[0].upper() }}
+                        </div>
+                        <div class="customer-details">
+                            <h4>{{ customer.full_name }}</h4>
+                            <p>{{ customer.email }}</p>
+                        </div>
+                    </div>
+                </td>
+                <td>{{ customer.phone or '-' }}</td>
+                <td>{{ customer.address[:50] + '...' if customer.address and customer.address|length > 50 else (customer.address or '-') }}</td>
+                <td>
+                    {% if customer.is_active %}
+                    <span class="status-badge status-active">✓ Hoạt động</span>
+                    {% else %}
+                    <span class="status-badge status-inactive">✗ Bị khóa</span>
+                    {% endif %}
+                </td>
+                <td>{{ customer.created_at.strftime('%d/%m/%Y') if customer.created_at else '-' }}</td>
+                <td>
+                    <div class="action-buttons">
+                        <a href="{{ url_for('admin_customer_detail', customer_id=customer.id) }}" 
+                           class="btn btn-primary btn-sm">Chi tiết</a>
+                        <a href="{{ url_for('admin_edit_customer', customer_id=customer.id) }}" 
+                           class="btn btn-warning btn-sm">Sửa</a>
+                        <form method="POST" action="{{ url_for('admin_toggle_customer_status', customer_id=customer.id) }}" 
+                              style="display:inline;"
+                              onsubmit="return confirm('Bạn có chắc muốn thay đổi trạng thái khách hàng này?')">
+                            <button type="submit" class="btn btn-{% if customer.is_active %}danger{% else %}success{% endif %} btn-sm">
+                                {% if customer.is_active %}Khóa{% else %}Mở khóa{% endif %}
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('admin_customers', page=page-1, search=search, status=status_filter) }}">‹ Trước</a>
+        {% endif %}
+
+        {% for p in range(1, total_pages + 1) %}
+            {% if p == page %}
+            <span class="current">{{ p }}</span>
+            {% elif p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+            <a href="{{ url_for('admin_customers', page=p, search=search, status=status_filter) }}">{{ p }}</a>
+            {% elif p == page - 3 or p == page + 3 %}
+            <span>...</span>
+            {% endif %}
+        {% endfor %}
+
+        {% if page < total_pages %}
+        <a href="{{ url_for('admin_customers', page=page+1, search=search, status=status_filter) }}">Sau ›</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div style="padding: 40px; text-align: center; color: #7f8c8d;">
+        <p>Không tìm thấy khách hàng nào</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

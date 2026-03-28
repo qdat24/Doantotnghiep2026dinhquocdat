@@ -1,0 +1,1775 @@
+{% extends "base.html" %}
+
+{% block title %}Thanh Toán USDT - HOMESTEAD{% endblock %}
+
+{% block content %}
+<style>
+/* ========== USDT PAYMENT PAGE STYLES ========== */
+.usdt-payment-section {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 2rem 0;
+}
+
+.usdt-payment-section * {
+    font-family: inherit;
+}
+
+.usdt-payment-section i.fas,
+.usdt-payment-section i.far,
+.usdt-payment-section i.fab {
+    font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
+    font-style: normal !important;
+    font-weight: 900 !important;
+    display: inline-block !important;
+    text-rendering: auto !important;
+    -webkit-font-smoothing: antialiased !important;
+    speak: none;
+}
+
+.usdt-payment-section i.fab {
+    font-family: "Font Awesome 6 Brands" !important;
+    font-weight: 400 !important;
+}
+
+.usdt-payment-section i.far {
+    font-weight: 400 !important;
+}
+
+.payment-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.payment-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem 0;
+}
+
+.payment-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.payment-header h1 i {
+    font-size: 2.5rem !important;
+    color: #667eea;
+}
+
+.payment-header p {
+    font-size: 1.1rem;
+    color: #7f8c8d;
+    font-family: inherit;
+}
+
+.payment-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+    .payment-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.payment-qr-section,
+.payment-details-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.qr-card,
+.networks-card,
+.order-summary-card,
+.timer-card,
+.submit-payment-card,
+.help-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    font-family: inherit;
+}
+
+.qr-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    font-family: inherit;
+}
+
+.qr-header i {
+    font-size: 1.5rem !important;
+    color: #667eea;
+}
+
+.qr-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    min-height: 280px;
+}
+
+.wallet-address-box {
+    margin-top: 1.5rem;
+}
+
+.wallet-address-box label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.95rem;
+    font-family: inherit;
+}
+
+.address-input-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.address-input-group input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #e0e6ed;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: 'Courier New', monospace;
+    background: #fafbfc;
+    font-family: 'Courier New', 'Consolas', monospace;
+}
+
+.address-input-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+}
+
+.btn-copy {
+    padding: 12px 20px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.btn-copy:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+}
+
+.btn-copy.copied {
+    background: #27ae60;
+}
+
+.network-warning {
+    display: block;
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    font-family: inherit;
+}
+
+.networks-card h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-family: inherit;
+}
+
+.networks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.network-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 2px solid #e0e6ed;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.network-item:hover {
+    border-color: #667eea;
+    background: #f8f9fa;
+}
+
+.network-item.selected {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.network-icon {
+    font-size: 1.5rem;
+    color: #667eea;
+    width: 2rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.network-icon i {
+    font-size: 1.5rem !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+.network-info {
+    flex: 1;
+    font-family: inherit;
+}
+
+.network-info strong {
+    display: block;
+    color: #2c3e50;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.network-info span {
+    color: #7f8c8d;
+    font-size: 0.85rem;
+    font-family: inherit;
+}
+
+.order-summary-card h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: inherit;
+}
+
+.order-summary-card h3 i {
+    font-size: 1.3rem !important;
+    color: #3498db;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #ecf0f1;
+    font-family: inherit;
+}
+
+.summary-row span {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    font-family: inherit;
+}
+
+.summary-row strong {
+    color: #2c3e50;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+.summary-row.total-vnd strong {
+    color: #e74c3c;
+    font-size: 1.2rem;
+    font-family: inherit;
+}
+
+.exchange-rate {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin: 1rem 0;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    font-family: inherit;
+}
+
+.usdt-amount {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.usdt-amount strong {
+    color: #667eea;
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: inherit;
+}
+
+.usdt-label {
+    color: #667eea;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+.payment-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #e8f4f8;
+    border-radius: 8px;
+    margin-top: 1rem;
+    font-family: inherit;
+}
+
+.payment-note i {
+    color: #3498db;
+    font-size: 1.2rem;
+    margin-top: 0.2rem;
+}
+
+.payment-note p {
+    color: #2c3e50;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0;
+    font-family: inherit;
+}
+
+.critical-warning {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 10px;
+    font-family: inherit;
+}
+
+.warning-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    font-family: inherit;
+}
+
+.warning-header i {
+    color: #e74c3c;
+    font-size: 1.5rem;
+}
+
+.warning-header h4 {
+    color: #e74c3c;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
+    font-family: inherit;
+}
+
+.warning-content {
+    font-family: inherit;
+}
+
+.warning-content p {
+    color: #2c3e50;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+    font-family: inherit;
+}
+
+.warning-content ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+    font-family: inherit;
+}
+
+.warning-content li {
+    color: #2c3e50;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    margin-bottom: 0.5rem;
+    font-family: inherit;
+}
+
+.contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+
+.contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: white;
+    border: 2px solid #e0e6ed;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #2c3e50;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.contact-link:hover {
+    border-color: #667eea;
+    background: #f8f9fa;
+    transform: translateY(-2px);
+}
+
+.timer-card {
+    text-align: center;
+}
+
+.timer-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    font-family: inherit;
+}
+
+.timer-header i {
+    font-size: 1.3rem !important;
+    color: #667eea;
+}
+
+.timer-display {
+    margin: 1.5rem 0;
+}
+
+.timer-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #667eea;
+    font-family: 'Courier New', monospace;
+}
+
+.timer-progress {
+    height: 8px;
+    background: #ecf0f1;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 1rem 0;
+}
+
+.timer-progress-bar {
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: width 1s linear;
+}
+
+.timer-note {
+    color: #7f8c8d;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    font-family: inherit;
+}
+
+.submit-payment-card h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: inherit;
+}
+
+.submit-payment-card h4 i {
+    font-size: 1.3rem !important;
+    color: #667eea;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: inherit;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e0e6ed;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    background: #fafbfc;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.form-hint {
+    display: block;
+    color: #7f8c8d;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    font-family: inherit;
+}
+
+.btn-submit-payment {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-family: inherit;
+}
+
+.btn-submit-payment:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.btn-submit-payment:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-metamask:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.btn-metamask:disabled {
+    opacity: 0.8;
+    cursor: wait;
+}
+
+.verification-status {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.status-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.status-text {
+    color: #2c3e50;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.help-card h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: inherit;
+}
+
+.help-card h4 i {
+    font-size: 1.3rem !important;
+    color: #667eea;
+}
+
+.help-steps {
+    margin: 0;
+    padding-left: 1.5rem;
+    font-family: inherit;
+}
+
+.help-steps li {
+    color: #2c3e50;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    margin-bottom: 0.75rem;
+    font-family: inherit;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 10000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    font-family: inherit;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification-success {
+    border-left: 4px solid #27ae60;
+}
+
+.notification-error {
+    border-left: 4px solid #e74c3c;
+}
+
+.notification-info {
+    border-left: 4px solid #3498db;
+}
+
+@media (max-width: 768px) {
+    .payment-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .payment-grid {
+        gap: 1.5rem;
+    }
+    
+    .qr-card,
+    .networks-card,
+    .order-summary-card,
+    .timer-card,
+    .submit-payment-card,
+    .help-card {
+        padding: 1.5rem;
+    }
+    
+    .timer-value {
+        font-size: 2rem;
+    }
+}
+</style>
+
+<section class="usdt-payment-section">
+    <div class="container">
+        <div class="payment-container">
+            <!-- Header -->
+            <div class="payment-header">
+                <h1><i class="fas fa-coins"></i> Thanh Toán USDT</h1>
+                <p>Quét mã QR hoặc sao chép địa chỉ ví để thanh toán</p>
+                {% if testnet_mode %}
+                <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 0.75rem 1.5rem; border-radius: 12px; display: inline-block; margin-top: 1rem; font-weight: 600;">
+                    <i class="fas fa-flask"></i> CHẾ ĐỘ THỬ NGHIỆM - BSC Testnet (không dùng tiền thật)
+                </div>
+                <p style="font-size: 0.9rem; margin-top: 0.5rem;"><a href="https://testnet.bnbchain.org/faucet-smart" target="_blank" style="color: #667eea;">Lấy tBNB + USDT test miễn phí tại BSC Faucet</a></p>
+                {% endif %}
+            </div>
+
+            <!-- Payment Info Grid -->
+            <div class="payment-grid">
+                <!-- Left: QR Code & Wallet -->
+                <div class="payment-qr-section">
+                    <div class="qr-card">
+                        <div class="qr-header">
+                            <i class="fas fa-qrcode"></i>
+                            <span>Quét Mã QR</span>
+                        </div>
+                        
+                        <div id="qrcode" class="qr-container"></div>
+                        
+                        <div class="wallet-address-box">
+                            <label>Địa Chỉ Ví Nhận</label>
+                            <div class="address-input-group">
+                                <input type="text" id="walletAddress" value="{{ recipient_wallet }}" readonly>
+                                <button class="btn-copy" onclick="copyAddress()">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <small class="network-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Chỉ chuyển USDT qua các mạng được hỗ trợ
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Supported Networks -->
+                    <div class="networks-card">
+                        <h4><i class="fas fa-network-wired"></i> Mạng Được Hỗ Trợ</h4>
+                        <div class="networks-list">
+                            {% for chain_id, network in networks.items() %}
+                            {% if testnet_mode or not network.is_testnet %}
+                            <div class="network-item" data-chain="{{ chain_id }}">
+                                <div class="network-icon">
+                                    {% if 'Ethereum' in network.name %}
+                                        <i class="fab fa-ethereum"></i>
+                                    {% elif 'BNB' in network.name or 'BSC' in network.name %}
+                                        <i class="fab fa-bitcoin"></i>
+                                    {% elif 'Polygon' in network.name %}
+                                        <i class="fas fa-layer-group"></i>
+                                    {% elif 'Arbitrum' in network.name %}
+                                        <i class="fas fa-project-diagram"></i>
+                                    {% elif 'Optimism' in network.name %}
+                                        <i class="fas fa-bolt"></i>
+                                    {% else %}
+                                        <i class="fas fa-coins"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="network-info">
+                                    <strong>{{ network.name }}</strong>
+                                    <span>{{ network.symbol }}</span>
+                                </div>
+                                <div class="network-badge">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Payment Details -->
+                <div class="payment-details-section">
+                    <!-- Order Summary -->
+                    <div class="order-summary-card">
+                        <h3><i class="fas fa-file-invoice"></i> Thông Tin Đơn Hàng</h3>
+                        
+                        <div class="summary-row">
+                            <span>Mã đơn hàng:</span>
+                            <strong>{{ order_id }}</strong>
+                        </div>
+                        
+                        <div class="summary-row total-vnd">
+                            <span>Tổng tiền:</span>
+                            <strong>{{ amount | format_currency }}</strong>
+                        </div>
+                        
+                        <div class="exchange-rate">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>Tỷ giá: 1 USDT = <span id="usdtRate">{{ "{:,.0f}".format(usdt_rate) }}</span>₫</span>
+                        </div>
+                        
+                        <div class="summary-row total-usdt">
+                            <span>Số tiền cần thanh toán:</span>
+                            <div class="usdt-amount">
+                                <strong id="usdtAmount">{{ usdt_amount }}</strong>
+                                <span class="usdt-label">USDT</span>
+                            </div>
+                        </div>
+
+                        <div class="payment-note">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Vui lòng chuyển <strong>chính xác</strong> số tiền USDT để xác nhận thanh toán tự động</p>
+                        </div>
+                        
+                        <!-- ⚠️ CRITICAL WARNING -->
+                        <div class="critical-warning">
+                            <div class="warning-header">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h4>CẢNH BÁO QUAN TRỌNG</h4>
+                            </div>
+                            <div class="warning-content">
+                                <p><strong>⚠️ Chuyển sai sẽ MẤT TIỀN:</strong></p>
+                                <ul>
+                                    <li>Chuyển <strong>sai số tiền</strong> → Không thể hoàn tiền tự động</li>
+                                    <li>Chuyển <strong>sai địa chỉ ví</strong> → Tiền sẽ bị mất vĩnh viễn</li>
+                                    <li>Chuyển <strong>sai mạng blockchain</strong> → Tiền sẽ bị mất vĩnh viễn</li>
+                                </ul>
+                                <p class="warning-contact">
+                                    <strong>Nếu bạn đã chuyển sai, vui lòng liên hệ ngay:</strong>
+                                </p>
+                                <div class="contact-links">
+                                    {% set zalo = site_settings.get('contact_zalo', '0345211386') %}
+                                    <a href="https://zalo.me/{{ zalo }}" target="_blank" class="contact-link zalo">
+                                        <i class="fas fa-comments"></i>
+                                        Zalo: {{ zalo }}
+                                    </a>
+                                    
+                                    {% set facebook = site_settings.get('contact_facebook', 'https://facebook.com') %}
+                                    <a href="{{ facebook }}" target="_blank" class="contact-link facebook">
+                                        <i class="fab fa-facebook"></i>
+                                        Facebook
+                                    </a>
+                                    
+                                    {% set phone = site_settings.get('contact_phone', '0345211386') %}
+                                    <a href="tel:{{ phone }}" class="contact-link phone">
+                                        <i class="fas fa-phone"></i>
+                                        Hotline: {{ phone }}
+                                    </a>
+                                </div>
+                                <p class="warning-note">
+                                    <i class="fas fa-clock"></i> Liên hệ trong vòng <strong>24 giờ</strong> để được hỗ trợ tốt nhất
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Timer -->
+                    <div class="timer-card">
+                        <div class="timer-header">
+                            <i class="fas fa-clock"></i>
+                            <span>Thời Gian Còn Lại</span>
+                        </div>
+                        <div class="timer-display">
+                            <div class="timer-value" id="countdown">15:00</div>
+                        </div>
+                        <div class="timer-progress">
+                            <div class="timer-progress-bar" id="timerBar"></div>
+                        </div>
+                        <p class="timer-note">Đơn hàng sẽ bị hủy nếu hết thời gian</p>
+                    </div>
+
+                    <!-- MetaMask Quick Pay -->
+                    <div class="metamask-pay-card" style="background: linear-gradient(135deg, #f6851b 0%, #e2761b 100%); border-radius: 15px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: center;">
+                        <h4 style="color: white; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                            <i class="fab fa-ethereum"></i>
+                            Thanh Toán Nhanh Bằng MetaMask
+                        </h4>
+                        <p style="color: rgba(255,255,255,0.9); font-size: 0.9rem; margin-bottom: 1rem;">Kết nối ví MetaMask và thanh toán trực tiếp - không cần copy/paste</p>
+                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                            <button type="button" class="btn-metamask" id="btnMetaMaskPay" style="background: white; color: #e2761b; border: none; padding: 1rem 2rem; border-radius: 12px; font-weight: 700; font-size: 1.1rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.75rem; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                                <i class="fab fa-ethereum" style="font-size: 1.5rem;"></i>
+                                <span>Kết nối MetaMask & Thanh toán</span>
+                            </button>
+                            {% if testnet_mode %}
+                            <button type="button" class="btn-demo" id="btnDemoPay" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; border: none; padding: 1rem 2rem; border-radius: 12px; font-weight: 700; font-size: 1.1rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.75rem; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                                <i class="fas fa-flask" style="font-size: 1.5rem;"></i>
+                                <span>Demo Test (không cần USDT)</span>
+                            </button>
+                            {% endif %}
+                        </div>
+                        <p style="color: rgba(255,255,255,0.8); font-size: 0.8rem; margin-top: 0.75rem;">Hỗ trợ: BSC, Polygon, Ethereum, Arbitrum, Optimism</p>
+                    </div>
+
+                    <!-- Divider: Hoặc nhập thủ công -->
+                    <div style="text-align: center; margin: 1rem 0; color: #7f8c8d;">
+                        <span style="background: #f8f9fa; padding: 0 1rem;">— Hoặc nhập mã giao dịch thủ công —</span>
+                    </div>
+
+                    <!-- Payment Form -->
+                    <div class="submit-payment-card">
+                        <h4><i class="fas fa-paper-plane"></i> Xác Nhận Thanh Toán</h4>
+                        
+                        <form id="paymentForm">
+                            <div class="form-group">
+                                <label for="networkSelect">
+                                    <i class="fas fa-network-wired"></i>
+                                    Chọn Mạng Đã Chuyển
+                                </label>
+                                <select id="networkSelect" class="form-control" required>
+                                    <option value="">-- Chọn mạng blockchain --</option>
+                                    {% for chain_id, network in networks.items() %}
+                                    {% if testnet_mode or not network.is_testnet %}
+                                    <option value="{{ chain_id }}" {% if default_chain_id == chain_id %}selected{% endif %}>{{ network.name }} ({{ network.symbol }})</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="txHash">
+                                    <i class="fas fa-hashtag"></i>
+                                    Mã Giao Dịch (Transaction Hash)
+                                </label>
+                                <input type="text" 
+                                       id="txHash" 
+                                       class="form-control" 
+                                       placeholder="0x..." 
+                                       required>
+                                <small class="form-hint">
+                                    Sao chép từ ví hoặc block explorer
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="senderAddress">
+                                    <i class="fas fa-wallet"></i>
+                                    Địa Chỉ Ví Gửi (Tùy chọn)
+                                </label>
+                                <input type="text" 
+                                       id="senderAddress" 
+                                       class="form-control" 
+                                       placeholder="0x...">
+                            </div>
+
+                            <button type="submit" class="btn btn-submit-payment" id="submitBtn">
+                                <i class="fas fa-check-circle"></i>
+                                Xác Nhận Đã Thanh Toán
+                            </button>
+                        </form>
+
+                        <div id="verificationStatus" class="verification-status" style="display: none;">
+                            <div class="status-icon">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                            <p class="status-text">Đang xác minh giao dịch...</p>
+                        </div>
+                    </div>
+
+                    <!-- Help Section -->
+                    <div class="help-card">
+                        <h4><i class="fas fa-question-circle"></i> Hướng Dẫn</h4>
+                        <ol class="help-steps">
+                            <li><strong>Nhanh nhất:</strong> Bấm "Kết nối MetaMask & Thanh toán" - thanh toán trực tiếp không cần copy/paste</li>
+                            <li>Hoặc mở ví crypto (MetaMask, Trust Wallet, Binance...)</li>
+                            <li>Quét mã QR hoặc sao chép địa chỉ ví nhận</li>
+                            <li>Chọn mạng blockchain (BSC, Polygon, Ethereum...)</li>
+                            <li>Chuyển <strong>{{ usdt_amount }} USDT</strong></li>
+                            <li>Sao chép mã giao dịch (TX Hash)</li>
+                            <li>Dán vào form trên và xác nhận</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Web3 & MetaMask - Load for direct payment (Web3 v1.x exposes global Web3) -->
+<script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='js/web3-payment.js') }}"></script>
+
+<!-- QR Code Library - Load with error handling -->
+<script>
+// Payment Configuration - MUST BE DEFINED FIRST
+const CONFIG = {
+    orderId: '{{ order_id }}',
+    amountVND: {{ amount }},
+    amountUSDT: {{ usdt_amount }},
+    usdtRate: {{ usdt_rate }},
+    paymentId: '{{ payment_id }}',
+    recipientWallet: '{{ recipient_wallet }}',
+    timeoutSeconds: 900, // 15 minutes
+    networks: {{ networks | tojson | safe }},
+    paymentCreatedAt: '{{ payment_created_at }}',
+    paymentExpiresAt: '{{ payment_expires_at }}',
+    testnetMode: {{ 'true' if testnet_mode else 'false' }},
+    defaultChainId: {{ default_chain_id | default(56) }}
+};
+
+console.log('[INFO] CONFIG loaded:', CONFIG);
+
+// Alternative: Use online QR code generator API
+function useAlternativeQRCode() {
+    const qrContainer = document.getElementById('qrcode');
+    if (!qrContainer) {
+        console.error('[ERROR] QR container not found');
+        return;
+    }
+    
+    const walletAddress = CONFIG.recipientWallet;
+    if (!walletAddress || walletAddress === 'None' || walletAddress.trim() === '') {
+        qrContainer.innerHTML = '<p style="color: red; padding: 20px;">Lỗi: Địa chỉ ví không hợp lệ</p>';
+        return;
+    }
+    
+    console.log('[INFO] Using alternative QR code API for:', walletAddress);
+    
+    // Use API QR code generator as fallback
+    const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=' + encodeURIComponent(walletAddress);
+    const img = document.createElement('img');
+    img.src = qrUrl;
+    img.alt = 'USDT Payment QR Code';
+    img.style.width = '100%';
+    img.style.maxWidth = '280px';
+    img.style.height = 'auto';
+    img.style.display = 'block';
+    img.style.margin = '0 auto';
+    img.onload = function() {
+        console.log('[OK] Alternative QR Code loaded');
+    };
+    img.onerror = function() {
+        console.error('[ERROR] Failed to load alternative QR code');
+        qrContainer.innerHTML = '<p style="color: red; padding: 20px;">Lỗi: Không thể tạo mã QR. Vui lòng copy địa chỉ ví.</p>';
+    };
+    qrContainer.innerHTML = '';
+    qrContainer.appendChild(img);
+}
+
+// Load QRCode library dynamically with retry
+function loadQRCodeLibrary(callback, retries = 3) {
+    if (typeof QRCode !== 'undefined') {
+        console.log('[OK] QRCode library already loaded');
+        setTimeout(callback, 100);
+        return;
+    }
+    
+    if (retries <= 0) {
+        console.error('[ERROR] Failed to load QRCode library after multiple attempts, using alternative');
+        useAlternativeQRCode();
+        if (callback) callback(); // Still call callback to start countdown
+        return;
+    }
+    
+    console.log('[INFO] Loading QRCode library, retries left:', retries);
+    
+    // Try to load from CDN
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
+    script.onload = function() {
+        console.log('[OK] QRCode library loaded from CDN');
+        // Wait a bit for library to initialize
+        setTimeout(function() {
+            if (callback) callback();
+        }, 300);
+    };
+    script.onerror = function() {
+        console.warn('[WARNING] Failed to load QRCode from CDN, trying alternative CDN...');
+        // Try alternative CDN
+        const altScript = document.createElement('script');
+        altScript.src = 'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js';
+        altScript.onload = function() {
+            console.log('[OK] QRCode library loaded from alternative CDN');
+            setTimeout(function() {
+                if (callback) callback();
+            }, 300);
+        };
+        altScript.onerror = function() {
+            console.error('[ERROR] All CDNs failed, using alternative method');
+            useAlternativeQRCode();
+            if (callback) callback();
+        };
+        document.head.appendChild(altScript);
+    };
+    document.head.appendChild(script);
+}
+
+// Generate QR Code
+function generateQRCode() {
+    const qrContainer = document.getElementById('qrcode');
+    if (!qrContainer) {
+        console.error('[ERROR] QR container not found');
+        return;
+    }
+    
+    const walletAddress = CONFIG.recipientWallet;
+    if (!walletAddress || walletAddress === 'None' || walletAddress.trim() === '') {
+        console.error('[ERROR] Recipient wallet address is empty');
+        qrContainer.innerHTML = '<p style="color: red; padding: 20px;">Lỗi: Địa chỉ ví không hợp lệ</p>';
+        return;
+    }
+    
+    console.log('[INFO] Generating QR code for wallet:', walletAddress);
+    
+    // Clear container first
+    qrContainer.innerHTML = '<p style="padding: 20px; text-align: center;">Đang tạo mã QR...</p>';
+    
+    // Check if QRCode library is loaded
+    if (typeof QRCode === 'undefined') {
+        console.warn('[WARNING] QRCode library not loaded, using alternative method');
+        useAlternativeQRCode();
+        return;
+    }
+    
+    // Generate QR Code using toDataURL and create img element (more reliable)
+    try {
+        QRCode.toDataURL(walletAddress, {
+            width: 280,
+            margin: 2,
+            color: {
+                dark: '#2c3e50',
+                light: '#ffffff'
+            }
+        }, function(error, url) {
+            if (error) {
+                console.error('[ERROR] QR Code generation failed:', error);
+                console.log('[INFO] Falling back to alternative method');
+                useAlternativeQRCode();
+                return;
+            }
+            
+            // Create img element
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = 'USDT Payment QR Code';
+            img.style.width = '100%';
+            img.style.maxWidth = '280px';
+            img.style.height = 'auto';
+            img.style.display = 'block';
+            img.style.margin = '0 auto';
+            
+            qrContainer.innerHTML = '';
+            qrContainer.appendChild(img);
+            console.log('[OK] QR Code generated successfully');
+        });
+    } catch (error) {
+        console.error('[ERROR] Exception during QR generation:', error);
+        useAlternativeQRCode();
+    }
+}
+
+// Auto-refresh USDT rate
+let rateRefreshInterval = null;
+
+function refreshRate(showLoading = false) {
+    const rateElement = document.getElementById('usdtRate');
+    const updateTimeElement = document.getElementById('rateUpdateTime');
+    if (!rateElement) return;
+    const refreshBtn = document.querySelector('.btn-refresh-rate');
+    
+    if (showLoading && refreshBtn) {
+        refreshBtn.querySelector('i').classList.add('fa-spin');
+        refreshBtn.disabled = true;
+    }
+    
+    fetch('/api/web3/usdt-rate?force=true')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const newRate = data.rate;
+                const oldRate = parseFloat(rateElement.textContent.replace(/,/g, ''));
+                
+                // Update rate display
+                rateElement.textContent = newRate.toLocaleString('vi-VN');
+                
+                // Update USDT amount based on new rate
+                const amountVND = CONFIG.amountVND;
+                const newUsdtAmount = (amountVND / newRate).toFixed(2);
+                const usdtAmountElement = document.getElementById('usdtAmount');
+                if (usdtAmountElement) {
+                    usdtAmountElement.textContent = newUsdtAmount;
+                }
+                
+                // Update CONFIG
+                CONFIG.amountUSDT = parseFloat(newUsdtAmount);
+                
+                // Show update time
+                if (updateTimeElement) {
+                    const now = new Date();
+                    const timeStr = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                    updateTimeElement.innerHTML = `<i class="fas fa-clock"></i> Cập nhật lúc ${timeStr} (${data.source || 'thị trường'})`;
+                }
+                
+                // Visual feedback if rate changed
+                if (Math.abs(newRate - oldRate) > 100) {
+                    rateElement.style.color = '#e74c3c';
+                    setTimeout(() => {
+                        rateElement.style.color = '';
+                    }, 2000);
+                }
+                
+                console.log('[OK] Rate updated:', newRate);
+            }
+        })
+        .catch(error => {
+            console.error('[ERROR] Failed to refresh rate:', error);
+        })
+        .finally(() => {
+            if (refreshBtn) {
+                refreshBtn.querySelector('i').classList.remove('fa-spin');
+                refreshBtn.disabled = false;
+            }
+        });
+}
+
+// Wait for DOM to be ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('[INFO] DOM loaded, initializing...');
+    console.log('[INFO] CONFIG:', CONFIG);
+    
+    // Start countdown immediately (doesn't depend on QR)
+    try {
+        startCountdown();
+        console.log('[OK] Countdown started');
+    } catch (error) {
+        console.error('[ERROR] Failed to start countdown:', error);
+    }
+    
+    // Load QRCode library and then generate QR
+    try {
+        loadQRCodeLibrary(function() {
+            console.log('[INFO] QRCode library ready, generating QR...');
+            generateQRCode();
+        });
+    } catch (error) {
+        console.error('[ERROR] Failed to load QRCode library:', error);
+        // Use alternative method immediately
+        setTimeout(function() {
+            useAlternativeQRCode();
+        }, 500);
+    }
+    
+    // Auto-refresh rate mỗi 60 giây (tránh rate limit CoinGecko)
+    rateRefreshInterval = setInterval(function() {
+        refreshRate(false); // Silent refresh
+    }, 60000); // 60 giây
+    
+    // Initial rate refresh immediately
+    refreshRate(false);
+    
+    // MetaMask Pay Button
+    const btnMetaMask = document.getElementById('btnMetaMaskPay');
+    if (btnMetaMask) {
+        btnMetaMask.addEventListener('click', handleMetaMaskPay);
+    }
+    
+    // Demo Pay Button (chỉ khi testnet mode)
+    const btnDemo = document.getElementById('btnDemoPay');
+    if (btnDemo) {
+        btnDemo.addEventListener('click', handleDemoPay);
+    }
+    
+    console.log('[OK] Initialization complete');
+});
+
+// MetaMask Direct Payment
+async function handleMetaMaskPay() {
+    const btn = document.getElementById('btnMetaMaskPay');
+    if (!btn) return;
+    
+    if (typeof window.ethereum === 'undefined') {
+        showNotification('Vui lòng cài đặt MetaMask: https://metamask.io/download/', 'error');
+        if (typeof Web3PaymentSystemPro !== 'undefined' && Web3PaymentSystemPro.prototype.showWalletInstallPrompt) {
+            new Web3PaymentSystemPro().showWalletInstallPrompt();
+        }
+        return;
+    }
+    
+    if (typeof Web3PaymentSystemPro === 'undefined') {
+        showNotification('Hệ thống thanh toán chưa sẵn sàng. Vui lòng tải lại trang.', 'error');
+        return;
+    }
+    
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang kết nối...';
+    
+    try {
+        const paymentSystem = new Web3PaymentSystemPro();
+        paymentSystem.recipientAddress = CONFIG.recipientWallet;
+        paymentSystem.usdRate = CONFIG.usdtRate || 25000;
+        
+        const result = await paymentSystem.connectWallet('metamask');
+        if (!result || !result.success) {
+            throw new Error(result?.error || 'Không thể kết nối MetaMask');
+        }
+        
+        const targetChainId = CONFIG.testnetMode ? 97 : 56;
+        const targetChainHex = '0x' + targetChainId.toString(16);
+        const supportedChains = [1, 56, 97, 137, 80001, 42161, 10, 11155111];
+        if (!supportedChains.includes(paymentSystem.chainId) || paymentSystem.chainId !== targetChainId) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang chuyển mạng ' + (CONFIG.testnetMode ? 'BSC Testnet' : 'BSC') + '...';
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: targetChainHex }]
+                });
+                await new Promise(r => setTimeout(r, 500));
+                const newSystem = new Web3PaymentSystemPro();
+                newSystem.recipientAddress = CONFIG.recipientWallet;
+                newSystem.usdRate = CONFIG.usdtRate || 25000;
+                const reconnect = await newSystem.connectWallet('metamask');
+                if (reconnect.success) {
+                    paymentSystem.web3 = newSystem.web3;
+                    paymentSystem.account = newSystem.account;
+                    paymentSystem.chainId = newSystem.chainId;
+                    paymentSystem.usdtContract = newSystem.usdtContract;
+                }
+            } catch (switchErr) {
+                if (switchErr.code === 4902) {
+                    try {
+                        const chainConfig = CONFIG.testnetMode ? {
+                            chainId: '0x61',
+                            chainName: 'BSC Testnet',
+                            nativeCurrency: { name: 'tBNB', symbol: 'tBNB', decimals: 18 },
+                            rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
+                            blockExplorerUrls: ['https://testnet.bscscan.com']
+                        } : {
+                            chainId: '0x38',
+                            chainName: 'BNB Smart Chain',
+                            nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+                            rpcUrls: ['https://bsc-dataseed1.binance.org'],
+                            blockExplorerUrls: ['https://bscscan.com']
+                        };
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [chainConfig]
+                        });
+                        await new Promise(r => setTimeout(r, 500));
+                        const newSystem = new Web3PaymentSystemPro();
+                        newSystem.recipientAddress = CONFIG.recipientWallet;
+                        newSystem.usdRate = CONFIG.usdtRate || 25000;
+                        const reconnect = await newSystem.connectWallet('metamask');
+                        if (reconnect.success) {
+                            paymentSystem.web3 = newSystem.web3;
+                            paymentSystem.account = newSystem.account;
+                            paymentSystem.chainId = newSystem.chainId;
+                            paymentSystem.usdtContract = newSystem.usdtContract;
+                        }
+                    } catch (addErr) {
+                        showNotification('Không thể thêm mạng ' + (CONFIG.testnetMode ? 'BSC Testnet' : 'BSC') + '. Vui lòng thêm thủ công trong MetaMask.', 'error');
+                        btn.disabled = false;
+                        btn.innerHTML = originalHTML;
+                        return;
+                    }
+                } else {
+                    showNotification('Vui lòng chuyển sang mạng ' + (CONFIG.testnetMode ? 'BSC Testnet' : 'BSC') + ' trong MetaMask', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = originalHTML;
+                    return;
+                }
+            }
+        }
+        
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi giao dịch...';
+        
+        const payResult = await paymentSystem.sendPayment(CONFIG.amountVND, CONFIG.orderId, {
+            onApprove: () => { btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Xác nhận trong MetaMask...'; },
+            onSubmit: (hash) => { btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xác minh...'; }
+        });
+        
+        if (!payResult.success) {
+            throw new Error(payResult.error || 'Thanh toán thất bại');
+        }
+        
+        document.getElementById('txHash').value = payResult.txHash;
+        document.getElementById('networkSelect').value = payResult.chainId;
+        document.getElementById('senderAddress').value = paymentSystem.account || '';
+        
+        showNotification('Giao dịch đã gửi! Đang xác minh...', 'success');
+        
+        document.getElementById('verificationStatus').style.display = 'block';
+        document.getElementById('submitBtn').disabled = true;
+        
+        const submitResponse = await fetch('/api/web3/submit-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                order_id: CONFIG.orderId,
+                payment_id: CONFIG.paymentId,
+                tx_hash: payResult.txHash,
+                chain_id: payResult.chainId,
+                from_address: paymentSystem.account || '',
+                amount_usdt: CONFIG.amountUSDT
+            })
+        });
+        
+        const data = await submitResponse.json();
+        
+        if (data.success) {
+            document.querySelector('.status-icon i').className = 'fas fa-check-circle';
+            document.querySelector('.status-text').textContent = 'Thanh toán thành công!';
+            showNotification('Thanh toán thành công!', 'success');
+            setTimeout(() => {
+                window.location.href = `/payment-success?order_id=${CONFIG.orderId}&tx_hash=${payResult.txHash}`;
+            }, 1500);
+        } else {
+            throw new Error(data.error || 'Xác minh thất bại');
+        }
+        
+    } catch (error) {
+        console.error('MetaMask Pay Error:', error);
+        showNotification(error.message || 'Có lỗi xảy ra. Vui lòng thử lại.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+    }
+}
+
+// Demo Pay - Test luồng thanh toán + NFT không cần USDT (chỉ khi testnet mode)
+async function handleDemoPay() {
+    const btn = document.getElementById('btnDemoPay');
+    if (!btn) return;
+    
+    if (typeof window.ethereum === 'undefined') {
+        showNotification('Cần MetaMask để lấy địa chỉ ví (cho NFT). Vui lòng cài đặt MetaMask.', 'error');
+        return;
+    }
+    
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý Demo...';
+    
+    try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const fromAddress = accounts[0] || '0x0000000000000000000000000000000000000001';
+        
+        const demoTxHash = '0xdemo' + Array.from(crypto.getRandomValues(new Uint8Array(30))).map(b => b.toString(16).padStart(2, '0')).join('');
+        
+        const submitResponse = await fetch('/api/web3/submit-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                order_id: CONFIG.orderId,
+                payment_id: CONFIG.paymentId,
+                tx_hash: demoTxHash,
+                chain_id: 97,
+                from_address: fromAddress,
+                amount_usdt: CONFIG.amountUSDT,
+                demo: true
+            })
+        });
+        
+        const data = await submitResponse.json();
+        
+        if (data.success) {
+            showNotification('Demo thành công! Đang chuyển...', 'success');
+            setTimeout(() => {
+                window.location.href = `/order-success?order_id=${CONFIG.orderId}&tx_hash=${demoTxHash}`;
+            }, 800);
+        } else {
+            throw new Error(data.error || 'Demo thất bại');
+        }
+    } catch (error) {
+        console.error('Demo Pay Error:', error);
+        showNotification(error.message || 'Demo thất bại. Vui lòng thử lại.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+    }
+}
+
+// Copy Wallet Address
+function copyAddress() {
+    const address = document.getElementById('walletAddress');
+    address.select();
+    document.execCommand('copy');
+    
+    // Visual feedback
+    const btn = event.target.closest('.btn-copy');
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check"></i>';
+    btn.classList.add('copied');
+    
+    setTimeout(() => {
+        btn.innerHTML = originalHTML;
+        btn.classList.remove('copied');
+    }, 2000);
+    
+    showNotification('Đã sao chép địa chỉ ví!', 'success');
+}
+
+// Countdown Timer - Real-time from server
+let countdownInterval = null;
+let timerSyncInterval = null;
+
+// Get remaining time from server (real-time)
+async function getRemainingTime() {
+    if (!CONFIG.paymentId) {
+        console.error('[ERROR] Payment ID not found');
+        return CONFIG.timeoutSeconds || 900;
+    }
+    
+    try {
+        const response = await fetch(`/api/web3/payment-timer/${CONFIG.paymentId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            // Save to localStorage to prevent reset on F5
+            localStorage.setItem(`payment_timer_${CONFIG.paymentId}`, JSON.stringify({
+                remaining: data.remaining_seconds,
+                expires_at: data.expires_at,
+                server_time: data.server_time,
+                last_sync: Date.now()
+            }));
+            
+            return data.remaining_seconds;
+        }
+    } catch (error) {
+        console.error('[ERROR] Failed to get remaining time:', error);
+    }
+    
+    // Fallback: Try to get from localStorage
+    const saved = localStorage.getItem(`payment_timer_${CONFIG.paymentId}`);
+    if (saved) {
+        try {
+            const savedData = JSON.parse(saved);
+            const expiresAt = new Date(savedData.expires_at);
+            const now = new Date();
+            const remaining = Math.max(0, Math.floor((expiresAt - now) / 1000));
+            return remaining;
+        } catch (e) {
+            console.error('[ERROR] Failed to parse saved timer:', e);
+        }
+    }
+    
+    // Last fallback: Use default
+    return CONFIG.timeoutSeconds || 900;
+}
+
+// Calculate remaining time from expires_at
+function calculateRemainingTime() {
+    if (CONFIG.paymentExpiresAt && CONFIG.paymentExpiresAt !== '' && CONFIG.paymentExpiresAt !== 'None') {
+        try {
+            const expiresAt = new Date(CONFIG.paymentExpiresAt);
+            const now = new Date();
+            const remaining = Math.max(0, Math.floor((expiresAt - now) / 1000));
+            return remaining;
+        } catch (e) {
+            console.error('[ERROR] Failed to parse expires_at:', e);
+        }
+    }
+    return CONFIG.timeoutSeconds || 900;
+}
+
+async function startCountdown() {
+    console.log('[INFO] Initializing countdown timer...');
+    
+    // Get initial remaining time - try server first, then calculate
+    let initialTimeLeft = await getRemainingTime();
+    
+    // Always calculate from expires_at to ensure accuracy (prevents F5 reset)
+    if (CONFIG.paymentExpiresAt) {
+        initialTimeLeft = calculateRemainingTime();
+        console.log('[INFO] Using calculated time from expires_at:', initialTimeLeft);
+    }
+    
+    console.log('[INFO] Starting countdown with', initialTimeLeft, 'seconds remaining');
+    
+    // Clear any existing interval
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+    }
+    if (timerSyncInterval) {
+        clearInterval(timerSyncInterval);
+    }
+    
+    // Update display immediately
+    updateTimerDisplay(initialTimeLeft);
+    
+    // Start countdown - always calculate from expires_at to prevent F5 reset
+    countdownInterval = setInterval(() => {
+        // Always recalculate from expires_at (real-time, can't be reset by F5)
+        const timeLeft = calculateRemainingTime();
+        
+        if (timeLeft > 0) {
+            updateTimerDisplay(timeLeft);
+        } else {
+            clearInterval(countdownInterval);
+            if (timerSyncInterval) {
+                clearInterval(timerSyncInterval);
+            }
+            handleTimeout();
+        }
+    }, 1000);
+    
+    // Sync with server every 30 seconds to verify (optional, for accuracy)
+    timerSyncInterval = setInterval(async () => {
+        try {
+            const remaining = await getRemainingTime();
+            if (remaining <= 0) {
+                clearInterval(countdownInterval);
+                clearInterval(timerSyncInterval);
+                handleTimeout();
+            }
+        } catch (error) {
+            console.warn('[WARNING] Timer sync failed, continuing with local calculation');
+        }
+    }, 30000); // Sync every 30 seconds
+}
+
+function updateTimerDisplay(timeLeftValue) {
+    const countdownEl = document.getElementById('countdown');
+    const timerBarEl = document.getElementById('timerBar');
+    
+    if (!countdownEl || !timerBarEl) {
+        console.warn('[WARNING] Timer elements not found');
+        return;
+    }
+    
+    // Use provided value or calculate
+    let timeLeft = timeLeftValue;
+    if (timeLeft === undefined || timeLeft === null) {
+        timeLeft = calculateRemainingTime();
+    }
+    
+    if (timeLeft < 0) {
+        timeLeft = 0;
+    }
+    
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    
+    countdownEl.textContent = display;
+    
+    // Update progress bar
+    const totalSeconds = CONFIG.timeoutSeconds || 900;
+    const percentage = Math.max(0, Math.min(100, (timeLeft / totalSeconds) * 100));
+    timerBarEl.style.width = percentage + '%';
+    
+    // Change color when time is running out
+    if (timeLeft < 60) {
+        timerBarEl.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+        countdownEl.style.color = '#e74c3c';
+    } else if (timeLeft < 300) {
+        timerBarEl.style.background = 'linear-gradient(135deg, #f39c12, #e67e22)';
+        countdownEl.style.color = '#f39c12';
+    } else {
+        timerBarEl.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        countdownEl.style.color = '#667eea';
+    }
+}
+
+function handleTimeout() {
+    showNotification('Hết thời gian thanh toán! Đơn hàng đã bị hủy.', 'error');
+    setTimeout(() => {
+        window.location.href = '/cart';
+    }, 3000);
+}
+
+// Submit Payment Form
+document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const networkId = document.getElementById('networkSelect').value;
+    const txHash = document.getElementById('txHash').value.trim();
+    const senderAddress = document.getElementById('senderAddress').value.trim();
+    
+    if (!networkId || !txHash) {
+        showNotification('Vui lòng điền đầy đủ thông tin!', 'error');
+        return;
+    }
+    
+    // Validate TX Hash format
+    if (!txHash.startsWith('0x') || txHash.length !== 66) {
+        showNotification('Mã giao dịch không hợp lệ! (phải bắt đầu bằng 0x và có 66 ký tự)', 'error');
+        return;
+    }
+    
+    // Show verification status
+    document.getElementById('verificationStatus').style.display = 'block';
+    document.getElementById('submitBtn').disabled = true;
+    
+    try {
+        // Submit payment
+        const response = await fetch('/api/web3/submit-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                order_id: CONFIG.orderId,
+                payment_id: CONFIG.paymentId,
+                tx_hash: txHash,
+                chain_id: parseInt(networkId),
+                from_address: senderAddress || '',
+                amount_usdt: CONFIG.amountUSDT
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Update status
+            document.querySelector('.status-icon i').className = 'fas fa-check-circle';
+            document.querySelector('.status-text').textContent = 'Giao dịch đã được xác nhận!';
+            
+            showNotification('Thanh toán thành công!', 'success');
+            
+            // Redirect to success page
+            setTimeout(() => {
+                window.location.href = `/payment-success?order_id=${CONFIG.orderId}&tx_hash=${txHash}`;
+            }, 2000);
+            
+        } else {
+            throw new Error(data.error || 'Xác minh thất bại');
+        }
+        
+    } catch (error) {
+        console.error('Error:', error);
+        
+        document.querySelector('.status-icon i').className = 'fas fa-times-circle';
+        document.querySelector('.status-text').textContent = error.message || 'Có lỗi xảy ra!';
+        document.querySelector('.status-text').style.color = '#e74c3c';
+        
+        showNotification(error.message || 'Có lỗi xảy ra!', 'error');
+        
+        document.getElementById('submitBtn').disabled = false;
+        
+        setTimeout(() => {
+            document.getElementById('verificationStatus').style.display = 'none';
+        }, 3000);
+    }
+});
+
+// Notification
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : (type === 'error' ? 'times-circle' : 'info-circle')}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => notification.classList.add('show'), 100);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 4000);
+}
+
+// Network Selection Helper
+document.querySelectorAll('.network-item').forEach(item => {
+    item.addEventListener('click', function() {
+        const chainId = this.dataset.chain;
+        document.getElementById('networkSelect').value = chainId;
+        
+        // Visual feedback
+        document.querySelectorAll('.network-item').forEach(n => n.classList.remove('selected'));
+        this.classList.add('selected');
+    });
+});
+</script>
+
+{% endblock %}

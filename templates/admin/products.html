@@ -1,0 +1,97 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản Lý Sản Phẩm{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📦 Quản Lý Sản Phẩm</h1>
+    <p>Danh sách tất cả sản phẩm</p>
+</div>
+
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>Danh Sách Sản Phẩm ({{ products|length }})</h3>
+        <a href="{{ url_for('admin_add_product') }}" class="btn btn-success">+ Thêm Sản Phẩm Mới</a>
+    </div>
+
+    {% if products %}
+    <div style="overflow-x: auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Hình Ảnh</th>
+                    <th>Tên Sản Phẩm</th>
+                    <th>Danh Mục</th>
+                    <th>Giá</th>
+                    <th>Giá Gốc</th>
+                    <th>Đánh Giá</th>
+                    <th>Tồn Kho</th>
+                    <th>Trạng Thái</th>
+                    <th>Thao Tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.id }}</td>
+                    <td>
+                        {% if product.image %}
+                        <img src="{{ product.image }}" alt="{{ product.name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+                        {% else %}
+                        <div style="width: 60px; height: 60px; background: #eee; border-radius: 5px; display: flex; align-items: center; justify-content: center;">No Image</div>
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ product.name }}</strong></td>
+                    <td>{{ product.category }}</td>
+                    <td><strong>{{ "{:,.0f}".format(product.price) }} ₫</strong></td>
+                    <td style="text-decoration: line-through; color: #999;">{{ "{:,.0f}".format(product.original_price) }} ₫</td>
+                    <td>
+                        <span style="color: #f39c12;">★ {{ product.rating }}</span>
+                        <span style="color: #999; font-size: 12px;">({{ product.reviews }})</span>
+                    </td>
+                    <td>
+                        {% if product.stock > 10 %}
+                            <span style="color: #27ae60;">{{ product.stock }}</span>
+                        {% elif product.stock > 0 %}
+                            <span style="color: #f39c12;">{{ product.stock }}</span>
+                        {% else %}
+                            <span style="color: #e74c3c;">Hết hàng</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if product.is_active %}
+                            <span style="color: #27ae60; font-weight: bold;">✓ Hoạt động</span>
+                        {% else %}
+                            <span style="color: #e74c3c;">✗ Ẩn</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                            <a href="{{ url_for('admin_edit_product', product_id=product.id) }}" class="btn btn-warning" style="padding: 6px 12px; font-size: 13px; text-decoration: none; border-radius: 4px; display: inline-block;">✏️ Sửa</a>
+                            <a href="{{ url_for('admin_product_images', product_id=product.id) }}" class="btn" style="padding: 6px 12px; font-size: 13px; background: #3498db; color: white; text-decoration: none; border-radius: 4px; display: inline-block;">🖼️ Ảnh</a>
+                            {% if product.is_active %}
+                            <form method="POST" action="{{ url_for('admin_delete_product', product_id=product.id) }}" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn ẩn sản phẩm \"{{ product.name }}\" khỏi website? Sản phẩm sẽ không hiển thị trên trang chủ nhưng vẫn còn trong hệ thống.');">
+                                <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 13px; border: none; cursor: pointer; border-radius: 4px;">🗑️ Ẩn</button>
+                            </form>
+                            {% else %}
+                            <form method="POST" action="{{ url_for('admin_delete_product', product_id=product.id) }}" style="display: inline;" onsubmit="return confirm('⚠️ CẢNH BÁO: Bạn có chắc muốn XÓA VĨNH VIỄN sản phẩm \"{{ product.name }}\"? Hành động này không thể hoàn tác!');">
+                                <input type="hidden" name="hard_delete" value="true">
+                                <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 13px; border: none; cursor: pointer; border-radius: 4px; background: #c0392b;">🗑️ Xóa Vĩnh Viễn</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('admin_restore_product', product_id=product.id) }}" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn khôi phục sản phẩm \"{{ product.name }}\"?');">
+                                <button type="submit" class="btn" style="padding: 6px 12px; font-size: 13px; border: none; cursor: pointer; border-radius: 4px; background: #27ae60; color: white;">↩️ Khôi Phục</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="text-align: center; color: #7f8c8d; padding: 40px;">Chưa có sản phẩm nào</p>
+    {% endif %}
+</div>
+{% endblock %}

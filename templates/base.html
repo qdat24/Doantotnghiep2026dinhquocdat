@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>{% block title %}Nội Thất Sang Trọng{% endblock %}</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/product-detail-enhanced.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" 
+          integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" 
+          crossorigin="anonymous" 
+          referrerpolicy="no-referrer">
+    <!-- Mobile Menu Toggle Function - Phải định nghĩa trước khi button render -->
+    <script>
+        // Global function để toggle menu - PHẢI định nghĩa trước khi button render
+        function toggleMobileMenuNow() {
+            console.log('toggleMobileMenuNow called');
+            const navLinks = document.getElementById('navLinks');
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            
+            if (navLinks && mobileMenuToggle) {
+                const isActive = navLinks.classList.contains('active');
+                navLinks.classList.toggle('active');
+                mobileMenuToggle.classList.toggle('active');
+                document.body.style.overflow = !isActive ? 'hidden' : '';
+                mobileMenuToggle.setAttribute('aria-expanded', !isActive ? 'true' : 'false');
+                console.log('Menu toggled, isActive:', !isActive);
+            } else {
+                console.error('navLinks or mobileMenuToggle not found', { navLinks, mobileMenuToggle });
+            }
+        }
+        
+        // Đảm bảo function có sẵn ngay lập tức
+        window.toggleMobileMenuNow = toggleMobileMenuNow;
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <a href="/" class="logo">
+                    {% if site_settings.get('site_logo') %}
+                        <img src="{{ site_settings.get('site_logo') }}" alt="{{ site_settings.get('site_name', 'Nội Thất Sang') }}">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="{{ site_settings.get('site_name', 'Nội Thất Sang') }}" id="site-logo" onerror="handleLogoError()">
+                        <span id="logo-fallback" style="display: none;">
+                            <i class="fas fa-couch"></i>
+                            <span>{{ site_settings.get('site_name', 'Nội Thất Sang') }}</span>
+                        </span>
+                    {% endif %}
+                </a>
+                <div style="position: relative; z-index: 10002; pointer-events: auto;">
+                    <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobileMenuToggle" type="button" onclick="toggleMobileMenuNow()" style="pointer-events: auto !important; z-index: 10002 !important; position: relative !important; cursor: pointer !important; touch-action: manipulation !important; -webkit-tap-highlight-color: transparent;">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="/" data-translate="Trang Chủ">Trang Chủ</a></li>
+                    <li class="dropdown">
+                        <a href="/products" class="dropbtn">
+                            <span data-translate="Sản Phẩm">Sản Phẩm</span> <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <div class="dropdown-content">
+                            <a href="/products">
+                                <i class="fas fa-th"></i> <span data-translate="Tất Cả Sản Phẩm">Tất Cả Sản Phẩm</span>
+                            </a>
+                            <a href="/products?category=Phòng%20Khách">
+                                <i class="fas fa-couch"></i> <span data-translate="Phòng Khách">Phòng Khách</span>
+                            </a>
+                            <a href="/products?category=Phòng%20Ngủ">
+                                <i class="fas fa-bed"></i> <span data-translate="Phòng Ngủ">Phòng Ngủ</span>
+                            </a>
+                            <a href="/products?category=Nhà%20Bếp">
+                                <i class="fas fa-utensils"></i> <span data-translate="Nhà Bếp">Nhà Bếp</span>
+                            </a>
+                            <a href="/products?category=Văn%20Phòng">
+                                <i class="fas fa-briefcase"></i> <span data-translate="Văn Phòng">Văn Phòng</span>
+                            </a>
+                            <a href="/products?category=Phòng%20Ăn">
+                                <i class="fas fa-chair"></i> <span data-translate="Phòng Ăn">Phòng Ăn</span>
+                            </a>
+                        </div>
+                    </li>
+                    <li><a href="/about" data-translate="Về Chúng Tôi">Về Chúng Tôi</a></li>
+                    <li><a href="/partners" data-translate="Đối Tác">Đối Tác</a></li>
+                    <li><a href="/policy" data-translate="Chính Sách">Chính Sách</a></li>
+                    <li><a href="/contact" data-translate="Liên Hệ">Liên Hệ</a></li>
+                    <li>
+                        <a href="/cart" class="cart-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count" id="cartBadge">{{ cart_count }}</span>
+                        </a>
+                    </li>
+                    {% if session.get('customer_logged_in') %}
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn">
+                            <i class="fas fa-user-circle"></i> {{ session.get('customer_name') }}
+                        </a>
+                        <div class="dropdown-content">
+                            <a href="/account">
+                                <i class="fas fa-user"></i> <span data-translate="Tài Khoản">Tài Khoản</span>
+                            </a>
+                            <a href="/logout">
+                                <i class="fas fa-sign-out-alt"></i> <span data-translate="Đăng Xuất">Đăng Xuất</span>
+                            </a>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn">
+                            <i class="fas fa-user"></i> <span data-translate="Tài Khoản">Tài Khoản</span> <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <div class="dropdown-content">
+                            <a href="/login">
+                                <i class="fas fa-sign-in-alt"></i> <span data-translate="Đăng Nhập">Đăng Nhập</span>
+                            </a>
+                            <a href="/register">
+                                <i class="fas fa-user-plus"></i> <span data-translate="Đăng Ký">Đăng Ký</span>
+                            </a>
+                        </div>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 data-translate="Về Chúng Tôi">Về Chúng Tôi</h3>
+                    <p>HOMESTEAD là đơn vị chuyên cung cấp các sản phẩm nội thất cao cấp, hiện đại với chất lượng tốt nhất.</p>
+                </div>
+                <div class="footer-section">
+                    <h3 data-translate="Liên Hệ">Liên Hệ</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Đường ABC, Quận XYZ, TP.HCM</li>
+                        <li><i class="fas fa-phone"></i> 0345211386</li>
+                        <li><i class="fas fa-envelope"></i> quocdat30075@gmail.com</li>
+                    </ul>
+                    <div class="footer-social-icons">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3 data-translate="Liên Kết">Liên Kết</h3>
+                    <ul>
+                        <li><a href="/products" data-translate="Sản Phẩm">Sản Phẩm</a></li>
+                        <li><a href="/about" data-translate="Về Chúng Tôi">Về Chúng Tôi</a></li>
+                        <li><a href="/partners" data-translate="Đối Tác">Đối Tác</a></li>
+                        <li><a href="/policy" data-translate="Chính Sách">Chính Sách</a></li>
+                        <li><a href="/terms" data-translate="Điều Khoản Dịch Vụ">Điều Khoản Dịch Vụ</a></li>
+                        <li><a href="/privacy" data-translate="Chính Sách Bảo Mật">Chính Sách Bảo Mật</a></li>
+                        <li><a href="/contact" data-translate="Liên Hệ">Liên Hệ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3 data-translate="Hỗ Trợ">Hỗ Trợ</h3>
+                    <ul>
+                        <li><a href="/guide" data-translate="Hướng Dẫn Mua Hàng">Hướng Dẫn Mua Hàng</a></li>
+                        <li><a href="/return-policy" data-translate="Chính Sách Đổi Trả">Chính Sách Đổi Trả</a></li>
+                        <li><a href="/warranty" data-translate="Bảo Hành">Bảo Hành</a></li>
+                        <li><a href="/faq" data-translate="Câu Hỏi Thường Gặp">Câu Hỏi Thường Gặp</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 HOMESTEAD. <span data-translate="Tất Cả Quyền Được Bảo Lưu">Tất Cả Quyền Được Bảo Lưu</span>.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Coupons Modal -->
+    {% if show_coupons and coupons_list %}
+    <script>
+        window.couponsToShow = {{ coupons_list|tojson }};
+        window.shouldShowCoupons = true;
+    </script>
+    <div id="couponsModal" class="coupons-modal">
+        <div class="coupons-modal-overlay" onclick="closeCouponsModal()"></div>
+        <div class="coupons-modal-content">
+            <div class="coupons-modal-header">
+                <h2>
+                    <i class="fas fa-gift"></i>
+                    Mã Giảm Giá Đang Áp Dụng
+                </h2>
+                <button class="coupons-modal-close" onclick="closeCouponsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="coupons-modal-body">
+                <p class="coupons-intro">Chúc mừng! Dưới đây là các mã giảm giá đang áp dụng trên website:</p>
+                <div class="coupons-list">
+                    {% for coupon in coupons_list %}
+                    <div class="coupon-card">
+                        <div class="coupon-code-section">
+                            <div class="coupon-code">{{ coupon.code }}</div>
+                            <button class="copy-coupon-btn" onclick="copyCouponCode('{{ coupon.code }}', this)">
+                                <i class="fas fa-copy"></i>
+                                Sao chép
+                            </button>
+                        </div>
+                        <div class="coupon-info">
+                            <h3>{{ coupon.name }}</h3>
+                            {% if coupon.description %}
+                            <p class="coupon-description">{{ coupon.description }}</p>
+                            {% endif %}
+                            <div class="coupon-details">
+                                <span class="coupon-discount">
+                                    {% if coupon.discount_type == 'percentage' %}
+                                    Giảm {{ coupon.discount_value|int }}%
+                                    {% else %}
+                                    Giảm {{ coupon.discount_value|format_currency }}đ
+                                    {% endif %}
+                                </span>
+                                {% if coupon.min_order_amount > 0 %}
+                                <span class="coupon-min-order">
+                                    Áp dụng cho đơn từ {{ coupon.min_order_amount|format_currency }}đ
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="coupons-modal-footer">
+                    <p class="coupons-note">
+                        <i class="fas fa-info-circle"></i>
+                        Sử dụng mã giảm giá khi thanh toán để nhận ưu đãi
+                    </p>
+                    <button class="coupons-close-btn" onclick="closeCouponsModal()">
+                        Đã Hiểu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        .coupons-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .coupons-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .coupons-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .coupons-modal-content {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .coupons-modal-header {
+            padding: 25px 30px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #a08968 0%, #9db892 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .coupons-modal-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .coupons-modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .coupons-modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .coupons-modal-body {
+            padding: 30px;
+        }
+
+        .coupons-intro {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+
+        .coupons-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .coupon-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            background: linear-gradient(135deg, #faf8f5 0%, #ffffff 100%);
+            transition: all 0.3s;
+        }
+
+        .coupon-card:hover {
+            border-color: #a08968;
+            box-shadow: 0 5px 15px rgba(160, 137, 104, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .coupon-code-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 15px;
+        }
+
+        .coupon-code {
+            font-size: 24px;
+            font-weight: 700;
+            color: #a08968;
+            letter-spacing: 2px;
+            padding: 10px 20px;
+            background: white;
+            border: 2px dashed #a08968;
+            border-radius: 8px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .copy-coupon-btn {
+            background: linear-gradient(135deg, #a08968 0%, #9db892 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .copy-coupon-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(160, 137, 104, 0.3);
+        }
+
+        .copy-coupon-btn.copied {
+            background: #4caf50;
+        }
+
+        .coupon-info h3 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .coupon-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .coupon-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .coupon-discount {
+            background: #fff3cd;
+            color: #856404;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .coupon-min-order {
+            background: #e7f3ff;
+            color: #004085;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .coupons-modal-footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .coupons-note {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .coupons-close-btn {
+            background: linear-gradient(135deg, #a08968 0%, #9db892 100%);
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .coupons-close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(160, 137, 104, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .coupons-modal-content {
+                width: 95%;
+                max-height: 95vh;
+            }
+
+            .coupons-modal-header {
+                padding: 20px;
+            }
+
+            .coupons-modal-header h2 {
+                font-size: 20px;
+            }
+
+            .coupons-modal-body {
+                padding: 20px;
+            }
+
+            .coupon-code-section {
+                flex-direction: column;
+            }
+
+            .coupon-code {
+                font-size: 20px;
+            }
+
+            .copy-coupon-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+    <script>
+        function showCouponsModal() {
+            const modal = document.getElementById('couponsModal');
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeCouponsModal() {
+            const modal = document.getElementById('couponsModal');
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+                
+                fetch('/api/clear-coupons-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).catch(err => console.error('Error clearing coupons session:', err));
+            }
+        }
+
+        function copyCouponCode(code, btn) {
+            navigator.clipboard.writeText(code).then(() => {
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Đã sao chép';
+                btn.classList.add('copied');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                alert('Không thể sao chép mã. Mã giảm giá: ' + code);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('couponsModal');
+            if (modal && window.shouldShowCoupons) {
+                setTimeout(showCouponsModal, 500);
+            }
+
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const navLinks = document.getElementById('navLinks');
+            
+            function toggleMobileMenu() {
+                if (navLinks && mobileMenuToggle) {
+                    const isActive = navLinks.classList.contains('active');
+                    navLinks.classList.toggle('active');
+                    mobileMenuToggle.classList.toggle('active');
+                    document.body.style.overflow = !isActive ? 'hidden' : '';
+                }
+            }
+            
+            if (mobileMenuToggle && navLinks) {
+                // Đảm bảo nút luôn hiển thị và clickable trên mobile
+                function showMobileMenuButton() {
+                    if (window.innerWidth <= 768) {
+                        mobileMenuToggle.style.display = 'flex';
+                        mobileMenuToggle.style.visibility = 'visible';
+                        mobileMenuToggle.style.opacity = '1';
+                        mobileMenuToggle.style.pointerEvents = 'auto';
+                        mobileMenuToggle.style.cursor = 'pointer';
+                        mobileMenuToggle.style.zIndex = '10002';
+                        mobileMenuToggle.style.position = 'relative';
+                        mobileMenuToggle.style.touchAction = 'manipulation';
+                        mobileMenuToggle.setAttribute('tabindex', '0');
+                        mobileMenuToggle.setAttribute('role', 'button');
+                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                    } else {
+                        mobileMenuToggle.style.display = 'none';
+                    }
+                }
+                
+                showMobileMenuButton();
+                window.addEventListener('resize', showMobileMenuButton);
+                
+                // Đơn giản hóa event handler - gọi function global
+                function handleMenuClick(e) {
+                    console.log('Menu button clicked!', e.type); // Debug
+                    if (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                    }
+                    toggleMobileMenuNow(); // Dùng function global
+                    return false;
+                }
+                
+                // Xóa tất cả listeners cũ nếu có
+                const newToggle = mobileMenuToggle.cloneNode(true);
+                mobileMenuToggle.parentNode.replaceChild(newToggle, mobileMenuToggle);
+                const freshToggle = document.getElementById('mobileMenuToggle');
+                
+                // Thêm lại onclick attribute
+                freshToggle.setAttribute('onclick', 'toggleMobileMenuNow(); return false;');
+                
+                // Thêm event listeners với capture phase để đảm bảo được trigger
+                freshToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    toggleMobileMenuNow();
+                    return false;
+                }, true);
+                
+                freshToggle.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    toggleMobileMenuNow();
+                    return false;
+                }, true);
+                
+                freshToggle.addEventListener('touchstart', function(e) {
+                    e.stopPropagation();
+                }, true);
+                
+                // Fallback với mousedown
+                freshToggle.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleMobileMenuNow();
+                    return false;
+                }, true);
+                
+                // Keyboard support
+                freshToggle.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleMobileMenuNow();
+                    }
+                });
+
+                // Đóng menu khi click outside
+                document.addEventListener('click', function(e) {
+                    if (navLinks && mobileMenuToggle) {
+                        if (!navLinks.contains(e.target) && !mobileMenuToggle.contains(e.target) && !e.target.closest('.mobile-menu-toggle')) {
+                            navLinks.classList.remove('active');
+                            mobileMenuToggle.classList.remove('active');
+                            mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                            document.body.style.overflow = '';
+                        }
+                    }
+                }, true);
+
+                // Xử lý dropdowns trong menu
+                const dropdowns = navLinks.querySelectorAll('.dropdown');
+                dropdowns.forEach(dropdown => {
+                    const dropbtn = dropdown.querySelector('.dropbtn');
+                    if (dropbtn) {
+                        dropbtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            dropdown.classList.toggle('active');
+                        });
+                    }
+                });
+            }
+        });
+        
+        // Chạy ngay cả khi DOM đã loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                const btn = document.getElementById('mobileMenuToggle');
+                if (btn) {
+                    btn.setAttribute('onclick', 'toggleMobileMenuNow(); return false;');
+                    console.log('Mobile menu button onclick set on DOMContentLoaded');
+                }
+            });
+        } else {
+            // DOM đã loaded, chạy ngay
+            setTimeout(function() {
+                const btn = document.getElementById('mobileMenuToggle');
+                if (btn) {
+                    btn.setAttribute('onclick', 'toggleMobileMenuNow(); return false;');
+                    console.log('Mobile menu button onclick set immediately');
+                }
+            }, 100);
+        }
+    </script>
+    {% endif %}
+
+    <!-- Anime.js Library - CSS Animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="{{ url_for('static', filename='js/anime-animations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/translations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme-language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+    <script>
+        // Handle logo error fallback
+        function handleLogoError() {
+            const logoImg = document.getElementById('site-logo');
+            const logoFallback = document.getElementById('logo-fallback');
+            if (logoImg && logoFallback) {
+                logoImg.style.display = 'none';
+                logoFallback.style.display = 'flex';
+            }
+        }
+        
+        // Check if logo exists on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoImg = document.getElementById('site-logo');
+            if (logoImg && !logoImg.complete) {
+                logoImg.onerror = handleLogoError;
+            } else if (logoImg && logoImg.complete && logoImg.naturalHeight === 0) {
+                handleLogoError();
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

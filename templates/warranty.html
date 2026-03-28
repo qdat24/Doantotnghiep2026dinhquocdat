@@ -1,0 +1,542 @@
+{% extends "base.html" %}
+
+{% block title %}Chính Sách Bảo Hành - HOMESTEAD{% endblock %}
+
+{% block content %}
+<style>
+    .warranty-hero {
+        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
+        color: white;
+        padding: clamp(3rem, 6vh, 5rem) 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .warranty-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
+        opacity: 0.3;
+        pointer-events: none;
+    }
+    
+    .warranty-hero .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .warranty-hero h1 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        margin-bottom: clamp(0.75rem, 1.5vh, 1rem);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .warranty-hero p {
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        opacity: 0.95;
+        color: white;
+    }
+    
+    .warranty-content {
+        padding: clamp(3rem, 6vh, 4rem) 0;
+        background: var(--bg-cream);
+    }
+    
+    .warranty-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 clamp(1rem, 3vw, 2rem);
+    }
+    
+    .warranty-section {
+        background: white;
+        padding: clamp(1.75rem, 3.5vw, 2.5rem);
+        border-radius: var(--radius-xl);
+        margin-bottom: clamp(1.5rem, 3vh, 2rem);
+        box-shadow: var(--shadow-md);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+    }
+    
+    .warranty-section:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--sage-light);
+    }
+    
+    .warranty-section h2 {
+        color: var(--text-dark);
+        margin-bottom: clamp(1rem, 2vh, 1.5rem);
+        font-size: clamp(1.375rem, 2.8vw, 1.75rem);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .warranty-section h2 i {
+        color: var(--sage-medium);
+        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    }
+    
+    .warranty-section p {
+        color: var(--text-medium);
+        line-height: 1.8;
+        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    }
+    
+    .warranty-section ul {
+        color: var(--text-medium);
+        line-height: 1.8;
+        margin-left: clamp(1.5rem, 3vw, 2rem);
+        margin-bottom: 0;
+    }
+    
+    .warranty-section li {
+        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    }
+    
+    .warranty-section strong {
+        color: var(--sage-dark);
+        font-weight: 600;
+    }
+    
+    .warranty-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        overflow: hidden;
+        border-radius: var(--radius-md);
+    }
+    
+    .warranty-table thead {
+        background: var(--gradient-sage);
+        color: white;
+    }
+    
+    .warranty-table th {
+        padding: clamp(12px, 2vw, 16px);
+        text-align: left;
+        font-weight: 600;
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    }
+    
+    .warranty-table th:last-child {
+        text-align: center;
+    }
+    
+    .warranty-table tbody tr {
+        border-bottom: 1px solid var(--border-color);
+        transition: background 0.3s ease;
+    }
+    
+    .warranty-table tbody tr:hover {
+        background: var(--bg-cream);
+    }
+    
+    .warranty-table tbody tr:nth-child(even) {
+        background: var(--bg-cream);
+    }
+    
+    .warranty-table tbody tr:nth-child(even):hover {
+        background: var(--bg-sage);
+    }
+    
+    .warranty-table td {
+        padding: clamp(12px, 2vw, 16px);
+        color: var(--text-medium);
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+        border: 1px solid var(--border-color);
+    }
+    
+    .warranty-table td:last-child {
+        text-align: center;
+    }
+    
+    .warranty-table td strong {
+        color: var(--sage-dark);
+    }
+    
+    .warranty-table td strong.free {
+        color: var(--sage-dark);
+    }
+    
+    .warranty-process {
+        margin-top: 1rem;
+    }
+    
+    .process-step {
+        margin-bottom: clamp(1.25rem, 2.5vh, 1.5rem);
+        padding-left: clamp(1rem, 2vw, 1.5rem);
+        border-left: 4px solid var(--sage-medium);
+        position: relative;
+    }
+    
+    .process-step::before {
+        content: '';
+        position: absolute;
+        left: -6px;
+        top: 0;
+        width: 12px;
+        height: 12px;
+        background: var(--sage-medium);
+        border-radius: 50%;
+        border: 2px solid white;
+        box-shadow: 0 0 0 2px var(--sage-medium);
+    }
+    
+    .process-step strong {
+        color: var(--sage-dark);
+        font-size: clamp(1rem, 2vw, 1.125rem);
+        display: block;
+        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
+    }
+    
+    .process-step ul {
+        margin-top: 0.5rem;
+    }
+    
+    .warranty-note {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
+        padding: clamp(1.75rem, 3.5vw, 2.5rem);
+        border-radius: var(--radius-xl);
+        border: 2px dashed var(--terracotta);
+        margin-bottom: clamp(1.5rem, 3vh, 2rem);
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .warranty-note h2 {
+        color: var(--rust);
+        margin-bottom: clamp(1rem, 2vh, 1.5rem);
+    }
+    
+    .warranty-cta {
+        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
+        color: white;
+        padding: clamp(2.5rem, 5vw, 3.5rem);
+        border-radius: var(--radius-xl);
+        text-align: center;
+        margin-top: clamp(2rem, 4vh, 3rem);
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .warranty-cta::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: pulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    .warranty-cta .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .warranty-cta h3 {
+        margin-bottom: clamp(1rem, 2vh, 1.5rem);
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 700;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    
+    .warranty-cta p {
+        font-size: clamp(1rem, 2vw, 1.125rem);
+        line-height: 1.8;
+        margin-bottom: clamp(1rem, 2vh, 1.5rem);
+        opacity: 0.95;
+        color: white;
+    }
+    
+    .warranty-cta .contact-info {
+        margin-top: clamp(1rem, 2vh, 1.5rem);
+    }
+    
+    .warranty-cta .contact-info p {
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
+    }
+    
+    .warranty-cta strong {
+        font-weight: 700;
+    }
+    
+    @media (max-width: 768px) {
+        .warranty-content {
+            padding: 2rem 0;
+        }
+        
+        .warranty-section {
+            padding: 1.5rem;
+        }
+        
+        .warranty-table {
+            font-size: 0.875rem;
+        }
+        
+        .warranty-table th,
+        .warranty-table td {
+            padding: 10px 8px;
+        }
+        
+        .warranty-cta {
+            padding: 2rem 1.5rem;
+        }
+    }
+</style>
+
+<!-- Page Header -->
+<section class="warranty-hero">
+    <div class="container">
+        <h1>
+            <i class="fas fa-shield-alt"></i> Chính Sách Bảo Hành
+        </h1>
+        <p>Cam kết bảo hành chu đáo, sử dụng lâu dài an tâm</p>
+    </div>
+</section>
+
+<!-- Warranty Content -->
+<section class="warranty-content">
+    <div class="warranty-wrapper">
+
+        <!-- Thời gian bảo hành -->
+        <div class="warranty-section">
+            <h2>
+                <i class="fas fa-clock"></i> Thời Gian Bảo Hành
+            </h2>
+            <table class="warranty-table">
+                <thead>
+                    <tr>
+                        <th>Loại Sản Phẩm</th>
+                        <th>Thời Gian</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ghế sofa, ghế ăn, ghế văn phòng</td>
+                        <td><strong>24 tháng</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Bàn làm việc, bàn ăn, bàn trà</td>
+                        <td><strong>24 tháng</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Giường, tủ quần áo, tủ đầu giường</td>
+                        <td><strong>36 tháng</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Tủ bếp, bàn đảo bếp</td>
+                        <td><strong>24 tháng</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Kệ sách, kệ tivi, kệ trang trí</td>
+                        <td><strong>18 tháng</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Đèn trang trí, phụ kiện</td>
+                        <td><strong>12 tháng</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Phạm vi bảo hành -->
+        <div class="warranty-section">
+            <h2>
+                <i class="fas fa-check-circle"></i> Phạm Vi Bảo Hành
+            </h2>
+            <p>Bảo hành miễn phí cho các lỗi:</p>
+            <ul>
+                <li><i class="fas fa-check" style="color: var(--sage-medium); margin-right: 0.5rem;"></i> <strong>Lỗi kỹ thuật do nhà sản xuất:</strong> Khung gãy, bề mặt bong tróc</li>
+                <li><i class="fas fa-check" style="color: var(--sage-medium); margin-right: 0.5rem;"></i> <strong>Lỗi về chất liệu:</strong> Gỗ cong vênh, vải/da bong tróc bất thường</li>
+                <li><i class="fas fa-check" style="color: var(--sage-medium); margin-right: 0.5rem;"></i> <strong>Lỗi linh kiện:</strong> Bản lề, ray trượt, ốc vít, khóa</li>
+                <li><i class="fas fa-check" style="color: var(--sage-medium); margin-right: 0.5rem;"></i> <strong>Lỗi cơ khí:</strong> Ghế xoay không hoạt động, cơ chế nâng hạ</li>
+                <li><i class="fas fa-check" style="color: var(--sage-medium); margin-right: 0.5rem;"></i> <strong>Lỗi màu sắc:</strong> Phai màu bất thường trong điều kiện sử dụng đúng</li>
+            </ul>
+        </div>
+
+        <!-- Không bảo hành -->
+        <div class="warranty-section">
+            <h2>
+                <i class="fas fa-times-circle"></i> Không Thuộc Phạm Vi Bảo Hành
+            </h2>
+            <p>Không bảo hành trong các trường hợp:</p>
+            <ul>
+                <li><i class="fas fa-times" style="color: var(--terracotta); margin-right: 0.5rem;"></i> Hết hạn bảo hành</li>
+                <li><i class="fas fa-times" style="color: var(--terracotta); margin-right: 0.5rem;"></i> Sử dụng sai mục đích, quá tải trọng</li>
+                <li><i class="fas fa-times" style="color: var(--terracotta); margin-right: 0.5rem;"></i> Va đập, trầy xước do người sử dụng</li>
+                <li><i class="fas fa-times" style="color: var(--terracotta); margin-right: 0.5rem;"></i> Hỏa hoạn, lũ lụt, thiên tai</li>
+                <li><i class="fas fa-times" style="color: var(--terracotta); margin-right: 0.5rem;"></i> Mất tem bảo hành, sửa chữa tại nơi không ủy quyền</li>
+                <li><i class="fas fa-times" style="color: var(--terracotta); margin-right: 0.5rem;"></i> Hao mòn tự nhiên (vải, da, đệm...)</li>
+                <li><i class="fas fa-times" style="color: var(--terracotta); margin-right: 0.5rem;"></i> Côn trùng, mối mọt do môi trường ẩm ướt</li>
+            </ul>
+        </div>
+
+        <!-- Quy trình bảo hành -->
+        <div class="warranty-section">
+            <h2>
+                <i class="fas fa-clipboard-list"></i> Quy Trình Bảo Hành
+            </h2>
+            <div class="warranty-process">
+                <div class="process-step">
+                    <strong>Bước 1: Liên hệ bảo hành</strong>
+                    <ul>
+                        <li>Hotline: <strong>0345211386</strong> (8:00 - 22:00)</li>
+                        <li>Email: <strong>quocdat30075@gmail.com</strong></li>
+                        <li>Cung cấp: Mã đơn hàng, hình ảnh lỗi, mô tả vấn đề</li>
+                    </ul>
+                </div>
+
+                <div class="process-step">
+                    <strong>Bước 2: Kiểm tra sơ bộ</strong>
+                    <ul>
+                        <li>Bộ phận kỹ thuật xem xét thông tin</li>
+                        <li>Phản hồi trong <strong>24 giờ</strong></li>
+                        <li>Xác định thuộc/không thuộc bảo hành</li>
+                    </ul>
+                </div>
+
+                <div class="process-step">
+                    <strong>Bước 3: Hẹn lịch kiểm tra</strong>
+                    <ul>
+                        <li><strong>Tại nhà:</strong> Kỹ thuật viên đến tận nơi (miễn phí)</li>
+                        <li><strong>Tại showroom:</strong> Quý khách mang sản phẩm đến</li>
+                        <li>Thời gian: 1-3 ngày làm việc</li>
+                    </ul>
+                </div>
+
+                <div class="process-step">
+                    <strong>Bước 4: Sửa chữa/Thay thế</strong>
+                    <ul>
+                        <li><strong>Sửa tại chỗ:</strong> 1-2 giờ</li>
+                        <li><strong>Đưa về xưởng:</strong> 5-7 ngày làm việc</li>
+                        <li><strong>Thay thế:</strong> 7-10 ngày (nếu không sửa được)</li>
+                    </ul>
+                </div>
+
+                <div class="process-step">
+                    <strong>Bước 5: Giao hàng hoàn tất</strong>
+                    <ul>
+                        <li>Giao sản phẩm đã sửa/thay thế</li>
+                        <li>Kiểm tra cùng khách hàng</li>
+                        <li>Gia hạn bảo hành cho phần thay thế</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Điều kiện bảo hành -->
+        <div class="warranty-section">
+            <h2>
+                <i class="fas fa-file-alt"></i> Điều Kiện Bảo Hành
+            </h2>
+            <p>Để được bảo hành, quý khách cần:</p>
+            <ul>
+                <li><i class="fas fa-check" style="color: var(--sage-medium); margin-right: 0.5rem;"></i> Xuất trình <strong>phiếu bảo hành</strong> hoặc hóa đơn mua hàng</li>
+                <li><i class="fas fa-check" style="color: var(--sage-medium); margin-right: 0.5rem;"></i> Còn trong thời hạn bảo hành</li>
+                <li><i class="fas fa-check" style="color: var(--sage-medium); margin-right: 0.5rem;"></i> Tem bảo hành <strong>còn nguyên vẹn</strong>, không bị rách, mất</li>
+                <li><i class="fas fa-check" style="color: var(--sage-medium); margin-right: 0.5rem;"></i> Sản phẩm <strong>chưa qua sửa chữa</strong> tại nơi không ủy quyền</li>
+                <li><i class="fas fa-check" style="color: var(--sage-medium); margin-right: 0.5rem;"></i> Sử dụng đúng hướng dẫn, không có dấu hiệu lạm dụng</li>
+            </ul>
+        </div>
+
+        <!-- Chi phí -->
+        <div class="warranty-section">
+            <h2>
+                <i class="fas fa-dollar-sign"></i> Chi Phí Bảo Hành
+            </h2>
+            <table class="warranty-table">
+                <thead>
+                    <tr>
+                        <th>Hạng Mục</th>
+                        <th>Chi Phí</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lỗi nhà sản xuất (trong BH)</td>
+                        <td><strong class="free">Miễn phí 100%</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Vận chuyển đến trung tâm BH</td>
+                        <td><strong class="free">Miễn phí</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Sửa chữa ngoài BH (hết hạn)</td>
+                        <td>Báo giá theo tình trạng</td>
+                    </tr>
+                    <tr>
+                        <td>Thay linh kiện ngoài BH</td>
+                        <td>Chi phí linh kiện + công</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Bảo dưỡng -->
+        <div class="warranty-note">
+            <h2>
+                <i class="fas fa-tools"></i> Dịch Vụ Bảo Dưỡng
+            </h2>
+            <p>Để sản phẩm bền đẹp lâu dài, chúng tôi khuyến nghị:</p>
+            <ul>
+                <li><i class="fas fa-circle" style="color: var(--sage-medium); font-size: 0.5rem; margin-right: 0.5rem; vertical-align: middle;"></i> <strong>Bảo dưỡng định kỳ 6 tháng:</strong> Vệ sinh, kiểm tra, bảo dưỡng miễn phí</li>
+                <li><i class="fas fa-circle" style="color: var(--sage-medium); font-size: 0.5rem; margin-right: 0.5rem; vertical-align: middle;"></i> <strong>Vệ sinh chuyên sâu:</strong> Giặt ghế sofa, đánh bóng gỗ (có phí)</li>
+                <li><i class="fas fa-circle" style="color: var(--sage-medium); font-size: 0.5rem; margin-right: 0.5rem; vertical-align: middle;"></i> <strong>Tư vấn sử dụng:</strong> Hướng dẫn chăm sóc, bảo quản đúng cách</li>
+            </ul>
+        </div>
+
+        <!-- Liên hệ -->
+        <div class="warranty-cta">
+            <div class="container">
+                <h3>
+                    <i class="fas fa-shield-alt"></i> Trung Tâm Bảo Hành
+                </h3>
+                <p>
+                    Đội ngũ kỹ thuật viên chuyên nghiệp, trang thiết bị hiện đại, 
+                    sẵn sàng hỗ trợ 24/7!
+                </p>
+                <div class="contact-info">
+                    <p>
+                        <i class="fas fa-phone"></i> Hotline BH: <strong>0345211386</strong>
+                    </p>
+                    <p>
+                        <i class="fas fa-envelope"></i> Email: <strong>quocdat30075@gmail.com</strong>
+                    </p>
+                    <p>
+                        <i class="fas fa-map-marker-alt"></i> Địa chỉ: <strong>123 Đường ABC, Quận XYZ, TP.HCM</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

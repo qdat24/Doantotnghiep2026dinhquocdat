@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Danh Mục Sản Phẩm - HOMESTEAD{% endblock %}
+
+{% block content %}
+<!-- Categories Hero -->
+<section class="hero-modern" style="padding: 4rem 0;">
+    <div class="container">
+        <h1>Danh Mục Sản Phẩm</h1>
+        <p>Khám phá các danh mục nội thất đa dạng</p>
+    </div>
+</section>
+
+<!-- Categories Grid -->
+<section class="categories-section" style="padding: 4rem 0; background: #faf8f4;">
+    <div class="container">
+        <div class="categories-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+            {% for category in categories %}
+            <a href="/products?category={{ category.name|replace(' ', '%20') }}" class="category-card" style="display: block; background: white; border-radius: 16px; padding: 2.5rem; text-align: center; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <div class="category-icon" style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: linear-gradient(135deg, #9db892, #7a9c6f); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    {% if category.name == 'Phòng Khách' %}
+                    <i class="fas fa-couch" style="font-size: 2.5rem; color: white;"></i>
+                    {% elif category.name == 'Phòng Ngủ' %}
+                    <i class="fas fa-bed" style="font-size: 2.5rem; color: white;"></i>
+                    {% elif category.name == 'Nhà Bếp' %}
+                    <i class="fas fa-utensils" style="font-size: 2.5rem; color: white;"></i>
+                    {% elif category.name == 'Văn Phòng' %}
+                    <i class="fas fa-briefcase" style="font-size: 2.5rem; color: white;"></i>
+                    {% elif category.name == 'Phòng Ăn' %}
+                    <i class="fas fa-chair" style="font-size: 2.5rem; color: white;"></i>
+                    {% else %}
+                    <i class="fas fa-th" style="font-size: 2.5rem; color: white;"></i>
+                    {% endif %}
+                </div>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: #2d271f; margin-bottom: 0.5rem;">{{ category.name }}</h3>
+                <p style="color: #6b7280; margin-bottom: 1rem;">{{ category.count }} sản phẩm</p>
+                <span class="btn btn-sm" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                    Xem Ngay <i class="fas fa-arrow-right"></i>
+                </span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- All Products CTA -->
+<section class="cta-section" style="padding: 3rem 0; background: white; text-align: center;">
+    <div class="container">
+        <h2 style="font-size: 2rem; font-weight: 700; color: #2d271f; margin-bottom: 1rem;">Xem Tất Cả Sản Phẩm</h2>
+        <p style="font-size: 1.125rem; color: #6b7280; margin-bottom: 2rem;">Khám phá toàn bộ bộ sưu tập nội thất của chúng tôi</p>
+        <a href="/products" class="btn btn-lg">
+            <i class="fas fa-shopping-bag"></i>
+            Xem Tất Cả
+        </a>
+    </div>
+</section>
+
+<style>
+    .category-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(157, 184, 146, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        .categories-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+{% endblock %}
+

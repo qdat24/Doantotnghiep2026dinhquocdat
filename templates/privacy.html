@@ -1,0 +1,550 @@
+{% extends "base.html" %}
+
+{% block title %}Chính Sách Bảo Mật - HOMESTEAD{% endblock %}
+
+{% block content %}
+<style>
+    .privacy-page {
+        background: var(--bg-cream);
+        min-height: 100vh;
+        padding: clamp(2rem, 4vh, 3rem) 0;
+    }
+    
+    .privacy-header {
+        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
+        color: white;
+        padding: clamp(3rem, 6vh, 5rem) 0;
+        text-align: center;
+        margin-bottom: clamp(2rem, 4vh, 3rem);
+        box-shadow: var(--shadow-md);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .privacy-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
+        opacity: 0.3;
+        pointer-events: none;
+    }
+    
+    .privacy-header .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .privacy-header h1 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        margin-bottom: clamp(0.75rem, 1.5vh, 1rem);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .privacy-header p {
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        opacity: 0.95;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .privacy-header p:last-of-type {
+        font-size: clamp(0.875rem, 1.6vw, 0.9375rem);
+        opacity: 0.8;
+        margin-top: 0.5rem;
+    }
+    
+    .privacy-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 clamp(1rem, 3vw, 2rem);
+    }
+    
+    .privacy-section {
+        background: white;
+        padding: clamp(2rem, 4vw, 2.5rem);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        margin-bottom: clamp(1.5rem, 3vh, 2rem);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+    }
+    
+    .privacy-section:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--sage-light);
+    }
+    
+    .privacy-section h2 {
+        color: var(--text-dark);
+        font-size: clamp(1.5rem, 3vw, 1.875rem);
+        font-weight: 700;
+        margin-bottom: clamp(1.25rem, 2.5vh, 1.5rem);
+        display: flex;
+        align-items: center;
+        gap: clamp(0.75rem, 1.5vw, 1rem);
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-color);
+        position: relative;
+    }
+    
+    .privacy-section h2::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 60px;
+        height: 2px;
+        background: var(--gradient-sage);
+        border-radius: var(--radius-full);
+    }
+    
+    .privacy-section h2 i {
+        color: var(--sage-medium);
+        font-size: clamp(1.375rem, 2.5vw, 1.625rem);
+    }
+    
+    .privacy-section h3 {
+        color: var(--text-medium);
+        font-size: clamp(1.125rem, 2.2vw, 1.375rem);
+        font-weight: 600;
+        margin-top: clamp(1.25rem, 2.5vh, 1.5rem);
+        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
+    }
+    
+    .privacy-section p {
+        color: var(--text-medium);
+        line-height: 1.8;
+        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    }
+    
+    .privacy-section ul {
+        color: var(--text-medium);
+        line-height: 1.8;
+        margin-left: clamp(1.5rem, 3vw, 2rem);
+        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
+        padding-left: 0;
+    }
+    
+    .privacy-section li {
+        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    }
+    
+    .privacy-section li strong {
+        color: var(--sage-dark);
+        font-weight: 600;
+    }
+    
+    .highlight {
+        background: var(--bg-sage);
+        padding: clamp(1.25rem, 2.5vw, 1.5rem);
+        border-left: 4px solid var(--sage-medium);
+        border-radius: var(--radius-md);
+        margin: clamp(1.25rem, 2.5vh, 1.5rem) 0;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .highlight p {
+        margin: 0;
+        color: var(--sage-dark);
+        font-weight: 600;
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .highlight p i {
+        color: var(--sage-medium);
+        font-size: 1.25rem;
+    }
+    
+    .warning {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
+        padding: clamp(1.25rem, 2.5vw, 1.5rem);
+        border-left: 4px solid var(--terracotta);
+        border-radius: var(--radius-md);
+        margin: clamp(1.25rem, 2.5vh, 1.5rem) 0;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .warning p {
+        margin: 0;
+        color: var(--rust);
+        font-weight: 600;
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .warning p i {
+        color: var(--terracotta);
+        font-size: 1.25rem;
+    }
+    
+    .contact-info {
+        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
+        color: white;
+        padding: clamp(2rem, 4vw, 2.5rem);
+        border-radius: var(--radius-xl);
+        text-align: center;
+        margin-top: clamp(2rem, 4vh, 3rem);
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .contact-info::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: pulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    .contact-info .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .contact-info h3 {
+        color: white;
+        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
+        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    
+    .contact-info p {
+        color: white;
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+        line-height: 1.8;
+        margin-bottom: 0.75rem;
+    }
+    
+    .contact-info a {
+        color: white;
+        text-decoration: underline;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .contact-info a:hover {
+        color: var(--sage-light);
+        text-decoration: none;
+    }
+    
+    @media (max-width: 768px) {
+        .privacy-page {
+            padding: 1.5rem 0;
+        }
+        
+        .privacy-header {
+            padding: clamp(2rem, 4vh, 3rem) 0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .privacy-section {
+            padding: clamp(1.5rem, 3vw, 2rem);
+            margin-bottom: 1.5rem;
+        }
+        
+        .privacy-section h2 {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .privacy-section ul {
+            margin-left: 1.25rem;
+        }
+    }
+</style>
+
+<div class="privacy-page">
+    <div class="privacy-header">
+        <div class="container">
+            <h1>
+                <i class="fas fa-shield-alt"></i> Chính Sách Bảo Mật
+            </h1>
+            <p>Cam kết bảo vệ thông tin cá nhân của bạn</p>
+            <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem;">
+                Cập nhật lần cuối: 21/12/2025
+            </p>
+        </div>
+    </div>
+
+    <div class="privacy-container">
+        <!-- Section 1 -->
+        <div class="privacy-section">
+            <h2>
+                <i class="fas fa-info-circle"></i> 1. Giới Thiệu
+            </h2>
+            <p>
+                HOMESTEAD cam kết bảo vệ quyền riêng tư và thông tin cá nhân của bạn. 
+                Chính sách bảo mật này giải thích cách chúng tôi thu thập, sử dụng, lưu trữ và bảo vệ 
+                thông tin cá nhân của bạn khi sử dụng website và dịch vụ của chúng tôi.
+            </p>
+            <p>
+                Bằng việc sử dụng website của chúng tôi, bạn đồng ý với các thực hành được mô tả trong chính sách này.
+            </p>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="privacy-section">
+            <h2>
+                <i class="fas fa-database"></i> 2. Thông Tin Chúng Tôi Thu Thập
+            </h2>
+            <h3>2.1. Thông Tin Bạn Cung Cấp</h3>
+            <p>Chúng tôi thu thập thông tin bạn cung cấp trực tiếp khi:</p>
+            <ul>
+                <li><strong>Đăng ký tài khoản:</strong> Tên, email, số điện thoại, địa chỉ</li>
+                <li><strong>Đặt hàng:</strong> Thông tin giao hàng, thanh toán</li>
+                <li><strong>Liên hệ:</strong> Tên, email, nội dung tin nhắn</li>
+                <li><strong>Đăng ký nhận tin:</strong> Email, sở thích</li>
+            </ul>
+            
+            <h3>2.2. Thông Tin Tự Động Thu Thập</h3>
+            <p>Khi bạn truy cập website, chúng tôi tự động thu thập:</p>
+            <ul>
+                <li>Địa chỉ IP</li>
+                <li>Loại trình duyệt và phiên bản</li>
+                <li>Hệ điều hành</li>
+                <li>Trang bạn truy cập và thời gian truy cập</li>
+                <li>Trang web bạn đến từ (referrer)</li>
+                <li>Cookies và công nghệ theo dõi tương tự</li>
+            </ul>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="privacy-section">
+            <h2>
+                <i class="fas fa-cookie"></i> 3. Cookies và Công Nghệ Theo Dõi
+            </h2>
+            <p>
+                Chúng tôi sử dụng cookies và các công nghệ tương tự để cải thiện trải nghiệm của bạn, 
+                phân tích cách bạn sử dụng website và hỗ trợ các tính năng tiếp thị.
+            </p>
+            
+            <h3>3.1. Loại Cookies Chúng Tôi Sử Dụng</h3>
+            <ul>
+                <li><strong>Cookies Cần Thiết:</strong> Để website hoạt động cơ bản</li>
+                <li><strong>Cookies Hiệu Suất:</strong> Để phân tích cách sử dụng website</li>
+                <li><strong>Cookies Chức Năng:</strong> Để ghi nhớ tùy chọn của bạn</li>
+                <li><strong>Cookies Quảng Cáo:</strong> Để hiển thị quảng cáo phù hợp</li>
+            </ul>
+            
+            <div class="highlight">
+                <p>
+                    <i class="fas fa-info-circle"></i> 
+                    Bạn có thể quản lý hoặc xóa cookies thông qua cài đặt trình duyệt của mình.
+                </p>
+            </div>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="privacy-section">
+            <h2>
+                <i class="fas fa-user-shield"></i> 4. Cách Chúng Tôi Sử Dụng Thông Tin
+            </h2>
+            <p>Chúng tôi sử dụng thông tin thu thập được để:</p>
+            <ul>
+                <li>Xử lý và hoàn thành đơn hàng của bạn</li>
+                <li>Giao tiếp với bạn về đơn hàng, sản phẩm và dịch vụ</li>
+                <li>Cải thiện website và trải nghiệm người dùng</li>
+                <li>Gửi thông tin khuyến mãi và cập nhật (nếu bạn đồng ý)</li>
+                <li>Phân tích xu hướng và hành vi người dùng</li>
+                <li>Ngăn chặn gian lận và bảo vệ an ninh</li>
+                <li>Tuân thủ các nghĩa vụ pháp lý</li>
+            </ul>
+        </div>
+
+        <!-- Section 5 -->
+        <div class="privacy-section">
+            <h2>
+                <i class="fas fa-share-alt"></i> 5. Chia Sẻ Thông Tin
+            </h2>
+            <p>Chúng tôi không bán thông tin cá nhân của bạn. Chúng tôi có thể chia sẻ thông tin với:</p>
+            
+            <h3>5.1. Nhà Cung Cấp Dịch Vụ</h3>
+            <ul>
+                <li>Đơn vị vận chuyển để giao hàng</li>
+                <li>Nhà cung cấp thanh toán để xử lý giao dịch</li>
+                <li>Dịch vụ email marketing</li>
+                <li>Nhà cung cấp công nghệ và hosting</li>
+            </ul>
+            
+            <h3>5.2. Yêu Cầu Pháp Lý</h3>
+            <p>
+                Chúng tôi có thể tiết lộ thông tin nếu được yêu cầu bởi pháp luật hoặc 
+                để bảo vệ quyền và an toàn của chúng tôi và người dùng khác.
+            </p>
+            
+            <div class="warning">
+                <p>
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Tất cả các bên thứ ba đều được yêu cầu bảo mật thông tin của bạn 
+                    và chỉ sử dụng cho mục đích được chỉ định.
+                </p>
+            </div>
+        </div>
+
+        <!-- Section 6 -->
+        <div class="privacy-section">
+            <h2>
+                <i class="fas fa-lock"></i> 6. Bảo Mật Thông Tin
+            </h2>
+            <p>
+                Chúng tôi áp dụng các biện pháp bảo mật kỹ thuật và tổ chức phù hợp để bảo vệ 
+                thông tin cá nhân của bạn khỏi truy cập trái phép, mất mát, sử dụng hoặc tiết lộ.
+            </p>
+            
+            <h3>6.1. Biện Pháp Bảo Mật</h3>
+            <ul>
+                <li>Mã hóa SSL/TLS cho tất cả các giao dịch</li>
+                <li>Bảo mật cơ sở dữ liệu với quyền truy cập hạn chế</li>
+                <li>Kiểm tra bảo mật định kỳ</li>
+                <li>Đào tạo nhân viên về bảo mật dữ liệu</li>
+                <li>Hệ thống phát hiện và ngăn chặn xâm nhập</li>
+            </ul>
+            
+            <div class="warning">
+                <p>
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Mặc dù chúng tôi nỗ lực bảo vệ thông tin của bạn, không có phương pháp truyền tải 
+                    hoặc lưu trữ nào là 100% an toàn. Bạn cũng có trách nhiệm bảo vệ mật khẩu của mình.
+                </p>
+            </div>
+        </div>
+
+        <!-- Section 7 -->
+        <div class="privacy-section">
+            <h2>
+                <i class="fas fa-user-cog"></i> 7. Quyền Của Bạn
+            </h2>
+            <p>Bạn có các quyền sau đối với thông tin cá nhân của mình:</p>
+            <ul>
+                <li><strong>Quyền Truy Cập:</strong> Yêu cầu xem thông tin chúng tôi lưu trữ về bạn</li>
+                <li><strong>Quyền Chỉnh Sửa:</strong> Cập nhật hoặc sửa đổi thông tin không chính xác</li>
+                <li><strong>Quyền Xóa:</strong> Yêu cầu xóa thông tin của bạn (trừ khi pháp luật yêu cầu giữ lại)</li>
+                <li><strong>Quyền Từ Chối:</strong> Từ chối nhận email marketing</li>
+                <li><strong>Quyền Rút Lại Đồng Ý:</strong> Rút lại sự đồng ý xử lý dữ liệu</li>
+                <li><strong>Quyền Khiếu Nại:</strong> Khiếu nại với cơ quan bảo vệ dữ liệu</li>
+            </ul>
+            
+            <p>
+                Để thực hiện các quyền này, vui lòng liên hệ với chúng tôi qua email hoặc hotline.
+            </p>
+        </div>
+
+        <!-- Section 8 -->
+        <div class="privacy-section">
+            <h2>
+                <i class="fas fa-clock"></i> 8. Lưu Trữ Thông Tin
+            </h2>
+            <p>
+                Chúng tôi lưu trữ thông tin cá nhân của bạn trong thời gian cần thiết để thực hiện 
+                các mục đích được nêu trong chính sách này, trừ khi pháp luật yêu cầu hoặc cho phép 
+                lưu trữ lâu hơn.
+            </p>
+            <p>
+                Sau khi không còn cần thiết, chúng tôi sẽ xóa hoặc ẩn danh hóa thông tin của bạn 
+                một cách an toàn.
+            </p>
+        </div>
+
+        <!-- Section 9 -->
+        <div class="privacy-section">
+            <h2>
+                <i class="fas fa-globe"></i> 9. Chuyển Giao Quốc Tế
+            </h2>
+            <p>
+                Thông tin của bạn có thể được chuyển và lưu trữ tại các quốc gia khác ngoài quốc gia 
+                của bạn. Chúng tôi đảm bảo rằng việc chuyển giao này tuân thủ các quy định về bảo vệ 
+                dữ liệu và thông tin của bạn được bảo vệ phù hợp.
+            </p>
+        </div>
+
+        <!-- Section 10 -->
+        <div class="privacy-section">
+            <h2>
+                <i class="fas fa-child"></i> 10. Bảo Vệ Trẻ Em
+            </h2>
+            <p>
+                Website của chúng tôi không dành cho trẻ em dưới 18 tuổi. Chúng tôi không cố ý thu thập 
+                thông tin cá nhân từ trẻ em. Nếu chúng tôi phát hiện đã thu thập thông tin từ trẻ em, 
+                chúng tôi sẽ xóa thông tin đó ngay lập tức.
+            </p>
+        </div>
+
+        <!-- Section 11 -->
+        <div class="privacy-section">
+            <h2>
+                <i class="fas fa-edit"></i> 11. Thay Đổi Chính Sách
+            </h2>
+            <p>
+                Chúng tôi có thể cập nhật chính sách bảo mật này theo thời gian. 
+                Chúng tôi sẽ thông báo cho bạn về bất kỳ thay đổi quan trọng nào bằng cách 
+                đăng thông báo trên website hoặc gửi email cho bạn.
+            </p>
+            <p>
+                Chúng tôi khuyến khích bạn xem lại chính sách này định kỳ để cập nhật về cách 
+                chúng tôi bảo vệ thông tin của bạn.
+            </p>
+        </div>
+
+        <!-- Section 12 -->
+        <div class="privacy-section">
+            <h2>
+                <i class="fas fa-link"></i> 12. Liên Kết Bên Thứ Ba
+            </h2>
+            <p>
+                Website của chúng tôi có thể chứa liên kết đến các website khác. 
+                Chúng tôi không chịu trách nhiệm về các thực hành bảo mật của các website bên thứ ba. 
+                Chúng tôi khuyến khích bạn đọc chính sách bảo mật của các website đó.
+            </p>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="contact-info">
+            <h3>
+                <i class="fas fa-envelope"></i> Liên Hệ Về Bảo Mật
+            </h3>
+            <p>
+                Nếu bạn có câu hỏi hoặc lo ngại về Chính Sách Bảo Mật này, vui lòng liên hệ với chúng tôi:
+            </p>
+            <p>
+                Email: <a href="mailto:quocdat30075@gmail.com">quocdat30075@gmail.com</a><br>
+                Hotline: <a href="tel:0345211386">0345211386</a><br>
+                Địa chỉ: 123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh
+            </p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

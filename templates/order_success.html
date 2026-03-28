@@ -1,0 +1,660 @@
+{% extends "base.html" %}
+
+{% block title %}Đặt Hàng Thành Công - Nội Thất Sang Trọng{% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="container" style="max-width: 800px; margin: 1rem auto; padding: 0 1.5rem;">
+                <div class="alert alert-{{ category }}" style="padding: 1rem 1.5rem; border-radius: 12px; display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}" style="font-size: 1.5rem;"></i>
+                    <span>{{ message }}</span>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+<style>
+.success-section {
+    min-height: 80vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 3rem 0;
+}
+
+.success-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.success-card {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.success-icon {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    animation: checkmark 0.6s ease-in-out;
+}
+
+.success-icon i {
+    font-size: 60px;
+    color: white;
+}
+
+@keyframes checkmark {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.success-title {
+    color: #2c3e50;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-family: inherit;
+}
+
+.success-subtitle {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    font-family: inherit;
+}
+
+.payment-method-badge {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    font-family: inherit;
+}
+
+.payment-method-badge.cod {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.payment-method-badge.bank_transfer {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.payment-method-badge.credit_card {
+    background: #d4edda;
+    color: #155724;
+}
+
+.payment-method-badge.usdt {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.payment-method-badge.paypal {
+    background: linear-gradient(135deg, #003087 0%, #009cde 100%);
+    color: white;
+}
+
+.payment-method-badge.nft {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.nft-certificate-box {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    border: 2px solid #f5576c;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    text-align: left;
+}
+
+.nft-certificate-box h4 {
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.nft-certificate-box .nft-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    transition: transform 0.2s;
+}
+
+.nft-certificate-box .nft-link:hover {
+    transform: translateY(-2px);
+    color: white;
+}
+
+.order-info-box {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 15px;
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e0e6ed;
+    font-family: inherit;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: #7f8c8d;
+    font-weight: 600;
+    font-size: 0.95rem;
+    font-family: inherit;
+}
+
+.info-value {
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.tx-hash-box {
+    background: #edf2f7;
+    padding: 1rem;
+    border-radius: 10px;
+    margin: 1rem 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    word-break: break-all;
+    color: #4a5568;
+    border: 1px solid #cbd5e0;
+}
+
+.timeline {
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.timeline-item {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    font-family: inherit;
+}
+
+.timeline-icon {
+    width: 50px;
+    height: 50px;
+    background: #cbd5e0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.timeline-icon.completed {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+}
+
+.timeline-icon.pending {
+    background: #cbd5e0;
+}
+
+.timeline-content {
+    flex: 1;
+    font-family: inherit;
+}
+
+.timeline-title {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    font-family: inherit;
+}
+
+.timeline-desc {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    font-family: inherit;
+}
+
+.btn-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.btn {
+    flex: 1;
+    min-width: 200px;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.btn-secondary:hover {
+    background: #f7fafc;
+}
+
+.order-items {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e0e6ed;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e0e6ed;
+    font-family: inherit;
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.order-item-name {
+    color: #2c3e50;
+    font-weight: 500;
+    font-family: inherit;
+}
+
+.order-item-price {
+    color: #7f8c8d;
+    font-family: inherit;
+}
+
+.order-total {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 0;
+    margin-top: 1rem;
+    border-top: 2px solid #e0e6ed;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    font-family: inherit;
+}
+
+@media (max-width: 768px) {
+    .success-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .success-title {
+        font-size: 2rem;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}
+</style>
+
+<section class="success-section">
+    <div class="success-container">
+        <div class="success-card">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            
+            <h1 class="success-title">Đặt Hàng Thành Công!</h1>
+            
+            {% if payment_method and payment_method|lower == 'usdt' %}
+            <p class="success-subtitle">
+                Chúng tôi đã nhận được giao dịch USDT của bạn.<br>
+                Đơn hàng sẽ được xử lý sau khi giao dịch được xác nhận trên blockchain.
+            </p>
+            <div class="payment-method-badge usdt">
+                <i class="fas fa-coins"></i> Thanh Toán USDT
+            </div>
+            {% elif payment_method and payment_method|lower == 'bank_transfer' %}
+            <p class="success-subtitle">
+                Đơn hàng của bạn đã được tạo thành công.<br>
+                Vui lòng chuyển khoản theo thông tin đã cung cấp. Đơn hàng sẽ được xử lý sau khi nhận được thanh toán.
+            </p>
+            <div class="payment-method-badge bank_transfer">
+                <i class="fas fa-university"></i> Chuyển Khoản Ngân Hàng
+            </div>
+            {% elif payment_method and payment_method|lower == 'credit_card' %}
+            <p class="success-subtitle">
+                Thanh toán bằng thẻ đã được xử lý thành công.<br>
+                Đơn hàng của bạn đang được chuẩn bị và sẽ được giao trong thời gian sớm nhất.
+            </p>
+            <div class="payment-method-badge credit_card">
+                <i class="fas fa-credit-card"></i> Thanh Toán Thẻ
+            </div>
+            {% elif payment_method and payment_method|lower == 'paypal' %}
+            <p class="success-subtitle">
+                Thanh toán PayPal đã được xử lý thành công.<br>
+                Đơn hàng của bạn đang được chuẩn bị và sẽ được giao trong thời gian sớm nhất.
+            </p>
+            <div class="payment-method-badge paypal">
+                <i class="fab fa-paypal"></i> Thanh Toán PayPal
+            </div>
+            {% else %}
+            <p class="success-subtitle">
+                Đơn hàng của bạn đã được đặt thành công.<br>
+                Chúng tôi sẽ liên hệ với bạn để xác nhận và giao hàng trong thời gian sớm nhất.
+            </p>
+            <div class="payment-method-badge cod">
+                <i class="fas fa-money-bill-wave"></i> Thanh Toán Khi Nhận Hàng (COD)
+            </div>
+            {% endif %}
+
+            <div class="order-info-box">
+                <div class="info-row">
+                    <span class="info-label">Mã đơn hàng:</span>
+                    <span class="info-value">{{ order_id }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Tên khách hàng:</span>
+                    <span class="info-value">{{ order.customer_name }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Số điện thoại:</span>
+                    <span class="info-value">{{ order.phone }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value">{{ order.email or 'N/A' }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Địa chỉ giao hàng:</span>
+                    <span class="info-value">{{ order.address }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Tổng tiền:</span>
+                    <span class="info-value" style="color: #e74c3c; font-size: 1.2rem;">{{ "{:,.0f}".format(order.total) }} ₫</span>
+                </div>
+                {% if payment_method and payment_method|lower == 'paypal' and amount_usd %}
+                <div class="info-row">
+                    <span class="info-label">Số tiền thanh toán (PayPal):</span>
+                    <span class="info-value" style="color: #003087; font-weight: 700;">${{ "{:,.2f}".format(amount_usd) }} USD</span>
+                </div>
+                {% endif %}
+                
+                {% if nft_certificate %}
+                <div class="nft-certificate-box" style="margin-top: 1rem;">
+                    <h4><i class="fas fa-certificate"></i> NFT Chứng Nhận Sở Hữu</h4>
+                    {% if nft_certificate.tx_hash and nft_certificate.tx_hash.startswith('0xdemo') %}
+                    <p style="margin: 0; color: #7f8c8d; font-size: 0.95rem;"><i class="fas fa-flask"></i> Demo NFT #{{ nft_certificate.token_id }} - Mô phỏng luồng thanh toán (không có trên blockchain)</p>
+                    <span style="display: inline-block; padding: 0.5rem 1rem; background: #27ae60; color: white; border-radius: 10px; font-weight: 600; margin-top: 0.5rem;"><i class="fas fa-check"></i> Demo thành công</span>
+                    {% else %}
+                    <p style="margin: 0; color: #7f8c8d; font-size: 0.95rem;">Bạn đã nhận được NFT chứng nhận #{{ nft_certificate.token_id }} trên BSC.</p>
+                    {% if nft_contract_address %}
+                    <a href="{{ nft_explorer_base }}/nft/{{ nft_contract_address }}/{{ nft_certificate.token_id }}" class="nft-link" target="_blank" rel="noopener" id="nftExplorerLink">
+                        <i class="fas fa-external-link-alt"></i> Xem trên BSCScan
+                    </a>
+                    {% endif %}
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                {% if payment_transaction and payment_transaction.transaction_hash %}
+                <div class="info-row">
+                    <span class="info-label">Transaction Hash:</span>
+                </div>
+                <div class="tx-hash-box" id="txHash">
+                    {{ payment_transaction.transaction_hash }}
+                </div>
+                {% elif tx_hash and tx_hash != 'None' %}
+                <div class="info-row">
+                    <span class="info-label">Transaction Hash:</span>
+                </div>
+                <div class="tx-hash-box" id="txHash">
+                    {{ tx_hash }}
+                </div>
+                {% endif %}
+            </div>
+
+            {% if payment_method and payment_method|lower == 'usdt' and (tx_hash or (payment_transaction and payment_transaction.transaction_hash)) %}
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon completed">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Thanh toán đã gửi</div>
+                        <div class="timeline-desc">Giao dịch đã được gửi lên blockchain</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon pending" id="confirmIcon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Đang xác nhận</div>
+                        <div class="timeline-desc" id="confirmDesc">
+                            Đang chờ xác nhận từ blockchain (thường 1-5 phút)
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon pending" id="processIcon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Xử lý đơn hàng</div>
+                        <div class="timeline-desc">Đơn hàng sẽ được xử lý ngay sau khi xác nhận</div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon completed">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Đơn hàng đã được tạo</div>
+                        <div class="timeline-desc">Đơn hàng của bạn đã được ghi nhận thành công</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon {% if payment_method and payment_method|lower in ['credit_card', 'paypal'] %}completed{% else %}pending{% endif %}">
+                        <i class="fas fa-{% if payment_method and payment_method|lower in ['credit_card', 'paypal'] %}check{% else %}clock{% endif %}"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Thanh toán</div>
+                        <div class="timeline-desc">
+                            {% if payment_method and payment_method|lower == 'credit_card' %}
+                                Đã thanh toán thành công
+                            {% elif payment_method and payment_method|lower == 'paypal' %}
+                                Đã thanh toán PayPal thành công
+                            {% elif payment_method and payment_method|lower == 'bank_transfer' %}
+                                Đang chờ xác nhận thanh toán
+                            {% else %}
+                                Thanh toán khi nhận hàng
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon pending">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Chuẩn bị hàng</div>
+                        <div class="timeline-desc">Đơn hàng đang được chuẩn bị để giao</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if order.get('items') %}
+            <div class="order-items">
+                <h3 style="color: #2c3e50; margin-bottom: 1rem; text-align: left; font-family: inherit;">
+                    <i class="fas fa-shopping-bag"></i> Sản Phẩm Đã Đặt
+                </h3>
+                {% for item in order.get('items', []) %}
+                <div class="order-item">
+                    <span class="order-item-name">{{ item.product_name or item.name or 'Sản phẩm' }} x {{ item.quantity }}</span>
+                    <span class="order-item-price">{{ "{:,.0f}".format(item.subtotal or (item.price * item.quantity)) }} ₫</span>
+                </div>
+                {% endfor %}
+                {% if order.subtotal %}
+                <div style="padding: 0.75rem 0; border-top: 1px solid #e0e6ed; margin-top: 0.5rem;">
+                    <div style="display: flex; justify-content: space-between; color: #7f8c8d; font-family: inherit;">
+                        <span>Tạm tính:</span>
+                        <span>{{ "{:,.0f}".format(order.subtotal) }} ₫</span>
+                    </div>
+                    {% if order.shipping_fee %}
+                    <div style="display: flex; justify-content: space-between; color: #7f8c8d; margin-top: 0.5rem; font-family: inherit;">
+                        <span>Phí vận chuyển:</span>
+                        <span>{% if order.shipping_fee == 0 %}<span style="color: #27ae60;">Miễn phí</span>{% else %}{{ "{:,.0f}".format(order.shipping_fee) }} ₫{% endif %}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                <div class="order-total">
+                    <span>Tổng cộng:</span>
+                    <span style="color: #e74c3c;">{{ "{:,.0f}".format(order.total) }} ₫</span>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="btn-group">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Về Trang Chủ
+                </a>
+                <a href="/account" class="btn btn-secondary">
+                    <i class="fas fa-user"></i> Xem Đơn Hàng
+                </a>
+                {% if payment_method and payment_method|lower == 'usdt' and (tx_hash or (payment_transaction and payment_transaction.transaction_hash)) %}
+                <a href="#" id="explorerLink" target="_blank" class="btn btn-secondary">
+                    <i class="fas fa-external-link-alt"></i> Xem Trên Explorer
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if payment_method and payment_method|lower == 'usdt' and (tx_hash or (payment_transaction and payment_transaction.transaction_hash)) %}
+<script>
+const txHash = '{{ tx_hash or (payment_transaction.transaction_hash if payment_transaction else "") }}';
+const orderId = '{{ order_id }}';
+
+if (txHash && txHash !== 'None' && txHash !== '') {
+    const explorerUrl = `https://bscscan.com/tx/${txHash}`;
+    const explorerLink = document.getElementById('explorerLink');
+    if (explorerLink) {
+        explorerLink.href = explorerUrl;
+    }
+    
+    async function checkTransactionStatus() {
+        try {
+            const response = await fetch(`/api/web3/check-status/${txHash}`);
+            const data = await response.json();
+
+            if (data.success) {
+                const status = data.status;
+                const confirmations = data.confirmations || 0;
+
+                if (status === 'confirmed' || confirmations >= 12) {
+                    document.getElementById('confirmIcon').className = 'timeline-icon completed';
+                    document.getElementById('confirmIcon').innerHTML = '<i class="fas fa-check"></i>';
+                    document.getElementById('confirmDesc').textContent = 
+                        `Đã xác nhận (${confirmations} confirmations)`;
+                    
+                    document.getElementById('processIcon').className = 'timeline-icon completed';
+                    document.getElementById('processIcon').innerHTML = '<i class="fas fa-check"></i>';
+                    
+                    clearInterval(statusCheckInterval);
+                } else if (confirmations > 0) {
+                    document.getElementById('confirmDesc').textContent = 
+                        `Đang xác nhận (${confirmations}/12 confirmations)`;
+                }
+            }
+        } catch (error) {
+            console.error('Error checking status:', error);
+        }
+    }
+
+    let statusCheckInterval;
+    checkTransactionStatus();
+    statusCheckInterval = setInterval(checkTransactionStatus, 10000);
+    
+    setTimeout(() => {
+        clearInterval(statusCheckInterval);
+    }, 10 * 60 * 1000);
+}
+</script>
+{% endif %}
+
+{% endblock %}

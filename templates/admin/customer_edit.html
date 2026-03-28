@@ -1,0 +1,177 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Chỉnh sửa khách hàng - {{ customer.full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        font-family: inherit;
+    }
+
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+    .required {
+        color: #e74c3c;
+    }
+
+    .form-note {
+        font-size: 12px;
+        color: #7f8c8d;
+        margin-top: 5px;
+    }
+
+    .customer-info-box {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    .customer-info-box h4 {
+        margin: 0 0 10px 0;
+        color: #2c3e50;
+        font-size: 16px;
+    }
+
+    .customer-info-box p {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #495057;
+    }
+
+    .radio-group {
+        display: flex;
+        gap: 20px;
+    }
+
+    .radio-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .radio-option input[type="radio"] {
+        width: auto;
+        margin: 0;
+    }
+
+    .radio-option label {
+        margin: 0 !important;
+        font-weight: normal !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>✏️ Chỉnh sửa thông tin khách hàng</h1>
+    <p>Cập nhật thông tin khách hàng</p>
+</div>
+
+<div class="card form-container">
+    <!-- Customer Info -->
+    <div class="customer-info-box">
+        <h4>👤 {{ customer.full_name }}</h4>
+        <p><strong>Email:</strong> {{ customer.email }}</p>
+        <p><strong>ID:</strong> #{{ customer.id }}</p>
+        <p><strong>Ngày tạo:</strong> {{ customer.created_at.strftime('%d/%m/%Y %H:%M') if customer.created_at else '-' }}</p>
+    </div>
+
+    <!-- Edit Form -->
+    <form method="POST" action="{{ url_for('admin_edit_customer', customer_id=customer.id) }}">
+        <div class="form-group">
+            <label>Họ và tên <span class="required">*</span></label>
+            <input type="text" name="full_name" value="{{ customer.full_name }}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Số điện thoại</label>
+            <input type="tel" name="phone" value="{{ customer.phone or '' }}" placeholder="VD: 0901234567">
+            <div class="form-note">Số điện thoại liên hệ của khách hàng</div>
+        </div>
+
+        <div class="form-group">
+            <label>Địa chỉ</label>
+            <textarea name="address" placeholder="Địa chỉ chi tiết...">{{ customer.address or '' }}</textarea>
+            <div class="form-note">Địa chỉ giao hàng mặc định</div>
+        </div>
+
+        <div class="form-group">
+            <label>Trạng thái tài khoản <span class="required">*</span></label>
+            <div class="radio-group">
+                <div class="radio-option">
+                    <input type="radio" name="is_active" id="active" value="true" 
+                           {% if customer.is_active %}checked{% endif %}>
+                    <label for="active">✓ Đang hoạt động</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" name="is_active" id="inactive" value="false" 
+                           {% if not customer.is_active %}checked{% endif %}>
+                    <label for="inactive">✗ Bị khóa</label>
+                </div>
+            </div>
+            <div class="form-note">Khách hàng bị khóa sẽ không thể đăng nhập vào hệ thống</div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">💾 Lưu thay đổi</button>
+            <a href="{{ url_for('admin_customer_detail', customer_id=customer.id) }}" 
+               class="btn btn-warning">❌ Hủy</a>
+            <a href="{{ url_for('admin_customers') }}" 
+               class="btn btn-primary">← Quay lại danh sách</a>
+        </div>
+    </form>
+</div>
+
+<!-- Warning Box -->
+<div class="card form-container" style="margin-top: 20px; border-left: 4px solid #e74c3c;">
+    <h3 style="color: #e74c3c; margin-bottom: 10px;">⚠️ Lưu ý quan trọng</h3>
+    <ul style="margin: 0; padding-left: 20px; color: #495057;">
+        <li>Email không thể thay đổi vì đây là thông tin đăng nhập</li>
+        <li>Khi khóa tài khoản, khách hàng sẽ không thể đăng nhập và đặt hàng</li>
+        <li>Thông tin cá nhân của khách hàng cần được bảo mật</li>
+        <li>Chỉ sử dụng chức năng xóa khách hàng khi thực sự cần thiết</li>
+    </ul>
+</div>
+{% endblock %}

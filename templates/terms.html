@@ -1,0 +1,496 @@
+{% extends "base.html" %}
+
+{% block title %}Điều Khoản Dịch Vụ - HOMESTEAD{% endblock %}
+
+{% block content %}
+<style>
+    .terms-page {
+        background: var(--bg-cream);
+        min-height: 100vh;
+        padding: clamp(2rem, 4vh, 3rem) 0;
+    }
+    
+    .terms-header {
+        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
+        color: white;
+        padding: clamp(3rem, 6vh, 5rem) 0;
+        text-align: center;
+        margin-bottom: clamp(2rem, 4vh, 3rem);
+        box-shadow: var(--shadow-md);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .terms-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
+        opacity: 0.3;
+        pointer-events: none;
+    }
+    
+    .terms-header .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .terms-header h1 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        margin-bottom: clamp(0.75rem, 1.5vh, 1rem);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .terms-header p {
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        opacity: 0.95;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    
+    .terms-header p:last-of-type {
+        font-size: clamp(0.875rem, 1.6vw, 0.9375rem);
+        opacity: 0.8;
+        margin-top: 0.5rem;
+    }
+    
+    .terms-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 clamp(1rem, 3vw, 2rem);
+    }
+    
+    .terms-section {
+        background: white;
+        padding: clamp(2rem, 4vw, 2.5rem);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        margin-bottom: clamp(1.5rem, 3vh, 2rem);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+    }
+    
+    .terms-section:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--sage-light);
+    }
+    
+    .terms-section h2 {
+        color: var(--text-dark);
+        font-size: clamp(1.5rem, 3vw, 1.875rem);
+        font-weight: 700;
+        margin-bottom: clamp(1.25rem, 2.5vh, 1.5rem);
+        display: flex;
+        align-items: center;
+        gap: clamp(0.75rem, 1.5vw, 1rem);
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-color);
+        position: relative;
+    }
+    
+    .terms-section h2::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 60px;
+        height: 2px;
+        background: var(--gradient-sage);
+        border-radius: var(--radius-full);
+    }
+    
+    .terms-section h2 i {
+        color: var(--sage-medium);
+        font-size: clamp(1.375rem, 2.5vw, 1.625rem);
+    }
+    
+    .terms-section h3 {
+        color: var(--text-medium);
+        font-size: clamp(1.125rem, 2.2vw, 1.375rem);
+        font-weight: 600;
+        margin-top: clamp(1.25rem, 2.5vh, 1.5rem);
+        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
+    }
+    
+    .terms-section p {
+        color: var(--text-medium);
+        line-height: 1.8;
+        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    }
+    
+    .terms-section ul {
+        color: var(--text-medium);
+        line-height: 1.8;
+        margin-left: clamp(1.5rem, 3vw, 2rem);
+        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
+        padding-left: 0;
+    }
+    
+    .terms-section li {
+        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    }
+    
+    .terms-section li strong {
+        color: var(--sage-dark);
+        font-weight: 600;
+    }
+    
+    .highlight {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
+        padding: clamp(1.25rem, 2.5vw, 1.5rem);
+        border-left: 4px solid var(--terracotta);
+        border-radius: var(--radius-md);
+        margin: clamp(1.25rem, 2.5vh, 1.5rem) 0;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .highlight p {
+        margin: 0;
+        color: var(--rust);
+        font-weight: 600;
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .highlight p i {
+        color: var(--terracotta);
+        font-size: 1.25rem;
+    }
+    
+    .contact-info {
+        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
+        color: white;
+        padding: clamp(2rem, 4vw, 2.5rem);
+        border-radius: var(--radius-xl);
+        text-align: center;
+        margin-top: clamp(2rem, 4vh, 3rem);
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .contact-info::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: pulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    .contact-info .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .contact-info h3 {
+        color: white;
+        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
+        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    
+    .contact-info p {
+        color: white;
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+        line-height: 1.8;
+        margin-bottom: 0.75rem;
+    }
+    
+    .contact-info a {
+        color: white;
+        text-decoration: underline;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .contact-info a:hover {
+        color: var(--sage-light);
+        text-decoration: none;
+    }
+    
+    @media (max-width: 768px) {
+        .terms-page {
+            padding: 1.5rem 0;
+        }
+        
+        .terms-header {
+            padding: clamp(2rem, 4vh, 3rem) 0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .terms-section {
+            padding: clamp(1.5rem, 3vw, 2rem);
+            margin-bottom: 1.5rem;
+        }
+        
+        .terms-section h2 {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .terms-section ul {
+            margin-left: 1.25rem;
+        }
+    }
+</style>
+
+<div class="terms-page">
+    <div class="terms-header">
+        <div class="container">
+            <h1>
+                <i class="fas fa-file-contract"></i> Điều Khoản Dịch Vụ
+            </h1>
+            <p>Các quy định và điều khoản khi sử dụng dịch vụ của chúng tôi</p>
+            <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem;">
+                Cập nhật lần cuối: 21/12/2025
+            </p>
+        </div>
+    </div>
+
+    <div class="terms-container">
+        <!-- Section 1 -->
+        <div class="terms-section">
+            <h2>
+                <i class="fas fa-info-circle"></i> 1. Giới Thiệu
+            </h2>
+            <p>
+                Chào mừng bạn đến với HOMESTEAD. Bằng việc truy cập và sử dụng website của chúng tôi, 
+                bạn đồng ý tuân thủ và bị ràng buộc bởi các điều khoản và điều kiện sau đây. 
+                Nếu bạn không đồng ý với bất kỳ phần nào của các điều khoản này, vui lòng không sử dụng dịch vụ của chúng tôi.
+            </p>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="terms-section">
+            <h2>
+                <i class="fas fa-user-check"></i> 2. Đăng Ký Tài Khoản
+            </h2>
+            <h3>2.1. Yêu Cầu Đăng Ký</h3>
+            <p>
+                Để sử dụng một số tính năng của website, bạn cần đăng ký tài khoản. Khi đăng ký, bạn cam kết:
+            </p>
+            <ul>
+                <li>Cung cấp thông tin chính xác, đầy đủ và cập nhật</li>
+                <li>Duy trì và cập nhật thông tin tài khoản của bạn</li>
+                <li>Bảo mật mật khẩu và tài khoản của bạn</li>
+                <li>Chịu trách nhiệm cho tất cả các hoạt động xảy ra dưới tài khoản của bạn</li>
+            </ul>
+            
+            <h3>2.2. Tuổi Tác</h3>
+            <p>
+                Bạn phải từ 18 tuổi trở lên hoặc có sự đồng ý của người giám hộ hợp pháp để sử dụng dịch vụ của chúng tôi.
+            </p>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="terms-section">
+            <h2>
+                <i class="fas fa-shopping-cart"></i> 3. Đặt Hàng và Thanh Toán
+            </h2>
+            <h3>3.1. Đặt Hàng</h3>
+            <p>
+                Khi bạn đặt hàng trên website, bạn đồng ý mua sản phẩm theo giá và điều kiện được hiển thị tại thời điểm đặt hàng.
+            </p>
+            
+            <h3>3.2. Xác Nhận Đơn Hàng</h3>
+            <p>
+                Sau khi nhận được đơn hàng, chúng tôi sẽ gửi email xác nhận. Đơn hàng chỉ được coi là hợp lệ sau khi 
+                chúng tôi xác nhận và gửi email xác nhận cho bạn.
+            </p>
+            
+            <h3>3.3. Thanh Toán</h3>
+            <p>
+                Chúng tôi chấp nhận các phương thức thanh toán sau:
+            </p>
+            <ul>
+                <li>Thanh toán khi nhận hàng (COD)</li>
+                <li>Chuyển khoản ngân hàng</li>
+                <li>Thẻ tín dụng/ghi nợ</li>
+                <li>Thanh toán bằng USDT (cryptocurrency)</li>
+            </ul>
+            
+            <div class="highlight">
+                <p>
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Lưu ý: Tất cả các giao dịch thanh toán đều được xử lý an toàn và bảo mật.
+                </p>
+            </div>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="terms-section">
+            <h2>
+                <i class="fas fa-truck"></i> 4. Giao Hàng
+            </h2>
+            <h3>4.1. Phí Vận Chuyển</h3>
+            <p>
+                Phí vận chuyển sẽ được tính dựa trên địa chỉ giao hàng và trọng lượng sản phẩm. 
+                Miễn phí vận chuyển cho đơn hàng từ 5.000.000 VNĐ trở lên.
+            </p>
+            
+            <h3>4.2. Thời Gian Giao Hàng</h3>
+            <p>
+                Thời gian giao hàng dự kiến sẽ được thông báo khi bạn đặt hàng. 
+                Chúng tôi sẽ cố gắng giao hàng trong thời gian đã cam kết, tuy nhiên thời gian có thể thay đổi 
+                do các yếu tố bất khả kháng.
+            </p>
+            
+            <h3>4.3. Kiểm Tra Hàng</h3>
+            <p>
+                Bạn có quyền kiểm tra hàng hóa trước khi thanh toán. Nếu sản phẩm bị hư hỏng hoặc không đúng với đơn hàng, 
+                bạn có quyền từ chối nhận hàng.
+            </p>
+        </div>
+
+        <!-- Section 5 -->
+        <div class="terms-section">
+            <h2>
+                <i class="fas fa-undo"></i> 5. Đổi Trả và Hoàn Tiền
+            </h2>
+            <h3>5.1. Điều Kiện Đổi Trả</h3>
+            <p>
+                Bạn có thể đổi trả sản phẩm trong vòng 7 ngày kể từ ngày nhận hàng với các điều kiện sau:
+            </p>
+            <ul>
+                <li>Sản phẩm còn nguyên vẹn, chưa sử dụng</li>
+                <li>Còn đầy đủ bao bì, phụ kiện kèm theo</li>
+                <li>Có hóa đơn mua hàng</li>
+                <li>Sản phẩm không nằm trong danh sách không được đổi trả</li>
+            </ul>
+            
+            <h3>5.2. Hoàn Tiền</h3>
+            <p>
+                Sau khi kiểm tra và chấp nhận đổi trả, chúng tôi sẽ hoàn tiền trong vòng 7-14 ngày làm việc 
+                theo phương thức thanh toán ban đầu của bạn.
+            </p>
+        </div>
+
+        <!-- Section 6 -->
+        <div class="terms-section">
+            <h2>
+                <i class="fas fa-shield-alt"></i> 6. Bảo Hành
+            </h2>
+            <p>
+                Tất cả sản phẩm của chúng tôi đều được bảo hành theo chính sách bảo hành của nhà sản xuất. 
+                Thời gian bảo hành sẽ được ghi rõ trên hóa đơn và phiếu bảo hành.
+            </p>
+            <p>
+                Để được bảo hành, bạn cần cung cấp hóa đơn mua hàng và phiếu bảo hành hợp lệ.
+            </p>
+        </div>
+
+        <!-- Section 7 -->
+        <div class="terms-section">
+            <h2>
+                <i class="fas fa-ban"></i> 7. Hành Vi Bị Cấm
+            </h2>
+            <p>Bạn không được phép:</p>
+            <ul>
+                <li>Sử dụng website cho mục đích bất hợp pháp</li>
+                <li>Đăng tải nội dung vi phạm pháp luật, đạo đức</li>
+                <li>Xâm phạm quyền sở hữu trí tuệ của chúng tôi hoặc bên thứ ba</li>
+                <li>Can thiệp vào hoạt động bình thường của website</li>
+                <li>Truy cập trái phép vào hệ thống của chúng tôi</li>
+                <li>Sử dụng robot, spider hoặc công cụ tự động khác để thu thập dữ liệu</li>
+            </ul>
+        </div>
+
+        <!-- Section 8 -->
+        <div class="terms-section">
+            <h2>
+                <i class="fas fa-copyright"></i> 8. Sở Hữu Trí Tuệ
+            </h2>
+            <p>
+                Tất cả nội dung trên website bao gồm nhưng không giới hạn: văn bản, hình ảnh, logo, 
+                thiết kế, phần mềm đều thuộc quyền sở hữu của HOMESTEAD hoặc được cấp phép sử dụng.
+            </p>
+            <p>
+                Bạn không được phép sao chép, phân phối, sửa đổi hoặc sử dụng bất kỳ nội dung nào 
+                trên website mà không có sự cho phép bằng văn bản của chúng tôi.
+            </p>
+        </div>
+
+        <!-- Section 9 -->
+        <div class="terms-section">
+            <h2>
+                <i class="fas fa-gavel"></i> 9. Giới Hạn Trách Nhiệm
+            </h2>
+            <p>
+                Chúng tôi không chịu trách nhiệm cho bất kỳ thiệt hại trực tiếp, gián tiếp, ngẫu nhiên, 
+                đặc biệt hoặc hậu quả nào phát sinh từ việc sử dụng hoặc không thể sử dụng website của chúng tôi.
+            </p>
+            <p>
+                Chúng tôi không đảm bảo rằng website sẽ hoạt động liên tục, không bị gián đoạn hoặc không có lỗi.
+            </p>
+        </div>
+
+        <!-- Section 10 -->
+        <div class="terms-section">
+            <h2>
+                <i class="fas fa-edit"></i> 10. Thay Đổi Điều Khoản
+            </h2>
+            <p>
+                Chúng tôi có quyền thay đổi các điều khoản này bất cứ lúc nào. 
+                Các thay đổi sẽ có hiệu lực ngay sau khi được đăng tải trên website.
+            </p>
+            <p>
+                Việc bạn tiếp tục sử dụng website sau khi có thay đổi được coi là bạn đã chấp nhận các điều khoản mới.
+            </p>
+        </div>
+
+        <!-- Section 11 -->
+        <div class="terms-section">
+            <h2>
+                <i class="fas fa-balance-scale"></i> 11. Luật Áp Dụng
+            </h2>
+            <p>
+                Các điều khoản này được điều chỉnh bởi pháp luật Việt Nam. 
+                Mọi tranh chấp phát sinh sẽ được giải quyết tại Tòa án có thẩm quyền tại Việt Nam.
+            </p>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="contact-info">
+            <h3>
+                <i class="fas fa-question-circle"></i> Có Câu Hỏi?
+            </h3>
+            <p>
+                Nếu bạn có bất kỳ câu hỏi nào về Điều Khoản Dịch Vụ, vui lòng liên hệ với chúng tôi:
+            </p>
+            <p>
+                Email: <a href="mailto:quocdat30075@gmail.com">quocdat30075@gmail.com</a><br>
+                Hotline: <a href="tel:0345211386">0345211386</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

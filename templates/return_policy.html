@@ -1,0 +1,467 @@
+{% extends "base.html" %}
+
+{% block title %}Chính Sách Đổi Trả - HOMESTEAD{% endblock %}
+
+{% block content %}
+<style>
+    .return-hero {
+        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
+        color: white;
+        padding: clamp(3rem, 6vh, 5rem) 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .return-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
+        opacity: 0.3;
+        pointer-events: none;
+    }
+    
+    .return-hero .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .return-hero h1 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        margin-bottom: clamp(0.75rem, 1.5vh, 1rem);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .return-hero p {
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        opacity: 0.95;
+        color: white;
+    }
+    
+    .return-content {
+        padding: clamp(3rem, 6vh, 4rem) 0;
+        background: var(--bg-cream);
+    }
+    
+    .return-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 clamp(1rem, 3vw, 2rem);
+    }
+    
+    .return-section {
+        background: white;
+        padding: clamp(1.75rem, 3.5vw, 2.5rem);
+        border-radius: var(--radius-xl);
+        margin-bottom: clamp(1.5rem, 3vh, 2rem);
+        box-shadow: var(--shadow-md);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+    }
+    
+    .return-section:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--sage-light);
+    }
+    
+    .return-section h2 {
+        color: var(--text-dark);
+        margin-bottom: clamp(1rem, 2vh, 1.5rem);
+        font-size: clamp(1.375rem, 2.8vw, 1.75rem);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .return-section h2 i {
+        color: var(--sage-medium);
+        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    }
+    
+    .return-section p {
+        color: var(--text-medium);
+        line-height: 1.8;
+        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    }
+    
+    .return-section ul {
+        color: var(--text-medium);
+        line-height: 1.8;
+        margin-left: clamp(1.5rem, 3vw, 2rem);
+        margin-bottom: 0;
+    }
+    
+    .return-section li {
+        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    }
+    
+    .return-section strong {
+        color: var(--sage-dark);
+        font-weight: 600;
+    }
+    
+    .return-section li i {
+        margin-right: 0.5rem;
+    }
+    
+    .return-section li i.fa-check {
+        color: var(--sage-medium);
+    }
+    
+    .return-section li i.fa-times {
+        color: var(--terracotta);
+    }
+    
+    .return-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        overflow: hidden;
+        border-radius: var(--radius-md);
+    }
+    
+    .return-table thead {
+        background: var(--gradient-sage);
+        color: white;
+    }
+    
+    .return-table th {
+        padding: clamp(12px, 2vw, 16px);
+        text-align: left;
+        font-weight: 600;
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+    }
+    
+    .return-table tbody tr {
+        border-bottom: 1px solid var(--border-color);
+        transition: background 0.3s ease;
+    }
+    
+    .return-table tbody tr:hover {
+        background: var(--bg-cream);
+    }
+    
+    .return-table tbody tr:nth-child(even) {
+        background: var(--bg-cream);
+    }
+    
+    .return-table tbody tr:nth-child(even):hover {
+        background: var(--bg-sage);
+    }
+    
+    .return-table td {
+        padding: clamp(12px, 2vw, 16px);
+        color: var(--text-medium);
+        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+        border: 1px solid var(--border-color);
+    }
+    
+    .return-table td strong {
+        color: var(--sage-dark);
+    }
+    
+    .return-table td strong.free {
+        color: var(--sage-dark);
+    }
+    
+    .return-process {
+        margin-top: 1rem;
+    }
+    
+    .return-process p {
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: clamp(1rem, 2vw, 1.125rem);
+        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
+        margin-top: clamp(1rem, 2vh, 1.25rem);
+    }
+    
+    .return-process p:first-child {
+        margin-top: 0;
+    }
+    
+    .return-process ul {
+        margin-bottom: clamp(1rem, 2vh, 1.25rem);
+    }
+    
+    .return-cta {
+        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
+        color: white;
+        padding: clamp(2.5rem, 5vw, 3.5rem);
+        border-radius: var(--radius-xl);
+        text-align: center;
+        margin-top: clamp(2rem, 4vh, 3rem);
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .return-cta::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: pulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    .return-cta .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .return-cta h3 {
+        margin-bottom: clamp(1rem, 2vh, 1.5rem);
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 700;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    
+    .return-cta p {
+        font-size: clamp(1rem, 2vw, 1.125rem);
+        line-height: 1.8;
+        margin-bottom: clamp(1rem, 2vh, 1.5rem);
+        opacity: 0.95;
+        color: white;
+    }
+    
+    .return-cta .contact-info {
+        margin-top: clamp(1rem, 2vh, 1.5rem);
+    }
+    
+    .return-cta .contact-info p {
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
+    }
+    
+    .return-cta strong {
+        font-weight: 700;
+    }
+    
+    @media (max-width: 768px) {
+        .return-content {
+            padding: 2rem 0;
+        }
+        
+        .return-section {
+            padding: 1.5rem;
+        }
+        
+        .return-table {
+            font-size: 0.875rem;
+        }
+        
+        .return-table th,
+        .return-table td {
+            padding: 10px 8px;
+        }
+        
+        .return-cta {
+            padding: 2rem 1.5rem;
+        }
+    }
+</style>
+
+<!-- Page Header -->
+<section class="return-hero">
+    <div class="container">
+        <h1>
+            <i class="fas fa-exchange-alt"></i> Chính Sách Đổi Trả
+        </h1>
+        <p>Cam kết đổi trả linh hoạt, bảo vệ quyền lợi khách hàng</p>
+    </div>
+</section>
+
+<!-- Return Content -->
+<section class="return-content">
+    <div class="return-wrapper">
+
+        <!-- Điều kiện đổi trả -->
+        <div class="return-section">
+            <h2>
+                <i class="fas fa-clipboard-check"></i> Điều Kiện Đổi Trả
+            </h2>
+            <p>Quý khách có thể đổi/trả sản phẩm trong các trường hợp sau:</p>
+            <ul>
+                <li><i class="fas fa-check"></i> <strong>Sản phẩm lỗi do nhà sản xuất:</strong> Vết xước, bể vỡ, lỗi kỹ thuật</li>
+                <li><i class="fas fa-check"></i> <strong>Sản phẩm không đúng mô tả:</strong> Màu sắc, kích thước, mẫu mã</li>
+                <li><i class="fas fa-check"></i> <strong>Giao sai sản phẩm:</strong> Không đúng với đơn hàng đã đặt</li>
+                <li><i class="fas fa-check"></i> <strong>Thiếu phụ kiện:</strong> Không đủ linh kiện đi kèm</li>
+                <li><i class="fas fa-check"></i> <strong>Đổi ý không muốn mua:</strong> Trong vòng 7 ngày (điều kiện áp dụng)</li>
+            </ul>
+        </div>
+
+        <!-- Thời gian đổi trả -->
+        <div class="return-section">
+            <h2>
+                <i class="fas fa-clock"></i> Thời Gian Đổi Trả
+            </h2>
+            <p><strong style="color: var(--terracotta);"><i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 0.5rem;"></i> Sản phẩm lỗi:</strong></p>
+            <ul>
+                <li>Đổi/trả trong vòng <strong>30 ngày</strong> kể từ ngày nhận hàng</li>
+                <li>Miễn phí vận chuyển đổi trả</li>
+            </ul>
+
+            <p style="margin-top: 1.5rem;"><strong style="color: var(--oak);"><i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 0.5rem;"></i> Đổi ý không mua:</strong></p>
+            <ul>
+                <li>Đổi/trả trong vòng <strong>7 ngày</strong> kể từ ngày nhận hàng</li>
+                <li>Sản phẩm còn nguyên tem, nhãn, chưa qua sử dụng</li>
+                <li>Khách hàng chịu phí vận chuyển</li>
+            </ul>
+        </div>
+
+        <!-- Quy trình đổi trả -->
+        <div class="return-section">
+            <h2>
+                <i class="fas fa-clipboard-list"></i> Quy Trình Đổi Trả
+            </h2>
+            <div class="return-process">
+                <p>Bước 1: Liên hệ</p>
+                <ul>
+                    <li>Hotline: <strong>0345211386</strong></li>
+                    <li>Email: <strong>quocdat30075@gmail.com</strong></li>
+                    <li>Cung cấp: Mã đơn hàng, lý do đổi trả, hình ảnh sản phẩm (nếu lỗi)</li>
+                </ul>
+
+                <p>Bước 2: Xác nhận</p>
+                <ul>
+                    <li>Bộ phận CSKH kiểm tra yêu cầu</li>
+                    <li>Phản hồi trong vòng <strong>24 giờ</strong></li>
+                    <li>Hướng dẫn quy trình tiếp theo</li>
+                </ul>
+
+                <p>Bước 3: Gửi hàng hoàn trả</p>
+                <ul>
+                    <li><strong>Lỗi nhà sản xuất:</strong> Chúng tôi thu hồi tận nơi miễn phí</li>
+                    <li><strong>Đổi ý:</strong> Quý khách gửi hàng về kho hoặc showroom</li>
+                    <li>Đóng gói cẩn thận, kèm theo hóa đơn</li>
+                </ul>
+
+                <p>Bước 4: Kiểm tra & xử lý</p>
+                <ul>
+                    <li>Kiểm tra tình trạng sản phẩm</li>
+                    <li>Thời gian xử lý: 3-5 ngày làm việc</li>
+                    <li>Thông báo kết quả qua email/điện thoại</li>
+                </ul>
+
+                <p>Bước 5: Hoàn tiền/Đổi hàng</p>
+                <ul>
+                    <li><strong>Đổi hàng:</strong> Giao hàng mới trong 3-5 ngày</li>
+                    <li><strong>Hoàn tiền:</strong> Chuyển khoản trong 5-7 ngày làm việc</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Điều kiện sản phẩm -->
+        <div class="return-section">
+            <h2>
+                <i class="fas fa-check-circle"></i> Điều Kiện Sản Phẩm Đổi Trả
+            </h2>
+            <p>Sản phẩm đổi trả cần đảm bảo:</p>
+            <ul>
+                <li><i class="fas fa-check"></i> Còn nguyên tem, nhãn mác của nhà sản xuất</li>
+                <li><i class="fas fa-check"></i> Chưa qua sử dụng, không có dấu hiệu hư hỏng</li>
+                <li><i class="fas fa-check"></i> Đầy đủ phụ kiện, hộp, giấy tờ đi kèm</li>
+                <li><i class="fas fa-check"></i> Hóa đơn mua hàng hoặc phiếu giao hàng</li>
+                <li><i class="fas fa-check"></i> Trong thời gian đổi trả quy định</li>
+            </ul>
+        </div>
+
+        <!-- Không áp dụng -->
+        <div class="return-section">
+            <h2>
+                <i class="fas fa-times-circle"></i> Không Áp Dụng Đổi Trả
+            </h2>
+            <p>Chúng tôi không chấp nhận đổi/trả trong các trường hợp:</p>
+            <ul>
+                <li><i class="fas fa-times"></i> Quá thời hạn đổi trả quy định</li>
+                <li><i class="fas fa-times"></i> Sản phẩm đã qua sử dụng, có dấu hiệu hư hỏng</li>
+                <li><i class="fas fa-times"></i> Mất tem, nhãn, hộp, phụ kiện đi kèm</li>
+                <li><i class="fas fa-times"></i> Sản phẩm làm theo yêu cầu riêng (đơn đặt hàng)</li>
+                <li><i class="fas fa-times"></i> Lỗi do người sử dụng (va đập, nước, hỏa hoạn...)</li>
+                <li><i class="fas fa-times"></i> Sản phẩm giảm giá, thanh lý (trừ lỗi nhà sản xuất)</li>
+            </ul>
+        </div>
+
+        <!-- Phí đổi trả -->
+        <div class="return-section">
+            <h2>
+                <i class="fas fa-dollar-sign"></i> Chi Phí Đổi Trả
+            </h2>
+            <table class="return-table">
+                <thead>
+                    <tr>
+                        <th>Trường hợp</th>
+                        <th>Chi phí</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lỗi nhà sản xuất</td>
+                        <td><strong class="free">Miễn phí 100%</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Giao sai sản phẩm</td>
+                        <td><strong class="free">Miễn phí 100%</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Đổi ý không mua (7 ngày)</td>
+                        <td>Khách hàng trả phí vận chuyển</td>
+                    </tr>
+                    <tr>
+                        <td>Đổi sang sản phẩm khác</td>
+                        <td>Bù chênh lệch giá (nếu có)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Cam kết -->
+        <div class="return-cta">
+            <div class="container">
+                <h3>
+                    <i class="fas fa-gem"></i> Cam Kết Của Chúng Tôi
+                </h3>
+                <p>
+                    Chúng tôi cam kết xử lý mọi yêu cầu đổi/trả một cách nhanh chóng, minh bạch và công bằng. 
+                    Sự hài lòng của quý khách là ưu tiên hàng đầu!
+                </p>
+                <div class="contact-info">
+                    <p>
+                        <i class="fas fa-phone"></i> Hotline: <strong>0345211386</strong>
+                    </p>
+                    <p>
+                        <i class="fas fa-envelope"></i> Email: <strong>quocdat30075@gmail.com</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

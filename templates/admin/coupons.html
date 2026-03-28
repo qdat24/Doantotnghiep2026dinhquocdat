@@ -1,0 +1,132 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản Lý Mã Giảm Giá{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🎫 Quản Lý Mã Giảm Giá</h1>
+    <p>Quản lý các mã giảm giá và khuyến mãi</p>
+</div>
+
+<div class="card" style="margin-bottom: 20px;">
+    <div class="card-header">
+        <h3>Thống Kê</h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+        <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+            <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">{{ stats.total }}</div>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Tổng số</div>
+        </div>
+        <div style="text-align: center; padding: 15px; background: #d4edda; border-radius: 5px;">
+            <div style="font-size: 24px; font-weight: bold; color: #27ae60;">{{ stats.active }}</div>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Đang hoạt động</div>
+        </div>
+        <div style="text-align: center; padding: 15px; background: #f8d7da; border-radius: 5px;">
+            <div style="font-size: 24px; font-weight: bold; color: #e74c3c;">{{ stats.inactive }}</div>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Đã tắt</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>Danh Sách Mã Giảm Giá ({{ total_coupons }})</h3>
+        <div>
+            <a href="{{ url_for('admin_add_coupon') }}" class="btn btn-success">+ Thêm Mã Mới</a>
+            <a href="{{ url_for('admin_coupons') }}" class="btn {% if not active_filter %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px; margin-left: 10px;">Tất Cả</a>
+            <a href="{{ url_for('admin_coupons', active='true') }}" class="btn {% if active_filter == 'true' %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px;">Đang Hoạt Động</a>
+            <a href="{{ url_for('admin_coupons', active='false') }}" class="btn {% if active_filter == 'false' %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px;">Đã Tắt</a>
+        </div>
+    </div>
+
+    {% if coupons %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Mã</th>
+                <th>Tên</th>
+                <th>Loại Giảm</th>
+                <th>Giá Trị</th>
+                <th>Đơn Tối Thiểu</th>
+                <th>Giảm Tối Đa</th>
+                <th>Sử Dụng</th>
+                <th>Ngày Bắt Đầu</th>
+                <th>Ngày Kết Thúc</th>
+                <th>Trạng Thái</th>
+                <th>Thao Tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for coupon in coupons %}
+            <tr>
+                <td>{{ coupon.id }}</td>
+                <td><strong style="color: #3498db; font-size: 16px;">{{ coupon.code }}</strong></td>
+                <td><strong>{{ coupon.name }}</strong></td>
+                <td>
+                    {% if coupon.discount_type == 'percentage' %}
+                        <span style="color: #27ae60;">%</span>
+                    {% else %}
+                        <span style="color: #3498db;">₫</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if coupon.discount_type == 'percentage' %}
+                        {{ coupon.discount_value }}%
+                    {% else %}
+                        {{ "{:,.0f}".format(coupon.discount_value) }} ₫
+                    {% endif %}
+                </td>
+                <td>{{ "{:,.0f}".format(coupon.min_order_amount) }} ₫</td>
+                <td>
+                    {% if coupon.max_discount_amount %}
+                        {{ "{:,.0f}".format(coupon.max_discount_amount) }} ₫
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    {% if coupon.usage_limit %}
+                        {{ coupon.usage_count }} / {{ coupon.usage_limit }}
+                    {% else %}
+                        {{ coupon.usage_count }} / ∞
+                    {% endif %}
+                </td>
+                <td>{{ coupon.start_date.strftime('%d/%m/%Y') if coupon.start_date else '-' }}</td>
+                <td>{{ coupon.end_date.strftime('%d/%m/%Y') if coupon.end_date else '-' }}</td>
+                <td>
+                    {% if coupon.is_active %}
+                        <span style="color: #27ae60; font-weight: 600;">✓ Hoạt động</span>
+                    {% else %}
+                        <span style="color: #e74c3c; font-weight: 600;">✗ Tắt</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('admin_edit_coupon', coupon_id=coupon.id) }}" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px; margin-right: 5px;">Sửa</a>
+                    <form method="POST" action="{{ url_for('admin_delete_coupon', coupon_id=coupon.id) }}" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn xóa mã giảm giá này?');">
+                        <button type="submit" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if total_pages > 1 %}
+    <div style="margin-top: 20px; text-align: center;">
+        {% if page > 1 %}
+        <a href="{{ url_for('admin_coupons', page=page-1, active=active_filter) }}" class="btn" style="margin-right: 10px;">← Trước</a>
+        {% endif %}
+        
+        <span style="margin: 0 15px;">Trang {{ page }} / {{ total_pages }}</span>
+        
+        {% if page < total_pages %}
+        <a href="{{ url_for('admin_coupons', page=page+1, active=active_filter) }}" class="btn">Sau →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <p style="text-align: center; color: #7f8c8d; padding: 40px;">Chưa có mã giảm giá nào. <a href="{{ url_for('admin_add_coupon') }}">Thêm mã đầu tiên</a></p>
+    {% endif %}
+</div>
+{% endblock %}

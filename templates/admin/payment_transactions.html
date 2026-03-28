@@ -1,0 +1,135 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản Lý Giao Dịch Thanh Toán{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>💳 Quản Lý Giao Dịch Thanh Toán</h1>
+    <p>Xem và quản lý tất cả giao dịch thanh toán</p>
+</div>
+
+<div class="card" style="margin-bottom: 20px;">
+    <div class="card-header">
+        <h3>Thống Kê</h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+        <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+            <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">{{ stats.total }}</div>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Tổng số</div>
+        </div>
+        <div style="text-align: center; padding: 15px; background: #fff3cd; border-radius: 5px;">
+            <div style="font-size: 24px; font-weight: bold; color: #f39c12;">{{ stats.pending }}</div>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Đang chờ</div>
+        </div>
+        <div style="text-align: center; padding: 15px; background: #d4edda; border-radius: 5px;">
+            <div style="font-size: 24px; font-weight: bold; color: #27ae60;">{{ stats.completed }}</div>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Hoàn thành</div>
+        </div>
+        <div style="text-align: center; padding: 15px; background: #f8d7da; border-radius: 5px;">
+            <div style="font-size: 24px; font-weight: bold; color: #e74c3c;">{{ stats.failed }}</div>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Thất bại</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>Danh Sách Giao Dịch ({{ total_transactions }})</h3>
+        <div>
+            <a href="{{ url_for('admin_payment_transactions') }}" class="btn {% if not status_filter %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px; margin-right: 5px;">Tất Cả</a>
+            <a href="{{ url_for('admin_payment_transactions', status='pending') }}" class="btn {% if status_filter == 'pending' %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px; margin-right: 5px;">Đang Chờ</a>
+            <a href="{{ url_for('admin_payment_transactions', status='completed') }}" class="btn {% if status_filter == 'completed' %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px; margin-right: 5px;">Hoàn Thành</a>
+            <a href="{{ url_for('admin_payment_transactions', status='failed') }}" class="btn {% if status_filter == 'failed' %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px;">Thất Bại</a>
+        </div>
+    </div>
+
+    {% if transactions %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Mã Giao Dịch</th>
+                <th>Mã Đơn Hàng</th>
+                <th>Phương Thức</th>
+                <th>Số Tiền</th>
+                <th>Trạng Thái</th>
+                <th>Transaction Hash</th>
+                <th>Ngày Tạo</th>
+                <th>Ngày Thanh Toán</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.id }}</td>
+                <td><strong style="color: #3498db;">{{ transaction.transaction_id }}</strong></td>
+                <td>
+                    <a href="{{ url_for('admin_order_detail', order_id=transaction.order_id) }}" style="color: #2c3e50;">
+                        {{ transaction.order_id }}
+                    </a>
+                </td>
+                <td>
+                    {% if transaction.payment_method == 'paypal' %}
+                        <span style="color: #003087; font-weight: bold;">💳 PayPal</span>
+                    {% elif transaction.payment_method == 'usdt' %}
+                        <span style="color: #3498db;">💎 USDT</span>
+                    {% elif transaction.payment_method == 'bank_transfer' %}
+                        <span style="color: #27ae60;">🏦 Chuyển khoản</span>
+                    {% elif transaction.payment_method == 'credit_card' %}
+                        <span style="color: #9b59b6;">💳 Thẻ</span>
+                    {% else %}
+                        <span style="color: #7f8c8d;">{{ transaction.payment_method }}</span>
+                    {% endif %}
+                </td>
+                <td><strong>{{ "{:,.0f}".format(transaction.amount) }} {{ transaction.currency or 'VND' }}</strong></td>
+                <td>
+                    {% if transaction.status == 'completed' %}
+                        <span style="color: #27ae60; font-weight: 600;">✓ Hoàn thành</span>
+                    {% elif transaction.status == 'pending' %}
+                        <span style="color: #f39c12; font-weight: 600;">⏳ Đang chờ</span>
+                    {% elif transaction.status == 'failed' %}
+                        <span style="color: #e74c3c; font-weight: 600;">✗ Thất bại</span>
+                    {% else %}
+                        <span style="color: #7f8c8d;">{{ transaction.status }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if transaction.transaction_hash %}
+                        <a href="https://etherscan.io/tx/{{ transaction.transaction_hash }}" target="_blank" style="color: #3498db; font-size: 11px;">
+                            {{ transaction.transaction_hash[:10] }}...
+                        </a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ transaction.created_at.strftime('%d/%m/%Y %H:%M') if transaction.created_at else 'N/A' }}</td>
+                <td>
+                    {% if transaction.paid_at %}
+                        {{ transaction.paid_at.strftime('%d/%m/%Y %H:%M') }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if total_pages > 1 %}
+    <div style="margin-top: 20px; text-align: center;">
+        {% if page > 1 %}
+        <a href="{{ url_for('admin_payment_transactions', page=page-1, status=status_filter) }}" class="btn" style="margin-right: 10px;">← Trước</a>
+        {% endif %}
+        
+        <span style="margin: 0 15px;">Trang {{ page }} / {{ total_pages }}</span>
+        
+        {% if page < total_pages %}
+        <a href="{{ url_for('admin_payment_transactions', page=page+1, status=status_filter) }}" class="btn">Sau →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <p style="text-align: center; color: #7f8c8d; padding: 40px;">Chưa có giao dịch nào</p>
+    {% endif %}
+</div>
+{% endblock %}

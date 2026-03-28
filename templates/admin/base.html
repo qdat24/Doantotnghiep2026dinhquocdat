@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>{% block title %}Admin Panel{% endblock %} - Nội Thất DDQ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" 
+          integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" 
+          crossorigin="anonymous" 
+          referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-couch"></i> Admin Panel</h2>
+            <p>Nội Thất DDQ</p>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li><a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+            <li><a href="{{ url_for('admin_revenue_report') }}" class="{% if request.endpoint == 'admin_revenue_report' %}active{% endif %}"><i class="fas fa-chart-bar"></i> Báo Cáo Doanh Thu</a></li>
+            <li><a href="{{ url_for('admin_products') }}" class="{% if 'product' in request.endpoint %}active{% endif %}"><i class="fas fa-box"></i> Sản Phẩm</a></li>
+            <li><a href="{{ url_for('admin_orders') }}" class="{% if 'order' in request.endpoint %}active{% endif %}"><i class="fas fa-shopping-cart"></i> Đơn Hàng</a></li>
+            <li><a href="{{ url_for('admin_customers') }}" class="{% if 'customer' in request.endpoint %}active{% endif %}"><i class="fas fa-users"></i> Khách Hàng</a></li>
+            <li><a href="{{ url_for('admin_reviews') }}" class="{% if 'review' in request.endpoint %}active{% endif %}"><i class="fas fa-star"></i> Đánh Giá</a></li>
+            <li><a href="{{ url_for('admin_coupons') }}" class="{% if 'coupon' in request.endpoint %}active{% endif %}"><i class="fas fa-ticket-alt"></i> Mã Giảm Giá</a></li>
+            <li><a href="{{ url_for('admin_notifications') }}" class="{% if 'notification' in request.endpoint %}active{% endif %}"><i class="fas fa-bell"></i> Thông Báo</a></li>
+            <li><a href="{{ url_for('admin_payment_transactions') }}" class="{% if 'payment_transaction' in request.endpoint %}active{% endif %}"><i class="fas fa-credit-card"></i> Giao Dịch</a></li>
+            <li><a href="{{ url_for('admin_contacts') }}" class="{% if 'contact' in request.endpoint %}active{% endif %}"><i class="fas fa-envelope"></i> Liên Hệ</a></li>
+            <li><a href="{{ url_for('admin_settings') }}" class="{% if request.endpoint == 'admin_settings' %}active{% endif %}"><i class="fas fa-cog"></i> Cài Đặt</a></li>
+            <li><a href="{{ url_for('index') }}" target="_blank"><i class="fas fa-external-link-alt"></i> Xem Website</a></li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i> {{ session.get('admin_name', 'Admin') }}
+            </div>
+            <a href="{{ url_for('admin_logout') }}" class="btn-logout">Đăng Xuất</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Anime.js Library - CSS Animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="{{ url_for('static', filename='js/anime-animations.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+    
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const toggle = document.querySelector('.sidebar-toggle');
+            
+            const isActive = sidebar.classList.contains('active');
+            
+            if (!isActive) {
+                // Mở sidebar với animation
+                sidebar.classList.add('active');
+                overlay.classList.add('active');
+                
+                anime({
+                    targets: sidebar,
+                    translateX: [-300, 0],
+                    opacity: [0, 1],
+                    duration: 400,
+                    easing: 'easeOutExpo'
+                });
+                
+                anime({
+                    targets: overlay,
+                    opacity: [0, 0.5],
+                    duration: 300,
+                    easing: 'easeOutQuad'
+                });
+            } else {
+                // Đóng sidebar với animation
+                anime({
+                    targets: sidebar,
+                    translateX: [0, -300],
+                    opacity: [1, 0],
+                    duration: 300,
+                    easing: 'easeInQuad',
+                    complete: function() {
+                        sidebar.classList.remove('active');
+                        overlay.classList.remove('active');
+                    }
+                });
+                
+                anime({
+                    targets: overlay,
+                    opacity: [0.5, 0],
+                    duration: 300,
+                    easing: 'easeInQuad'
+                });
+            }
+            
+            // Đổi icon với animation
+            const icon = toggle.querySelector('i');
+            if (!isActive) {
+                anime({
+                    targets: icon,
+                    rotate: [0, 90],
+                    duration: 300,
+                    complete: function() {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-times');
+                        anime({
+                            targets: icon,
+                            rotate: [90, 0],
+                            duration: 300
+                        });
+                    }
+                });
+            } else {
+                anime({
+                    targets: icon,
+                    rotate: [0, -90],
+                    duration: 300,
+                    complete: function() {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                        anime({
+                            targets: icon,
+                            rotate: [-90, 0],
+                            duration: 300
+                        });
+                    }
+                });
+            }
+        }
+        
+        // Đóng sidebar khi click vào overlay
+        document.querySelector('.sidebar-overlay').addEventListener('click', function() {
+            toggleSidebar();
+        });
+        
+        // Đóng sidebar khi resize về desktop
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 1024) {
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.querySelector('.sidebar-overlay');
+                const toggle = document.querySelector('.sidebar-toggle');
+                const icon = toggle.querySelector('i');
+                
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+    </script>
+</body>
+</html>

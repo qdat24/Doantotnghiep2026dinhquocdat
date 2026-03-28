@@ -1,0 +1,107 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản Lý Thông Báo{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🔔 Quản Lý Thông Báo</h1>
+    <p>Xem và quản lý thông báo hệ thống</p>
+</div>
+
+<div class="card" style="margin-bottom: 20px;">
+    <div class="card-header">
+        <h3>Thống Kê</h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+        <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+            <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">{{ stats.total }}</div>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Tổng số</div>
+        </div>
+        <div style="text-align: center; padding: 15px; background: #fff3cd; border-radius: 5px;">
+            <div style="font-size: 24px; font-weight: bold; color: #f39c12;">{{ stats.unread }}</div>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Chưa đọc</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>Danh Sách Thông Báo ({{ total_notifications }})</h3>
+        <div>
+            <a href="{{ url_for('admin_notifications') }}" class="btn {% if not unread_only %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px; margin-right: 5px;">Tất Cả</a>
+            <a href="{{ url_for('admin_notifications', unread='true') }}" class="btn {% if unread_only %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px;">Chưa Đọc</a>
+        </div>
+    </div>
+
+    {% if notifications %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Loại</th>
+                <th>Tiêu Đề</th>
+                <th>Nội Dung</th>
+                <th>Link</th>
+                <th>Trạng Thái</th>
+                <th>Ngày Tạo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for notification in notifications %}
+            <tr style="{% if not notification.is_read %}background: #fff3cd;{% endif %}">
+                <td>{{ notification.id }}</td>
+                <td>
+                    {% if notification.type == 'order' %}
+                        <span style="color: #3498db;">🛒 Đơn hàng</span>
+                    {% elif notification.type == 'payment' %}
+                        <span style="color: #27ae60;">💳 Thanh toán</span>
+                    {% elif notification.type == 'promotion' %}
+                        <span style="color: #f39c12;">🎁 Khuyến mãi</span>
+                    {% else %}
+                        <span style="color: #7f8c8d;">📢 Hệ thống</span>
+                    {% endif %}
+                </td>
+                <td><strong>{{ notification.title }}</strong></td>
+                <td>
+                    <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ notification.message }}">
+                        {{ notification.message[:80] }}{% if notification.message|length > 80 %}...{% endif %}
+                    </div>
+                </td>
+                <td>
+                    {% if notification.link %}
+                        <a href="{{ notification.link }}" target="_blank" style="color: #3498db;">Xem →</a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    {% if notification.is_read %}
+                        <span style="color: #7f8c8d;">✓ Đã đọc</span>
+                    {% else %}
+                        <span style="color: #f39c12; font-weight: 600;">📬 Chưa đọc</span>
+                    {% endif %}
+                </td>
+                <td>{{ notification.created_at.strftime('%d/%m/%Y %H:%M') if notification.created_at else 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if total_pages > 1 %}
+    <div style="margin-top: 20px; text-align: center;">
+        {% if page > 1 %}
+        <a href="{{ url_for('admin_notifications', page=page-1, unread='true' if unread_only else '') }}" class="btn" style="margin-right: 10px;">← Trước</a>
+        {% endif %}
+        
+        <span style="margin: 0 15px;">Trang {{ page }} / {{ total_pages }}</span>
+        
+        {% if page < total_pages %}
+        <a href="{{ url_for('admin_notifications', page=page+1, unread='true' if unread_only else '') }}" class="btn">Sau →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <p style="text-align: center; color: #7f8c8d; padding: 40px;">Chưa có thông báo nào</p>
+    {% endif %}
+</div>
+{% endblock %}

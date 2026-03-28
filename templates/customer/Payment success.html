@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Thanh Toán Thành Công - Web3 Payment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .success-card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            animation: checkmark 0.6s ease-in-out;
+        }
+
+        .success-icon::before {
+            content: '✓';
+            font-size: 60px;
+            color: white;
+            font-weight: bold;
+        }
+
+        @keyframes checkmark {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .order-info {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .tx-hash {
+            background: #edf2f7;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85em;
+            word-break: break-all;
+            margin: 15px 0;
+            color: #4a5568;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #f7fafc;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #fef5e7;
+            color: #d68910;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+
+        .status-badge.confirmed {
+            background: #d5f4e6;
+            color: #0e6635;
+        }
+
+        .timeline {
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .timeline-icon {
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+
+        .timeline-icon.completed {
+            background: #38ef7d;
+        }
+
+        .timeline-icon.pending {
+            background: #cbd5e0;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .timeline-desc {
+            color: #718096;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-card">
+            <div class="success-icon"></div>
+            
+            <h1>Thanh Toán Thành Công!</h1>
+            <p class="subtitle">
+                Chúng tôi đã nhận được giao dịch USDT của bạn.<br>
+                Đơn hàng sẽ được xử lý sau khi giao dịch được xác nhận trên blockchain.
+            </p>
+
+            <div class="status-badge" id="statusBadge">
+                ⏳ Đang chờ xác nhận
+            </div>
+
+            <div class="order-info">
+                <div class="info-row">
+                    <span class="info-label">Mã đơn hàng:</span>
+                    <span class="info-value" id="orderId">{{ order_id }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Transaction Hash:</span>
+                </div>
+                <div class="tx-hash" id="txHash">{{ tx_hash }}</div>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon completed">✓</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Thanh toán đã gửi</div>
+                        <div class="timeline-desc">Giao dịch đã được gửi lên blockchain</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon pending" id="confirmIcon">⏳</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Đang xác nhận</div>
+                        <div class="timeline-desc" id="confirmDesc">
+                            Đang chờ xác nhận từ blockchain (thường 1-5 phút)
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon pending" id="processIcon">⏳</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Xử lý đơn hàng</div>
+                        <div class="timeline-desc">Đơn hàng sẽ được xử lý ngay sau khi xác nhận</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <a href="/" class="btn btn-primary">
+                    🏠 Về Trang Chủ
+                </a>
+                <a href="#" id="explorerLink" target="_blank" class="btn btn-secondary">
+                    🔍 Xem Trên Explorer
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get order info from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('order_id') || '{{ order_id }}';
+        const txHash = urlParams.get('tx_hash') || '{{ tx_hash }}';
+
+        // Update display
+        if (orderId && orderId !== 'None') {
+            document.getElementById('orderId').textContent = orderId;
+        }
+        if (txHash && txHash !== 'None') {
+            document.getElementById('txHash').textContent = txHash;
+            
+            // Set explorer link (default to BSC)
+            const explorerUrl = `https://bscscan.com/tx/${txHash}`;
+            document.getElementById('explorerLink').href = explorerUrl;
+        }
+
+        // Check transaction status
+        async function checkTransactionStatus() {
+            if (!txHash || txHash === 'None') return;
+
+            try {
+                const response = await fetch(`/api/web3/check-status/${txHash}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const status = data.status;
+                    const confirmations = data.confirmations || 0;
+
+                    if (status === 'confirmed' || confirmations >= 12) {
+                        // Update UI to show confirmed
+                        document.getElementById('statusBadge').className = 'status-badge confirmed';
+                        document.getElementById('statusBadge').innerHTML = '✅ Đã xác nhận';
+                        
+                        document.getElementById('confirmIcon').className = 'timeline-icon completed';
+                        document.getElementById('confirmIcon').textContent = '✓';
+                        document.getElementById('confirmDesc').textContent = 
+                            `Đã xác nhận (${confirmations} confirmations)`;
+                        
+                        document.getElementById('processIcon').className = 'timeline-icon completed';
+                        document.getElementById('processIcon').textContent = '✓';
+                        
+                        // Stop checking
+                        clearInterval(statusCheckInterval);
+                    } else if (confirmations > 0) {
+                        document.getElementById('confirmDesc').textContent = 
+                            `Đang xác nhận (${confirmations}/12 confirmations)`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking status:', error);
+            }
+        }
+
+        // Check status every 10 seconds
+        let statusCheckInterval;
+        if (txHash && txHash !== 'None') {
+            // Check immediately
+            checkTransactionStatus();
+            
+            // Then check every 10 seconds
+            statusCheckInterval = setInterval(checkTransactionStatus, 10000);
+            
+            // Stop checking after 10 minutes
+            setTimeout(() => {
+                clearInterval(statusCheckInterval);
+            }, 10 * 60 * 1000);
+        }
+    </script>
+</body>
+</html>

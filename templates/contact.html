@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+
+{% block title %}Liên Hệ - HOMESTEAD{% endblock %}
+
+{% block content %}
+<style>
+.contact-hero {
+    background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
+    opacity: 0.3;
+}
+
+.contact-hero .container {
+    position: relative;
+    z-index: 1;
+}
+
+.contact-hero h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.contact-hero p {
+    font-size: 1.25rem;
+    opacity: 0.95;
+    color: white;
+}
+
+.contact-section {
+    padding: 4rem 0;
+    background: var(--bg-cream);
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-top: 3rem;
+}
+
+.contact-info {
+    background: white;
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.contact-info h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin-bottom: 2rem;
+    color: var(--text-dark);
+    font-weight: 700;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: var(--bg-beige);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-normal);
+}
+
+.info-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(157, 184, 146, 0.15);
+}
+
+.info-item i {
+    font-size: 1.75rem;
+    color: var(--sage-medium);
+    margin-right: 1.25rem;
+    min-width: 40px;
+    flex-shrink: 0;
+}
+
+.info-content h3 {
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    font-weight: 700;
+}
+
+.info-content p {
+    margin: 0;
+    color: var(--text-medium);
+    line-height: 1.7;
+    font-size: 1rem;
+}
+
+.contact-form {
+    background: white;
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.contact-form h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin-bottom: 2rem;
+    color: var(--text-dark);
+    font-weight: 700;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    font-size: 1rem;
+}
+
+.form-group label .required {
+    color: var(--terracotta);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-family: var(--font-primary);
+    transition: all var(--transition-normal);
+    background: white;
+    color: var(--text-dark);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--sage-medium);
+    box-shadow: 0 0 0 3px rgba(157, 184, 146, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 150px;
+    font-family: var(--font-primary);
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, var(--sage-medium), var(--sage-dark));
+    color: white;
+    padding: 1rem 2.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1.125rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 4px 12px rgba(157, 184, 146, 0.3);
+}
+
+.btn-submit:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(157, 184, 146, 0.4);
+}
+
+.map-section {
+    margin-top: 4rem;
+}
+
+.map-section h2 {
+    text-align: center;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    margin-bottom: 2.5rem;
+    color: var(--text-dark);
+    font-weight: 700;
+}
+
+.map-container {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.alert {
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.alert-success {
+    background: var(--sage-light);
+    color: var(--sage-dark);
+    border: 2px solid var(--sage-medium);
+}
+
+.alert-error {
+    background: rgba(224, 147, 128, 0.15);
+    color: var(--rust);
+    border: 2px solid var(--coral);
+}
+
+@media (max-width: 768px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .contact-hero {
+        padding: 3rem 0;
+    }
+
+    .contact-section {
+        padding: 3rem 0;
+    }
+
+    .contact-info,
+    .contact-form {
+        padding: 2rem;
+    }
+}
+</style>
+
+<!-- Hero Section -->
+<section class="contact-hero">
+    <div class="container">
+        <h1>
+            <i class="fas fa-phone"></i> Liên Hệ Với Chúng Tôi
+        </h1>
+        <p>Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn</p>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="contact-section">
+    <div class="container">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="contact-grid">
+            <!-- Contact Info -->
+            <div class="contact-info">
+                <h2>Thông Tin Liên Hệ</h2>
+                
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div class="info-content">
+                        <h3>Địa Chỉ</h3>
+                        <p>{{ site_settings.get('contact_address', 'Hà Đông Hà Nội') }}</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-phone"></i>
+                    <div class="info-content">
+                        <h3>Điện Thoại</h3>
+                        <p>{{ site_settings.get('contact_phone', '0345211386') }}</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-envelope"></i>
+                    <div class="info-content">
+                        <h3>Email</h3>
+                        <p>{{ site_settings.get('contact_email', 'quocdat30075@gmail.com') }}</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <div class="info-content">
+                        <h3>Giờ Làm Việc</h3>
+                        <p>Thứ 2 - Thứ 6: 8:00 - 18:00<br>
+                           Thứ 7 - CN: 9:00 - 17:00</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="contact-form">
+                <h2>Gửi Tin Nhắn</h2>
+                <form method="POST" action="{{ url_for('contact') }}">
+                    <div class="form-group">
+                        <label for="name">Họ và Tên <span class="required">*</span></label>
+                        <input type="text" 
+                               id="name" 
+                               name="name" 
+                               placeholder="Nguyễn Văn A"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email <span class="required">*</span></label>
+                        <input type="email" 
+                               id="email" 
+                               name="email" 
+                               placeholder="email@example.com"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Số Điện Thoại</label>
+                        <input type="tel" 
+                               id="phone" 
+                               name="phone" 
+                               placeholder="0901234567">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">Chủ Đề <span class="required">*</span></label>
+                        <select id="subject" name="subject" required>
+                            <option value="">-- Chọn chủ đề --</option>
+                            <option value="Tư vấn sản phẩm">Tư vấn sản phẩm</option>
+                            <option value="Báo giá">Báo giá</option>
+                            <option value="Hỗ trợ kỹ thuật">Hỗ trợ kỹ thuật</option>
+                            <option value="Khiếu nại">Khiếu nại</option>
+                            <option value="Hợp tác kinh doanh">Hợp tác kinh doanh</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Nội Dung <span class="required">*</span></label>
+                        <textarea id="message" 
+                                  name="message" 
+                                  placeholder="Nhập nội dung tin nhắn của bạn..."
+                                  required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-paper-plane"></i> Gửi Tin Nhắn
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="map-section">
+            <h2>
+                <i class="fas fa-map-marker-alt"></i> Vị Trí Của Chúng Tôi
+            </h2>
+            <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.4781408048125!2d105.80874507393352!3d21.013546088303517!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab438bbafeeb%3A0xb97ca6f7e88ba308!2sDevmaster!5e0!3m2!1svi!2sus!4v1761831922135!5m2!1svi!2sus" 
+                        width="100%" 
+                        height="450" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

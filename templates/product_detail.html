@@ -1,0 +1,640 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - HOMESTEAD{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<section class="breadcrumb-section">
+    <div class="container">
+        <nav class="breadcrumb-nav">
+            <a href="/">Trang chủ</a>
+            <span class="separator">/</span>
+            <a href="/products">Sản phẩm</a>
+            <span class="separator">/</span>
+            <a href="/products?category={{ product.category }}">{{ product.category }}</a>
+            <span class="separator">/</span>
+            <span class="current">{{ product.name }}</span>
+        </nav>
+    </div>
+</section>
+
+<!-- Product Detail -->
+<section class="product-detail">
+    <div class="container">
+        <div class="product-detail-container">
+            <!-- Product Image -->
+            <div class="product-image-container">
+                <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image-large">
+                
+                <!-- Optional: Image Gallery Thumbnails -->
+                <!-- <div class="product-gallery-thumbs">
+                    <img src="{{ product.image }}" alt="Thumb 1" class="gallery-thumb active">
+                    <img src="{{ product.image }}" alt="Thumb 2" class="gallery-thumb">
+                    <img src="{{ product.image }}" alt="Thumb 3" class="gallery-thumb">
+                </div> -->
+            </div>
+
+            <!-- Product Info -->
+            <div class="product-detail-info">
+                <!-- Category Badge -->
+                <span class="product-category">{{ product.category }}</span>
+                
+                <!-- Product Name -->
+                <h1>{{ product.name }}</h1>
+                
+                <!-- Rating -->
+                <div class="product-rating">
+                    <span class="stars">
+                        {% for i in range(5) %}
+                            {% if i < product.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                    <span class="rating-text">
+                        <strong>{{ product.rating }}</strong>/5 ({{ product.reviews }} đánh giá)
+                    </span>
+                </div>
+
+                <!-- Price -->
+                <div class="product-detail-price">
+                    <span class="price">{{ product.price | format_currency }}</span>
+                    {% if product.original_price > product.price %}
+                    <span class="original-price">{{ product.original_price | format_currency }}</span>
+                    <span class="product-badge">
+                        Giảm {{ ((product.original_price - product.price) / product.original_price * 100) | int }}%
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Description -->
+                <div class="product-description">
+                    <p>{{ product.description }}</p>
+                </div>
+
+                <!-- Features -->
+                <div class="product-features">
+                    <h3>Đặc điểm nổi bật</h3>
+                    <ul>
+                        {% for feature in product.features %}
+                        <li>{{ feature }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Quantity Selector -->
+                <div class="quantity-selector">
+                    <label>Số lượng:</label>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn quantity-minus">−</button>
+                        <input type="number" class="quantity-input" value="1" min="1" max="99">
+                        <button class="quantity-btn quantity-plus">+</button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="product-actions">
+                    <button class="btn btn-add-cart" onclick="addToCart({{ product.id }}, parseInt(document.querySelector('.quantity-input').value))">
+                        <i class="fas fa-shopping-cart"></i>
+                        Thêm Vào Giỏ Hàng
+                    </button>
+                    <button class="btn btn-buy-now" onclick="addToCart({{ product.id }}, parseInt(document.querySelector('.quantity-input').value)); setTimeout(() => window.location.href='/cart', 500);">
+                        <i class="fas fa-bolt"></i>
+                        Mua Ngay
+                    </button>
+                </div>
+
+                <!-- Benefits/Guarantees -->
+                <div class="product-benefits">
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <i class="fas fa-shipping-fast"></i>
+                            <strong>Miễn Phí Vận Chuyển</strong>
+                            <p>Cho đơn hàng từ 5 triệu</p>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <strong>Bảo Hành 2 Năm</strong>
+                            <p>Cam kết chất lượng</p>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-exchange-alt"></i>
+                            <strong>Đổi Trả 30 Ngày</strong>
+                            <p>Nếu có lỗi từ nhà sản xuất</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Products -->
+{% if related_products %}
+<section class="related-products-section products-enhanced">
+    <div class="container">
+        <h2 class="section-title">Sản Phẩm Liên Quan</h2>
+        <div class="products-grid-new">
+            {% for product in related_products %}
+            <div class="product-new" onclick="window.location.href='/product/{{ product.id }}'">
+                <!-- Wishlist -->
+                <button class="wishlist-btn" onclick="event.stopPropagation()">
+                    <i class="far fa-heart"></i>
+                </button>
+                
+                <!-- Image -->
+                <div class="prod-img-wrap">
+                    <img src="{{ product.image }}" alt="{{ product.name }}">
+                    {% if product.original_price > product.price %}
+                    <span class="disc-badge">
+                        -{{ ((product.original_price - product.price) / product.original_price * 100) | int }}%
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <!-- Info -->
+                <div class="prod-details">
+                    <span class="prod-cat">{{ product.category }}</span>
+                    <h3 class="prod-name">{{ product.name }}</h3>
+                    
+                    <!-- Rating -->
+                    <div class="prod-rating">
+                        <div class="rating-stars">
+                            {% for i in range(5) %}
+                                {% if i < product.rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="review-cnt">({{ product.reviews }})</span>
+                    </div>
+                    
+                    <!-- Price -->
+                    <div class="prod-price-new">
+                        <span class="price-current">{{ product.price | format_currency }}</span>
+                        {% if product.original_price > product.price %}
+                        <span class="price-old">{{ product.original_price | format_currency }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Stock -->
+                    <div class="stock-indicator in-stock">
+                        Còn hàng
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="product-actions">
+                        <button class="btn btn-add-cart" onclick="event.stopPropagation(); addToCart({{ product.id }})">
+                            <i class="fas fa-shopping-cart"></i>
+                            Thêm giỏ hàng
+                        </button>
+                        <button class="btn btn-quick-view" onclick="event.stopPropagation()">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Reviews Section -->
+<section class="reviews-section" style="background: #f8f9fa; padding: 60px 0; margin-top: 40px;">
+    <div class="container">
+        <div class="reviews-container" style="max-width: 1200px; margin: 0 auto;">
+            <h2 style="font-size: 2rem; color: #2c3e50; margin-bottom: 30px; text-align: center;">
+                <i class="fas fa-star"></i> Đánh Giá Sản Phẩm
+            </h2>
+            
+            <!-- Rating Summary -->
+            <div class="rating-summary" style="background: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 30px; align-items: center;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 4rem; font-weight: 700; color: #3498db; margin-bottom: 10px;">
+                            {{ "%.1f"|format(product.rating) if product.rating else "0.0" }}
+                        </div>
+                        <div style="color: #f39c12; font-size: 1.5rem; margin-bottom: 10px;">
+                            {% for i in range(5) %}
+                                {% if i < (product.rating|int) %}
+                                    <i class="fas fa-star"></i>
+                                {% elif i < (product.rating|float) %}
+                                    <i class="fas fa-star-half-alt"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div style="color: #7f8c8d; font-size: 0.9rem;">
+                            Dựa trên {{ product.reviews or 0 }} đánh giá
+                        </div>
+                    </div>
+                    
+                    <div class="rating-breakdown">
+                        {% for rating in range(5, 0, -1) %}
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                            <div style="min-width: 80px; text-align: right;">
+                                <span style="font-weight: 600;">{{ rating }} sao</span>
+                            </div>
+                            <div style="flex: 1; background: #e0e0e0; height: 10px; border-radius: 5px; overflow: hidden;">
+                                <div style="background: #f39c12; height: 100%; width: {{ rating_stats[rating].percentage if rating_stats else 0 }}%; transition: width 0.3s;"></div>
+                            </div>
+                            <div style="min-width: 50px; text-align: left; color: #7f8c8d; font-size: 0.9rem;">
+                                {{ rating_stats[rating].count if rating_stats else 0 }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Review Form -->
+            {% if session.get('customer_id') %}
+            <div class="review-form-container" style="background: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h3 style="font-size: 1.5rem; color: #2c3e50; margin-bottom: 20px;">
+                    <i class="fas fa-edit"></i> Viết Đánh Giá
+                </h3>
+                <form id="review-form" onsubmit="event.preventDefault(); submitReview({{ product.id }});">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 10px; color: #2c3e50;">Đánh giá của bạn:</label>
+                        <div class="star-rating-input" style="display: flex; gap: 5px; font-size: 2rem;">
+                            {% for i in range(1, 6) %}
+                            <i class="far fa-star star-input" data-rating="{{ i }}" style="cursor: pointer; color: #ddd; transition: all 0.2s;"></i>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" id="review-rating" name="rating" required>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label for="review-title" style="display: block; font-weight: 600; margin-bottom: 10px; color: #2c3e50;">Tiêu đề (tùy chọn):</label>
+                        <input type="text" id="review-title" name="title" placeholder="Tóm tắt đánh giá của bạn" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label for="review-comment" style="display: block; font-weight: 600; margin-bottom: 10px; color: #2c3e50;">Nội dung đánh giá:</label>
+                        <textarea id="review-comment" name="comment" rows="5" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..." required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; resize: vertical;"></textarea>
+                    </div>
+                    
+                    {% if customer_has_purchased %}
+                    <div style="margin-bottom: 20px; padding: 10px; background: #d4edda; border-radius: 8px; color: #155724;">
+                        <i class="fas fa-check-circle"></i> Bạn đã mua sản phẩm này - Đánh giá của bạn sẽ được đánh dấu "Đã mua hàng"
+                    </div>
+                    {% endif %}
+                    
+                    <button type="submit" class="btn btn-primary" style="padding: 12px 30px; font-size: 1rem; border-radius: 8px;">
+                        <i class="fas fa-paper-plane"></i> Gửi Đánh Giá
+                    </button>
+                </form>
+            </div>
+            {% else %}
+            <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-bottom: 30px; text-align: center; color: #856404;">
+                <i class="fas fa-info-circle"></i> Vui lòng <a href="/login" style="color: #3498db; font-weight: 600;">đăng nhập</a> để viết đánh giá
+            </div>
+            {% endif %}
+            
+            <!-- Reviews List -->
+            <div class="reviews-list-container" style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+                    <h3 style="font-size: 1.5rem; color: #2c3e50; margin: 0;">
+                        Tất Cả Đánh Giá (<span id="total-reviews-count">{{ product.reviews or 0 }}</span>)
+                    </h3>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <select id="rating-filter" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem;">
+                            <option value="">Tất cả đánh giá</option>
+                            <option value="5">5 sao</option>
+                            <option value="4">4 sao</option>
+                            <option value="3">3 sao</option>
+                            <option value="2">2 sao</option>
+                            <option value="1">1 sao</option>
+                        </select>
+                        <select id="sort-reviews" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem;">
+                            <option value="newest">Mới nhất</option>
+                            <option value="oldest">Cũ nhất</option>
+                            <option value="highest">Đánh giá cao nhất</option>
+                            <option value="lowest">Đánh giá thấp nhất</option>
+                            <option value="helpful">Hữu ích nhất</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="reviews-container" style="min-height: 200px;">
+                    <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
+                        <p style="margin-top: 10px;">Đang tải đánh giá...</p>
+                    </div>
+                </div>
+                
+                <div id="reviews-pagination" style="margin-top: 30px; text-align: center;"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Quantity Controls
+document.addEventListener('DOMContentLoaded', function() {
+    const minusBtn = document.querySelector('.quantity-minus');
+    const plusBtn = document.querySelector('.quantity-plus');
+    const input = document.querySelector('.quantity-input');
+    
+    if (minusBtn && plusBtn && input) {
+        minusBtn.addEventListener('click', function() {
+            const current = parseInt(input.value) || 1;
+            if (current > 1) {
+                input.value = current - 1;
+            }
+        });
+        
+        plusBtn.addEventListener('click', function() {
+            const current = parseInt(input.value) || 1;
+            const max = parseInt(input.max) || 99;
+            if (current < max) {
+                input.value = current + 1;
+            }
+        });
+        
+        input.addEventListener('input', function() {
+            let value = parseInt(this.value) || 1;
+            const min = parseInt(this.min) || 1;
+            const max = parseInt(this.max) || 99;
+            
+            if (value < min) value = min;
+            if (value > max) value = max;
+            
+            this.value = value;
+        });
+    }
+});
+
+// Image Gallery (if you add multiple images)
+document.querySelectorAll('.gallery-thumb').forEach(thumb => {
+    thumb.addEventListener('click', function() {
+        // Remove active from all
+        document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+        
+        // Add active to clicked
+        this.classList.add('active');
+        
+        // Update main image
+        const mainImage = document.querySelector('.product-image-large');
+        mainImage.src = this.src;
+    });
+});
+
+// Wishlist toggle for related products
+document.querySelectorAll('.wishlist-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        this.classList.toggle('active');
+        const icon = this.querySelector('i');
+        icon.classList.toggle('far');
+        icon.classList.toggle('fas');
+    });
+});
+
+// ==================== Review Functions ====================
+let currentReviewPage = 1;
+let currentRatingFilter = '';
+let currentSort = 'newest';
+const productId = {{ product.id }};
+
+// Star Rating Input
+document.querySelectorAll('.star-input').forEach(star => {
+    star.addEventListener('click', function() {
+        const rating = parseInt(this.dataset.rating);
+        document.getElementById('review-rating').value = rating;
+        
+        document.querySelectorAll('.star-input').forEach((s, index) => {
+            if (index < rating) {
+                s.classList.remove('far');
+                s.classList.add('fas');
+                s.style.color = '#f39c12';
+            } else {
+                s.classList.remove('fas');
+                s.classList.add('far');
+                s.style.color = '#ddd';
+            }
+        });
+    });
+    
+    star.addEventListener('mouseenter', function() {
+        const rating = parseInt(this.dataset.rating);
+        document.querySelectorAll('.star-input').forEach((s, index) => {
+            if (index < rating) {
+                s.style.color = '#f39c12';
+            }
+        });
+    });
+});
+
+document.querySelector('.star-rating-input')?.addEventListener('mouseleave', function() {
+    const currentRating = parseInt(document.getElementById('review-rating').value) || 0;
+    document.querySelectorAll('.star-input').forEach((s, index) => {
+        if (index < currentRating) {
+            s.style.color = '#f39c12';
+        } else {
+            s.style.color = '#ddd';
+        }
+    });
+});
+
+// Load Reviews
+async function loadReviews(page = 1) {
+    const container = document.getElementById('reviews-container');
+    container.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i><p style="margin-top: 10px;">Đang tải...</p></div>';
+    
+    try {
+        const params = new URLSearchParams({
+            page: page,
+            per_page: 10,
+            sort: currentSort
+        });
+        if (currentRatingFilter) {
+            params.append('rating', currentRatingFilter);
+        }
+        
+        const response = await fetch(`/api/product/${productId}/reviews?${params}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            displayReviews(data.reviews);
+            displayPagination(data.pagination);
+            document.getElementById('total-reviews-count').textContent = data.pagination.total;
+        }
+    } catch (error) {
+        console.error('Error loading reviews:', error);
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #e74c3c;"><i class="fas fa-exclamation-circle"></i><p>Lỗi khi tải đánh giá</p></div>';
+    }
+}
+
+function displayReviews(reviews) {
+    const container = document.getElementById('reviews-container');
+    
+    if (!reviews || reviews.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #7f8c8d;"><i class="fas fa-comment-slash"></i><p>Chưa có đánh giá nào</p></div>';
+        return;
+    }
+    
+    container.innerHTML = reviews.map(review => `
+        <div class="review-item" style="padding: 20px; border-bottom: 1px solid #e0e6ed; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <strong style="color: #2c3e50; font-size: 1.1rem;">${review.customer_name || 'Khách hàng'}</strong>
+                        ${review.is_verified_purchase ? '<span style="background: #27ae60; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;"><i class="fas fa-check-circle"></i> Đã mua hàng</span>' : ''}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <div style="color: #f39c12;">
+                            ${generateStars(review.rating)}
+                        </div>
+                        <span style="color: #7f8c8d; font-size: 0.9rem;">${formatDate(review.created_at)}</span>
+                    </div>
+                    ${review.title ? `<h4 style="color: #2c3e50; margin: 10px 0;">${review.title}</h4>` : ''}
+                    <p style="color: #555; line-height: 1.6; margin: 10px 0;">${review.comment || ''}</p>
+                    ${review.images && review.images.length > 0 ? `
+                        <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
+                            ${review.images.map(img => `<img src="${img}" alt="Review image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer;" onclick="openImageModal('${img}')">`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px; margin-top: 15px;">
+                <button onclick="markHelpful(${review.id})" class="helpful-btn" style="background: #f8f9fa; border: 1px solid #ddd; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; color: #555; transition: all 0.2s;">
+                    <i class="fas fa-thumbs-up"></i> Hữu ích (${review.helpful_count || 0})
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function generateStars(rating) {
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+            html += '<i class="fas fa-star"></i>';
+        } else {
+            html += '<i class="far fa-star"></i>';
+        }
+    }
+    return html;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function displayPagination(pagination) {
+    const container = document.getElementById('reviews-pagination');
+    if (pagination.total_pages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    let html = '<div style="display: flex; justify-content: center; gap: 5px; flex-wrap: wrap;">';
+    
+    if (pagination.page > 1) {
+        html += `<button onclick="loadReviews(${pagination.page - 1})" style="padding: 8px 15px; border: 1px solid #ddd; background: white; border-radius: 5px; cursor: pointer;">Trước</button>`;
+    }
+    
+    for (let i = 1; i <= pagination.total_pages; i++) {
+        if (i === pagination.page) {
+            html += `<button style="padding: 8px 15px; border: 1px solid #3498db; background: #3498db; color: white; border-radius: 5px; cursor: pointer;">${i}</button>`;
+        } else if (i === 1 || i === pagination.total_pages || (i >= pagination.page - 2 && i <= pagination.page + 2)) {
+            html += `<button onclick="loadReviews(${i})" style="padding: 8px 15px; border: 1px solid #ddd; background: white; border-radius: 5px; cursor: pointer;">${i}</button>`;
+        } else if (i === pagination.page - 3 || i === pagination.page + 3) {
+            html += `<span style="padding: 8px;">...</span>`;
+        }
+    }
+    
+    if (pagination.page < pagination.total_pages) {
+        html += `<button onclick="loadReviews(${pagination.page + 1})" style="padding: 8px 15px; border: 1px solid #ddd; background: white; border-radius: 5px; cursor: pointer;">Sau</button>`;
+    }
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+async function markHelpful(reviewId) {
+    try {
+        const response = await fetch(`/api/review/${reviewId}/helpful`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            loadReviews(currentReviewPage);
+        }
+    } catch (error) {
+        console.error('Error marking helpful:', error);
+    }
+}
+
+async function submitReview(productId) {
+    const rating = document.getElementById('review-rating').value;
+    const title = document.getElementById('review-title').value;
+    const comment = document.getElementById('review-comment').value;
+    
+    if (!rating || !comment) {
+        alert('Vui lòng chọn đánh giá và nhập nội dung');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/product/${productId}/review`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                rating: parseInt(rating),
+                title: title,
+                comment: comment,
+                is_verified_purchase: {{ 'true' if customer_has_purchased else 'false' }}
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('Đánh giá đã được gửi. Cảm ơn bạn!');
+            document.getElementById('review-form').reset();
+            document.querySelectorAll('.star-input').forEach(s => {
+                s.classList.remove('fas');
+                s.classList.add('far');
+                s.style.color = '#ddd';
+            });
+            loadReviews(1);
+            location.reload();
+        } else {
+            alert(data.message || 'Có lỗi xảy ra');
+        }
+    } catch (error) {
+        console.error('Error submitting review:', error);
+        alert('Có lỗi xảy ra');
+    }
+}
+
+// Filter and Sort
+document.getElementById('rating-filter')?.addEventListener('change', function() {
+    currentRatingFilter = this.value;
+    currentReviewPage = 1;
+    loadReviews(1);
+});
+
+document.getElementById('sort-reviews')?.addEventListener('change', function() {
+    currentSort = this.value;
+    currentReviewPage = 1;
+    loadReviews(1);
+});
+
+// Load reviews on page load
+loadReviews(1);
+</script>
+
+{% endblock %}

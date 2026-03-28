@@ -1,0 +1,146 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản Lý Đánh Giá{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>⭐ Quản Lý Đánh Giá Sản Phẩm</h1>
+    <p>Duyệt và quản lý đánh giá từ khách hàng</p>
+</div>
+
+<div class="card" style="margin-bottom: 20px;">
+    <div class="card-header">
+        <h3>Thống Kê</h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+        <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+            <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">{{ stats.total }}</div>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Tổng số</div>
+        </div>
+        <div style="text-align: center; padding: 15px; background: #d4edda; border-radius: 5px;">
+            <div style="font-size: 24px; font-weight: bold; color: #27ae60;">{{ stats.approved }}</div>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Đã duyệt</div>
+        </div>
+        <div style="text-align: center; padding: 15px; background: #fff3cd; border-radius: 5px;">
+            <div style="font-size: 24px; font-weight: bold; color: #f39c12;">{{ stats.pending }}</div>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Chờ duyệt</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>Danh Sách Đánh Giá ({{ total_reviews }})</h3>
+        <div>
+            <a href="{{ url_for('admin_reviews') }}" class="btn {% if not approved_filter %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px; margin-right: 5px;">Tất Cả</a>
+            <a href="{{ url_for('admin_reviews', approved='true') }}" class="btn {% if approved_filter == 'true' %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px; margin-right: 5px;">Đã Duyệt</a>
+            <a href="{{ url_for('admin_reviews', approved='false') }}" class="btn {% if approved_filter == 'false' %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px;">Chờ Duyệt</a>
+        </div>
+    </div>
+
+    {% if reviews %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Sản Phẩm</th>
+                <th>Khách Hàng</th>
+                <th>Đánh Giá</th>
+                <th>Tiêu Đề</th>
+                <th>Nội Dung</th>
+                <th>Hình Ảnh</th>
+                <th>Trạng Thái</th>
+                <th>Ngày</th>
+                <th>Thao Tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for review in reviews %}
+            <tr>
+                <td>{{ review.id }}</td>
+                <td>
+                    {% if products_dict.get(review.product_id) %}
+                        <a href="{{ url_for('product_detail', product_id=review.product_id) }}" target="_blank">
+                            {{ products_dict[review.product_id].name }}
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('product_detail', product_id=review.product_id) }}" target="_blank">
+                            Sản phẩm #{{ review.product_id }}
+                        </a>
+                    {% endif %}
+                </td>
+                <td>
+                    <strong>{{ review.customer_name }}</strong>
+                    {% if review.is_verified_purchase %}
+                        <span style="color: #27ae60; font-size: 11px;">✓ Đã mua</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div style="color: #f39c12;">
+                        {% for i in range(5) %}
+                            {% if i < review.rating %}
+                                ★
+                            {% else %}
+                                ☆
+                            {% endif %}
+                        {% endfor %}
+                        <span style="color: #2c3e50; margin-left: 5px;">{{ review.rating }}</span>
+                    </div>
+                </td>
+                <td><strong>{{ review.title or '-' }}</strong></td>
+                <td>
+                    <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ review.comment }}">
+                        {{ review.comment[:50] }}{% if review.comment|length > 50 %}...{% endif %}
+                    </div>
+                </td>
+                <td>
+                    {% if review.images and review.images|length > 0 %}
+                        <span style="color: #3498db;">📷 {{ review.images|length }} ảnh</span>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    {% if review.is_approved %}
+                        <span style="color: #27ae60; font-weight: 600;">✓ Đã duyệt</span>
+                    {% else %}
+                        <span style="color: #f39c12; font-weight: 600;">⏳ Chờ duyệt</span>
+                    {% endif %}
+                </td>
+                <td>{{ review.created_at.strftime('%d/%m/%Y') if review.created_at else 'N/A' }}</td>
+                <td>
+                    {% if not review.is_approved %}
+                    <form method="POST" action="{{ url_for('admin_approve_review', review_id=review.id) }}" style="display: inline; margin-right: 5px;">
+                        <button type="submit" class="btn btn-success" style="padding: 5px 10px; font-size: 12px;">Duyệt</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin_reject_review', review_id=review.id) }}" style="display: inline; margin-right: 5px;">
+                        <button type="submit" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Từ chối</button>
+                    </form>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('admin_delete_review', review_id=review.id) }}" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn xóa đánh giá này?');">
+                        <button type="submit" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if total_pages > 1 %}
+    <div style="margin-top: 20px; text-align: center;">
+        {% if page > 1 %}
+        <a href="{{ url_for('admin_reviews', page=page-1, approved=approved_filter) }}" class="btn" style="margin-right: 10px;">← Trước</a>
+        {% endif %}
+        
+        <span style="margin: 0 15px;">Trang {{ page }} / {{ total_pages }}</span>
+        
+        {% if page < total_pages %}
+        <a href="{{ url_for('admin_reviews', page=page+1, approved=approved_filter) }}" class="btn">Sau →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <p style="text-align: center; color: #7f8c8d; padding: 40px;">Chưa có đánh giá nào</p>
+    {% endif %}
+</div>
+{% endblock %}

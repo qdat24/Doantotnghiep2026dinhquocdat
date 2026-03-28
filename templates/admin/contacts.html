@@ -1,0 +1,138 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản Lý Liên Hệ{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📧 Quản Lý Tin Nhắn Liên Hệ</h1>
+    <p>Danh sách tin nhắn từ khách hàng</p>
+</div>
+
+<div class="card" style="margin-bottom: 20px;">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>Thống Kê</h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+        <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+            <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">{{ stats.total }}</div>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Tổng số</div>
+        </div>
+        <div style="text-align: center; padding: 15px; background: #fff3cd; border-radius: 5px;">
+            <div style="font-size: 24px; font-weight: bold; color: #f39c12;">{{ stats.new }}</div>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Tin mới</div>
+        </div>
+        <div style="text-align: center; padding: 15px; background: #d4edda; border-radius: 5px;">
+            <div style="font-size: 24px; font-weight: bold; color: #27ae60;">{{ stats.replied }}</div>
+            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Đã trả lời</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>Danh Sách Tin Nhắn ({{ total_contacts }})</h3>
+        <div>
+            <a href="{{ url_for('admin_contacts') }}" class="btn {% if not status_filter %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px; margin-right: 5px;">Tất Cả</a>
+            <a href="{{ url_for('admin_contacts', status='new') }}" class="btn {% if status_filter == 'new' %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px; margin-right: 5px;">Mới</a>
+            <a href="{{ url_for('admin_contacts', status='replied') }}" class="btn {% if status_filter == 'replied' %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px;">Đã Trả Lời</a>
+        </div>
+    </div>
+
+    {% if contacts %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Người Gửi</th>
+                <th>Email</th>
+                <th>Điện Thoại</th>
+                <th>Chủ Đề</th>
+                <th>Tin Nhắn</th>
+                <th>Trạng Thái</th>
+                <th>Ngày Gửi</th>
+                <th>Thao Tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for contact in contacts %}
+            <tr style="{% if contact.status == 'new' %}background: #fff3cd;{% elif contact.replied %}background: #d4edda;{% endif %}">
+                <td>{{ contact.id }}</td>
+                <td><strong>{{ contact.name }}</strong></td>
+                <td>{{ contact.email }}</td>
+                <td>{{ contact.phone or '-' }}</td>
+                <td><strong>{{ contact.subject }}</strong></td>
+                <td>
+                    <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ contact.message }}">
+                        {{ contact.message[:100] }}{% if contact.message|length > 100 %}...{% endif %}
+                    </div>
+                </td>
+                <td>
+                    {% if contact.status == 'new' %}
+                        <span style="color: #f39c12; font-weight: 600;">🆕 Mới</span>
+                    {% elif contact.replied %}
+                        <span style="color: #27ae60; font-weight: 600;">✓ Đã trả lời</span>
+                    {% else %}
+                        <span style="color: #7f8c8d;">{{ contact.status }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ contact.created_at.strftime('%d/%m/%Y %H:%M') if contact.created_at else 'N/A' }}</td>
+                <td>
+                    {% if not contact.replied %}
+                    <form method="POST" action="{{ url_for('admin_mark_contact_replied', contact_id=contact.id) }}" style="display: inline; margin-right: 5px;">
+                        <button type="submit" class="btn btn-success" style="padding: 5px 10px; font-size: 12px;">Đánh dấu đã trả lời</button>
+                    </form>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('admin_delete_contact', contact_id=contact.id) }}" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn xóa tin nhắn này?');">
+                        <button type="submit" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if total_pages > 1 %}
+    <div style="margin-top: 20px; text-align: center;">
+        {% if page > 1 %}
+        <a href="{{ url_for('admin_contacts', page=page-1, status=status_filter) }}" class="btn" style="margin-right: 10px;">← Trước</a>
+        {% endif %}
+        
+        <span style="margin: 0 15px;">Trang {{ page }} / {{ total_pages }}</span>
+        
+        {% if page < total_pages %}
+        <a href="{{ url_for('admin_contacts', page=page+1, status=status_filter) }}" class="btn">Sau →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <p style="text-align: center; color: #7f8c8d; padding: 40px;">Chưa có tin nhắn nào</p>
+    {% endif %}
+</div>
+
+<style>
+.stat-card {
+    transition: transform 0.2s;
+}
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+</style>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

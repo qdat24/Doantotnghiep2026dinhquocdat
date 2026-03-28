@@ -1,0 +1,463 @@
+{% extends "base.html" %}
+
+{% block title %}Đối Tác - HOMESTEAD{% endblock %}
+
+{% block content %}
+<style>
+    .partners-hero {
+        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
+        color: white;
+        padding: 4rem 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .partners-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .partners-hero .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    .partners-hero h1 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        margin-bottom: 1rem;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .partners-hero p {
+        font-size: 1.25rem;
+        opacity: 0.95;
+        color: white;
+    }
+
+    .partners-content {
+        padding: 4rem 0;
+        background: var(--bg-cream);
+    }
+
+    .partners-intro {
+        max-width: 900px;
+        margin: 0 auto 4rem auto;
+        text-align: center;
+    }
+
+    .partners-intro h2 {
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 700;
+    }
+
+    .partners-intro p {
+        font-size: 1.125rem;
+        line-height: 1.8;
+        color: var(--text-medium);
+        margin-bottom: 1.5rem;
+    }
+
+    .partners-section {
+        margin-bottom: 4rem;
+    }
+
+    .partners-section h2 {
+        text-align: center;
+        color: var(--text-dark);
+        margin-bottom: 3rem;
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .partners-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .partner-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .partner-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--sage-medium), var(--sage-dark));
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .partner-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .partner-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .partner-logo {
+        width: 180px;
+        height: 180px;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: var(--sage-dark);
+        font-weight: 700;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .partner-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 15px;
+        border-radius: 50%;
+    }
+
+    .partner-logo.has-image {
+        background: white;
+        padding: 10px;
+    }
+
+    .partner-logo.has-image i {
+        display: none !important;
+    }
+
+    .partner-logo:not(.has-image) img {
+        display: none;
+    }
+
+    .partner-card:hover .partner-logo {
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 6px 20px rgba(157, 184, 146, 0.3);
+    }
+
+    .partner-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+    }
+
+    .devmaster-special .partner-name {
+        font-size: 1.1rem;
+        line-height: 1.5;
+    }
+
+    .partner-type {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--sage-medium), var(--sage-dark));
+        color: white;
+        padding: 0.5rem 1.25rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+    }
+
+    .partner-description {
+        color: var(--text-medium);
+        line-height: 1.7;
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .partner-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--sage-dark);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .partner-link:hover {
+        color: var(--sage-medium);
+        gap: 0.75rem;
+    }
+
+    .partner-link i {
+        transition: transform 0.3s ease;
+    }
+
+    .partner-link:hover i {
+        transform: translateX(5px);
+    }
+
+    .devmaster-special {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .devmaster-special .partner-logo {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .devmaster-special .partner-name {
+        color: white;
+    }
+
+    .devmaster-special .partner-description {
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .devmaster-special .partner-link {
+        color: white;
+    }
+
+    .devmaster-special .partner-link:hover {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .partners-cta {
+        text-align: center;
+        padding: 3rem 0;
+        background: white;
+        border-radius: 15px;
+        max-width: 800px;
+        margin: 4rem auto 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .partners-cta h3 {
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 700;
+    }
+
+    .partners-cta p {
+        color: var(--text-medium);
+        font-size: 1.125rem;
+        margin-bottom: 2rem;
+        line-height: 1.7;
+    }
+
+    .cta-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 2.5rem;
+        background: linear-gradient(135deg, var(--sage-medium), var(--sage-dark));
+        color: white;
+        text-decoration: none;
+        border-radius: var(--radius-full);
+        font-weight: 700;
+        font-size: 1.125rem;
+        transition: all var(--transition-normal);
+        box-shadow: 0 4px 12px rgba(157, 184, 146, 0.3);
+    }
+
+    .cta-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(157, 184, 146, 0.4);
+    }
+
+    @media (max-width: 768px) {
+        .partners-hero {
+            padding: 3rem 0;
+        }
+
+        .partners-content {
+            padding: 3rem 0;
+        }
+
+        .partners-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .partner-card {
+            padding: 2rem;
+        }
+
+        .partner-logo {
+            width: 140px;
+            height: 140px;
+            font-size: 3rem;
+        }
+    }
+</style>
+
+<!-- Page Header -->
+<section class="partners-hero">
+    <div class="container">
+        <h1>
+            <i class="fas fa-handshake"></i> Đối Tác
+        </h1>
+        <p>Hợp tác cùng các đối tác uy tín trong lĩnh vực kiến trúc và công nghệ</p>
+    </div>
+</section>
+
+<!-- Content -->
+<section class="partners-content">
+    <div class="container">
+        
+        <!-- Intro -->
+        <div class="partners-intro">
+            <h2>Đối Tác Chiến Lược</h2>
+            <p>
+                HOMESTEAD tự hào được hợp tác với các đối tác hàng đầu trong lĩnh vực nội thất 
+                và công nghệ. Sự hợp tác này giúp chúng tôi mang đến những giải pháp nội thất 
+                tốt nhất và dịch vụ công nghệ hiện đại cho khách hàng.
+            </p>
+        </div>
+
+        <!-- Interior Design Partners -->
+        <div class="partners-section">
+            <h2>
+                <i class="fas fa-couch"></i> Đối Tác Nội Thất
+            </h2>
+            <div class="partners-grid">
+                <div class="partner-card">
+                    <div class="partner-logo has-image" id="hoanggia-logo">
+                        <img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-6/368370209_671084131719706_4843289841186139566_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=YXEufYhOObEQ7kNvwGo19b_&_nc_oc=AdkvrCRQA1NAuBVLntrOBluzPtw-6QAKE4axwC1Y9qRibbclndRY9ODBHgBoAiADb-JfiMg8s5_J4eShIRuUnE3m&_nc_zt=23&_nc_ht=scontent.fhan15-1.fna&_nc_gid=iOOG2bwS6bBF7AL6K5xtmw&oh=00_AfkITWQyk1aVngGQvjKQmf3eAgjYAmL2F6FDjYRgb4AsVw&oe=69521E27" 
+                             alt="Nội Thất Hoàng Gia Logo"
+                             onerror="this.onerror=null; this.src='https://hoanggiadesign.vn/logo.png'; this.onerror=function(){this.style.display='none'; const logoDiv=document.getElementById('hoanggia-logo'); if(logoDiv){logoDiv.innerHTML='<i class=\'fas fa-crown\'></i>'; logoDiv.classList.remove('has-image'); logoDiv.style.background='linear-gradient(135deg, #f6d365 0%, #fda085 100%)'; logoDiv.style.color='white';}};">
+                    </div>
+                    <div class="partner-name">Nội Thất Hoàng Gia</div>
+                    <div class="partner-type">Thiết Kế & Sản Xuất Nội Thất</div>
+                    <div class="partner-description">
+                        Công ty chuyên thiết kế và sản xuất nội thất, nổi bật với các dự án nội thất tân cổ điển. 
+                        Đã thực hiện nhiều công trình tiêu biểu như nội thất biệt thự, nhà phố cao cấp. 
+                        Cam kết cung cấp sản phẩm chất lượng cao, mẫu mã đẹp và phù hợp với mọi không gian.
+                        <br><br>
+                        <strong>Địa chỉ:</strong> Số Nhà 05, Nhà P16 TT Trương Định, Đường Nguyễn An Ninh, Phường Tương Mai, Quận Hoàng Mai, Hà Nội
+                    </div>
+                    <a href="https://hoanggiadesign.vn" target="_blank" class="partner-link">
+                        Xem thêm <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+
+                <div class="partner-card">
+                    <div class="partner-logo has-image" id="aic-logo">
+                        <img src="https://office.aicjsc.com/wp-content/uploads/2023/10/LOGO-MOI-04-3.png" 
+                             alt="AIC Group Logo"
+                             onerror="this.onerror=null; this.src='https://aicjsc.com/logo.png'; this.onerror=function(){this.style.display='none'; const logoDiv=document.getElementById('aic-logo'); if(logoDiv){logoDiv.innerHTML='<i class=\'fas fa-building\'></i>'; logoDiv.classList.remove('has-image'); logoDiv.style.background='linear-gradient(135deg, #667eea 0%, #764ba2 100%)'; logoDiv.style.color='white';}};">
+                    </div>
+                    <div class="partner-name">AIC Group</div>
+                    <div class="partner-type">Kiến Trúc Nội Thất & Xây Dựng</div>
+                    <div class="partner-description">
+                        Công ty Cổ phần Kiến Trúc Nội Thất Xây Dựng AIC, chuyên về thiết kế và thi công nội thất. 
+                        Với hơn 10 năm kinh nghiệm trong lĩnh vực kiến tạo không gian sống và làm việc. 
+                        Được khách hàng đánh giá cao về chất lượng thi công, phong cách làm việc chuyên nghiệp 
+                        và đội ngũ nhân viên nhiệt tình, có gu thẩm mỹ tốt.
+                        <br><br>
+                        <strong>Địa chỉ:</strong> Phòng 1806, Tòa nhà The Garden, Khu đô thị mới Mỹ Đình - Mễ Trì, Phường Từ Liêm, Hà Nội
+                    </div>
+                    <a href="https://aicjsc.com" target="_blank" class="partner-link">
+                        Xem thêm <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+
+                <div class="partner-card">
+                    <div class="partner-logo has-image" id="nhaxinh-logo">
+                        <img src="https://nhaxinh.com/wp-content/uploads/2025/07/logo-NX-moi-798x800.webp" 
+                             alt="Nhà Xinh Logo"
+                             onerror="this.onerror=null; this.src='https://www.nhaxinh.com/logo.png'; this.onerror=function(){this.style.display='none'; const logoDiv=document.getElementById('nhaxinh-logo'); if(logoDiv){logoDiv.innerHTML='<i class=\'fas fa-home\'></i>'; logoDiv.classList.remove('has-image'); logoDiv.style.background='linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'; logoDiv.style.color='white';}};">
+                    </div>
+                    <div class="partner-name">Nhà Xinh</div>
+                    <div class="partner-type">Nội Thất Cao Cấp & Thiết Kế</div>
+                    <div class="partner-description">
+                        Thương hiệu nội thất nổi tiếng tại Việt Nam, chuyên cung cấp các sản phẩm nội thất cao cấp 
+                        và dịch vụ thiết kế nội thất. Được biết đến với các sản phẩm chất lượng, thiết kế tinh tế, 
+                        phù hợp với nhiều phong cách khác nhau từ hiện đại đến cổ điển.
+                        <br><br>
+                        <strong>Địa chỉ:</strong> Số 2, Đường 3/2, Phường 12, Quận 10, TP. Hồ Chí Minh
+                    </div>
+                    <a href="https://www.nhaxinh.com" target="_blank" class="partner-link">
+                        Xem thêm <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Partner -->
+        <div class="partners-section">
+            <h2>
+                <i class="fas fa-code"></i> Đối Tác Công Nghệ
+            </h2>
+            <div class="partners-grid">
+                <div class="partner-card devmaster-special">
+                    <div class="partner-logo has-image" id="devmaster-logo">
+                        <img src="https://devmaster.edu.vn/logo.png" 
+                             alt="DevMaster Logo" 
+                             onerror="this.onerror=null; this.src='https://devmaster.edu.vn/images/logo.png'; this.onerror=function(){this.style.display='none'; const logoDiv=document.getElementById('devmaster-logo'); if(logoDiv){logoDiv.innerHTML='<i class=\'fas fa-laptop-code\'></i>'; logoDiv.classList.remove('has-image');}};">
+                    </div>
+                    <div class="partner-name">VIỆN CÔNG NGHỆ VÀ ĐÀO TẠO DEVMASTER</div>
+                    <div class="partner-type" style="background: rgba(255, 255, 255, 0.3);">Đào Tạo - Phần Mềm - Cho Thuê Nhân Sự</div>
+                    <div class="partner-description">
+                        <strong>DevMaster</strong> là viện công nghệ và đào tạo hàng đầu, chuyên đào tạo lập trình viên chuyên nghiệp 
+                        với các khóa học về lập trình frontend, backend, mobile và cơ sở dữ liệu. Với hơn 900+ học viên đã đào tạo, 
+                        20+ khóa học và đội ngũ giảng viên nhiệt huyết, DevMaster là đối tác tin cậy trong việc phát triển 
+                        và xây dựng nền tảng thương mại điện tử cho HOMESTEAD.
+                        <br><br>
+                        <strong>Địa chỉ:</strong> Tầng 6 - Tòa nhà VIỆN CÔNG NGHỆ, Số 25, Vũ Ngọc Phan - Láng Hạ - Đống Đa - Hà Nội<br>
+                        <strong>Hotline:</strong> 0969.609.003 | 0978.611.889<br>
+                        <strong>Email:</strong> devmaster.contact@gmail.com
+                    </div>
+                    <a href="https://devmaster.edu.vn" target="_blank" class="partner-link">
+                        Truy cập website <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="partners-cta">
+            <h3>Bạn muốn trở thành đối tác?</h3>
+            <p>
+                Nếu bạn là đơn vị nội thất, thiết kế hoặc công nghệ và muốn hợp tác với HOMESTEAD, 
+                vui lòng liên hệ với chúng tôi để được tư vấn về cơ hội hợp tác.
+            </p>
+            <a href="/contact" class="cta-button">
+                <i class="fas fa-envelope"></i> Liên Hệ Ngay
+            </a>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+

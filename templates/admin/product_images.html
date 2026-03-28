@@ -1,0 +1,95 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Quản Lý Hình Ảnh - {{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🖼️ Quản Lý Hình Ảnh Sản Phẩm</h1>
+    <p><a href="{{ url_for('admin_products') }}">← Quay lại danh sách sản phẩm</a> | <strong>{{ product.name }}</strong></p>
+</div>
+
+<div class="card" style="margin-bottom: 20px;">
+    <h2 style="margin-bottom: 15px;">➕ Thêm Hình Ảnh Mới</h2>
+    <form method="POST" action="{{ url_for('admin_add_product_image', product_id=product.id) }}">
+        <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 15px; align-items: end;">
+            <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">URL Hình Ảnh *</label>
+                <input type="url" name="image_url" required placeholder="https://example.com/image.jpg" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Mô Tả (Alt Text)</label>
+                <input type="text" name="alt_text" placeholder="Mô tả hình ảnh" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" name="is_primary">
+                    <span>Ảnh chính</span>
+                </label>
+                <button type="submit" style="padding: 10px 20px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">Thêm</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <h2 style="margin-bottom: 15px;">📸 Danh Sách Hình Ảnh ({{ images|length }})</h2>
+    
+    {% if images %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+        {% for image in images %}
+        <div style="border: 2px solid {% if image.is_primary %}#27ae60{% else %}#ddd{% endif %}; border-radius: 8px; padding: 10px; background: #f9f9f9;">
+            <div style="position: relative; margin-bottom: 10px;">
+                <img src="{{ image.image_url }}" alt="{{ image.alt_text or product.name }}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 5px;">
+                {% if image.is_primary %}
+                <span style="position: absolute; top: 5px; right: 5px; background: #27ae60; color: white; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">CHÍNH</span>
+                {% endif %}
+            </div>
+            <div style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                {% if image.alt_text %}{{ image.alt_text }}{% else %}<em>Không có mô tả</em>{% endif %}
+            </div>
+            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                {% if not image.is_primary %}
+                <form method="POST" action="{{ url_for('admin_set_primary_image', product_id=product.id, image_id=image.id) }}" style="flex: 1;">
+                    <button type="submit" style="width: 100%; padding: 6px; background: #3498db; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px;">Đặt làm chính</button>
+                </form>
+                {% endif %}
+                <form method="POST" action="{{ url_for('admin_delete_product_image', product_id=product.id, image_id=image.id) }}" style="flex: 1;" onsubmit="return confirm('Bạn có chắc muốn xóa hình ảnh này?');">
+                    <button type="submit" style="width: 100%; padding: 6px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px;">Xóa</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="text-align: center; padding: 40px; color: #999;">Chưa có hình ảnh nào. Hãy thêm hình ảnh đầu tiên!</p>
+    {% endif %}
+</div>
+
+<style>
+.card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+</style>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
