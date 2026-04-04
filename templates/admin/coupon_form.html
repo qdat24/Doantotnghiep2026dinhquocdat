@@ -1,165 +1,390 @@
 {% extends "admin/base.html" %}
+{% block title %}{% if coupon %}Sửa mã giảm giá{% else %}Thêm mã giảm giá mới{% endif %}{% endblock %}
 
-{% block title %}{% if coupon %}Sửa Mã Giảm Giá{% else %}Thêm Mã Giảm Giá{% endif %}{% endblock %}
+{% block extra_css %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+:root{--f:'Be Vietnam Pro',ui-sans-serif,sans-serif;--dk:#1a1a18;--gd:#b8922a;--bd:#e8e3db;--tx:#2a2520;--mu:#7a7060;--lt:#f5f4f1;--wh:#fff;--gr:#16a34a;--rd:#dc2626;--am:#d97706}
+.cf{font-family:var(--f);color:var(--tx)}.cf *{box-sizing:border-box}
+.cf-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1.5px solid var(--bd);flex-wrap:wrap}
+.cf-hd h1{font-size:1.375rem;font-weight:700;color:var(--dk);margin:0 0 .2rem;letter-spacing:-.02em}
+.cf-hd p{font-size:.8125rem;color:var(--mu);margin:0}
+.cf-badge{display:inline-flex;align-items:center;gap:.375rem;padding:.35rem .875rem;border-radius:99px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
+.b-add{background:#f0faf4;color:#166534;border:1px solid #bbf7d0}
+.b-edit{background:#fffbeb;color:#854d0e;border:1px solid #fde68a}
+.cf-back{display:inline-flex;align-items:center;gap:.375rem;padding:.6rem 1.125rem;border:1.5px solid var(--bd);border-radius:8px;font-family:var(--f);font-size:.78rem;font-weight:600;color:var(--mu);text-decoration:none;transition:all .18s;flex-shrink:0}
+.cf-back svg{width:13px;height:13px}.cf-back:hover{border-color:var(--dk);color:var(--dk)}
+/* Layout */
+.cf-layout{display:grid;grid-template-columns:1fr 300px;gap:1.25rem;align-items:start}
+/* Cards */
+.cf-card{background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:1.25rem}
+.cf-card:last-child{margin-bottom:0}
+.cf-ch{display:flex;align-items:center;gap:.75rem;padding:.875rem 1.25rem;border-bottom:1.5px solid var(--bd);background:var(--lt)}
+.cf-ch-ic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}.cf-ch-ic svg{width:16px;height:16px}
+.ci-bl{background:#eff6ff;color:#2563eb}.ci-am{background:#fffbeb;color:#d97706}.ci-gr{background:#f0faf4;color:#16a34a}.ci-pu{background:#faf5ff;color:#7c3aed}
+.cf-ch h3{font-size:.9rem;font-weight:700;color:var(--dk);margin:0}
+.cf-cb{padding:1.25rem;display:flex;flex-direction:column;gap:.875rem}
+.cf-row{display:grid;grid-template-columns:1fr 1fr;gap:.875rem}
+/* Fields */
+.cf-f{display:flex;flex-direction:column;gap:.375rem}
+.cf-f label{font-size:.78rem;font-weight:600;color:var(--dk);display:flex;align-items:center;gap:.375rem}
+.req{color:var(--rd)}.cf-hint{font-size:.72rem;color:var(--mu);line-height:1.4}
+.cf-inp,.cf-sel,.cf-ta{padding:.65rem .875rem;border:1.5px solid var(--bd);border-radius:8px;font-family:var(--f);font-size:.875rem;color:var(--tx);background:var(--wh);outline:none;transition:border-color .18s,box-shadow .18s;width:100%;-webkit-appearance:none}
+.cf-inp:focus,.cf-sel:focus,.cf-ta:focus{border-color:var(--gd);box-shadow:0 0 0 3px rgba(184,146,42,.1)}
+.cf-inp::placeholder,.cf-ta::placeholder{color:#c0b9ae}
+.cf-ta{resize:vertical;min-height:80px}
+/* Code input */
+.cf-code-wrap{position:relative}
+.cf-code-inp{font-family:'Courier New',monospace;font-size:.9375rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.7rem 2.75rem .7rem .875rem}
+.cf-code-gen{position:absolute;right:.625rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--mu);font-family:var(--f);font-size:.68rem;font-weight:600;padding:.25rem .375rem;transition:color .15s}
+.cf-code-gen:hover{color:var(--dk)}
+/* Select wrapper */
+.cf-sel-w{position:relative}.cf-sel{padding-right:2.25rem}
+.cf-arr{position:absolute;right:.625rem;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--mu);pointer-events:none}
+/* Discount value */
+.cf-val-wrap{position:relative;display:flex;align-items:center}
+.cf-val-inp{width:100%}
+.cf-val-sfx{position:absolute;right:.875rem;font-size:.8125rem;font-weight:700;color:var(--mu);pointer-events:none}
+/* Checkbox */
+.cf-check{display:flex;align-items:center;gap:.75rem;padding:.875rem 1rem;background:var(--lt);border:1.5px solid var(--bd);border-radius:8px;cursor:pointer;user-select:none;transition:border-color .18s}
+.cf-check:hover{border-color:var(--gd)}
+.cf-check input[type=checkbox]{width:17px;height:17px;accent-color:var(--gd);flex-shrink:0;margin:0;cursor:pointer}
+.cf-check span{font-size:.8125rem;font-weight:500;color:var(--dk)}
+/* Preview */
+.cf-preview{background:var(--lt);border:1.5px dashed var(--bd);border-radius:9px;padding:1rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;text-align:center;min-height:80px;justify-content:center;transition:all .2s}
+.cf-preview.live{background:rgba(184,146,42,.06);border-color:var(--gd)}
+.cf-pv-code{font-family:'Courier New',monospace;font-size:1.25rem;font-weight:700;color:var(--gd);letter-spacing:.08em}
+.cf-pv-val{font-size:.875rem;font-weight:600;color:var(--dk)}
+.cf-pv-sub{font-size:.72rem;color:var(--mu)}
+/* Submit bar */
+.cf-bar{background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;position:sticky;bottom:1rem;box-shadow:0 4px 16px rgba(0,0,0,.08);grid-column:1/-1}
+.cf-bar-info{font-size:.78rem;color:var(--mu)}.cf-bar-info strong{color:var(--dk)}
+.cf-bar-btns{display:flex;gap:.625rem}
+.cf-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.25rem;border-radius:8px;font-family:var(--f);font-size:.875rem;font-weight:600;cursor:pointer;transition:all .18s;text-decoration:none;border:1.5px solid transparent}
+.cf-btn svg{width:15px;height:15px}
+.btn-save{background:var(--dk);color:var(--wh);border-color:var(--dk)}.btn-save:hover{background:#2e2e2a}
+.btn-save:disabled{opacity:.65;cursor:not-allowed}
+.btn-cancel{background:var(--wh);color:var(--mu);border-color:var(--bd)}.btn-cancel:hover{border-color:var(--rd);color:var(--rd)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:900px){.cf-layout{grid-template-columns:1fr};.cf-side{order:-1}}
+@media(max-width:600px){.cf-row{grid-template-columns:1fr};.cf-hd{flex-direction:column};.cf-bar{flex-direction:column;align-items:stretch;position:static};.cf-bar-btns{justify-content:flex-end}}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>{% if coupon %}✏️ Sửa Mã Giảm Giá{% else %}➕ Thêm Mã Giảm Giá Mới{% endif %}</h1>
-    <p>Điền thông tin mã giảm giá</p>
-</div>
+<div class="cf">
 
-<div class="card">
-    <form method="POST" action="{% if coupon %}{{ url_for('admin_edit_coupon', coupon_id=coupon.id) }}{% else %}{{ url_for('admin_add_coupon') }}{% endif %}">
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+  <div class="cf-hd">
+    <div>
+      <div class="cf-badge {% if coupon %}b-edit{% else %}b-add{% endif %}">
+        {% if coupon %}
+        <svg viewBox="0 0 12 12" fill="none" style="width:10px;height:10px"><path d="M9 2l1 1-6 6H3V8L9 2z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Chỉnh sửa
+        {% else %}
+        <svg viewBox="0 0 12 12" fill="none" style="width:10px;height:10px"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Thêm mới
+        {% endif %}
+      </div>
+      <h1>{% if coupon %}Sửa mã giảm giá{% else %}Thêm mã giảm giá mới{% endif %}</h1>
+      <p>{% if coupon %}Cập nhật thông tin mã <strong>{{ coupon.code }}</strong>{% else %}Điền thông tin để tạo mã giảm giá mới{% endif %}</p>
+    </div>
+    <a href="{{ url_for('admin_coupons') }}" class="cf-back">
+      <svg viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Danh sách mã
+    </a>
+  </div>
+
+  <form method="POST" action="{% if coupon %}{{ url_for('admin_edit_coupon', coupon_id=coupon.id) }}{% else %}{{ url_for('admin_add_coupon') }}{% endif %}" id="cfForm">
+    <div class="cf-layout">
+
+      <!-- LEFT -->
+      <div class="cf-col-left">
+
+        <!-- Basic info -->
+        <div class="cf-card">
+          <div class="cf-ch">
+            <div class="cf-ch-ic ci-pu"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2h5a1 1 0 011 1v5l-8 8a2 2 0 01-2.828 0l-4-4A2 2 0 011.17 9L9 2h1zm3.5 4a1 1 0 100-2 1 1 0 000 2z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3>Thông tin mã</h3>
+          </div>
+          <div class="cf-cb">
             {% if not coupon %}
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Mã Giảm Giá *</label>
-                <input type="text" name="code" value="{{ coupon.code if coupon else '' }}" required 
-                       placeholder="VD: SALE2024" 
-                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; text-transform: uppercase;"
-                       pattern="[A-Z0-9]+" title="Chỉ chấp nhận chữ in hoa và số">
-                <small style="color: #666; font-size: 12px;">Chỉ chấp nhận chữ in hoa và số, không có khoảng trắng</small>
+            <div class="cf-f">
+              <label>Mã giảm giá <span class="req">*</span></label>
+              <div class="cf-code-wrap">
+                <input class="cf-inp cf-code-inp" type="text" id="codeInput" name="code" value="{{ coupon.code if coupon else '' }}"
+                       required placeholder="VD: SALE2024" pattern="[A-Z0-9]+" title="Chỉ chữ in hoa và số">
+                <button type="button" class="cf-code-gen" onclick="genCode()" title="Tạo mã ngẫu nhiên">⚡ Tạo</button>
+              </div>
+              <span class="cf-hint">Chỉ chữ in hoa và số, không khoảng trắng. Click ⚡ để tạo tự động.</span>
             </div>
             {% endif %}
-
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Tên Mã Giảm Giá *</label>
-                <input type="text" name="name" value="{{ coupon.name if coupon else '' }}" required 
-                       placeholder="VD: Giảm giá 20% cho đơn hàng đầu tiên"
-                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+            <div class="cf-f">
+              <label>Tên mã giảm giá <span class="req">*</span></label>
+              <input class="cf-inp" type="text" name="name" value="{{ coupon.name if coupon else '' }}" required placeholder="VD: Giảm 20% cho đơn đầu tiên">
             </div>
-
-            <div style="grid-column: 1 / -1;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Mô Tả</label>
-                <textarea name="description" rows="3" 
-                          placeholder="Mô tả chi tiết về mã giảm giá này..."
-                          style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">{{ coupon.description if coupon else '' }}</textarea>
+            <div class="cf-f">
+              <label>Mô tả</label>
+              <textarea class="cf-ta" name="description" placeholder="Mô tả chi tiết về điều kiện áp dụng...">{{ coupon.description if coupon else '' }}</textarea>
             </div>
+          </div>
+        </div>
 
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Loại Giảm Giá *</label>
-                <select name="discount_type" required id="discount_type" 
-                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+        <!-- Discount config -->
+        <div class="cf-card">
+          <div class="cf-ch">
+            <div class="cf-ch-ic ci-am"><svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 9h16M6 13h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <h3>Cấu hình giảm giá</h3>
+          </div>
+          <div class="cf-cb">
+            <div class="cf-row">
+              <div class="cf-f">
+                <label>Loại giảm <span class="req">*</span></label>
+                <div class="cf-sel-w">
+                  <select class="cf-sel" name="discount_type" id="discType" required>
                     <option value="">-- Chọn loại --</option>
-                    <option value="percentage" {% if coupon and coupon.discount_type == 'percentage' %}selected{% endif %}>Phần trăm (%)</option>
-                    <option value="fixed" {% if coupon and coupon.discount_type == 'fixed' %}selected{% endif %}>Số tiền cố định (VNĐ)</option>
-                </select>
+                    <option value="percentage" {% if coupon and coupon.discount_type=='percentage' %}selected{% endif %}>Phần trăm (%)</option>
+                    <option value="fixed" {% if coupon and coupon.discount_type=='fixed' %}selected{% endif %}>Số tiền cố định (₫)</option>
+                  </select>
+                  <svg class="cf-arr" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                </div>
+              </div>
+              <div class="cf-f">
+                <label>Giá trị giảm <span class="req">*</span></label>
+                <div class="cf-val-wrap">
+                  <input class="cf-inp cf-val-inp" type="number" id="discVal" name="discount_value"
+                         value="{{ coupon.discount_value if coupon else '' }}" required min="0" step="1"
+                         placeholder="0" style="padding-right:2.5rem">
+                  <span class="cf-val-sfx" id="discSfx">%</span>
+                </div>
+                <span class="cf-hint" id="discHint">Chọn loại giảm giá trước</span>
+              </div>
             </div>
-
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Giá Trị Giảm *</label>
-                <input type="number" name="discount_value" value="{{ coupon.discount_value if coupon else '' }}" required 
-                       min="0" step="0.01" id="discount_value"
-                       placeholder="VD: 20 (nếu %) hoặc 50000 (nếu VNĐ)"
-                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-                <small style="color: #666; font-size: 12px;" id="discount_hint">Nhập số phần trăm (1-100) hoặc số tiền (VNĐ)</small>
+            <div class="cf-row">
+              <div class="cf-f">
+                <label>Đơn hàng tối thiểu</label>
+                <div class="cf-val-wrap">
+                  <input class="cf-inp" type="number" name="min_order_amount" value="{{ coupon.min_order_amount if coupon else '0' }}" min="0" step="1000" placeholder="0" style="padding-right:2.5rem">
+                  <span class="cf-val-sfx">₫</span>
+                </div>
+                <span class="cf-hint">0 = không yêu cầu đơn tối thiểu</span>
+              </div>
+              <div class="cf-f">
+                <label>Giảm tối đa</label>
+                <div class="cf-val-wrap">
+                  <input class="cf-inp" type="number" name="max_discount_amount" value="{{ coupon.max_discount_amount if coupon else '' }}" min="0" step="1000" placeholder="Không giới hạn" style="padding-right:2.5rem">
+                  <span class="cf-val-sfx">₫</span>
+                </div>
+                <span class="cf-hint">Dùng cho loại phần trăm — để trống = không giới hạn</span>
+              </div>
             </div>
-
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Đơn Hàng Tối Thiểu (VNĐ)</label>
-                <input type="number" name="min_order_amount" value="{{ coupon.min_order_amount if coupon else '0' }}" 
-                       min="0" step="1000"
-                       placeholder="0"
-                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-                <small style="color: #666; font-size: 12px;">Đơn hàng phải đạt số tiền này mới được áp dụng mã</small>
-            </div>
-
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Giảm Tối Đa (VNĐ)</label>
-                <input type="number" name="max_discount_amount" value="{{ coupon.max_discount_amount if coupon else '' }}" 
-                       min="0" step="1000"
-                       placeholder="Không giới hạn"
-                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-                <small style="color: #666; font-size: 12px;">Áp dụng cho giảm theo phần trăm (để trống = không giới hạn)</small>
-            </div>
-
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Giới Hạn Sử Dụng</label>
-                <input type="number" name="usage_limit" value="{{ coupon.usage_limit if coupon else '' }}" 
-                       min="1"
-                       placeholder="Không giới hạn"
-                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-                <small style="color: #666; font-size: 12px;">Số lần mã có thể được sử dụng (để trống = không giới hạn)</small>
-            </div>
-
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Ngày Bắt Đầu *</label>
-                <input type="datetime-local" name="start_date" 
-                       value="{% if coupon and coupon.start_date %}{{ coupon.start_date.strftime('%Y-%m-%dT%H:%M') if coupon.start_date else '' }}{% endif %}" 
-                       required
-                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-            </div>
-
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Ngày Kết Thúc *</label>
-                <input type="datetime-local" name="end_date" 
-                       value="{% if coupon and coupon.end_date %}{{ coupon.end_date.strftime('%Y-%m-%dT%H:%M') if coupon.end_date else '' }}{% endif %}" 
-                       required
-                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-            </div>
-
-            <div style="grid-column: 1 / -1;">
-                <label style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-                    <input type="checkbox" name="is_active" value="true" 
-                           {% if coupon and coupon.is_active %}checked{% elif not coupon %}checked{% endif %}
-                           style="width: 20px; height: 20px;">
-                    <span style="font-weight: 600;">Kích hoạt mã giảm giá (hiển thị và có thể sử dụng)</span>
-                </label>
-            </div>
+          </div>
         </div>
 
-        <div style="margin-top: 30px; display: flex; gap: 10px; padding-top: 20px; border-top: 1px solid #eee;">
-            <button type="submit" class="btn btn-success" style="padding: 12px 24px; font-size: 16px; font-weight: 600;">💾 Lưu Mã Giảm Giá</button>
-            <a href="{{ url_for('admin_coupons') }}" class="btn btn-danger" style="padding: 12px 24px; font-size: 16px; font-weight: 600; text-decoration: none; display: inline-block;">❌ Hủy</a>
+        <!-- Validity -->
+        <div class="cf-card">
+          <div class="cf-ch">
+            <div class="cf-ch-ic ci-bl"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="14" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8h14M7 4V2M13 4V2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <h3>Thời hạn & giới hạn</h3>
+          </div>
+          <div class="cf-cb">
+            <div class="cf-row">
+              <div class="cf-f">
+                <label>Ngày bắt đầu <span class="req">*</span></label>
+                <input class="cf-inp" type="datetime-local" name="start_date" id="startDate"
+                       value="{% if coupon and coupon.start_date %}{{ coupon.start_date.strftime('%Y-%m-%dT%H:%M') }}{% endif %}" required>
+              </div>
+              <div class="cf-f">
+                <label>Ngày kết thúc <span class="req">*</span></label>
+                <input class="cf-inp" type="datetime-local" name="end_date" id="endDate"
+                       value="{% if coupon and coupon.end_date %}{{ coupon.end_date.strftime('%Y-%m-%dT%H:%M') }}{% endif %}" required>
+              </div>
+            </div>
+            <div class="cf-f">
+              <label>Giới hạn số lần dùng</label>
+              <input class="cf-inp" type="number" name="usage_limit" value="{{ coupon.usage_limit if coupon else '' }}" min="1" placeholder="Không giới hạn">
+              <span class="cf-hint">Để trống = không giới hạn số lần sử dụng</span>
+            </div>
+            <label class="cf-check">
+              <input type="checkbox" name="is_active" value="true"
+                     {% if coupon and coupon.is_active %}checked{% elif not coupon %}checked{% endif %}>
+              <span>Kích hoạt mã — cho phép khách hàng sử dụng ngay</span>
+            </label>
+          </div>
         </div>
-    </form>
+
+      </div>
+
+      <!-- RIGHT: Preview -->
+      <div class="cf-col-right cf-side">
+        <div class="cf-card">
+          <div class="cf-ch">
+            <div class="cf-ch-ic ci-gr"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3>Xem trước</h3>
+          </div>
+          <div style="padding:1.25rem;display:flex;flex-direction:column;gap:.875rem">
+            <div class="cf-preview" id="cpPreview">
+              <div class="cf-pv-code" id="pvCode">—</div>
+              <div class="cf-pv-val" id="pvVal">Điền thông tin để xem trước</div>
+              <div class="cf-pv-sub" id="pvSub"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:.5rem;font-size:.78rem">
+              <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--bd)">
+                <span style="color:var(--mu)">Đơn tối thiểu</span>
+                <span id="pvMin" style="font-weight:600;color:var(--dk)">—</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--bd)">
+                <span style="color:var(--mu)">Giảm tối đa</span>
+                <span id="pvMax" style="font-weight:600;color:var(--dk)">—</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:.5rem 0">
+                <span style="color:var(--mu)">Giới hạn dùng</span>
+                <span id="pvLimit" style="font-weight:600;color:var(--dk)">Không giới hạn</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% if coupon %}
+        <div class="cf-card">
+          <div class="cf-ch">
+            <div class="cf-ch-ic ci-bl"><svg viewBox="0 0 20 20" fill="none"><path d="M2 14l4-5 3 2 4-6 4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3>Thống kê sử dụng</h3>
+          </div>
+          <div style="padding:1.125rem;display:flex;flex-direction:column;gap:.5rem">
+            <div style="display:flex;justify-content:space-between;font-size:.8125rem;padding:.5rem 0;border-bottom:1px solid var(--bd)">
+              <span style="color:var(--mu)">Đã sử dụng</span>
+              <strong style="color:var(--dk)">{{ coupon.usage_count }} lần</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:.8125rem;padding:.5rem 0;border-bottom:1px solid var(--bd)">
+              <span style="color:var(--mu)">Giới hạn</span>
+              <strong style="color:var(--dk)">{% if coupon.usage_limit %}{{ coupon.usage_limit }}{% else %}∞{% endif %}</strong>
+            </div>
+            {% if coupon.usage_limit %}
+            <div style="margin-top:.375rem">
+              <div style="height:6px;background:var(--bd);border-radius:99px;overflow:hidden">
+                <div style="height:100%;background:var(--gd);border-radius:99px;width:{{ [coupon.usage_count/coupon.usage_limit*100,100]|min|int }}%"></div>
+              </div>
+              <div style="font-size:.68rem;color:var(--mu);margin-top:.25rem;text-align:right">{{ [coupon.usage_count/coupon.usage_limit*100,100]|min|int }}% đã dùng</div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Submit bar -->
+      <div class="cf-bar">
+        <div class="cf-bar-info">{% if coupon %}Đang sửa: <strong>{{ coupon.code }}</strong>{% else %}Tất cả trường <span style="color:var(--rd)">*</span> là bắt buộc{% endif %}</div>
+        <div class="cf-bar-btns">
+          <a href="{{ url_for('admin_coupons') }}" class="cf-btn btn-cancel">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Hủy
+          </a>
+          <button type="submit" class="cf-btn btn-save" id="saveBtn">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            {% if coupon %}Lưu thay đổi{% else %}Tạo mã giảm giá{% endif %}
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </form>
 </div>
 
 <script>
-    // Cập nhật hint khi thay đổi loại giảm giá
-    const discountType = document.getElementById('discount_type');
-    const discountValue = document.getElementById('discount_value');
-    const discountHint = document.getElementById('discount_hint');
+var fmt = function(n){return new Intl.NumberFormat('vi-VN').format(n)+' ₫';};
 
-    discountType.addEventListener('change', function() {
-        if (this.value === 'percentage') {
-            discountValue.setAttribute('max', '100');
-            discountValue.setAttribute('step', '1');
-            discountHint.textContent = 'Nhập số phần trăm (1-100)';
-            discountValue.placeholder = 'VD: 20 (tức 20%)';
-        } else if (this.value === 'fixed') {
-            discountValue.removeAttribute('max');
-            discountValue.setAttribute('step', '1000');
-            discountHint.textContent = 'Nhập số tiền giảm (VNĐ)';
-            discountValue.placeholder = 'VD: 50000';
-        }
-    });
+/* Code input auto uppercase */
+var codeInp = document.getElementById('codeInput');
+if(codeInp){
+  codeInp.addEventListener('input',function(){
+    var p=this.selectionStart;
+    this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+    this.setSelectionRange(p,p);
+    updatePreview();
+  });
+}
 
-    // Tự động chuyển mã code thành chữ in hoa
-    const codeInput = document.querySelector('input[name="code"]');
-    if (codeInput) {
-        codeInput.addEventListener('input', function() {
-            this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-        });
-    }
+/* Generate random code */
+function genCode(){
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var code='';
+  for(var i=0;i<8;i++) code+=chars[Math.floor(Math.random()*chars.length)];
+  if(codeInp){codeInp.value=code;updatePreview();}
+}
 
-    // Validate ngày tháng
-    const startDate = document.querySelector('input[name="start_date"]');
-    const endDate = document.querySelector('input[name="end_date"]');
+/* Discount type change */
+var discType=document.getElementById('discType');
+var discVal=document.getElementById('discVal');
+var discSfx=document.getElementById('discSfx');
+var discHint=document.getElementById('discHint');
+discType.addEventListener('change',function(){
+  if(this.value==='percentage'){
+    discVal.max='100';discVal.step='1';
+    discSfx.textContent='%';
+    discHint.textContent='Nhập số phần trăm từ 1 đến 100';
+    discVal.placeholder='VD: 20';
+  } else if(this.value==='fixed'){
+    discVal.removeAttribute('max');discVal.step='1000';
+    discSfx.textContent='₫';
+    discHint.textContent='Nhập số tiền giảm (VNĐ)';
+    discVal.placeholder='VD: 50000';
+  }
+  updatePreview();
+});
+// Init on load
+if(discType.value) discType.dispatchEvent(new Event('change'));
 
-    if (startDate && endDate) {
-        function validateDates() {
-            if (startDate.value && endDate.value) {
-                if (new Date(startDate.value) >= new Date(endDate.value)) {
-                    endDate.setCustomValidity('Ngày kết thúc phải sau ngày bắt đầu');
-                } else {
-                    endDate.setCustomValidity('');
-                }
-            }
-        }
+/* Live preview */
+function updatePreview(){
+  var code=(codeInp?codeInp.value:'{% if coupon %}{{ coupon.code }}{% endif %}') || '—';
+  var type=discType.value;
+  var val=parseFloat(discVal?discVal.value:0)||0;
+  var pvCode=document.getElementById('pvCode');
+  var pvVal=document.getElementById('pvVal');
+  var pvSub=document.getElementById('pvSub');
+  var prev=document.getElementById('cpPreview');
+  pvCode.textContent=code;
+  if(type && val>0){
+    pvVal.textContent=type==='percentage'?'Giảm '+val+'%':'Giảm '+fmt(val);
+    pvSub.textContent=type==='percentage'?'Theo phần trăm đơn hàng':'Giảm thẳng vào tổng tiền';
+    prev.classList.add('live');
+  } else {
+    pvVal.textContent='Điền giá trị để xem trước';
+    pvSub.textContent='';prev.classList.remove('live');
+  }
+  /* Update summary */
+  var minEl=document.querySelector('input[name=min_order_amount]');
+  var maxEl=document.querySelector('input[name=max_discount_amount]');
+  var limEl=document.querySelector('input[name=usage_limit]');
+  var minV=parseFloat(minEl?minEl.value:0)||0;
+  var maxV=parseFloat(maxEl?maxEl.value:0)||0;
+  var limV=parseInt(limEl?limEl.value:0)||0;
+  document.getElementById('pvMin').textContent=minV>0?fmt(minV):'Không yêu cầu';
+  document.getElementById('pvMax').textContent=maxV>0?fmt(maxV):'Không giới hạn';
+  document.getElementById('pvLimit').textContent=limV>0?limV+' lần':'Không giới hạn';
+}
+document.getElementById('cfForm').addEventListener('input',updatePreview);
+updatePreview();
 
-        startDate.addEventListener('change', validateDates);
-        endDate.addEventListener('change', validateDates);
-    }
+/* Date validation */
+var startDate=document.getElementById('startDate');
+var endDate=document.getElementById('endDate');
+function validateDates(){
+  if(startDate.value&&endDate.value){
+    endDate.setCustomValidity(new Date(startDate.value)>=new Date(endDate.value)?'Ngày kết thúc phải sau ngày bắt đầu':'');
+  }
+}
+startDate.addEventListener('change',validateDates);
+endDate.addEventListener('change',validateDates);
+
+/* Submit */
+document.getElementById('cfForm').addEventListener('submit',function(){
+  var b=document.getElementById('saveBtn');
+  b.disabled=true;
+  b.innerHTML='<svg viewBox="0 0 24 24" fill="none" style="width:15px;height:15px;animation:spin .7s linear infinite"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,.3)" stroke-width="3"/><path d="M12 2a10 10 0 0110 10" stroke="white" stroke-width="3" stroke-linecap="round"/></svg> Đang lưu...';
+  setTimeout(function(){b.disabled=false;b.innerHTML='<svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> {% if coupon %}Lưu thay đổi{% else %}Tạo mã giảm giá{% endif %}';},5000);
+});
 </script>
 {% endblock %}

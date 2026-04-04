@@ -1,325 +1,451 @@
 {% extends "base.html" %}
-
 {% block title %}Chính Sách - HOMESTEAD{% endblock %}
 
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
+<div class="pl-root">
+
+  <!-- Header -->
+  <div class="pl-header">
+    <div class="plh-inner">
+      <div class="plh-bc">
+        <a href="/">Trang chủ</a>
+        <svg viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span>Chính sách</span>
+      </div>
+      <h1>Chính sách <span class="gold">& cam kết</span></h1>
+      <p>Quy định và các cam kết của HOMESTEAD với khách hàng</p>
+    </div>
+  </div>
+
+  <!-- Sidebar nav + content -->
+  <div class="pl-body">
+    <div class="plb-inner">
+
+      <!-- Sidebar -->
+      <nav class="pl-nav">
+        <div class="pln-title">Mục lục</div>
+        <a href="#shipping"  class="pln-item pln-active">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3m-1 11h6m-3-3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Giao hàng
+        </a>
+        <a href="#return"    class="pln-item">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M4 10a6 6 0 100 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 6v4h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Đổi trả
+        </a>
+        <a href="#warranty"  class="pln-item">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M10 2l6 2.5v5c0 4-2.5 7-6 8.5C4.5 16.5 2 13.5 2 9.5v-5L10 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Bảo hành
+        </a>
+        <a href="#payment"   class="pln-item">
+          <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 9h16M6 13h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Thanh toán
+        </a>
+        <a href="#privacy"   class="pln-item">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 00-5 5v1H4a1 1 0 00-1 1v8a1 1 0 001 1h12a1 1 0 001-1v-8a1 1 0 00-1-1h-1V7a5 5 0 00-5-5zm0 2a3 3 0 013 3v1H7V7a3 3 0 013-3z" stroke="currentColor" stroke-width="1.4"/></svg>
+          Bảo mật
+        </a>
+
+        <div class="pln-divider"></div>
+        <div class="pln-contact">
+          <div class="pln-contact-title">Cần hỗ trợ?</div>
+          <a href="/contact" class="pln-contact-btn">Liên hệ ngay</a>
+          <a href="tel:0345211386" class="pln-phone">0345 211 386</a>
+        </div>
+      </nav>
+
+      <!-- Content -->
+      <main class="pl-content">
+
+        <!-- Giao hàng -->
+        <section class="pl-section" id="shipping">
+          <div class="pls-header">
+            <div class="pls-icon pls-icon-green">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3m-1 11h6m-3-3l3 3-3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <h2>Chính sách giao hàng</h2>
+              <p>Cam kết giao hàng nhanh chóng, an toàn trên toàn quốc</p>
+            </div>
+          </div>
+
+          <div class="pls-highlight">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 4v4l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <strong>Miễn phí vận chuyển</strong> cho đơn hàng từ 5 triệu đồng trên toàn quốc
+          </div>
+
+          <div class="pls-two-col">
+            <div class="pls-block">
+              <h3>Thời gian giao hàng</h3>
+              <ul class="pls-list">
+                <li>
+                  <div class="pls-li-dot"></div>
+                  <div><strong>Nội thành TP.HCM, Hà Nội</strong><span>1–2 ngày làm việc</span></div>
+                </li>
+                <li>
+                  <div class="pls-li-dot"></div>
+                  <div><strong>Các tỉnh thành khác</strong><span>3–5 ngày làm việc</span></div>
+                </li>
+                <li>
+                  <div class="pls-li-dot"></div>
+                  <div><strong>Vùng xa, vùng sâu</strong><span>5–7 ngày làm việc</span></div>
+                </li>
+              </ul>
+            </div>
+            <div class="pls-block">
+              <h3>Phí vận chuyển</h3>
+              <ul class="pls-list">
+                <li>
+                  <div class="pls-li-dot pls-li-gold"></div>
+                  <div><strong>Đơn từ 5 triệu</strong><span class="free">Miễn phí hoàn toàn</span></div>
+                </li>
+                <li>
+                  <div class="pls-li-dot"></div>
+                  <div><strong>Đơn dưới 5 triệu</strong><span>200.000 ₫ cố định</span></div>
+                </li>
+                <li>
+                  <div class="pls-li-dot"></div>
+                  <div><strong>Vùng xa</strong><span>Thông báo trước khi giao</span></div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Đổi trả -->
+        <section class="pl-section" id="return">
+          <div class="pls-header">
+            <div class="pls-icon pls-icon-amber">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 100 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4 8v4h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <h2>Chính sách đổi trả</h2>
+              <p>Đổi trả dễ dàng trong 7 ngày nếu có lỗi từ phía chúng tôi</p>
+            </div>
+          </div>
+
+          <div class="pls-two-col">
+            <div class="pls-block">
+              <h3>Điều kiện đổi trả</h3>
+              <ul class="pls-check-list">
+                <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Sản phẩm còn nguyên vẹn, chưa qua sử dụng</li>
+                <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Còn đủ hộp, phụ kiện, hóa đơn mua hàng</li>
+                <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Trong vòng <strong>7 ngày</strong> từ ngày nhận hàng</li>
+              </ul>
+            </div>
+            <div class="pls-block">
+              <h3>Trường hợp được đổi trả</h3>
+              <ul class="pls-check-list">
+                <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Sản phẩm lỗi do nhà sản xuất</li>
+                <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Giao sai sản phẩm hoặc thiếu phụ kiện</li>
+                <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Hư hại trong quá trình vận chuyển</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bảo hành -->
+        <section class="pl-section" id="warranty">
+          <div class="pls-header">
+            <div class="pls-icon pls-icon-dark">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l6 2.5v6c0 4.8-3 8.5-6 10.2C9 18.9 6 15.2 6 10.5v-6L12 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <h2>Chính sách bảo hành</h2>
+              <p>Bảo hành chính hãng từ 6 tháng đến 2 năm tùy loại sản phẩm</p>
+            </div>
+          </div>
+
+          <div class="warranty-grid">
+            <div class="warranty-item">
+              <div class="wi-label">Nội thất gỗ</div>
+              <div class="wi-dur">2 năm</div>
+            </div>
+            <div class="warranty-item">
+              <div class="wi-label">Sofa, giường</div>
+              <div class="wi-dur">1 năm</div>
+            </div>
+            <div class="warranty-item">
+              <div class="wi-label">Phụ kiện, linh kiện</div>
+              <div class="wi-dur">6 tháng</div>
+            </div>
+          </div>
+
+          <div class="pls-block" style="margin-top:1.5rem">
+            <h3>Quy trình bảo hành</h3>
+            <ol class="pls-steps">
+              <li><span class="step-num">1</span><div><strong>Liên hệ hotline</strong><span>Gọi 0345 211 386 hoặc liên hệ qua website</span></div></li>
+              <li><span class="step-num">2</span><div><strong>Cung cấp thông tin</strong><span>Thông tin sản phẩm, mã đơn hàng, hóa đơn</span></div></li>
+              <li><span class="step-num">3</span><div><strong>Kiểm tra miễn phí</strong><span>Đội ngũ kỹ thuật đến tận nơi kiểm tra</span></div></li>
+              <li><span class="step-num">4</span><div><strong>Sửa chữa / thay thế</strong><span>Miễn phí nếu thuộc diện bảo hành</span></div></li>
+            </ol>
+          </div>
+        </section>
+
+        <!-- Thanh toán -->
+        <section class="pl-section" id="payment">
+          <div class="pls-header">
+            <div class="pls-icon pls-icon-blue">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M2 10h20M6 14h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <h2>Chính sách thanh toán</h2>
+              <p>Đa dạng hình thức thanh toán an toàn và tiện lợi</p>
+            </div>
+          </div>
+
+          <div class="payment-methods-grid">
+            <div class="pm-card">
+              <div class="pm-icon pm-cod">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 4v5l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <strong>COD</strong>
+              <span>Thanh toán khi nhận hàng tại nhà</span>
+            </div>
+            <div class="pm-card">
+              <div class="pm-icon pm-bank">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M2 7l8-5 8 5v2H2V7zm0 4h16v7H2v-7zm4 2v3m4-3v3m4-3v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <strong>Chuyển khoản</strong>
+              <span>Ngân hàng hoặc ví điện tử (QR)</span>
+            </div>
+            <div class="pm-card">
+              <div class="pm-icon pm-card">
+                <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 9h16M6 13h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              </div>
+              <strong>Thẻ tín dụng</strong>
+              <span>Visa, Mastercard, JCB</span>
+            </div>
+            <div class="pm-card">
+              <div class="pm-icon pm-installment">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M3 10h14M10 3v14M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              </div>
+              <strong>Trả góp 0%</strong>
+              <span>Đơn từ 10 triệu, nhiều kỳ hạn</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bảo mật -->
+        <section class="pl-section" id="privacy">
+          <div class="pls-header">
+            <div class="pls-icon pls-icon-purple">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2a5 5 0 00-5 5v2H6a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2v-9a2 2 0 00-2-2h-1V7a5 5 0 00-5-5zm0 2a3 3 0 013 3v2H9V7a3 3 0 013-3z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <h2>Chính sách bảo mật</h2>
+              <p>Bảo vệ tuyệt đối thông tin và quyền riêng tư của bạn</p>
+            </div>
+          </div>
+
+          <div class="pls-two-col">
+            <div class="pls-block">
+              <h3>Cam kết của chúng tôi</h3>
+              <ul class="pls-check-list">
+                <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Bảo mật tuyệt đối thông tin khách hàng</li>
+                <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Không chia sẻ dữ liệu cho bên thứ ba</li>
+                <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Mã hóa SSL 256-bit cho mọi giao dịch</li>
+                <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Tuân thủ Luật bảo vệ dữ liệu cá nhân</li>
+              </ul>
+            </div>
+            <div class="pls-block">
+              <h3>Dữ liệu được thu thập</h3>
+              <ul class="pls-check-list">
+                <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Họ tên, email, số điện thoại</li>
+                <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Địa chỉ giao hàng</li>
+                <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Lịch sử đơn hàng</li>
+                <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Cookie (để cải thiện trải nghiệm)</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- CTA bottom -->
+        <div class="pl-cta">
+          <h2>Còn thắc mắc?</h2>
+          <p>Đội ngũ hỗ trợ của chúng tôi sẵn sàng giải đáp mọi câu hỏi của bạn.</p>
+          <div class="pl-cta-btns">
+            <a href="/contact" class="btn-dark">Liên hệ ngay</a>
+            <a href="tel:0345211386" class="btn-outline">0345 211 386</a>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+</div>
+
 <style>
-    .policy-hero {
-        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
-        color: white;
-        padding: 4rem 0;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--font:'Be Vietnam Pro',sans-serif;--dark:#1a1a18;--gold:#b8922a;--border:#e8e3db;--text:#2a2520;--muted:#7a7060;--light:#f5f4f1;--cream:#faf9f7}
+body{font-family:var(--font);color:var(--text)}
+a{text-decoration:none;color:inherit}
 
-    .policy-hero::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
-        opacity: 0.3;
-    }
+/* Header */
+.pl-header{background:var(--dark);padding:3rem 2rem;text-align:center;position:relative;overflow:hidden}
+.pl-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 100%,rgba(196,160,100,.12) 0%,transparent 60%)}
+.plh-inner{position:relative;z-index:1;max-width:1280px;margin:0 auto}
+.plh-bc{display:flex;align-items:center;justify-content:center;gap:.375rem;margin-bottom:.875rem}
+.plh-bc a,.plh-bc span{font-size:.75rem;color:rgba(255,255,255,.45)}
+.plh-bc a:hover{color:rgba(255,255,255,.8)}
+.plh-bc svg{width:11px;height:11px;color:rgba(255,255,255,.25)}
+.pl-header h1{font-size:clamp(1.875rem,4vw,2.75rem);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:.5rem}
+.pl-header h1 .gold{color:#c4a064;font-weight:300}
+.pl-header p{font-size:.9rem;color:rgba(255,255,255,.5);font-weight:300}
 
-    .policy-hero .container {
-        position: relative;
-        z-index: 1;
-    }
+/* Body */
+.pl-body{background:var(--light);padding:2rem}
+.plb-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:240px 1fr;gap:2rem;align-items:start}
 
-    .policy-hero h1 {
-        font-size: clamp(2rem, 5vw, 3rem);
-        font-weight: 800;
-        margin-bottom: 1rem;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-    }
+/* Sidebar nav */
+.pl-nav{background:#fff;border-radius:10px;border:1.5px solid var(--border);padding:1.25rem;position:sticky;top:1.5rem;display:flex;flex-direction:column;gap:.25rem}
+.pln-title{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:.25rem .5rem;margin-bottom:.375rem}
+.pln-item{display:flex;align-items:center;gap:.625rem;padding:.625rem .75rem;border-radius:8px;font-size:.8125rem;font-weight:500;color:var(--muted);transition:all .18s}
+.pln-item svg{width:15px;height:15px;flex-shrink:0}
+.pln-item:hover{background:var(--light);color:var(--dark)}
+.pln-active{background:var(--light);color:var(--dark);font-weight:600}
+.pln-divider{height:1px;background:var(--border);margin:.75rem 0}
+.pln-contact{display:flex;flex-direction:column;gap:.5rem;padding:.25rem .5rem}
+.pln-contact-title{font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.pln-contact-btn{display:flex;align-items:center;justify-content:center;padding:.55rem;background:var(--dark);color:#fff;border-radius:7px;font-size:.78rem;font-weight:600;transition:background .18s}
+.pln-contact-btn:hover{background:#2e2e2a}
+.pln-phone{text-align:center;font-size:.75rem;color:var(--gold);font-weight:600;font-variant-numeric:tabular-nums}
 
-    .policy-hero p {
-        font-size: 1.25rem;
-        opacity: 0.95;
-        color: white;
-    }
+/* Content */
+.pl-content{display:flex;flex-direction:column;gap:1.25rem}
 
-    .policy-content {
-        padding: 4rem 0;
-        background: var(--bg-cream);
-    }
+/* Section */
+.pl-section{background:#fff;border-radius:10px;border:1.5px solid var(--border);padding:1.75rem;scroll-margin-top:1.5rem}
 
-    .policy-wrapper {
-        max-width: 900px;
-        margin: 0 auto;
-    }
+.pls-header{display:flex;align-items:flex-start;gap:1.125rem;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1.5px solid var(--border)}
+.pls-icon{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pls-icon svg{width:22px;height:22px}
+.pls-icon-green{background:#f0faf4;color:#16a34a}
+.pls-icon-amber{background:#fffbeb;color:#d97706}
+.pls-icon-dark{background:var(--light);color:var(--dark)}
+.pls-icon-blue{background:#eff6ff;color:#2563eb}
+.pls-icon-purple{background:#faf5ff;color:#7c3aed}
 
-    .policy-card {
-        background: white;
-        padding: 2.5rem;
-        border-radius: var(--radius-lg);
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        margin-bottom: 2rem;
-        transition: all var(--transition-normal);
-    }
+.pls-header h2{font-size:1.0625rem;font-weight:700;color:var(--dark);margin-bottom:.25rem;letter-spacing:-.01em}
+.pls-header p{font-size:.8125rem;color:var(--muted)}
 
-    .policy-card:hover {
-        box-shadow: 0 8px 16px rgba(157, 184, 146, 0.15);
-        transform: translateY(-2px);
-    }
+/* Highlight */
+.pls-highlight{display:flex;align-items:center;gap:.75rem;background:#f0faf4;border:1.5px solid #bbf7d0;border-radius:8px;padding:.875rem 1rem;font-size:.875rem;color:#166534;margin-bottom:1.25rem}
+.pls-highlight svg{width:18px;height:18px;color:#16a34a;flex-shrink:0}
+.pls-highlight strong{margin-right:.25rem}
 
-    .policy-card h2 {
-        color: var(--text-dark);
-        margin-bottom: 1.5rem;
-        font-size: clamp(1.5rem, 3vw, 2rem);
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
+/* Two col */
+.pls-two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
 
-    .policy-card h2 i {
-        font-size: 1.75rem;
-    }
+/* Block */
+.pls-block h3{font-size:.8125rem;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.875rem}
 
-    .policy-card h2 i.shipping {
-        color: var(--sage-medium);
-    }
+/* List */
+.pls-list{list-style:none;display:flex;flex-direction:column;gap:.75rem}
+.pls-list li{display:flex;align-items:flex-start;gap:.75rem;font-size:.875rem}
+.pls-list li>div{display:flex;flex-direction:column;gap:.1rem}
+.pls-list li strong{color:var(--dark);font-weight:600;line-height:1.3}
+.pls-list li span{color:var(--muted);font-size:.78rem}
+.pls-list li .free{color:#16a34a;font-weight:600}
+.pls-li-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;margin-top:5px}
+.pls-li-gold{background:var(--gold)}
 
-    .policy-card h2 i.return {
-        color: var(--coral);
-    }
+/* Check list */
+.pls-check-list{list-style:none;display:flex;flex-direction:column;gap:.625rem}
+.pls-check-list li{display:flex;align-items:flex-start;gap:.5rem;font-size:.875rem;color:var(--text);line-height:1.5}
+.pls-check-list li strong{font-weight:600}
+.pls-check-list svg{width:14px;height:14px;color:#16a34a;flex-shrink:0;margin-top:2px}
 
-    .policy-card h2 i.warranty {
-        color: var(--sage-dark);
-    }
+/* Warranty grid */
+.warranty-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:.25rem}
+.warranty-item{background:var(--light);border-radius:8px;border:1.5px solid var(--border);padding:1rem;text-align:center;display:flex;flex-direction:column;gap:.375rem}
+.wi-label{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.wi-dur{font-size:1.375rem;font-weight:700;color:var(--dark)}
 
-    .policy-card h2 i.payment {
-        color: var(--oak);
-    }
+/* Steps */
+.pls-steps{list-style:none;display:flex;flex-direction:column;gap:.875rem}
+.pls-steps li{display:flex;align-items:flex-start;gap:.875rem;font-size:.875rem}
+.pls-steps li>div{display:flex;flex-direction:column;gap:.1rem}
+.pls-steps li strong{color:var(--dark);font-weight:600}
+.pls-steps li span{color:var(--muted);font-size:.78rem}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;margin-top:1px}
 
-    .policy-card h2 i.security {
-        color: var(--terracotta);
-    }
+/* Payment methods */
+.payment-methods-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.pm-card{background:var(--light);border-radius:10px;border:1.5px solid var(--border);padding:1.25rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.5rem;transition:border-color .18s,transform .18s}
+.pm-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.pm-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:.25rem}
+.pm-icon svg{width:20px;height:20px}
+.pm-cod{background:#f0faf4;color:#16a34a}
+.pm-bank{background:#eff6ff;color:#2563eb}
+.pm-card{background:#fffbeb;color:#d97706}
+.pm-installment{background:#faf5ff;color:#7c3aed}
+.pm-card-container .pm-card strong{font-size:.875rem;font-weight:600;color:var(--dark)}
+.pm-card strong{font-size:.875rem;font-weight:600;color:var(--dark)}
+.pm-card span{font-size:.75rem;color:var(--muted);line-height:1.4}
 
-    .policy-content-text {
-        line-height: 1.8;
-        color: var(--text-medium);
-    }
+/* CTA */
+.pl-cta{background:var(--dark);border-radius:10px;padding:2.5rem;text-align:center;position:relative;overflow:hidden}
+.pl-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(196,160,100,.1) 0%,transparent 60%)}
+.pl-cta>*{position:relative;z-index:1}
+.pl-cta h2{font-size:1.5rem;font-weight:700;color:#fff;margin-bottom:.625rem;letter-spacing:-.01em}
+.pl-cta p{font-size:.9rem;color:rgba(255,255,255,.55);margin-bottom:1.5rem;font-weight:300}
+.pl-cta-btns{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.btn-dark{display:inline-flex;align-items:center;padding:.75rem 1.75rem;background:#fff;color:var(--dark);border-radius:8px;font-family:var(--font);font-size:.875rem;font-weight:600;transition:all .18s}
+.btn-dark:hover{background:var(--gold);color:#fff}
+.btn-outline{display:inline-flex;align-items:center;padding:.75rem 1.75rem;border:1.5px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;font-family:var(--font);font-size:.875rem;font-weight:500;transition:all .18s}
+.btn-outline:hover{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.08)}
 
-    .policy-content-text p {
-        margin-bottom: 1rem;
-        font-size: 1.0625rem;
-    }
-
-    .policy-content-text strong {
-        color: var(--text-dark);
-        font-weight: 700;
-    }
-
-    .policy-content-text ul,
-    .policy-content-text ol {
-        margin-left: 2rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .policy-content-text li {
-        margin-bottom: 0.5rem;
-        font-size: 1.0625rem;
-    }
-
-    .policy-content-text .highlight {
-        color: var(--sage-dark);
-        font-weight: 700;
-    }
-
-    .policy-cta {
-        padding: 4rem 0;
-        text-align: center;
-        background: white;
-    }
-
-    .policy-cta h2 {
-        color: var(--text-dark);
-        margin-bottom: 1rem;
-        font-size: clamp(1.75rem, 4vw, 2.5rem);
-        font-weight: 700;
-    }
-
-    .policy-cta p {
-        color: var(--text-medium);
-        margin-bottom: 2rem;
-        font-size: 1.125rem;
-    }
-
-    .contact-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 1rem 2.5rem;
-        background: linear-gradient(135deg, var(--sage-medium), var(--sage-dark));
-        color: white;
-        text-decoration: none;
-        border-radius: var(--radius-full);
-        font-weight: 700;
-        font-size: 1.125rem;
-        transition: all var(--transition-normal);
-        box-shadow: 0 4px 12px rgba(157, 184, 146, 0.3);
-    }
-
-    .contact-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(157, 184, 146, 0.4);
-    }
-
-    @media (max-width: 768px) {
-        .policy-hero {
-            padding: 3rem 0;
-        }
-
-        .policy-content {
-            padding: 3rem 0;
-        }
-
-        .policy-card {
-            padding: 2rem;
-        }
-
-        .policy-content-text ul,
-        .policy-content-text ol {
-            margin-left: 1.5rem;
-        }
-    }
+/* Responsive */
+@media(max-width:900px){
+  .plb-inner{grid-template-columns:1fr}
+  .pl-nav{position:static;flex-direction:row;flex-wrap:wrap;gap:.5rem}
+  .pln-title,.pln-divider,.pln-contact{display:none}
+  .pln-item{padding:.5rem .875rem;font-size:.78rem}
+  .payment-methods-grid{grid-template-columns:repeat(2,1fr)}
+  .warranty-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:600px){
+  .pls-two-col{grid-template-columns:1fr}
+  .warranty-grid{grid-template-columns:1fr 1fr}
+  .payment-methods-grid{grid-template-columns:1fr 1fr}
+  .pl-body{padding:1rem}
+}
 </style>
 
-<!-- Page Header -->
-<section class="policy-hero">
-    <div class="container">
-        <h1>
-            <i class="fas fa-file-contract"></i> Chính Sách
-        </h1>
-        <p>Quy định và cam kết của chúng tôi</p>
-    </div>
-</section>
+<script>
+/* Active nav on scroll */
+const sections = document.querySelectorAll('.pl-section');
+const navItems = document.querySelectorAll('.pln-item');
 
-<!-- Content -->
-<section class="policy-content">
-    <div class="container">
-        <div class="policy-wrapper">
-            
-            <!-- Chính Sách Giao Hàng -->
-            <div class="policy-card">
-                <h2>
-                    <i class="fas fa-truck shipping"></i> Chính Sách Giao Hàng
-                </h2>
-                <div class="policy-content-text">
-                    <p><strong>Thời gian giao hàng:</strong></p>
-                    <ul>
-                        <li>Nội thành TP.HCM, Hà Nội: 1-2 ngày làm việc</li>
-                        <li>Các tỉnh thành khác: 3-5 ngày làm việc</li>
-                        <li>Vùng xa, vùng sâu: 5-7 ngày làm việc</li>
-                    </ul>
-                    
-                    <p><strong>Phí vận chuyển:</strong></p>
-                    <ul>
-                        <li><span class="highlight">MIỄN PHÍ</span> cho đơn hàng từ 5 triệu đồng</li>
-                        <li>Phí cố định 200,000đ cho đơn hàng dưới 5 triệu</li>
-                        <li>Phụ phí vùng xa sẽ được thông báo trước khi giao hàng</li>
-                    </ul>
-                </div>
-            </div>
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navItems.forEach(n => n.classList.remove('pln-active'));
+      const active = document.querySelector(`.pln-item[href="#${entry.target.id}"]`);
+      if (active) active.classList.add('pln-active');
+    }
+  });
+}, { rootMargin:'-20% 0px -60% 0px' });
 
-            <!-- Chính Sách Đổi Trả -->
-            <div class="policy-card">
-                <h2>
-                    <i class="fas fa-sync-alt return"></i> Chính Sách Đổi Trả
-                </h2>
-                <div class="policy-content-text">
-                    <p><strong>Điều kiện đổi trả:</strong></p>
-                    <ul>
-                        <li>Sản phẩm còn nguyên vẹn, chưa qua sử dụng</li>
-                        <li>Còn đầy đủ hộp, phụ kiện, hóa đơn mua hàng</li>
-                        <li>Trong vòng <strong>7 ngày</strong> kể từ ngày nhận hàng</li>
-                    </ul>
-                    
-                    <p><strong>Trường hợp được đổi trả:</strong></p>
-                    <ul>
-                        <li>Sản phẩm bị lỗi do nhà sản xuất</li>
-                        <li>Giao sai sản phẩm, thiếu phụ kiện</li>
-                        <li>Sản phẩm bị hư hại trong quá trình vận chuyển</li>
-                    </ul>
-                </div>
-            </div>
+sections.forEach(s => obs.observe(s));
 
-            <!-- Chính Sách Bảo Hành -->
-            <div class="policy-card">
-                <h2>
-                    <i class="fas fa-shield-alt warranty"></i> Chính Sách Bảo Hành
-                </h2>
-                <div class="policy-content-text">
-                    <p><strong>Thời gian bảo hành:</strong></p>
-                    <ul>
-                        <li>Nội thất gỗ: 2 năm</li>
-                        <li>Ghế sofa, giường: 1 năm</li>
-                        <li>Phụ kiện, linh kiện: 6 tháng</li>
-                    </ul>
-                    
-                    <p><strong>Quy trình bảo hành:</strong></p>
-                    <ol>
-                        <li>Liên hệ hotline: 0345211386</li>
-                        <li>Cung cấp thông tin sản phẩm, hóa đơn</li>
-                        <li>Đội ngũ kỹ thuật đến kiểm tra (miễn phí)</li>
-                        <li>Sửa chữa hoặc thay thế nếu thuộc diện bảo hành</li>
-                    </ol>
-                </div>
-            </div>
+/* Smooth scroll */
+navItems.forEach(item => {
+  item.addEventListener('click', e => {
+    const href = item.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      document.querySelector(href)?.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  });
+});
+</script>
 
-            <!-- Chính Sách Thanh Toán -->
-            <div class="policy-card">
-                <h2>
-                    <i class="fas fa-credit-card payment"></i> Chính Sách Thanh Toán
-                </h2>
-                <div class="policy-content-text">
-                    <p>Chúng tôi chấp nhận các hình thức thanh toán sau:</p>
-                    <ul>
-                        <li><strong>COD</strong> - Thanh toán khi nhận hàng</li>
-                        <li><strong>Chuyển khoản</strong> - Qua ngân hàng (có QR code)</li>
-                        <li><strong>Thẻ tín dụng/Ghi nợ</strong> - Visa, Mastercard, JCB</li>
-                        <li><strong>Trả góp</strong> - Lãi suất 0% (áp dụng cho đơn từ 10 triệu)</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Chính Sách Bảo Mật -->
-            <div class="policy-card">
-                <h2>
-                    <i class="fas fa-lock security"></i> Chính Sách Bảo Mật
-                </h2>
-                <div class="policy-content-text">
-                    <p>Chúng tôi cam kết:</p>
-                    <ul>
-                        <li>Bảo mật tuyệt đối thông tin khách hàng</li>
-                        <li>Không chia sẻ thông tin cho bên thứ ba</li>
-                        <li>Sử dụng công nghệ mã hóa SSL</li>
-                        <li>Tuân thủ nghiêm ngặt luật bảo vệ dữ liệu cá nhân</li>
-                    </ul>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<!-- CTA -->
-<section class="policy-cta">
-    <div class="container">
-        <h2>Còn Thắc Mắc?</h2>
-        <p>Liên hệ với chúng tôi để được tư vấn chi tiết</p>
-        <a href="/contact" class="contact-btn">
-            <i class="fas fa-phone"></i> Liên Hệ Ngay
-        </a>
-    </div>
-</section>
 {% endblock %}

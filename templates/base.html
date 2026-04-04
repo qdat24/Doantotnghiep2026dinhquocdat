@@ -1,748 +1,835 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>{% block title %}Nội Thất Sang Trọng{% endblock %}</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
-    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/product-detail-enhanced.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" 
-          integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" 
-          crossorigin="anonymous" 
-          referrerpolicy="no-referrer">
-    <!-- Mobile Menu Toggle Function - Phải định nghĩa trước khi button render -->
-    <script>
-        // Global function để toggle menu - PHẢI định nghĩa trước khi button render
-        function toggleMobileMenuNow() {
-            console.log('toggleMobileMenuNow called');
-            const navLinks = document.getElementById('navLinks');
-            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-            
-            if (navLinks && mobileMenuToggle) {
-                const isActive = navLinks.classList.contains('active');
-                navLinks.classList.toggle('active');
-                mobileMenuToggle.classList.toggle('active');
-                document.body.style.overflow = !isActive ? 'hidden' : '';
-                mobileMenuToggle.setAttribute('aria-expanded', !isActive ? 'true' : 'false');
-                console.log('Menu toggled, isActive:', !isActive);
-            } else {
-                console.error('navLinks or mobileMenuToggle not found', { navLinks, mobileMenuToggle });
-            }
-        }
-        
-        // Đảm bảo function có sẵn ngay lập tức
-        window.toggleMobileMenuNow = toggleMobileMenuNow;
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>{% block title %}DQD — Nội thất cao cấp{% endblock %}</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Existing stylesheets -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/darkmode.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/product-detail-enhanced.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+
+  {% block head %}{% endblock %}
+
+  <!-- DQD Base styles -->
+  <style>
+    :root {
+      --dqd-font: 'Be Vietnam Pro', sans-serif;
+      --dqd-dark: #1a1a18;
+      --dqd-gold: #b8922a;
+      --dqd-border: #e8e3db;
+      --dqd-text: #2a2520;
+      --dqd-muted: #7a7060;
+      --dqd-light: #f5f4f1;
+      --dqd-cream: #faf9f7;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: var(--dqd-font); color: var(--dqd-text); }
+
+    /* ── HEADER ── */
+    .dqd-header {
+      background: var(--dqd-dark);
+      position: sticky;
+      top: 0;
+      z-index: 9000;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .dqd-nav {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    /* Logo */
+    .dqd-logo {
+      display: flex;
+      align-items: center;
+      gap: .625rem;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .dqd-logo-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--dqd-gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .dqd-logo-mark img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+    }
+    .dqd-logo-mark svg { width: 20px; height: 20px; color: #fff; }
+    .dqd-logo-name {
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: .06em;
+    }
+
+    /* Nav links */
+    .dqd-nav-links {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      gap: .25rem;
+      margin: 0;
+      padding: 0;
+    }
+    .dqd-nav-links > li > a,
+    .dqd-nav-links > li > button {
+      display: flex;
+      align-items: center;
+      gap: .3rem;
+      padding: .5rem .75rem;
+      font-family: var(--dqd-font);
+      font-size: .8125rem;
+      font-weight: 500;
+      color: rgba(255,255,255,.7);
+      text-decoration: none;
+      border-radius: 7px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color .18s, background .18s;
+      white-space: nowrap;
+    }
+    .dqd-nav-links > li > a:hover,
+    .dqd-nav-links > li > button:hover {
+      color: #fff;
+      background: rgba(255,255,255,.07);
+    }
+    .dqd-nav-links > li > a.active { color: var(--dqd-gold); }
+    .dqd-nav-links > li > a i,
+    .dqd-nav-links > li > button i { font-size: .7rem; transition: transform .2s; }
+
+    /* Dropdown */
+    .dqd-dropdown { position: relative; }
+    .dqd-dropdown-panel {
+      position: absolute;
+      top: calc(100% + .5rem);
+      left: 0;
+      background: #fff;
+      border-radius: 10px;
+      border: 1.5px solid var(--dqd-border);
+      box-shadow: 0 8px 32px rgba(0,0,0,.12);
+      min-width: 200px;
+      padding: .5rem;
+      display: none;
+      z-index: 9100;
+    }
+    .dqd-dropdown:hover .dqd-dropdown-panel,
+    .dqd-dropdown.open .dqd-dropdown-panel { display: block; }
+    .dqd-dropdown:hover > a i,
+    .dqd-dropdown:hover > button i,
+    .dqd-dropdown.open > a i,
+    .dqd-dropdown.open > button i { transform: rotate(180deg); }
+    .dqd-dropdown-panel a {
+      display: flex;
+      align-items: center;
+      gap: .625rem;
+      padding: .6rem .875rem;
+      border-radius: 7px;
+      font-size: .8125rem;
+      font-weight: 500;
+      color: var(--dqd-text);
+      text-decoration: none;
+      transition: background .15s;
+    }
+    .dqd-dropdown-panel a i { width: 16px; text-align: center; color: var(--dqd-gold); }
+    .dqd-dropdown-panel a:hover { background: var(--dqd-light); color: var(--dqd-dark); }
+    .dqd-dropdown-panel hr { border: none; border-top: 1px solid var(--dqd-border); margin: .375rem 0; }
+
+    /* Cart badge */
+    .dqd-cart-link {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: .5rem .75rem;
+      color: rgba(255,255,255,.7) !important;
+      text-decoration: none;
+      border-radius: 7px;
+      transition: color .18s, background .18s;
+    }
+    .dqd-cart-link:hover { color: #fff !important; background: rgba(255,255,255,.07); }
+    .dqd-cart-badge {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      min-width: 17px;
+      height: 17px;
+      background: var(--dqd-gold);
+      color: #fff;
+      border-radius: 99px;
+      font-size: .6rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
+    .dqd-cart-badge:empty,
+    .dqd-cart-badge[data-zero] { display: none; }
+
+    /* Nav right group */
+    .dqd-nav-right {
+      display: flex;
+      align-items: center;
+      gap: .25rem;
+      flex-shrink: 0;
+    }
+
+    /* Hamburger */
+    .dqd-hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.08);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background .18s;
+      position: relative;
+      z-index: 9001;
+    }
+    .dqd-hamburger:hover { background: rgba(255,255,255,.14); }
+    .dqd-hamburger span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: #fff;
+      border-radius: 2px;
+      transition: transform .25s, opacity .25s;
+      transform-origin: center;
+    }
+    .dqd-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .dqd-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .dqd-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile drawer */
+    .dqd-mobile-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 8999;
+      backdrop-filter: blur(2px);
+    }
+    .dqd-mobile-overlay.show { display: block; }
+    .dqd-mobile-drawer {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: min(320px, 85vw);
+      height: 100%;
+      background: var(--dqd-dark);
+      z-index: 9000;
+      overflow-y: auto;
+      padding: 1.5rem;
+      transition: right .3s cubic-bezier(.4,0,.2,1);
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .dqd-mobile-drawer.open { right: 0; }
+    .dqd-drawer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+    .dqd-drawer-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.08);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .9375rem;
+      touch-action: manipulation;
+    }
+    .dqd-drawer-nav {
+      display: flex;
+      flex-direction: column;
+      gap: .25rem;
+    }
+    .dqd-drawer-nav a,
+    .dqd-drawer-section-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .75rem .875rem;
+      border-radius: 8px;
+      font-family: var(--dqd-font);
+      font-size: .9rem;
+      font-weight: 500;
+      color: rgba(255,255,255,.75);
+      text-decoration: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      transition: background .15s, color .15s;
+    }
+    .dqd-drawer-nav a:hover,
+    .dqd-drawer-section-toggle:hover { background: rgba(255,255,255,.07); color: #fff; }
+    .dqd-drawer-section-toggle i { font-size: .7rem; transition: transform .2s; }
+    .dqd-drawer-section-toggle.open i { transform: rotate(180deg); }
+    .dqd-drawer-sub {
+      display: none;
+      flex-direction: column;
+      gap: 0;
+      padding-left: 1rem;
+      margin-bottom: .25rem;
+    }
+    .dqd-drawer-sub.show { display: flex; }
+    .dqd-drawer-sub a {
+      font-size: .8125rem;
+      padding: .55rem .875rem;
+      color: rgba(255,255,255,.55);
+    }
+    .dqd-drawer-sub a i { width: 16px; text-align: center; color: var(--dqd-gold); margin-right: .375rem; }
+    .dqd-drawer-divider {
+      height: 1px;
+      background: rgba(255,255,255,.08);
+      margin: .75rem 0;
+    }
+
+    /* ── FOOTER ── */
+    .dqd-footer {
+      background: var(--dqd-dark);
+      padding: 4rem 2rem 2rem;
+      margin-top: auto;
+      position: relative;
+      overflow: hidden;
+    }
+    .dqd-footer::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 10% 90%, rgba(196,160,100,.07) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .dqdf-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    .dqdf-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+    .dqdf-brand .dqd-logo { margin-bottom: 1rem; }
+    .dqdf-brand p {
+      font-size: .8125rem;
+      color: rgba(255,255,255,.45);
+      line-height: 1.8;
+      margin-bottom: 1.25rem;
+    }
+    .dqdf-social {
+      display: flex;
+      gap: .5rem;
+    }
+    .dqdf-social a {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,.6);
+      text-decoration: none;
+      font-size: .8125rem;
+      transition: all .18s;
+    }
+    .dqdf-social a:hover { background: var(--dqd-gold); border-color: var(--dqd-gold); color: #fff; }
+    .dqdf-col h4 {
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: rgba(255,255,255,.35);
+      margin-bottom: 1.25rem;
+    }
+    .dqdf-col ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: .625rem;
+    }
+    .dqdf-col ul li a {
+      font-size: .8125rem;
+      color: rgba(255,255,255,.55);
+      text-decoration: none;
+      transition: color .18s;
+    }
+    .dqdf-col ul li a:hover { color: rgba(255,255,255,.9); }
+    .dqdf-contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: .625rem;
+      font-size: .8125rem;
+      color: rgba(255,255,255,.55);
+    }
+    .dqdf-contact-item i { color: var(--dqd-gold); margin-top: 2px; width: 14px; flex-shrink: 0; }
+    .dqdf-contact-item a { color: inherit; text-decoration: none; }
+    .dqdf-contact-item a:hover { color: rgba(255,255,255,.9); }
+    .dqdf-bottom {
+      border-top: 1px solid rgba(255,255,255,.08);
+      padding-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .dqdf-bottom p {
+      font-size: .75rem;
+      color: rgba(255,255,255,.3);
+    }
+    .dqdf-bottom-links {
+      display: flex;
+      gap: 1.25rem;
+    }
+    .dqdf-bottom-links a {
+      font-size: .75rem;
+      color: rgba(255,255,255,.3);
+      text-decoration: none;
+      transition: color .18s;
+    }
+    .dqdf-bottom-links a:hover { color: rgba(255,255,255,.7); }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width: 1024px) {
+      .dqdf-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    }
+    @media(max-width: 768px) {
+      .dqd-nav-links { display: none; }
+      .dqd-hamburger { display: flex; }
+      .dqd-nav { padding: 0 1rem; }
+      .dqdf-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem 2rem; }
+      .dqdf-brand { grid-column: 1/-1; }
+    }
+    @media(max-width: 480px) {
+      .dqdf-grid { grid-template-columns: 1fr; }
+      .dqdf-brand { grid-column: auto; }
+      .dqdf-bottom { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+
+  <!-- Mobile menu global fn (must be before body renders) -->
+  <script>
+    function dqdToggleDrawer() {
+      var drawer  = document.getElementById('dqdDrawer');
+      var overlay = document.getElementById('dqdOverlay');
+      var burger  = document.getElementById('dqdBurger');
+      if (!drawer) return;
+      var open = drawer.classList.contains('open');
+      drawer.classList.toggle('open', !open);
+      overlay.classList.toggle('show', !open);
+      burger.classList.toggle('open', !open);
+      document.body.style.overflow = open ? '' : 'hidden';
+    }
+    // Legacy alias kept for any inline calls from child templates
+    function toggleMobileMenuNow() { dqdToggleDrawer(); }
+    window.toggleMobileMenuNow = toggleMobileMenuNow;
+  </script>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <nav class="navbar">
-            <div class="container">
-                <a href="/" class="logo">
-                    {% if site_settings.get('site_logo') %}
-                        <img src="{{ site_settings.get('site_logo') }}" alt="{{ site_settings.get('site_name', 'Nội Thất Sang') }}">
-                    {% else %}
-                        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="{{ site_settings.get('site_name', 'Nội Thất Sang') }}" id="site-logo" onerror="handleLogoError()">
-                        <span id="logo-fallback" style="display: none;">
-                            <i class="fas fa-couch"></i>
-                            <span>{{ site_settings.get('site_name', 'Nội Thất Sang') }}</span>
-                        </span>
-                    {% endif %}
-                </a>
-                <div style="position: relative; z-index: 10002; pointer-events: auto;">
-                    <button class="mobile-menu-toggle" aria-label="Toggle menu" id="mobileMenuToggle" type="button" onclick="toggleMobileMenuNow()" style="pointer-events: auto !important; z-index: 10002 !important; position: relative !important; cursor: pointer !important; touch-action: manipulation !important; -webkit-tap-highlight-color: transparent;">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                </div>
-                <ul class="nav-links" id="navLinks">
-                    <li><a href="/" data-translate="Trang Chủ">Trang Chủ</a></li>
-                    <li class="dropdown">
-                        <a href="/products" class="dropbtn">
-                            <span data-translate="Sản Phẩm">Sản Phẩm</span> <i class="fas fa-chevron-down"></i>
-                        </a>
-                        <div class="dropdown-content">
-                            <a href="/products">
-                                <i class="fas fa-th"></i> <span data-translate="Tất Cả Sản Phẩm">Tất Cả Sản Phẩm</span>
-                            </a>
-                            <a href="/products?category=Phòng%20Khách">
-                                <i class="fas fa-couch"></i> <span data-translate="Phòng Khách">Phòng Khách</span>
-                            </a>
-                            <a href="/products?category=Phòng%20Ngủ">
-                                <i class="fas fa-bed"></i> <span data-translate="Phòng Ngủ">Phòng Ngủ</span>
-                            </a>
-                            <a href="/products?category=Nhà%20Bếp">
-                                <i class="fas fa-utensils"></i> <span data-translate="Nhà Bếp">Nhà Bếp</span>
-                            </a>
-                            <a href="/products?category=Văn%20Phòng">
-                                <i class="fas fa-briefcase"></i> <span data-translate="Văn Phòng">Văn Phòng</span>
-                            </a>
-                            <a href="/products?category=Phòng%20Ăn">
-                                <i class="fas fa-chair"></i> <span data-translate="Phòng Ăn">Phòng Ăn</span>
-                            </a>
-                        </div>
-                    </li>
-                    <li><a href="/about" data-translate="Về Chúng Tôi">Về Chúng Tôi</a></li>
-                    <li><a href="/partners" data-translate="Đối Tác">Đối Tác</a></li>
-                    <li><a href="/policy" data-translate="Chính Sách">Chính Sách</a></li>
-                    <li><a href="/contact" data-translate="Liên Hệ">Liên Hệ</a></li>
-                    <li>
-                        <a href="/cart" class="cart-icon">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span class="cart-count" id="cartBadge">{{ cart_count }}</span>
-                        </a>
-                    </li>
-                    {% if session.get('customer_logged_in') %}
-                    <li class="dropdown">
-                        <a href="#" class="dropbtn">
-                            <i class="fas fa-user-circle"></i> {{ session.get('customer_name') }}
-                        </a>
-                        <div class="dropdown-content">
-                            <a href="/account">
-                                <i class="fas fa-user"></i> <span data-translate="Tài Khoản">Tài Khoản</span>
-                            </a>
-                            <a href="/logout">
-                                <i class="fas fa-sign-out-alt"></i> <span data-translate="Đăng Xuất">Đăng Xuất</span>
-                            </a>
-                        </div>
-                    </li>
-                    {% else %}
-                    <li class="dropdown">
-                        <a href="#" class="dropbtn">
-                            <i class="fas fa-user"></i> <span data-translate="Tài Khoản">Tài Khoản</span> <i class="fas fa-chevron-down"></i>
-                        </a>
-                        <div class="dropdown-content">
-                            <a href="/login">
-                                <i class="fas fa-sign-in-alt"></i> <span data-translate="Đăng Nhập">Đăng Nhập</span>
-                            </a>
-                            <a href="/register">
-                                <i class="fas fa-user-plus"></i> <span data-translate="Đăng Ký">Đăng Ký</span>
-                            </a>
-                        </div>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </nav>
-    </header>
 
-    <!-- Main Content -->
-    {% block content %}{% endblock %}
+<!-- ══ HEADER ══ -->
+<header class="dqd-header">
+  <nav class="dqd-nav">
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3 data-translate="Về Chúng Tôi">Về Chúng Tôi</h3>
-                    <p>HOMESTEAD là đơn vị chuyên cung cấp các sản phẩm nội thất cao cấp, hiện đại với chất lượng tốt nhất.</p>
-                </div>
-                <div class="footer-section">
-                    <h3 data-translate="Liên Hệ">Liên Hệ</h3>
-                    <ul>
-                        <li><i class="fas fa-map-marker-alt"></i> 123 Đường ABC, Quận XYZ, TP.HCM</li>
-                        <li><i class="fas fa-phone"></i> 0345211386</li>
-                        <li><i class="fas fa-envelope"></i> quocdat30075@gmail.com</li>
-                    </ul>
-                    <div class="footer-social-icons">
-                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                <div class="footer-section">
-                    <h3 data-translate="Liên Kết">Liên Kết</h3>
-                    <ul>
-                        <li><a href="/products" data-translate="Sản Phẩm">Sản Phẩm</a></li>
-                        <li><a href="/about" data-translate="Về Chúng Tôi">Về Chúng Tôi</a></li>
-                        <li><a href="/partners" data-translate="Đối Tác">Đối Tác</a></li>
-                        <li><a href="/policy" data-translate="Chính Sách">Chính Sách</a></li>
-                        <li><a href="/terms" data-translate="Điều Khoản Dịch Vụ">Điều Khoản Dịch Vụ</a></li>
-                        <li><a href="/privacy" data-translate="Chính Sách Bảo Mật">Chính Sách Bảo Mật</a></li>
-                        <li><a href="/contact" data-translate="Liên Hệ">Liên Hệ</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3 data-translate="Hỗ Trợ">Hỗ Trợ</h3>
-                    <ul>
-                        <li><a href="/guide" data-translate="Hướng Dẫn Mua Hàng">Hướng Dẫn Mua Hàng</a></li>
-                        <li><a href="/return-policy" data-translate="Chính Sách Đổi Trả">Chính Sách Đổi Trả</a></li>
-                        <li><a href="/warranty" data-translate="Bảo Hành">Bảo Hành</a></li>
-                        <li><a href="/faq" data-translate="Câu Hỏi Thường Gặp">Câu Hỏi Thường Gặp</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 HOMESTEAD. <span data-translate="Tất Cả Quyền Được Bảo Lưu">Tất Cả Quyền Được Bảo Lưu</span>.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Coupons Modal -->
-    {% if show_coupons and coupons_list %}
-    <script>
-        window.couponsToShow = {{ coupons_list|tojson }};
-        window.shouldShowCoupons = true;
-    </script>
-    <div id="couponsModal" class="coupons-modal">
-        <div class="coupons-modal-overlay" onclick="closeCouponsModal()"></div>
-        <div class="coupons-modal-content">
-            <div class="coupons-modal-header">
-                <h2>
-                    <i class="fas fa-gift"></i>
-                    Mã Giảm Giá Đang Áp Dụng
-                </h2>
-                <button class="coupons-modal-close" onclick="closeCouponsModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="coupons-modal-body">
-                <p class="coupons-intro">Chúc mừng! Dưới đây là các mã giảm giá đang áp dụng trên website:</p>
-                <div class="coupons-list">
-                    {% for coupon in coupons_list %}
-                    <div class="coupon-card">
-                        <div class="coupon-code-section">
-                            <div class="coupon-code">{{ coupon.code }}</div>
-                            <button class="copy-coupon-btn" onclick="copyCouponCode('{{ coupon.code }}', this)">
-                                <i class="fas fa-copy"></i>
-                                Sao chép
-                            </button>
-                        </div>
-                        <div class="coupon-info">
-                            <h3>{{ coupon.name }}</h3>
-                            {% if coupon.description %}
-                            <p class="coupon-description">{{ coupon.description }}</p>
-                            {% endif %}
-                            <div class="coupon-details">
-                                <span class="coupon-discount">
-                                    {% if coupon.discount_type == 'percentage' %}
-                                    Giảm {{ coupon.discount_value|int }}%
-                                    {% else %}
-                                    Giảm {{ coupon.discount_value|format_currency }}đ
-                                    {% endif %}
-                                </span>
-                                {% if coupon.min_order_amount > 0 %}
-                                <span class="coupon-min-order">
-                                    Áp dụng cho đơn từ {{ coupon.min_order_amount|format_currency }}đ
-                                </span>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                <div class="coupons-modal-footer">
-                    <p class="coupons-note">
-                        <i class="fas fa-info-circle"></i>
-                        Sử dụng mã giảm giá khi thanh toán để nhận ưu đãi
-                    </p>
-                    <button class="coupons-close-btn" onclick="closeCouponsModal()">
-                        Đã Hiểu
-                    </button>
-                </div>
-            </div>
-        </div>
+    <!-- Logo -->
+    <!-- Logo -->
+<a href="/" class="dqd-logo">
+  {% if site_settings.get('site_logo') %}
+    <img src="{{ site_settings.get('site_logo') }}"
+         alt="{{ site_settings.get('site_name', 'DQD') }}"
+         id="site-logo"
+         style="height:38px;width:auto;max-width:150px;object-fit:contain"
+         onerror="this.style.display='none';document.getElementById('logo-fb').style.display='flex'">
+    <div id="logo-fb" class="dqd-logo-mark" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 21v-7h6v7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
-    <style>
-        .coupons-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10000;
-            animation: fadeIn 0.3s ease;
-        }
+  {% else %}
+    <div class="dqd-logo-mark">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="DQD" id="site-logo" onerror="handleLogoError()">
+      <svg id="logo-fallback-svg" viewBox="0 0 24 24" fill="none" style="display:none"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 21v-7h6v7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <span class="dqd-logo-name">{{ site_settings.get('site_name', 'DQD') }}</span>
+  {% endif %}
+</a>
 
-        .coupons-modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    <!-- Desktop nav -->
+    <ul class="dqd-nav-links">
+      <li><a href="/">Trang chủ</a></li>
+      <li class="dqd-dropdown">
+        <a href="/products">Sản phẩm <i class="fas fa-chevron-down"></i></a>
+        <div class="dqd-dropdown-panel">
+          <a href="/products"><i class="fas fa-th"></i> Tất cả sản phẩm</a>
+          <hr>
+          <a href="/products?category=Ph%C3%B2ng%20Kh%C3%A1ch"><i class="fas fa-couch"></i> Phòng Khách</a>
+          <a href="/products?category=Ph%C3%B2ng%20Ng%E1%BB%A7"><i class="fas fa-bed"></i> Phòng Ngủ</a>
+          <a href="/products?category=Nh%C3%A0%20B%E1%BA%BFp"><i class="fas fa-utensils"></i> Nhà Bếp</a>
+          <a href="/products?category=V%C4%83n%20Ph%C3%B2ng"><i class="fas fa-briefcase"></i> Văn Phòng</a>
+          <a href="/products?category=Ph%C3%B2ng%20%C4%82n"><i class="fas fa-chair"></i> Phòng Ăn</a>
+        </div>
+      </li>
+      <li><a href="/about">Về chúng tôi</a></li>
+      <li><a href="/partners">Đối tác</a></li>
+      <li class="dqd-dropdown">
+        <a href="/policy">Chính sách <i class="fas fa-chevron-down"></i></a>
+        <div class="dqd-dropdown-panel">
+          <a href="/policy"><i class="fas fa-file-contract"></i> Chính sách chung</a>
+          <a href="/return-policy"><i class="fas fa-undo"></i> Đổi trả</a>
+          <a href="/warranty"><i class="fas fa-shield-alt"></i> Bảo hành</a>
+          <a href="/privacy"><i class="fas fa-lock"></i> Bảo mật</a>
+          <a href="/terms"><i class="fas fa-gavel"></i> Điều khoản</a>
+        </div>
+      </li>
+      <li><a href="/contact">Liên hệ</a></li>
+    </ul>
 
-        .coupons-modal-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-        }
+    <!-- Right actions -->
+    <div class="dqd-nav-right">
+      <!-- Cart -->
+      <a href="/cart" class="dqd-cart-link" aria-label="Giỏ hàng">
+        <i class="fas fa-shopping-cart" style="font-size:.9rem"></i>
+        <span class="dqd-cart-badge" id="cartBadge">{{ cart_count if cart_count else '' }}</span>
+      </a>
 
-        .coupons-modal-content {
-            position: relative;
-            background: white;
-            border-radius: 20px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+      <!-- Account dropdown -->
+      <div class="dqd-dropdown">
+        {% if session.get('customer_logged_in') %}
+        <button class="dqd-dropdown" style="display:flex;align-items:center;gap:.375rem;padding:.5rem .75rem;font-family:var(--dqd-font);font-size:.8125rem;font-weight:500;color:rgba(255,255,255,.7);background:none;border:none;cursor:pointer;border-radius:7px;transition:background .18s,color .18s" onmouseover="this.parentElement.classList.add('open')" onmouseleave="this.parentElement.classList.remove('open')">
+          <i class="fas fa-user-circle"></i>
+          <span>{{ session.get('customer_name', '') | truncate(12, true, '…') }}</span>
+          <i class="fas fa-chevron-down" style="font-size:.7rem"></i>
+        </button>
+        <div class="dqd-dropdown-panel" style="right:0;left:auto">
+          <a href="/account"><i class="fas fa-user"></i> Tài khoản</a>
+          <a href="/account#orders"><i class="fas fa-box"></i> Đơn hàng</a>
+          <hr>
+          <a href="/logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+        </div>
+        {% else %}
+        <a href="/login" style="display:flex;align-items:center;gap:.375rem;padding:.5rem .875rem;border:1.5px solid rgba(255,255,255,.2);border-radius:8px;font-family:var(--dqd-font);font-size:.8125rem;font-weight:500;color:rgba(255,255,255,.8);text-decoration:none;transition:all .18s" onmouseover="this.style.background='rgba(255,255,255,.08)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,.8)'">
+          <i class="fas fa-user" style="font-size:.75rem"></i> Đăng nhập
+        </a>
+        {% endif %}
+      </div>
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+      <!-- Hamburger -->
+      <button class="dqd-hamburger" id="dqdBurger" aria-label="Menu" onclick="dqdToggleDrawer()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+  </nav>
+</header>
 
-        .coupons-modal-header {
-            padding: 25px 30px;
-            border-bottom: 2px solid #f0f0f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(135deg, #a08968 0%, #9db892 100%);
-            color: white;
-            border-radius: 20px 20px 0 0;
-        }
-
-        .coupons-modal-header h2 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .coupons-modal-close {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .coupons-modal-close:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(90deg);
-        }
-
-        .coupons-modal-body {
-            padding: 30px;
-        }
-
-        .coupons-intro {
-            text-align: center;
-            color: #666;
-            margin-bottom: 25px;
-            font-size: 16px;
-        }
-
-        .coupons-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .coupon-card {
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 20px;
-            background: linear-gradient(135deg, #faf8f5 0%, #ffffff 100%);
-            transition: all 0.3s;
-        }
-
-        .coupon-card:hover {
-            border-color: #a08968;
-            box-shadow: 0 5px 15px rgba(160, 137, 104, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .coupon-code-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            gap: 15px;
-        }
-
-        .coupon-code {
-            font-size: 24px;
-            font-weight: 700;
-            color: #a08968;
-            letter-spacing: 2px;
-            padding: 10px 20px;
-            background: white;
-            border: 2px dashed #a08968;
-            border-radius: 8px;
-            flex: 1;
-            text-align: center;
-        }
-
-        .copy-coupon-btn {
-            background: linear-gradient(135deg, #a08968 0%, #9db892 100%);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-
-        .copy-coupon-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(160, 137, 104, 0.3);
-        }
-
-        .copy-coupon-btn.copied {
-            background: #4caf50;
-        }
-
-        .coupon-info h3 {
-            margin: 0 0 8px 0;
-            font-size: 18px;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .coupon-description {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 12px;
-            line-height: 1.5;
-        }
-
-        .coupon-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .coupon-discount {
-            background: #fff3cd;
-            color: #856404;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .coupon-min-order {
-            background: #e7f3ff;
-            color: #004085;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 13px;
-        }
-
-        .coupons-modal-footer {
-            text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .coupons-note {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .coupons-close-btn {
-            background: linear-gradient(135deg, #a08968 0%, #9db892 100%);
-            color: white;
-            border: none;
-            padding: 12px 40px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .coupons-close-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(160, 137, 104, 0.3);
-        }
-
-        @media (max-width: 768px) {
-            .coupons-modal-content {
-                width: 95%;
-                max-height: 95vh;
-            }
-
-            .coupons-modal-header {
-                padding: 20px;
-            }
-
-            .coupons-modal-header h2 {
-                font-size: 20px;
-            }
-
-            .coupons-modal-body {
-                padding: 20px;
-            }
-
-            .coupon-code-section {
-                flex-direction: column;
-            }
-
-            .coupon-code {
-                font-size: 20px;
-            }
-
-            .copy-coupon-btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-    </style>
-    <script>
-        function showCouponsModal() {
-            const modal = document.getElementById('couponsModal');
-            if (modal) {
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
-        }
-
-        function closeCouponsModal() {
-            const modal = document.getElementById('couponsModal');
-            if (modal) {
-                modal.classList.remove('active');
-                document.body.style.overflow = '';
-                
-                fetch('/api/clear-coupons-session', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).catch(err => console.error('Error clearing coupons session:', err));
-            }
-        }
-
-        function copyCouponCode(code, btn) {
-            navigator.clipboard.writeText(code).then(() => {
-                const originalHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-check"></i> Đã sao chép';
-                btn.classList.add('copied');
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                    btn.classList.remove('copied');
-                }, 2000);
-            }).catch(err => {
-                alert('Không thể sao chép mã. Mã giảm giá: ' + code);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const modal = document.getElementById('couponsModal');
-            if (modal && window.shouldShowCoupons) {
-                setTimeout(showCouponsModal, 500);
-            }
-
-            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-            const navLinks = document.getElementById('navLinks');
-            
-            function toggleMobileMenu() {
-                if (navLinks && mobileMenuToggle) {
-                    const isActive = navLinks.classList.contains('active');
-                    navLinks.classList.toggle('active');
-                    mobileMenuToggle.classList.toggle('active');
-                    document.body.style.overflow = !isActive ? 'hidden' : '';
-                }
-            }
-            
-            if (mobileMenuToggle && navLinks) {
-                // Đảm bảo nút luôn hiển thị và clickable trên mobile
-                function showMobileMenuButton() {
-                    if (window.innerWidth <= 768) {
-                        mobileMenuToggle.style.display = 'flex';
-                        mobileMenuToggle.style.visibility = 'visible';
-                        mobileMenuToggle.style.opacity = '1';
-                        mobileMenuToggle.style.pointerEvents = 'auto';
-                        mobileMenuToggle.style.cursor = 'pointer';
-                        mobileMenuToggle.style.zIndex = '10002';
-                        mobileMenuToggle.style.position = 'relative';
-                        mobileMenuToggle.style.touchAction = 'manipulation';
-                        mobileMenuToggle.setAttribute('tabindex', '0');
-                        mobileMenuToggle.setAttribute('role', 'button');
-                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                    } else {
-                        mobileMenuToggle.style.display = 'none';
-                    }
-                }
-                
-                showMobileMenuButton();
-                window.addEventListener('resize', showMobileMenuButton);
-                
-                // Đơn giản hóa event handler - gọi function global
-                function handleMenuClick(e) {
-                    console.log('Menu button clicked!', e.type); // Debug
-                    if (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                    }
-                    toggleMobileMenuNow(); // Dùng function global
-                    return false;
-                }
-                
-                // Xóa tất cả listeners cũ nếu có
-                const newToggle = mobileMenuToggle.cloneNode(true);
-                mobileMenuToggle.parentNode.replaceChild(newToggle, mobileMenuToggle);
-                const freshToggle = document.getElementById('mobileMenuToggle');
-                
-                // Thêm lại onclick attribute
-                freshToggle.setAttribute('onclick', 'toggleMobileMenuNow(); return false;');
-                
-                // Thêm event listeners với capture phase để đảm bảo được trigger
-                freshToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    toggleMobileMenuNow();
-                    return false;
-                }, true);
-                
-                freshToggle.addEventListener('touchend', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    toggleMobileMenuNow();
-                    return false;
-                }, true);
-                
-                freshToggle.addEventListener('touchstart', function(e) {
-                    e.stopPropagation();
-                }, true);
-                
-                // Fallback với mousedown
-                freshToggle.addEventListener('mousedown', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleMobileMenuNow();
-                    return false;
-                }, true);
-                
-                // Keyboard support
-                freshToggle.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        toggleMobileMenuNow();
-                    }
-                });
-
-                // Đóng menu khi click outside
-                document.addEventListener('click', function(e) {
-                    if (navLinks && mobileMenuToggle) {
-                        if (!navLinks.contains(e.target) && !mobileMenuToggle.contains(e.target) && !e.target.closest('.mobile-menu-toggle')) {
-                            navLinks.classList.remove('active');
-                            mobileMenuToggle.classList.remove('active');
-                            mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                            document.body.style.overflow = '';
-                        }
-                    }
-                }, true);
-
-                // Xử lý dropdowns trong menu
-                const dropdowns = navLinks.querySelectorAll('.dropdown');
-                dropdowns.forEach(dropdown => {
-                    const dropbtn = dropdown.querySelector('.dropbtn');
-                    if (dropbtn) {
-                        dropbtn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            dropdown.classList.toggle('active');
-                        });
-                    }
-                });
-            }
-        });
-        
-        // Chạy ngay cả khi DOM đã loaded
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
-                const btn = document.getElementById('mobileMenuToggle');
-                if (btn) {
-                    btn.setAttribute('onclick', 'toggleMobileMenuNow(); return false;');
-                    console.log('Mobile menu button onclick set on DOMContentLoaded');
-                }
-            });
-        } else {
-            // DOM đã loaded, chạy ngay
-            setTimeout(function() {
-                const btn = document.getElementById('mobileMenuToggle');
-                if (btn) {
-                    btn.setAttribute('onclick', 'toggleMobileMenuNow(); return false;');
-                    console.log('Mobile menu button onclick set immediately');
-                }
-            }, 100);
-        }
-    </script>
+<!-- Mobile overlay + drawer -->
+<div class="dqd-mobile-overlay" id="dqdOverlay" onclick="dqdToggleDrawer()"></div>
+<div class="dqd-mobile-drawer" id="dqdDrawer">
+  <div class="dqd-drawer-top">
+    <a href="/" class="dqd-logo">
+      <div class="dqd-logo-mark" style="width:30px;height:30px">
+        <svg viewBox="0 0 24 24" fill="none" style="width:16px;height:16px"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z" stroke="white" stroke-width="2" stroke-linejoin="round"/><path d="M9 21v-7h6v7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="dqd-logo-name" style="font-size:.9375rem">{{ site_settings.get('site_name', 'DQD') }}</span>
+    </a>
+    <button class="dqd-drawer-close" onclick="dqdToggleDrawer()">✕</button>
+  </div>
+  <nav class="dqd-drawer-nav">
+    <a href="/">Trang chủ</a>
+    <button class="dqd-drawer-section-toggle" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('show')">
+      Sản phẩm <i class="fas fa-chevron-down"></i>
+    </button>
+    <div class="dqd-drawer-sub">
+      <a href="/products"><i class="fas fa-th"></i>Tất cả sản phẩm</a>
+      <a href="/products?category=Ph%C3%B2ng%20Kh%C3%A1ch"><i class="fas fa-couch"></i>Phòng Khách</a>
+      <a href="/products?category=Ph%C3%B2ng%20Ng%E1%BB%A7"><i class="fas fa-bed"></i>Phòng Ngủ</a>
+      <a href="/products?category=Nh%C3%A0%20B%E1%BA%BFp"><i class="fas fa-utensils"></i>Nhà Bếp</a>
+      <a href="/products?category=V%C4%83n%20Ph%C3%B2ng"><i class="fas fa-briefcase"></i>Văn Phòng</a>
+      <a href="/products?category=Ph%C3%B2ng%20%C4%82n"><i class="fas fa-chair"></i>Phòng Ăn</a>
+    </div>
+    <a href="/about">Về chúng tôi</a>
+    <a href="/partners">Đối tác</a>
+    <button class="dqd-drawer-section-toggle" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('show')">
+      Chính sách <i class="fas fa-chevron-down"></i>
+    </button>
+    <div class="dqd-drawer-sub">
+      <a href="/policy"><i class="fas fa-file-contract"></i>Chính sách chung</a>
+      <a href="/return-policy"><i class="fas fa-undo"></i>Đổi trả</a>
+      <a href="/warranty"><i class="fas fa-shield-alt"></i>Bảo hành</a>
+      <a href="/privacy"><i class="fas fa-lock"></i>Bảo mật</a>
+      <a href="/terms"><i class="fas fa-gavel"></i>Điều khoản</a>
+    </div>
+    <a href="/contact">Liên hệ</a>
+    <div class="dqd-drawer-divider"></div>
+    <a href="/cart">
+      <span>Giỏ hàng</span>
+      {% if cart_count %}<span style="background:var(--dqd-gold);color:#fff;border-radius:99px;padding:1px 8px;font-size:.7rem;font-weight:700">{{ cart_count }}</span>{% endif %}
+    </a>
+    {% if session.get('customer_logged_in') %}
+    <a href="/account"><i class="fas fa-user" style="width:16px;color:var(--dqd-gold)"></i>{{ session.get('customer_name') }}</a>
+    <a href="/logout" style="color:rgba(255,100,100,.7)"><i class="fas fa-sign-out-alt" style="width:16px"></i>Đăng xuất</a>
+    {% else %}
+    <a href="/login"><i class="fas fa-sign-in-alt" style="width:16px;color:var(--dqd-gold)"></i>Đăng nhập</a>
+    <a href="/register"><i class="fas fa-user-plus" style="width:16px;color:var(--dqd-gold)"></i>Đăng ký</a>
     {% endif %}
+  </nav>
+</div>
 
-    <!-- Anime.js Library - CSS Animation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <script src="{{ url_for('static', filename='js/anime-animations.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/translations.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/theme-language.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
-    <script>
-        // Handle logo error fallback
-        function handleLogoError() {
-            const logoImg = document.getElementById('site-logo');
-            const logoFallback = document.getElementById('logo-fallback');
-            if (logoImg && logoFallback) {
-                logoImg.style.display = 'none';
-                logoFallback.style.display = 'flex';
-            }
-        }
-        
-        // Check if logo exists on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const logoImg = document.getElementById('site-logo');
-            if (logoImg && !logoImg.complete) {
-                logoImg.onerror = handleLogoError;
-            } else if (logoImg && logoImg.complete && logoImg.naturalHeight === 0) {
-                handleLogoError();
-            }
-        });
-    </script>
-    {% block extra_js %}{% endblock %}
+<!-- ══ MAIN CONTENT ══ -->
+{% block content %}{% endblock %}
+
+<!-- ══ FOOTER ══ -->
+<footer class="dqd-footer">
+  <div class="dqdf-inner">
+    <div class="dqdf-grid">
+
+      <!-- Brand col -->
+      <div class="dqdf-brand">
+        <a href="/" class="dqd-logo" style="margin-bottom:1rem;display:inline-flex">
+          <div class="dqd-logo-mark">
+            <svg viewBox="0 0 24 24" fill="none" style="width:20px;height:20px"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 21v-7h6v7" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="dqd-logo-name">{{ site_settings.get('site_name', 'DQD') }}</span>
+        </a>
+        <p>Đơn vị chuyên cung cấp nội thất cao cấp, thiết kế hiện đại với chất lượng được kiểm định nghiêm ngặt. Mang đến không gian sống đẹp cho mọi gia đình Việt Nam.</p>
+        <div class="dqdf-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+        </div>
+      </div>
+
+      <!-- Links -->
+      <div class="dqdf-col">
+        <h4>Sản phẩm</h4>
+        <ul>
+          <li><a href="/products">Tất cả sản phẩm</a></li>
+          <li><a href="/products?category=Ph%C3%B2ng%20Kh%C3%A1ch">Phòng Khách</a></li>
+          <li><a href="/products?category=Ph%C3%B2ng%20Ng%E1%BB%A7">Phòng Ngủ</a></li>
+          <li><a href="/products?category=Nh%C3%A0%20B%E1%BA%BFp">Nhà Bếp</a></li>
+          <li><a href="/products?category=V%C4%83n%20Ph%C3%B2ng">Văn Phòng</a></li>
+          <li><a href="/products?category=Ph%C3%B2ng%20%C4%82n">Phòng Ăn</a></li>
+        </ul>
+      </div>
+
+      <!-- Support -->
+      <div class="dqdf-col">
+        <h4>Hỗ trợ</h4>
+        <ul>
+          <li><a href="/guide">Hướng dẫn mua hàng</a></li>
+          <li><a href="/return-policy">Chính sách đổi trả</a></li>
+          <li><a href="/warranty">Chính sách bảo hành</a></li>
+          <li><a href="/faq">Câu hỏi thường gặp</a></li>
+          <li><a href="/privacy">Chính sách bảo mật</a></li>
+          <li><a href="/terms">Điều khoản dịch vụ</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="dqdf-col">
+        <h4>Liên hệ</h4>
+        <ul style="gap:.875rem">
+          <li>
+            <div class="dqdf-contact-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>Hà Đông, Hà Nội</span>
+            </div>
+          </li>
+          <li>
+            <div class="dqdf-contact-item">
+              <i class="fas fa-phone"></i>
+              <a href="tel:0345211386">0345 211 386</a>
+            </div>
+          </li>
+          <li>
+            <div class="dqdf-contact-item">
+              <i class="fas fa-envelope"></i>
+              <a href="mailto:quocdat30075@gmail.com">quocdat30075@gmail.com</a>
+            </div>
+          </li>
+          <li>
+            <div class="dqdf-contact-item">
+              <i class="fas fa-clock"></i>
+              <span>8:00 – 22:00 hàng ngày</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="dqdf-bottom">
+      <p>© 2025 {{ site_settings.get('site_name', 'DQD') }}. Tất cả quyền được bảo lưu.</p>
+      <div class="dqdf-bottom-links">
+        <a href="/privacy">Bảo mật</a>
+        <a href="/terms">Điều khoản</a>
+        <a href="/sitemap">Sitemap</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ══ COUPON MODAL ══ -->
+{% if show_coupons and coupons_list %}
+<script>window.shouldShowCoupons = true;</script>
+<div id="couponModal" class="dqd-modal" onclick="if(event.target===this)closeCouponModal()">
+  <div class="dqd-modal-box">
+    <div class="dqd-modal-head">
+      <div>
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.5);margin-bottom:.25rem">Ưu đãi dành cho bạn</div>
+        <h2 style="font-size:1.125rem;font-weight:700;color:#fff">Mã giảm giá đang áp dụng</h2>
+      </div>
+      <button onclick="closeCouponModal()" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.875rem;transition:background .18s" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">✕</button>
+    </div>
+    <div class="dqd-modal-body">
+      <p style="font-size:.8125rem;color:var(--dqd-muted);text-align:center;margin-bottom:1.25rem">Sử dụng mã bên dưới khi thanh toán để nhận ưu đãi</p>
+      <div style="display:flex;flex-direction:column;gap:.875rem">
+        {% for coupon in coupons_list %}
+        <div class="dqd-coupon-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.75rem">
+            <div style="font-size:1.125rem;font-weight:700;color:var(--dqd-gold);letter-spacing:.08em;background:var(--dqd-light);padding:.5rem 1rem;border-radius:7px;border:1.5px dashed var(--dqd-gold);flex:1;text-align:center">{{ coupon.code }}</div>
+            <button onclick="dqdCopyCode('{{ coupon.code }}',this)" style="padding:.5rem 1rem;background:var(--dqd-dark);color:#fff;border:none;border-radius:8px;font-family:var(--dqd-font);font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .18s" onmouseover="this.style.background='#2e2e2a'" onmouseout="this.style.background='var(--dqd-dark)'">Sao chép</button>
+          </div>
+          <div style="font-size:.9rem;font-weight:600;color:var(--dqd-text);margin-bottom:.25rem">{{ coupon.name }}</div>
+          {% if coupon.description %}<div style="font-size:.78rem;color:var(--dqd-muted)">{{ coupon.description }}</div>{% endif %}
+          <div style="display:flex;gap:.5rem;margin-top:.625rem;flex-wrap:wrap">
+            <span style="background:#fffbeb;color:#854d0e;border:1px solid #fde68a;border-radius:99px;padding:2px 10px;font-size:.72rem;font-weight:600">
+              {% if coupon.discount_type == 'percentage' %}Giảm {{ coupon.discount_value|int }}%{% else %}Giảm {{ coupon.discount_value|format_currency }} ₫{% endif %}
+            </span>
+            {% if coupon.min_order_amount > 0 %}
+            <span style="background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;border-radius:99px;padding:2px 10px;font-size:.72rem">Đơn từ {{ coupon.min_order_amount|format_currency }} ₫</span>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div style="padding:1.25rem 1.5rem;border-top:1.5px solid var(--dqd-border);text-align:center">
+      <button onclick="closeCouponModal()" style="padding:.8rem 2.5rem;background:var(--dqd-dark);color:#fff;border:none;border-radius:9px;font-family:var(--dqd-font);font-size:.9rem;font-weight:600;cursor:pointer;transition:background .18s" onmouseover="this.style.background='#2e2e2a'" onmouseout="this.style.background='var(--dqd-dark)'">Đã hiểu, cảm ơn!</button>
+    </div>
+  </div>
+</div>
+<style>
+.dqd-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:99000;align-items:center;justify-content:center;padding:1.5rem}
+.dqd-modal.show{display:flex}
+.dqd-modal-box{background:#fff;border-radius:14px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.25);animation:modalIn .35s cubic-bezier(.22,.68,0,1.2)}
+@keyframes modalIn{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:none}}
+.dqd-modal-head{background:var(--dqd-dark);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-radius:14px 14px 0 0;position:relative;overflow:hidden}
+.dqd-modal-head::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 100%,rgba(196,160,100,.12) 0%,transparent 60%);pointer-events:none}
+.dqd-modal-head>*{position:relative;z-index:1}
+.dqd-modal-body{padding:1.5rem}
+.dqd-coupon-card{background:var(--dqd-cream);border:1.5px solid var(--dqd-border);border-radius:10px;padding:1.125rem}
+</style>
+<script>
+function closeCouponModal(){
+  var m=document.getElementById('couponModal');
+  if(m){m.classList.remove('show');document.body.style.overflow='';}
+  fetch('/api/clear-coupons-session',{method:'POST',headers:{'Content-Type':'application/json'}}).catch(()=>{});
+}
+function dqdCopyCode(code,btn){
+  navigator.clipboard.writeText(code).then(()=>{
+    var o=btn.innerHTML;btn.innerHTML='✓ Đã sao chép';btn.style.background='#16a34a';
+    setTimeout(()=>{btn.innerHTML=o;btn.style.background='';},2000);
+  }).catch(()=>alert('Mã giảm giá: '+code));
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  if(window.shouldShowCoupons){
+    setTimeout(()=>{
+      var m=document.getElementById('couponModal');
+      if(m){m.classList.add('show');document.body.style.overflow='hidden';}
+    },600);
+  }
+});
+</script>
+{% endif %}
+
+<!-- ══ SCRIPTS ══ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script src="{{ url_for('static', filename='js/anime-animations.js') }}"></script>
+<script src="{{ url_for('static', filename='js/translations.js') }}"></script>
+<script src="{{ url_for('static', filename='js/theme-language.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+<script>
+// Logo fallback
+function handleLogoError(){
+  var img=document.getElementById('site-logo');
+  var svg=document.getElementById('logo-fallback-svg');
+  if(img){img.style.display='none';}
+  if(svg){svg.style.display='block';}
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  var img=document.getElementById('site-logo');
+  if(img){img.onerror=handleLogoError;if(img.complete&&img.naturalHeight===0)handleLogoError();}
+
+  // Close drawer on nav link click
+  document.querySelectorAll('#dqdDrawer a').forEach(function(a){
+    a.addEventListener('click',function(){
+      var d=document.getElementById('dqdDrawer');
+      if(d&&d.classList.contains('open'))dqdToggleDrawer();
+    });
+  });
+
+  // Cart badge: hide if 0
+  var badge=document.getElementById('cartBadge');
+  if(badge&&(badge.textContent.trim()===''||badge.textContent.trim()==='0'))badge.style.display='none';
+});
+</script>
+{% block extra_js %}{% endblock %}
+
 </body>
 </html>

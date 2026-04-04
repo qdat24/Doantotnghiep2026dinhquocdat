@@ -1,463 +1,315 @@
 {% extends "base.html" %}
-
 {% block title %}Đối Tác - HOMESTEAD{% endblock %}
 
-{% block content %}
-<style>
-    .partners-hero {
-        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
-        color: white;
-        padding: 4rem 0;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .partners-hero::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
-        opacity: 0.3;
-    }
-
-    .partners-hero .container {
-        position: relative;
-        z-index: 1;
-    }
-
-    .partners-hero h1 {
-        font-size: clamp(2rem, 5vw, 3rem);
-        font-weight: 800;
-        margin-bottom: 1rem;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-    }
-
-    .partners-hero p {
-        font-size: 1.25rem;
-        opacity: 0.95;
-        color: white;
-    }
-
-    .partners-content {
-        padding: 4rem 0;
-        background: var(--bg-cream);
-    }
-
-    .partners-intro {
-        max-width: 900px;
-        margin: 0 auto 4rem auto;
-        text-align: center;
-    }
-
-    .partners-intro h2 {
-        color: var(--text-dark);
-        margin-bottom: 1.5rem;
-        font-size: clamp(1.75rem, 4vw, 2.5rem);
-        font-weight: 700;
-    }
-
-    .partners-intro p {
-        font-size: 1.125rem;
-        line-height: 1.8;
-        color: var(--text-medium);
-        margin-bottom: 1.5rem;
-    }
-
-    .partners-section {
-        margin-bottom: 4rem;
-    }
-
-    .partners-section h2 {
-        text-align: center;
-        color: var(--text-dark);
-        margin-bottom: 3rem;
-        font-size: clamp(1.75rem, 4vw, 2.5rem);
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-    }
-
-    .partners-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2.5rem;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    .partner-card {
-        background: white;
-        border-radius: 15px;
-        padding: 2.5rem;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .partner-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, var(--sage-medium), var(--sage-dark));
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
-    }
-
-    .partner-card:hover::before {
-        transform: scaleX(1);
-    }
-
-    .partner-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    }
-
-    .partner-logo {
-        width: 180px;
-        height: 180px;
-        margin: 0 auto 1.5rem;
-        background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 4rem;
-        color: var(--sage-dark);
-        font-weight: 700;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        overflow: hidden;
-        position: relative;
-    }
-
-    .partner-logo img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        padding: 15px;
-        border-radius: 50%;
-    }
-
-    .partner-logo.has-image {
-        background: white;
-        padding: 10px;
-    }
-
-    .partner-logo.has-image i {
-        display: none !important;
-    }
-
-    .partner-logo:not(.has-image) img {
-        display: none;
-    }
-
-    .partner-card:hover .partner-logo {
-        transform: scale(1.1) rotate(5deg);
-        box-shadow: 0 6px 20px rgba(157, 184, 146, 0.3);
-    }
-
-    .partner-name {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--text-dark);
-        margin-bottom: 0.75rem;
-        line-height: 1.4;
-    }
-
-    .devmaster-special .partner-name {
-        font-size: 1.1rem;
-        line-height: 1.5;
-    }
-
-    .partner-type {
-        display: inline-block;
-        background: linear-gradient(135deg, var(--sage-medium), var(--sage-dark));
-        color: white;
-        padding: 0.5rem 1.25rem;
-        border-radius: 20px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin-bottom: 1.25rem;
-    }
-
-    .partner-description {
-        color: var(--text-medium);
-        line-height: 1.7;
-        font-size: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .partner-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--sage-dark);
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-    .partner-link:hover {
-        color: var(--sage-medium);
-        gap: 0.75rem;
-    }
-
-    .partner-link i {
-        transition: transform 0.3s ease;
-    }
-
-    .partner-link:hover i {
-        transform: translateX(5px);
-    }
-
-    .devmaster-special {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-
-    .devmaster-special .partner-logo {
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-    }
-
-    .devmaster-special .partner-name {
-        color: white;
-    }
-
-    .devmaster-special .partner-description {
-        color: rgba(255, 255, 255, 0.9);
-    }
-
-    .devmaster-special .partner-link {
-        color: white;
-    }
-
-    .devmaster-special .partner-link:hover {
-        color: rgba(255, 255, 255, 0.8);
-    }
-
-    .partners-cta {
-        text-align: center;
-        padding: 3rem 0;
-        background: white;
-        border-radius: 15px;
-        max-width: 800px;
-        margin: 4rem auto 0;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    .partners-cta h3 {
-        color: var(--text-dark);
-        margin-bottom: 1rem;
-        font-size: clamp(1.5rem, 3vw, 2rem);
-        font-weight: 700;
-    }
-
-    .partners-cta p {
-        color: var(--text-medium);
-        font-size: 1.125rem;
-        margin-bottom: 2rem;
-        line-height: 1.7;
-    }
-
-    .cta-button {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 1rem 2.5rem;
-        background: linear-gradient(135deg, var(--sage-medium), var(--sage-dark));
-        color: white;
-        text-decoration: none;
-        border-radius: var(--radius-full);
-        font-weight: 700;
-        font-size: 1.125rem;
-        transition: all var(--transition-normal);
-        box-shadow: 0 4px 12px rgba(157, 184, 146, 0.3);
-    }
-
-    .cta-button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(157, 184, 146, 0.4);
-    }
-
-    @media (max-width: 768px) {
-        .partners-hero {
-            padding: 3rem 0;
-        }
-
-        .partners-content {
-            padding: 3rem 0;
-        }
-
-        .partners-grid {
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
-
-        .partner-card {
-            padding: 2rem;
-        }
-
-        .partner-logo {
-            width: 140px;
-            height: 140px;
-            font-size: 3rem;
-        }
-    }
-</style>
-
-<!-- Page Header -->
-<section class="partners-hero">
-    <div class="container">
-        <h1>
-            <i class="fas fa-handshake"></i> Đối Tác
-        </h1>
-        <p>Hợp tác cùng các đối tác uy tín trong lĩnh vực kiến trúc và công nghệ</p>
-    </div>
-</section>
-
-<!-- Content -->
-<section class="partners-content">
-    <div class="container">
-        
-        <!-- Intro -->
-        <div class="partners-intro">
-            <h2>Đối Tác Chiến Lược</h2>
-            <p>
-                HOMESTEAD tự hào được hợp tác với các đối tác hàng đầu trong lĩnh vực nội thất 
-                và công nghệ. Sự hợp tác này giúp chúng tôi mang đến những giải pháp nội thất 
-                tốt nhất và dịch vụ công nghệ hiện đại cho khách hàng.
-            </p>
-        </div>
-
-        <!-- Interior Design Partners -->
-        <div class="partners-section">
-            <h2>
-                <i class="fas fa-couch"></i> Đối Tác Nội Thất
-            </h2>
-            <div class="partners-grid">
-                <div class="partner-card">
-                    <div class="partner-logo has-image" id="hoanggia-logo">
-                        <img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-6/368370209_671084131719706_4843289841186139566_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=YXEufYhOObEQ7kNvwGo19b_&_nc_oc=AdkvrCRQA1NAuBVLntrOBluzPtw-6QAKE4axwC1Y9qRibbclndRY9ODBHgBoAiADb-JfiMg8s5_J4eShIRuUnE3m&_nc_zt=23&_nc_ht=scontent.fhan15-1.fna&_nc_gid=iOOG2bwS6bBF7AL6K5xtmw&oh=00_AfkITWQyk1aVngGQvjKQmf3eAgjYAmL2F6FDjYRgb4AsVw&oe=69521E27" 
-                             alt="Nội Thất Hoàng Gia Logo"
-                             onerror="this.onerror=null; this.src='https://hoanggiadesign.vn/logo.png'; this.onerror=function(){this.style.display='none'; const logoDiv=document.getElementById('hoanggia-logo'); if(logoDiv){logoDiv.innerHTML='<i class=\'fas fa-crown\'></i>'; logoDiv.classList.remove('has-image'); logoDiv.style.background='linear-gradient(135deg, #f6d365 0%, #fda085 100%)'; logoDiv.style.color='white';}};">
-                    </div>
-                    <div class="partner-name">Nội Thất Hoàng Gia</div>
-                    <div class="partner-type">Thiết Kế & Sản Xuất Nội Thất</div>
-                    <div class="partner-description">
-                        Công ty chuyên thiết kế và sản xuất nội thất, nổi bật với các dự án nội thất tân cổ điển. 
-                        Đã thực hiện nhiều công trình tiêu biểu như nội thất biệt thự, nhà phố cao cấp. 
-                        Cam kết cung cấp sản phẩm chất lượng cao, mẫu mã đẹp và phù hợp với mọi không gian.
-                        <br><br>
-                        <strong>Địa chỉ:</strong> Số Nhà 05, Nhà P16 TT Trương Định, Đường Nguyễn An Ninh, Phường Tương Mai, Quận Hoàng Mai, Hà Nội
-                    </div>
-                    <a href="https://hoanggiadesign.vn" target="_blank" class="partner-link">
-                        Xem thêm <i class="fas fa-external-link-alt"></i>
-                    </a>
-                </div>
-
-                <div class="partner-card">
-                    <div class="partner-logo has-image" id="aic-logo">
-                        <img src="https://office.aicjsc.com/wp-content/uploads/2023/10/LOGO-MOI-04-3.png" 
-                             alt="AIC Group Logo"
-                             onerror="this.onerror=null; this.src='https://aicjsc.com/logo.png'; this.onerror=function(){this.style.display='none'; const logoDiv=document.getElementById('aic-logo'); if(logoDiv){logoDiv.innerHTML='<i class=\'fas fa-building\'></i>'; logoDiv.classList.remove('has-image'); logoDiv.style.background='linear-gradient(135deg, #667eea 0%, #764ba2 100%)'; logoDiv.style.color='white';}};">
-                    </div>
-                    <div class="partner-name">AIC Group</div>
-                    <div class="partner-type">Kiến Trúc Nội Thất & Xây Dựng</div>
-                    <div class="partner-description">
-                        Công ty Cổ phần Kiến Trúc Nội Thất Xây Dựng AIC, chuyên về thiết kế và thi công nội thất. 
-                        Với hơn 10 năm kinh nghiệm trong lĩnh vực kiến tạo không gian sống và làm việc. 
-                        Được khách hàng đánh giá cao về chất lượng thi công, phong cách làm việc chuyên nghiệp 
-                        và đội ngũ nhân viên nhiệt tình, có gu thẩm mỹ tốt.
-                        <br><br>
-                        <strong>Địa chỉ:</strong> Phòng 1806, Tòa nhà The Garden, Khu đô thị mới Mỹ Đình - Mễ Trì, Phường Từ Liêm, Hà Nội
-                    </div>
-                    <a href="https://aicjsc.com" target="_blank" class="partner-link">
-                        Xem thêm <i class="fas fa-external-link-alt"></i>
-                    </a>
-                </div>
-
-                <div class="partner-card">
-                    <div class="partner-logo has-image" id="nhaxinh-logo">
-                        <img src="https://nhaxinh.com/wp-content/uploads/2025/07/logo-NX-moi-798x800.webp" 
-                             alt="Nhà Xinh Logo"
-                             onerror="this.onerror=null; this.src='https://www.nhaxinh.com/logo.png'; this.onerror=function(){this.style.display='none'; const logoDiv=document.getElementById('nhaxinh-logo'); if(logoDiv){logoDiv.innerHTML='<i class=\'fas fa-home\'></i>'; logoDiv.classList.remove('has-image'); logoDiv.style.background='linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'; logoDiv.style.color='white';}};">
-                    </div>
-                    <div class="partner-name">Nhà Xinh</div>
-                    <div class="partner-type">Nội Thất Cao Cấp & Thiết Kế</div>
-                    <div class="partner-description">
-                        Thương hiệu nội thất nổi tiếng tại Việt Nam, chuyên cung cấp các sản phẩm nội thất cao cấp 
-                        và dịch vụ thiết kế nội thất. Được biết đến với các sản phẩm chất lượng, thiết kế tinh tế, 
-                        phù hợp với nhiều phong cách khác nhau từ hiện đại đến cổ điển.
-                        <br><br>
-                        <strong>Địa chỉ:</strong> Số 2, Đường 3/2, Phường 12, Quận 10, TP. Hồ Chí Minh
-                    </div>
-                    <a href="https://www.nhaxinh.com" target="_blank" class="partner-link">
-                        Xem thêm <i class="fas fa-external-link-alt"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Technology Partner -->
-        <div class="partners-section">
-            <h2>
-                <i class="fas fa-code"></i> Đối Tác Công Nghệ
-            </h2>
-            <div class="partners-grid">
-                <div class="partner-card devmaster-special">
-                    <div class="partner-logo has-image" id="devmaster-logo">
-                        <img src="https://devmaster.edu.vn/logo.png" 
-                             alt="DevMaster Logo" 
-                             onerror="this.onerror=null; this.src='https://devmaster.edu.vn/images/logo.png'; this.onerror=function(){this.style.display='none'; const logoDiv=document.getElementById('devmaster-logo'); if(logoDiv){logoDiv.innerHTML='<i class=\'fas fa-laptop-code\'></i>'; logoDiv.classList.remove('has-image');}};">
-                    </div>
-                    <div class="partner-name">VIỆN CÔNG NGHỆ VÀ ĐÀO TẠO DEVMASTER</div>
-                    <div class="partner-type" style="background: rgba(255, 255, 255, 0.3);">Đào Tạo - Phần Mềm - Cho Thuê Nhân Sự</div>
-                    <div class="partner-description">
-                        <strong>DevMaster</strong> là viện công nghệ và đào tạo hàng đầu, chuyên đào tạo lập trình viên chuyên nghiệp 
-                        với các khóa học về lập trình frontend, backend, mobile và cơ sở dữ liệu. Với hơn 900+ học viên đã đào tạo, 
-                        20+ khóa học và đội ngũ giảng viên nhiệt huyết, DevMaster là đối tác tin cậy trong việc phát triển 
-                        và xây dựng nền tảng thương mại điện tử cho HOMESTEAD.
-                        <br><br>
-                        <strong>Địa chỉ:</strong> Tầng 6 - Tòa nhà VIỆN CÔNG NGHỆ, Số 25, Vũ Ngọc Phan - Láng Hạ - Đống Đa - Hà Nội<br>
-                        <strong>Hotline:</strong> 0969.609.003 | 0978.611.889<br>
-                        <strong>Email:</strong> devmaster.contact@gmail.com
-                    </div>
-                    <a href="https://devmaster.edu.vn" target="_blank" class="partner-link">
-                        Truy cập website <i class="fas fa-external-link-alt"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- CTA -->
-        <div class="partners-cta">
-            <h3>Bạn muốn trở thành đối tác?</h3>
-            <p>
-                Nếu bạn là đơn vị nội thất, thiết kế hoặc công nghệ và muốn hợp tác với HOMESTEAD, 
-                vui lòng liên hệ với chúng tôi để được tư vấn về cơ hội hợp tác.
-            </p>
-            <a href="/contact" class="cta-button">
-                <i class="fas fa-envelope"></i> Liên Hệ Ngay
-            </a>
-        </div>
-
-    </div>
-</section>
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 {% endblock %}
 
+{% block content %}
+<div class="pt-root">
+
+  <!-- Header -->
+  <div class="pt-header">
+    <div class="pth-inner">
+      <div class="pth-bc">
+        <a href="/">Trang chủ</a>
+        <svg viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span>Đối tác</span>
+      </div>
+      <h1>Đối tác <span class="gold">chiến lược</span></h1>
+      <p>Hợp tác cùng các đối tác hàng đầu trong lĩnh vực nội thất và công nghệ</p>
+    </div>
+  </div>
+
+  <!-- Intro -->
+  <div class="pt-intro">
+    <div class="pti-inner">
+      <div class="pti-text">
+        <span class="pti-eyebrow">Quan hệ đối tác</span>
+        <h2>Cùng nhau tạo nên những không gian sống tuyệt vời</h2>
+        <p>HOMESTEAD tự hào được hợp tác với các đối tác uy tín trong lĩnh vực nội thất và công nghệ. Sự hợp tác này giúp chúng tôi mang đến những giải pháp nội thất tốt nhất và dịch vụ hiện đại cho khách hàng.</p>
+      </div>
+      <div class="pti-stats">
+        <div class="pti-stat"><strong>4+</strong><span>Đối tác chiến lược</span></div>
+        <div class="pti-sep"></div>
+        <div class="pti-stat"><strong>10+</strong><span>Năm hợp tác</span></div>
+        <div class="pti-sep"></div>
+        <div class="pti-stat"><strong>100%</strong><span>Cam kết chất lượng</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interior partners -->
+  <div class="pt-section">
+    <div class="pts-inner">
+      <div class="pts-head">
+        <div>
+          <span class="pts-eyebrow">Nội thất</span>
+          <h2>Đối tác nội thất</h2>
+        </div>
+      </div>
+
+      <div class="pt-cards">
+
+        <!-- Hoàng Gia -->
+        <div class="pt-card">
+          <div class="ptc-logo" id="hoanggia-logo">
+            <img src="https://hoanggianoithat.vn/wp-content/uploads/2019/05/logo-hoang-gia-noi-that.png"
+                 alt="Nội Thất Hoàng Gia"
+                 onerror="this.style.display='none';document.getElementById('hoanggia-logo').querySelector('.ptc-logo-fb').style.display='flex'">
+            <div class="ptc-logo-fb" style="display:none">HG</div>
+          </div>
+          <div class="ptc-body">
+            <div class="ptc-type-tag">Thiết kế & Sản xuất nội thất</div>
+            <h3>Nội Thất Hoàng Gia</h3>
+            <p>Công ty chuyên thiết kế và sản xuất nội thất, nổi bật với các dự án tân cổ điển cho biệt thự, nhà phố cao cấp. Cam kết cung cấp sản phẩm chất lượng cao, mẫu mã đẹp và phù hợp mọi không gian.</p>
+            <div class="ptc-info">
+              <div class="ptci-row">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M8 2a4 4 0 016 3.5c0 3.5-6 9-6 9S2 9 2 5.5A4 4 0 018 2z" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="5.5" r="1.5" stroke="currentColor" stroke-width="1.2"/></svg>
+                <span>Hoàng Mai, Hà Nội</span>
+              </div>
+            </div>
+            <a href="https://hoanggianoithat.vn/" target="_blank" rel="noopener" class="ptc-link">
+              Xem website
+              <svg viewBox="0 0 16 16" fill="none"><path d="M9 3h4v4M13 3l-7 7M5 5H3a1 1 0 00-1 1v7a1 1 0 001 1h7a1 1 0 001-1v-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- AIC -->
+        <div class="pt-card">
+          <div class="ptc-logo" id="aic-logo">
+            <img src="https://office.aicjsc.com/wp-content/uploads/2023/10/LOGO-MOI-04-3.png"
+                 alt="AIC Group"
+                 onerror="this.style.display='none';document.getElementById('aic-logo').querySelector('.ptc-logo-fb').style.display='flex'">
+            <div class="ptc-logo-fb" style="display:none">AIC</div>
+          </div>
+          <div class="ptc-body">
+            <div class="ptc-type-tag">Kiến trúc nội thất & Xây dựng</div>
+            <h3>AIC Group</h3>
+            <p>Công ty Cổ phần Kiến Trúc Nội Thất Xây Dựng AIC với hơn 10 năm kinh nghiệm thiết kế và thi công. Được khách hàng đánh giá cao về chất lượng, phong cách chuyên nghiệp và đội ngũ có gu thẩm mỹ tốt.</p>
+            <div class="ptc-info">
+              <div class="ptci-row">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M8 2a4 4 0 016 3.5c0 3.5-6 9-6 9S2 9 2 5.5A4 4 0 018 2z" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="5.5" r="1.5" stroke="currentColor" stroke-width="1.2"/></svg>
+                <span>Mỹ Đình, Hà Nội</span>
+              </div>
+            </div>
+            <a href="https://aicjsc.com" target="_blank" rel="noopener" class="ptc-link">
+              Xem website
+              <svg viewBox="0 0 16 16" fill="none"><path d="M9 3h4v4M13 3l-7 7M5 5H3a1 1 0 00-1 1v7a1 1 0 001 1h7a1 1 0 001-1v-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Nhà Xinh -->
+        <div class="pt-card">
+          <div class="ptc-logo" id="nhaxinh-logo">
+            <img src="https://nhaxinh.com/wp-content/uploads/2025/07/logo-NX-moi-798x800.webp"
+                 alt="Nhà Xinh"
+                 onerror="this.style.display='none';document.getElementById('nhaxinh-logo').querySelector('.ptc-logo-fb').style.display='flex'">
+            <div class="ptc-logo-fb" style="display:none">NX</div>
+          </div>
+          <div class="ptc-body">
+            <div class="ptc-type-tag">Nội thất cao cấp & Thiết kế</div>
+            <h3>Nhà Xinh</h3>
+            <p>Thương hiệu nội thất nổi tiếng tại Việt Nam, chuyên cung cấp sản phẩm cao cấp và dịch vụ thiết kế. Sản phẩm đa dạng từ phong cách hiện đại đến cổ điển, chất lượng ổn định và được khách hàng tin yêu nhiều năm.</p>
+            <div class="ptc-info">
+              <div class="ptci-row">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M8 2a4 4 0 016 3.5c0 3.5-6 9-6 9S2 9 2 5.5A4 4 0 018 2z" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="5.5" r="1.5" stroke="currentColor" stroke-width="1.2"/></svg>
+                <span>Quận 10, TP. Hồ Chí Minh</span>
+              </div>
+            </div>
+            <a href="https://www.nhaxinh.com" target="_blank" rel="noopener" class="ptc-link">
+              Xem website
+              <svg viewBox="0 0 16 16" fill="none"><path d="M9 3h4v4M13 3l-7 7M5 5H3a1 1 0 00-1 1v7a1 1 0 001 1h7a1 1 0 001-1v-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech partner -->
+  <div class="pt-section pt-section-dark">
+    <div class="pts-inner">
+      <div class="pts-head">
+        <div>
+          <span class="pts-eyebrow" style="color:rgba(255,255,255,.5)">Công nghệ</span>
+          <h2 style="color:#fff">Đối tác công nghệ</h2>
+        </div>
+      </div>
+
+      <div class="pt-devmaster">
+        <div class="ptd-logo" id="devmaster-logo">
+          <img src="https://devmaster.edu.vn/logo.png"
+               alt="DevMaster"
+               onerror="this.src='https://devmaster.edu.vn/images/logo.png';this.onerror=function(){this.style.display='none';document.getElementById('devmaster-logo').querySelector('.ptd-logo-fb').style.display='flex'}">
+          <div class="ptd-logo-fb" style="display:none">DM</div>
+        </div>
+        <div class="ptd-body">
+          <div class="ptd-tag">Đào tạo · Phần mềm · Nhân sự</div>
+          <h3>Viện Công Nghệ & Đào Tạo DevMaster</h3>
+          <p>Viện công nghệ và đào tạo hàng đầu, chuyên đào tạo lập trình viên chuyên nghiệp với các khóa học frontend, backend, mobile và cơ sở dữ liệu. Đối tác tin cậy trong việc phát triển và xây dựng nền tảng thương mại điện tử cho HOMESTEAD.</p>
+          <div class="ptd-meta">
+            <div class="ptd-stat"><strong>900+</strong><span>Học viên</span></div>
+            <div class="ptd-stat"><strong>20+</strong><span>Khóa học</span></div>
+            <div class="ptd-stat"><strong>10+</strong><span>Năm kinh nghiệm</span></div>
+          </div>
+          <div class="ptd-info">
+            <div class="ptdi-row">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M8 2a4 4 0 016 3.5c0 3.5-6 9-6 9S2 9 2 5.5A4 4 0 018 2z" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="5.5" r="1.5" stroke="currentColor" stroke-width="1.2"/></svg>
+              25 Vũ Ngọc Phan, Láng Hạ, Đống Đa, Hà Nội
+            </div>
+            <div class="ptdi-row">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M5 2h-1A1.5 1.5 0 002.5 3.5v1C2.5 10.4 6.6 14.5 13.5 14.5h1A1.5 1.5 0 0016 13v-1.5a.5.5 0 00-.3-.46l-2.5-1a.5.5 0 00-.56.12l-1 1.25a8 8 0 01-3.5-3.5l1.25-1a.5.5 0 00.12-.57l-1-2.5A.5.5 0 005 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+              0969.609.003 · 0978.611.889
+            </div>
+            <div class="ptdi-row">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M1 4h14a1 1 0 011 1v7a1 1 0 01-1 1H1a1 1 0 01-1-1V5a1 1 0 011-1zm7 5L1 5M15 5l-7 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              devmaster.contact@gmail.com
+            </div>
+          </div>
+          <a href="https://devmaster.edu.vn" target="_blank" rel="noopener" class="ptd-link">
+            Truy cập website
+            <svg viewBox="0 0 16 16" fill="none"><path d="M9 3h4v4M13 3l-7 7M5 5H3a1 1 0 00-1 1v7a1 1 0 001 1h7a1 1 0 001-1v-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Become partner CTA -->
+  <div class="pt-cta">
+    <div class="ptcta-inner">
+      <div class="ptcta-left">
+        <h2>Bạn muốn trở thành đối tác?</h2>
+        <p>Nếu bạn là đơn vị nội thất, thiết kế hoặc công nghệ và muốn hợp tác với HOMESTEAD, hãy liên hệ để chúng tôi trao đổi về cơ hội hợp tác cùng phát triển.</p>
+      </div>
+      <div class="ptcta-right">
+        <a href="/contact" class="ptcta-btn">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5L10 11l7.5-5.5M3 4h14a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Liên hệ hợp tác
+        </a>
+        <a href="tel:0345211386" class="ptcta-phone">0345 211 386</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--font:'Be Vietnam Pro',sans-serif;--dark:#1a1a18;--gold:#b8922a;--border:#e8e3db;--text:#2a2520;--muted:#7a7060;--light:#f5f4f1;--cream:#faf9f7}
+body{font-family:var(--font);color:var(--text)}
+a{text-decoration:none;color:inherit}
+img{display:block;max-width:100%}
+
+/* Header */
+.pt-header{background:var(--dark);padding:3rem 2rem;text-align:center;position:relative;overflow:hidden}
+.pt-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 100%,rgba(196,160,100,.12) 0%,transparent 60%)}
+.pth-inner{position:relative;z-index:1;max-width:1280px;margin:0 auto}
+.pth-bc{display:flex;align-items:center;justify-content:center;gap:.375rem;margin-bottom:.875rem}
+.pth-bc a,.pth-bc span{font-size:.75rem;color:rgba(255,255,255,.45)}
+.pth-bc a:hover{color:rgba(255,255,255,.8)}
+.pth-bc svg{width:11px;height:11px;color:rgba(255,255,255,.25)}
+.pt-header h1{font-size:clamp(1.875rem,4vw,2.75rem);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:.5rem}
+.pt-header h1 .gold{color:#c4a064;font-weight:300}
+.pt-header p{font-size:.9rem;color:rgba(255,255,255,.5);font-weight:300}
+
+/* Intro */
+.pt-intro{background:#fff;padding:3.5rem 2rem;border-bottom:1.5px solid var(--border)}
+.pti-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:3rem;flex-wrap:wrap}
+.pti-text{flex:1;min-width:300px}
+.pti-eyebrow{display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:.875rem}
+.pti-text h2{font-size:clamp(1.375rem,3vw,2rem);font-weight:700;color:var(--dark);letter-spacing:-.02em;line-height:1.25;margin-bottom:1rem}
+.pti-text p{font-size:.9375rem;color:var(--muted);line-height:1.8}
+.pti-stats{display:flex;align-items:center;gap:2rem;background:var(--light);border-radius:12px;padding:1.5rem 2rem;flex-shrink:0}
+.pti-stat{text-align:center}
+.pti-stat strong{display:block;font-size:1.75rem;font-weight:700;color:var(--dark);line-height:1}
+.pti-stat span{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:.25rem;display:block}
+.pti-sep{width:1px;height:2.5rem;background:var(--border)}
+
+/* Sections */
+.pt-section{background:var(--light);padding:3.5rem 2rem}
+.pt-section-dark{background:var(--dark)}
+.pts-inner{max-width:1280px;margin:0 auto}
+.pts-head{margin-bottom:2rem}
+.pts-eyebrow{display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem}
+.pts-head h2{font-size:clamp(1.5rem,3vw,2rem);font-weight:700;color:var(--dark);letter-spacing:-.02em}
+
+/* Partner cards */
+.pt-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+
+.pt-card{background:#fff;border-radius:12px;border:1.5px solid var(--border);overflow:hidden;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s}
+.pt-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.1)}
+
+.ptc-logo{aspect-ratio:1;background:var(--light);display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1.5px solid var(--border);padding:1.5rem}
+.ptc-logo img{max-width:100%;max-height:100%;object-fit:contain}
+.ptc-logo-fb{width:80px;height:80px;border-radius:50%;background:var(--dark);color:#fff;font-size:1.25rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+.ptc-body{padding:1.5rem;display:flex;flex-direction:column;gap:.75rem;flex:1}
+.ptc-type-tag{display:inline-block;background:var(--light);color:var(--muted);font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:99px;align-self:flex-start}
+.ptc-body h3{font-size:1rem;font-weight:700;color:var(--dark);letter-spacing:-.01em}
+.ptc-body p{font-size:.8125rem;color:var(--muted);line-height:1.7;flex:1}
+
+.ptc-info{display:flex;flex-direction:column;gap:.375rem}
+.ptci-row{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--muted)}
+.ptci-row svg{width:13px;height:13px;color:var(--gold);flex-shrink:0}
+
+.ptc-link{display:inline-flex;align-items:center;gap:.375rem;font-size:.8125rem;font-weight:600;color:var(--dark);border-bottom:1px solid var(--dark);padding-bottom:1px;transition:color .18s,border-color .18s;align-self:flex-start}
+.ptc-link svg{width:13px;height:13px;transition:transform .18s}
+.ptc-link:hover{color:var(--gold);border-color:var(--gold)}
+.ptc-link:hover svg{transform:translate(2px,-2px)}
+
+/* DevMaster special card */
+.pt-devmaster{display:grid;grid-template-columns:280px 1fr;gap:2rem;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden}
+
+.ptd-logo{background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;padding:2rem;border-right:1px solid rgba(255,255,255,.08)}
+.ptd-logo img{max-width:180px;max-height:180px;object-fit:contain}
+.ptd-logo-fb{width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:1.5rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+.ptd-body{padding:2rem;display:flex;flex-direction:column;gap:1rem}
+.ptd-tag{display:inline-block;background:rgba(196,160,100,.15);color:#c4a064;font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:99px;align-self:flex-start}
+.ptd-body h3{font-size:1.25rem;font-weight:700;color:#fff;letter-spacing:-.01em;line-height:1.25}
+.ptd-body p{font-size:.875rem;color:rgba(255,255,255,.6);line-height:1.75}
+
+.ptd-meta{display:flex;gap:2rem}
+.ptd-stat strong{display:block;font-size:1.375rem;font-weight:700;color:#fff}
+.ptd-stat span{font-size:.72rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em}
+
+.ptd-info{display:flex;flex-direction:column;gap:.375rem}
+.ptdi-row{display:flex;align-items:center;gap:.5rem;font-size:.8125rem;color:rgba(255,255,255,.55)}
+.ptdi-row svg{width:14px;height:14px;color:#c4a064;flex-shrink:0}
+
+.ptd-link{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.5rem;background:#fff;color:var(--dark);border-radius:8px;font-family:var(--font);font-size:.875rem;font-weight:600;transition:all .18s;align-self:flex-start;margin-top:.25rem}
+.ptd-link svg{width:14px;height:14px;transition:transform .18s}
+.ptd-link:hover{background:var(--gold);color:#fff}
+.ptd-link:hover svg{transform:translate(2px,-2px)}
+
+/* CTA */
+.pt-cta{background:#fff;border-top:1.5px solid var(--border);padding:3rem 2rem}
+.ptcta-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.ptcta-left h2{font-size:clamp(1.25rem,2.5vw,1.75rem);font-weight:700;color:var(--dark);letter-spacing:-.01em;margin-bottom:.625rem}
+.ptcta-left p{font-size:.9rem;color:var(--muted);line-height:1.7;max-width:560px}
+.ptcta-right{display:flex;align-items:center;gap:1rem;flex-shrink:0;flex-wrap:wrap}
+.ptcta-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.875rem 2rem;background:var(--dark);color:#fff;border-radius:9px;font-family:var(--font);font-size:.9rem;font-weight:600;transition:background .2s,transform .15s}
+.ptcta-btn svg{width:17px;height:17px}
+.ptcta-btn:hover{background:#2e2e2a;transform:translateY(-1px)}
+.ptcta-phone{font-size:.9rem;font-weight:600;color:var(--gold);font-variant-numeric:tabular-nums}
+.ptcta-phone:hover{text-decoration:underline}
+
+@media(max-width:1024px){.pt-cards{grid-template-columns:1fr 1fr}.pt-devmaster{grid-template-columns:1fr}}
+@media(max-width:700px){
+  .pt-cards{grid-template-columns:1fr}
+  .pti-inner{flex-direction:column}
+  .pti-stats{width:100%}
+  .ptcta-inner{flex-direction:column;align-items:flex-start}
+  .pt-section,.pt-intro,.pt-cta{padding:2.5rem 1rem}
+}
+</style>
+
+{% endblock %}

@@ -1,1343 +1,879 @@
 {% extends "admin/base.html" %}
-
 {% block title %}Cài Đặt Website{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Force settings to be on top */
-    body.admin-page .main-content,
-    .main-content {
-        position: relative;
-        z-index: 100 !important;
-    }
-    
-    .settings-container {
-        max-width: 1400px;
-        margin: 0 auto;
-        position: relative;
-        z-index: 100 !important;
-        background: white;
-    }
+:root {
+  --font: 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif;
+  --dark: #1a1a18; --gold: #b8922a; --gold-light: rgba(184,146,42,.1);
+  --border: #e8e3db; --text: #2a2520; --muted: #7a7060;
+  --light: #f5f4f1; --white: #ffffff;
+  --blue: #2563eb; --green: #16a34a; --red: #dc2626; --amber: #d97706;
+  --radius: 9px; --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+}
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+.settings-page * { box-sizing: border-box; }
+.settings-page { font-family: var(--font); color: var(--text); }
 
-    .settings-tabs {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 30px;
-        border-bottom: 2px solid #e0e0e0;
-        flex-wrap: wrap;
-        position: relative;
-        z-index: 100;
-    }
+.as-page-head { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1.5px solid var(--border); }
+.as-page-head h1 { font-size: 1.375rem; font-weight: 700; color: var(--dark); letter-spacing: -.02em; margin: 0 0 .25rem; }
+.as-page-head p { font-size: .8125rem; color: var(--muted); margin: 0; }
 
-    .settings-tab {
-        padding: 12px 24px;
-        background: #f5f5f5;
-        border: none;
-        border-radius: 8px 8px 0 0;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 500;
-        color: #666;
-        transition: all 0.3s;
-        position: relative;
-        bottom: -2px;
-        /* Mobile touch improvements */
-        touch-action: manipulation !important;
-        -webkit-tap-highlight-color: rgba(52, 152, 219, 0.3) !important;
-        user-select: none !important;
-        min-width: 44px !important;
-        min-height: 44px !important;
-        pointer-events: auto !important;
-        z-index: 10000 !important;
-        -webkit-touch-callout: none !important;
-        -webkit-user-select: none !important;
-        -moz-user-select: none !important;
-        -ms-user-select: none !important;
-    }
+.as-layout { display: grid; grid-template-columns: 220px 1fr; gap: 1.5rem; align-items: start; }
 
-    .settings-tab:hover {
-        background: #e8e8e8;
-        color: #333;
-    }
+.as-nav { background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; position: sticky; top: 1rem; }
+.as-nav-header { padding: .875rem 1rem; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); border-bottom: 1.5px solid var(--border); }
+.as-nav-btn { display: flex; align-items: center; gap: .625rem; width: 100%; padding: .75rem 1rem; border: none; background: none; font-family: var(--font); font-size: .8125rem; font-weight: 500; color: var(--muted); cursor: pointer; text-align: left; border-left: 2px solid transparent; transition: all .15s; }
+.as-nav-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+.as-nav-btn:hover { background: var(--light); color: var(--dark); }
+.as-nav-btn.active { background: var(--gold-light); color: var(--gold); border-left-color: var(--gold); font-weight: 600; }
+.as-nav-btn.active svg { color: var(--gold); }
+.as-nav-divider { height: 1px; background: var(--border); margin: .25rem 0; }
 
-    .settings-tab.active {
-        background: #3498db;
-        color: white;
-        border-bottom: 2px solid #3498db;
-    }
+.as-panel { display: none; }
+.as-panel.active { display: flex; flex-direction: column; gap: 1.25rem; }
 
-    .settings-tab-content {
-        display: none;
-        animation: fadeIn 0.3s;
-    }
+.as-card { background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.as-card-head { display: flex; align-items: center; gap: .75rem; padding: 1rem 1.25rem; border-bottom: 1.5px solid var(--border); background: var(--light); }
+.as-card-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.as-card-icon svg { width: 16px; height: 16px; }
+.aci-blue   { background: #eff6ff; color: #2563eb; }
+.aci-amber  { background: #fffbeb; color: #d97706; }
+.aci-green  { background: #f0faf4; color: #16a34a; }
+.aci-purple { background: #faf5ff; color: #7c3aed; }
+.aci-red    { background: #fff5f5; color: #dc2626; }
+.aci-dark   { background: var(--light); color: var(--dark); }
+.aci-teal   { background: #f0fdfa; color: #0d9488; }
+.as-card-head h3 { font-size: .9rem; font-weight: 700; color: var(--dark); margin: 0; letter-spacing: -.01em; }
+.as-card-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
 
-    .settings-tab-content.active {
-        display: block;
-    }
+.as-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.as-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem; }
+.as-field { display: flex; flex-direction: column; gap: .375rem; }
+.as-field label { font-size: .78rem; font-weight: 600; color: var(--dark); }
+.as-field small { font-size: .72rem; color: var(--muted); line-height: 1.4; }
+.as-field small a { color: var(--blue); }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+/* FIX 1: type="text" thay vì type="url" để tránh validate fail khi trống */
+.as-input, .as-select, .as-textarea {
+  padding: .65rem .875rem; border: 1.5px solid var(--border); border-radius: 8px;
+  font-family: var(--font); font-size: .875rem; color: var(--text); background: var(--white);
+  outline: none; transition: border-color .18s, box-shadow .18s; width: 100%;
+  -webkit-appearance: none; appearance: none;
+}
+.as-input:focus, .as-select:focus, .as-textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-light); }
+.as-input::placeholder, .as-textarea::placeholder { color: #c0b9ae; }
+.as-textarea { resize: vertical; min-height: 80px; }
+.as-mono { font-family: 'Courier New', monospace; font-size: .8125rem !important; }
 
-    .form-group {
-        margin-bottom: 25px;
-    }
+.as-select-wrap { position: relative; }
+.as-select { padding-right: 2.25rem; cursor: pointer; }
+.as-select-arr { position: absolute; right: .75rem; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--muted); pointer-events: none; }
 
-    .form-group label {
-        display: block;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 8px;
-        font-size: 14px;
-    }
+.as-pwd-wrap { position: relative; }
+.as-pwd-wrap .as-input { padding-right: 2.75rem; }
+.as-pwd-toggle { position: absolute; right: .75rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted); padding: .25rem; display: flex; }
+.as-pwd-toggle svg { width: 15px; height: 15px; }
+.as-pwd-toggle:hover { color: var(--dark); }
 
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-size: 14px;
-        transition: border-color 0.3s;
-        font-family: inherit;
-        /* Mobile improvements */
-        touch-action: manipulation;
-        -webkit-appearance: none;
-        appearance: none;
-    }
+.as-check-label { display: flex; align-items: center; gap: .75rem; padding: .875rem 1rem; background: var(--light); border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; transition: border-color .18s; user-select: none; }
+.as-check-label:hover { border-color: var(--gold); }
+.as-check-label input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--gold); flex-shrink: 0; cursor: pointer; margin: 0; }
+.as-check-label span { font-size: .8125rem; font-weight: 500; color: var(--dark); }
 
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-        outline: none;
-        border-color: #3498db;
-        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-    }
+.as-info { display: flex; align-items: flex-start; gap: .625rem; padding: .875rem 1rem; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 8px; font-size: .78rem; color: #1e40af; line-height: 1.5; }
+.as-info svg { width: 15px; height: 15px; color: #2563eb; flex-shrink: 0; margin-top: 1px; }
+.as-info a { color: #1d4ed8; font-weight: 600; }
 
-    .form-group textarea {
-        resize: vertical;
-        min-height: 80px;
-    }
+/* Image preview */
+.as-img-preview { margin-top: .5rem; border-radius: 8px; border: 1.5px solid var(--border); max-width: 100%; max-height: 100px; object-fit: contain; background: var(--light); padding: .5rem; display: none; }
+.as-img-preview.show { display: block; }
+.as-img-preview.banner { max-height: 160px; }
 
-    .form-group small {
-        display: block;
-        margin-top: 5px;
-        color: #7f8c8d;
-        font-size: 12px;
-    }
+/* Slide / Banner blocks */
+.as-slide-block {
+  border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden;
+  transition: border-color .15s;
+}
+.as-slide-block:hover { border-color: var(--gold); }
+.as-slide-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .75rem 1rem; background: var(--light); cursor: pointer;
+  font-size: .8125rem; font-weight: 600; color: var(--dark); user-select: none;
+}
+.as-slide-head .sb-badge {
+  font-size: .65rem; font-weight: 700; padding: 2px 8px; border-radius: 99px;
+  background: var(--border); color: var(--muted);
+}
+.as-slide-head .sb-badge.has-img { background: #d1fae5; color: #065f46; }
+.as-slide-chevron { width: 14px; height: 14px; color: var(--muted); transition: transform .2s; }
+.as-slide-block.open .as-slide-chevron { transform: rotate(180deg); }
+.as-slide-body { display: none; padding: 1rem; display: flex; flex-direction: column; gap: .875rem; border-top: 1px solid var(--border); }
+.as-slide-block:not(.open) .as-slide-body { display: none; }
+.as-slide-block.open .as-slide-body { display: flex; }
 
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
+.as-toggle-group { display: flex; gap: .625rem; flex-wrap: wrap; }
+.as-toggle-btn { display: inline-flex; align-items: center; gap: .5rem; padding: .65rem 1.25rem; border: 1.5px solid var(--border); border-radius: 8px; background: var(--white); font-family: var(--font); font-size: .8125rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .18s; }
+.as-toggle-btn:hover { border-color: var(--gold); color: var(--dark); }
+.as-toggle-btn.active { background: var(--dark); border-color: var(--dark); color: var(--white); }
+.as-toggle-btn svg { width: 15px; height: 15px; }
 
-    .settings-section {
-        background: white;
-        border-radius: 10px;
-        padding: 25px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        margin-bottom: 25px;
-    }
+/* Submit bar */
+.as-submit-bar { background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; position: sticky; bottom: 1rem; box-shadow: var(--shadow); }
+.as-submit-info { font-size: .78rem; color: var(--muted); }
+.as-submit-info strong { color: var(--dark); }
+.as-submit-btns { display: flex; gap: .625rem; align-items: center; }
+.as-btn-cancel { display: inline-flex; align-items: center; gap: .375rem; padding: .65rem 1.25rem; border: 1.5px solid var(--border); border-radius: 8px; font-family: var(--font); font-size: .8125rem; font-weight: 600; color: var(--muted); text-decoration: none; background: var(--white); cursor: pointer; transition: all .18s; }
+.as-btn-cancel:hover { border-color: var(--dark); color: var(--dark); }
+.as-btn-save { display: inline-flex; align-items: center; gap: .5rem; padding: .7rem 1.5rem; border: none; border-radius: 8px; background: var(--dark); color: var(--white); font-family: var(--font); font-size: .8125rem; font-weight: 700; cursor: pointer; transition: background .18s; }
+.as-btn-save:hover { background: #2e2e2a; }
+.as-btn-save:disabled { opacity: .65; cursor: not-allowed; }
+.as-btn-save svg { width: 15px; height: 15px; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-    .settings-section h3 {
-        font-size: 18px;
-        color: #2c3e50;
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #3498db;
-    }
-    
-    @media (max-width: 768px) {
-        .settings-section {
-            padding: 18px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
-        
-        .settings-section h3 {
-            font-size: 16px;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-        }
-    }
-    
-    @media (max-width: 480px) {
-        .settings-section {
-            padding: 14px;
-            margin-bottom: 16px;
-        }
-        
-        .settings-section h3 {
-            font-size: 15px;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
-        }
-    }
+.as-mobile-tabs { display: none; overflow-x: auto; gap: .375rem; padding-bottom: .5rem; margin-bottom: 1rem; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.as-mobile-tabs::-webkit-scrollbar { display: none; }
+.as-mobile-tab { display: inline-flex; align-items: center; gap: .375rem; padding: .55rem 1rem; border: 1.5px solid var(--border); border-radius: 99px; font-family: var(--font); font-size: .75rem; font-weight: 600; color: var(--muted); background: var(--white); cursor: pointer; white-space: nowrap; transition: all .15s; flex-shrink: 0; }
+.as-mobile-tab:hover { border-color: var(--gold); color: var(--dark); }
+.as-mobile-tab.active { background: var(--dark); border-color: var(--dark); color: var(--white); }
 
-    .preview-image {
-        max-width: 100%;
-        margin-top: 10px;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .logo-preview {
-        max-height: 100px;
-    }
-
-    .banner-preview {
-        max-height: 300px;
-    }
-
-    .btn-group {
-        margin-top: 30px;
-        text-align: right;
-        padding-top: 20px;
-        border-top: 1px solid #e0e0e0;
-    }
-
-    .btn-secondary {
-        background: #95a5a6;
-        color: white;
-        margin-right: 10px;
-        padding: 12px 24px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
-        text-decoration: none;
-        display: inline-block;
-        /* Mobile improvements */
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-        min-width: 44px;
-        min-height: 44px;
-        pointer-events: auto;
-        user-select: none;
-    }
-
-    .btn-secondary:hover {
-        background: #7f8c8d;
-    }
-    
-    .btn-primary {
-        /* Mobile improvements */
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-        min-width: 44px;
-        min-height: 44px;
-        pointer-events: auto;
-        user-select: none;
-    }
-
-    .checkbox-group {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .checkbox-group input[type="checkbox"] {
-        width: auto;
-        margin: 0;
-        cursor: pointer;
-        /* Mobile improvements */
-        min-width: 20px;
-        min-height: 20px;
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-        pointer-events: auto;
-    }
-
-    .info-box {
-        background: #e8f4f8;
-        border-left: 4px solid #3498db;
-        padding: 15px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-    }
-
-    .info-box p {
-        margin: 0;
-        color: #2c3e50;
-        font-size: 13px;
-    }
-
-    @media (max-width: 992px) {
-        .settings-container {
-            padding: 0;
-        }
-        
-        .form-row {
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-
-        .settings-tabs {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; /* Hide scrollbar */
-            -ms-overflow-style: none;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            position: sticky;
-            top: 0;
-            background: white;
-            z-index: 1000 !important;
-            border-bottom: 2px solid #e0e0e0;
-        }
-        
-        .settings-tabs::-webkit-scrollbar {
-            display: none; /* Hide scrollbar */
-        }
-        
-        .settings-tab {
-            padding: 14px 18px;
-            font-size: 13px;
-            white-space: nowrap;
-            flex-shrink: 0;
-            min-width: 110px;
-            position: relative;
-            z-index: 1001 !important;
-        }
-        
-        .settings-section {
-            margin-bottom: 24px;
-        }
-        
-        .settings-section h3 {
-            font-size: 18px;
-            margin-bottom: 16px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-    }
-    
-    @media (max-width: 768px) {
-        .page-header {
-            padding: 16px !important;
-            margin-bottom: 16px !important;
-        }
-        
-        .page-header h1 {
-            font-size: 20px !important;
-        }
-        
-        .page-header p {
-            font-size: 13px !important;
-        }
-        
-        .settings-container {
-            padding: 0;
-        }
-        
-        .settings-tabs {
-            margin-left: -16px;
-            margin-right: -16px;
-            padding-left: 16px;
-            padding-right: 16px;
-            margin-bottom: 20px;
-        }
-        
-        .settings-tab {
-            padding: 12px 16px;
-            font-size: 12px;
-            min-width: 100px;
-        }
-        
-        .settings-section {
-            margin-bottom: 20px;
-        }
-        
-        .settings-section h3 {
-            font-size: 16px;
-            margin-bottom: 14px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .form-group {
-            margin-bottom: 18px;
-        }
-        
-        .form-group label {
-            font-size: 13px;
-            margin-bottom: 6px;
-        }
-        
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            padding: 12px 14px;
-            font-size: 16px; /* Prevent zoom on iOS */
-            min-height: 48px;
-            border-radius: 8px;
-        }
-        
-        .form-group textarea {
-            min-height: 100px;
-        }
-        
-        .form-group small {
-            font-size: 11px;
-            margin-top: 4px;
-        }
-        
-        .info-box {
-            padding: 12px;
-            font-size: 12px;
-        }
-        
-        .btn-group {
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 2px solid #e0e0e0;
-        }
-        
-        .btn-secondary,
-        .btn-primary {
-            width: 100%;
-            margin: 0;
-            padding: 14px 20px;
-            font-size: 15px;
-            min-height: 48px;
-            z-index: 10000 !important;
-            position: relative;
-        }
-    }
-    
-    @media (max-width: 480px) {
-        .page-header {
-            padding: 12px !important;
-        }
-        
-        .page-header h1 {
-            font-size: 18px !important;
-        }
-        
-        .settings-tabs {
-            margin-left: -12px;
-            margin-right: -12px;
-            padding-left: 12px;
-            padding-right: 12px;
-            gap: 6px;
-        }
-        
-        .settings-tab {
-            padding: 10px 14px;
-            font-size: 11px;
-            min-width: 90px;
-        }
-        
-        .settings-section h3 {
-            font-size: 15px;
-        }
-        
-        .form-group {
-            margin-bottom: 16px;
-        }
-        
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            padding: 10px 12px;
-            font-size: 16px;
-            min-height: 44px;
-        }
-        
-        .btn-secondary,
-        .btn-primary {
-            padding: 12px 18px;
-            font-size: 14px;
-            min-height: 44px;
-        }
-        
-        .checkbox-group {
-            flex-wrap: wrap;
-        }
-        
-        .checkbox-group label {
-            font-size: 13px;
-        }
-    }
-    
-    /* Force settings container above everything */
-    .settings-container {
-        position: relative;
-        z-index: 1000 !important;
-    }
-    
-    /* Ensure form is clickable */
-    #settingsForm {
-        position: relative;
-        z-index: 1000 !important;
-    }
+@media (max-width: 900px) {
+  .as-layout { grid-template-columns: 1fr; }
+  .as-nav { display: none; }
+  .as-mobile-tabs { display: flex; }
+  .as-submit-bar { position: fixed; bottom: 0; left: 0; right: 0; border-radius: 0; z-index: 999; }
+  .as-panel.active { padding-bottom: 5rem; }
+}
+@media (max-width: 640px) {
+  .as-row, .as-row-3 { grid-template-columns: 1fr; }
+  .as-page-head h1 { font-size: 1.25rem; }
+}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>Cài Đặt Website</h1>
-    <p>Quản lý toàn bộ cài đặt và cấu hình của website</p>
+<div class="settings-page">
+  <div class="as-page-head">
+    <h1>Cài đặt website</h1>
+    <p>Quản lý toàn bộ cấu hình và thiết lập của DQD</p>
+  </div>
+
+  <!-- Mobile tabs -->
+  <div class="as-mobile-tabs" id="mobileTabStrip">
+    {% for tid, tlabel in [
+      ('general','Thông tin'),('branding','Logo'),('homepage','Trang chủ'),
+      ('contact','Liên hệ'),('payment','Thanh toán'),('email','Email'),
+      ('shipping','Vận chuyển'),('seo','SEO'),('social','Mạng xã hội'),
+      ('security','Bảo mật'),('display','Hiển thị'),('nft','NFT'),
+    ] %}
+    <button type="button" class="as-mobile-tab {% if loop.first %}active{% endif %}"
+            data-tab="{{ tid }}" onclick="switchTab('{{ tid }}',this)">{{ tlabel }}</button>
+    {% endfor %}
+  </div>
+
+  <form method="POST" action="{{ url_for('admin_settings') }}" id="settingsForm">
+    <div class="as-layout">
+
+      <!-- ── SIDEBAR ─────────────────────────── -->
+      <div class="as-nav">
+        <div class="as-nav-header">Danh mục cài đặt</div>
+        {% for tid, dpath, tlabel in [
+          ('general',  'M10 2a8 8 0 100 16A8 8 0 0010 2zm0 3v5l3 2',           'Thông tin chung'),
+          ('branding', 'M4 4h16v4H4V4zm0 6h16v4H4v-4zm0 6h10v4H4v-4z',         'Logo website'),
+          ('homepage', 'M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z',         'Trang chủ'),
+          ('contact',  'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z','Liên hệ'),
+          ('payment',  'M3 5h18v14H3V5zm0 4h18M7 15h3',                          'Thanh toán'),
+          ('email',    'M3 8l9 6 9-6M3 6h18v12H3V6z',                            'Email SMTP'),
+          ('shipping', 'M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3m-1 11h6m-3-3l3 3-3 3','Vận chuyển'),
+          ('seo',      'M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z',    'SEO'),
+          ('social',   'M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3V2z','Mạng xã hội'),
+          ('security', 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',           'Bảo mật'),
+          ('display',  'M4 6h16M4 10h16M4 14h16M4 18h16',                        'Hiển thị'),
+          ('nft',      'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z','NFT'),
+        ] %}
+        <button type="button"
+                class="as-nav-btn {% if loop.first %}active{% endif %}"
+                data-tab="{{ tid }}" onclick="switchTab('{{ tid }}',this)">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="{{ dpath }}" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {{ tlabel }}
+        </button>
+        {% if loop.index in [2, 4, 6, 8, 11] %}<div class="as-nav-divider"></div>{% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- ── PANELS ─────────────────────────── -->
+      <div>
+
+        <!-- ══ GENERAL ══ -->
+        <div class="as-panel active" id="panel-general">
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-blue"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 3v5l3 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+              <h3>Thông tin website</h3>
+            </div>
+            <div class="as-card-body">
+              <div class="as-field">
+                <label>Tên website</label>
+                <input class="as-input" type="text" name="site_name"
+                       value="{{ settings.get('site_name',{}).get('setting_value','DQD') }}" required>
+              </div>
+              <div class="as-field">
+                <label>Mô tả website</label>
+                <textarea class="as-textarea" name="site_description">{{ settings.get('site_description',{}).get('setting_value','') }}</textarea>
+              </div>
+              <div class="as-row">
+                <div class="as-field">
+                  <label>Đơn vị tiền tệ</label>
+                  <div class="as-select-wrap">
+                    <select class="as-select" name="currency">
+                      <option value="VND" {% if settings.get('currency',{}).get('setting_value','VND')=='VND' %}selected{% endif %}>VND (₫)</option>
+                      <option value="USD" {% if settings.get('currency',{}).get('setting_value')=='USD' %}selected{% endif %}>USD ($)</option>
+                    </select>
+                    <svg class="as-select-arr" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  </div>
+                </div>
+                <div class="as-field">
+                  <label>Thuế VAT (%)</label>
+                  <input class="as-input" type="number" name="tax_rate" value="{{ settings.get('tax_rate',{}).get('setting_value','10') }}" min="0" max="100" step="0.1">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ BRANDING — Logo ══ -->
+        <div class="as-panel" id="panel-branding">
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-amber"><svg viewBox="0 0 20 20" fill="none"><rect x="2" y="6" width="16" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/></svg></div>
+              <h3>Logo website</h3>
+            </div>
+            <div class="as-card-body">
+              <div class="as-info">
+                <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                Dùng đường dẫn <strong>tuyệt đối</strong> (https://...) hoặc <strong>đường dẫn nội bộ</strong> (/static/images/logo.png). Tránh link từ Facebook CDN vì chúng tự hết hạn.
+              </div>
+              <div class="as-field">
+                <label>URL Logo</label>
+                {# FIX 1: type="text" không validate URL, tránh form fail silent #}
+                <input class="as-input" type="text" id="site_logo" name="site_logo"
+                       value="{{ settings.get('site_logo',{}).get('setting_value','') }}"
+                       placeholder="https://example.com/logo.png hoặc /static/images/logo.png">
+                <small>Khuyến nghị: 300×100px, PNG/SVG nền trong suốt</small>
+                <img class="as-img-preview {% if settings.get('site_logo',{}).get('setting_value') %}show{% endif %}"
+                     id="logo_preview"
+                     src="{{ settings.get('site_logo',{}).get('setting_value','') }}"
+                     onerror="this.classList.remove('show')" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ HOMEPAGE — Hero Slider + Promo Banners + Partners ══ -->
+        <div class="as-panel" id="panel-homepage">
+
+          {# ── Hero Slider ─────────────────────────────── #}
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-amber">
+                <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 8h16" stroke="currentColor" stroke-width="1.4"/><path d="M8 12l2 2 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <h3>Hero Slider — Ảnh chuyển đổi trang chủ</h3>
+            </div>
+            <div class="as-card-body">
+              <div class="as-info">
+                <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                Thêm tối đa <strong>5 slides</strong>. Chỉ các slide có ảnh mới hiển thị. Slide 1 load đầu tiên, nên dùng ảnh nén tốt (&lt;500KB).
+              </div>
+
+              <div class="as-field" style="max-width:220px">
+                <label>Thời gian chuyển (ms)</label>
+                <input class="as-input" type="number" name="hero_interval"
+                       value="{{ settings.get('hero_interval',{}).get('setting_value','5000') }}"
+                       min="2000" max="15000" step="500">
+                <small>1 giây = 1000ms. Mặc định 5000ms</small>
+              </div>
+
+              {% for i in range(1, 6) %}
+              {% set hk = 'hero_' ~ i %}
+              {% set has_img = settings.get(hk ~ '_image',{}).get('setting_value','') %}
+              <div class="as-slide-block {% if i == 1 %}open{% endif %}" id="slide-{{ i }}">
+                <div class="as-slide-head" onclick="toggleSlide({{ i }})">
+                  <div style="display:flex;align-items:center;gap:.625rem">
+                    <span>Slide {{ i }}</span>
+                    <span class="sb-badge {% if has_img %}has-img{% endif %}">
+                      {% if has_img %}✓ Có ảnh{% else %}Chưa cấu hình{% endif %}
+                    </span>
+                  </div>
+                  <svg class="as-slide-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+                <div class="as-slide-body">
+                  <div class="as-field">
+                    <label>URL Hình ảnh <span style="color:var(--red)">*</span></label>
+                    <input class="as-input" type="text"
+                           name="{{ hk }}_image" id="{{ hk }}_image"
+                           value="{{ settings.get(hk ~ '_image',{}).get('setting_value','') }}"
+                           placeholder="https://... hoặc /static/images/banner{{ i }}.jpg"
+                           oninput="livePreview('{{ hk }}_image','{{ hk }}_prev')">
+                    <small>1920×860px, JPG tối ưu. Slide chỉ hiển thị khi có ảnh.</small>
+                    <img class="as-img-preview banner {% if has_img %}show{% endif %}"
+                         id="{{ hk }}_prev"
+                         src="{{ settings.get(hk ~ '_image',{}).get('setting_value','') }}"
+                         onerror="this.classList.remove('show')" loading="lazy">
+                  </div>
+                  <div class="as-row-3">
+                    <div class="as-field">
+                      <label>Nhãn nhỏ (eyebrow)</label>
+                      <input class="as-input" type="text" name="{{ hk }}_eyebrow"
+                             value="{{ settings.get(hk ~ '_eyebrow',{}).get('setting_value','') }}"
+                             placeholder="Bộ sưu tập 2025">
+                    </div>
+                    <div class="as-field">
+                      <label>Text nút CTA</label>
+                      <input class="as-input" type="text" name="{{ hk }}_btn"
+                             value="{{ settings.get(hk ~ '_btn',{}).get('setting_value','') }}"
+                             placeholder="Mua sắm ngay">
+                    </div>
+                    <div class="as-field">
+                      <label>Link nút CTA</label>
+                      <input class="as-input" type="text" name="{{ hk }}_link"
+                             value="{{ settings.get(hk ~ '_link',{}).get('setting_value','') }}"
+                             placeholder="/products">
+                    </div>
+                  </div>
+                  <div class="as-field">
+                    <label>Tiêu đề chính</label>
+                    <input class="as-input" type="text" name="{{ hk }}_title"
+                           value="{{ settings.get(hk ~ '_title',{}).get('setting_value','') }}"
+                           placeholder="Không gian sống hoàn hảo">
+                  </div>
+                  <div class="as-field">
+                    <label>Mô tả phụ</label>
+                    <input class="as-input" type="text" name="{{ hk }}_subtitle"
+                           value="{{ settings.get(hk ~ '_subtitle',{}).get('setting_value','') }}"
+                           placeholder="Khám phá hàng nghìn sản phẩm nội thất cao cấp">
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          {# ── Promo Banners ─────────────────────────────── #}
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-teal">
+                <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="7" height="14" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="3" width="7" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="11" width="7" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/></svg>
+              </div>
+              <h3>Promo Banners — Ưu đãi & bộ sưu tập</h3>
+            </div>
+            <div class="as-card-body">
+              <div class="as-info">
+                <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                Tối đa <strong>6 banner</strong>. Layout tự động: 1→full, 2→đôi, 3→lớn+2nhỏ, 4–6→slider. Chỉ banner có ảnh mới hiển thị.
+              </div>
+
+              {% for i in range(1, 7) %}
+              {% set pk = 'promo_' ~ i %}
+              {% set has_img = settings.get(pk ~ '_image',{}).get('setting_value','') %}
+              <div class="as-slide-block {% if i <= 3 %}open{% endif %}" id="promo-{{ i }}">
+                <div class="as-slide-head" onclick="togglePromo({{ i }})">
+                  <div style="display:flex;align-items:center;gap:.625rem">
+                    <span>Banner {{ i }}</span>
+                    {% if i == 1 %}<span style="font-size:.65rem;color:var(--muted)">(Banner lớn)</span>{% elif i <= 3 %}<span style="font-size:.65rem;color:var(--muted)">(Banner nhỏ)</span>{% endif %}
+                    <span class="sb-badge {% if has_img %}has-img{% endif %}">
+                      {% if has_img %}✓ Có ảnh{% else %}Chưa cấu hình{% endif %}
+                    </span>
+                  </div>
+                  <svg class="as-slide-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+                <div class="as-slide-body">
+                  <div class="as-field">
+                    <label>URL Hình ảnh</label>
+                    <input class="as-input" type="text"
+                           name="{{ pk }}_image" id="{{ pk }}_image"
+                           value="{{ settings.get(pk ~ '_image',{}).get('setting_value','') }}"
+                           placeholder="https://..."
+                           oninput="livePreview('{{ pk }}_image','{{ pk }}_prev')">
+                    <img class="as-img-preview {% if has_img %}show{% endif %}"
+                         id="{{ pk }}_prev"
+                         src="{{ settings.get(pk ~ '_image',{}).get('setting_value','') }}"
+                         onerror="this.classList.remove('show')" loading="lazy">
+                  </div>
+                  <div class="as-row">
+                    <div class="as-field">
+                      <label>Nhãn (tag)</label>
+                      <input class="as-input" type="text" name="{{ pk }}_tag"
+                             value="{{ settings.get(pk ~ '_tag',{}).get('setting_value','') }}"
+                             placeholder="Ưu đãi mùa hè">
+                    </div>
+                    <div class="as-field">
+                      <label>Text nút</label>
+                      <input class="as-input" type="text" name="{{ pk }}_btn"
+                             value="{{ settings.get(pk ~ '_btn',{}).get('setting_value','') }}"
+                             placeholder="Khám phá ngay">
+                    </div>
+                  </div>
+                  <div class="as-row">
+                    <div class="as-field">
+                      <label>Tiêu đề <small style="font-weight:400">(dùng \n để xuống dòng)</small></label>
+                      <input class="as-input" type="text" name="{{ pk }}_title"
+                             value="{{ settings.get(pk ~ '_title',{}).get('setting_value','') }}"
+                             placeholder="Giảm đến 35%\nbộ sưu tập mới">
+                    </div>
+                    <div class="as-field">
+                      <label>Link khi click</label>
+                      <input class="as-input" type="text" name="{{ pk }}_link"
+                             value="{{ settings.get(pk ~ '_link',{}).get('setting_value','') }}"
+                             placeholder="/products">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          {# ── Partners ─────────────────────────────── #}
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-green">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.4"/><circle cx="13" cy="7" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M1 17c0-3 2.7-5 6-5m6 0c3.3 0 6 2 6 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              </div>
+              <h3>Đối tác — Trang chủ & trang đối tác</h3>
+            </div>
+            <div class="as-card-body">
+              <div class="as-info">
+                <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                Tối đa <strong>6 đối tác</strong>. Chỉ hiển thị đối tác có điền tên hoặc logo. Tải logo lên <code>/static/images/partners/</code> để dùng đường dẫn nội bộ.
+              </div>
+              <div class="as-row" style="row-gap:.875rem">
+                {% for i in range(1, 7) %}
+                {% set ptk = 'partner_' ~ i %}
+                {% set has_logo = settings.get(ptk ~ '_logo',{}).get('setting_value','') %}
+                <div style="border:1.5px solid var(--border);border-radius:8px;padding:1rem;background:var(--light)">
+                  <div style="font-size:.75rem;font-weight:700;color:var(--muted);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.06em">
+                    Đối tác {{ i }}
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:.625rem">
+                    <div class="as-field">
+                      <label>Tên hiển thị</label>
+                      <input class="as-input" type="text" name="{{ ptk }}_name"
+                             value="{{ settings.get(ptk ~ '_name',{}).get('setting_value','') }}"
+                             placeholder="Tên công ty">
+                    </div>
+                    <div class="as-field">
+                      <label>URL Logo</label>
+                      <input class="as-input" type="text" name="{{ ptk }}_logo"
+                             id="{{ ptk }}_logo"
+                             value="{{ has_logo }}"
+                             placeholder="https://... hoặc /static/images/partners/logo.png"
+                             oninput="livePreview('{{ ptk }}_logo','{{ ptk }}_lprev')">
+                      <img class="as-img-preview {% if has_logo %}show{% endif %}"
+                           id="{{ ptk }}_lprev"
+                           src="{{ has_logo }}"
+                           onerror="this.classList.remove('show')" loading="lazy"
+                           style="max-height:50px">
+                    </div>
+                    <div class="as-field">
+                      <label>Website</label>
+                      <input class="as-input" type="text" name="{{ ptk }}_url"
+                             value="{{ settings.get(ptk ~ '_url',{}).get('setting_value','') }}"
+                             placeholder="https://website.com">
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end panel-homepage -->
+
+        <!-- ══ CONTACT ══ -->
+        <div class="as-panel" id="panel-contact">
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-green"><svg viewBox="0 0 20 20" fill="none"><path d="M5 2h-1A1.5 1.5 0 002.5 3.5v1C2.5 10.4 6.6 14.5 13.5 14.5h1A1.5 1.5 0 0016 13v-1.5a.5.5 0 00-.3-.46l-2.5-1a.5.5 0 00-.56.12l-1 1.25a8 8 0 01-3.5-3.5l1.25-1a.5.5 0 00.12-.57l-1-2.5A.5.5 0 005 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
+              <h3>Thông tin liên hệ</h3>
+            </div>
+            <div class="as-card-body">
+              <div class="as-row">
+                <div class="as-field"><label>Số điện thoại</label><input class="as-input" type="text" name="contact_phone" value="{{ settings.get('contact_phone',{}).get('setting_value','') }}" placeholder="0345 211 386"></div>
+                <div class="as-field"><label>Email liên hệ</label><input class="as-input" type="text" name="contact_email" value="{{ settings.get('contact_email',{}).get('setting_value','') }}" placeholder="example@gmail.com"></div>
+              </div>
+              <div class="as-field"><label>Địa chỉ</label><textarea class="as-textarea" name="contact_address">{{ settings.get('contact_address',{}).get('setting_value','') }}</textarea></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ PAYMENT ══ -->
+        <div class="as-panel" id="panel-payment">
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-blue"><svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 9h16M6 13h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+              <h3>Thông tin ngân hàng</h3>
+            </div>
+            <div class="as-card-body">
+              <div class="as-row">
+                <div class="as-field"><label>Mã ngân hàng</label><input class="as-input" type="text" name="bank_code" value="{{ settings.get('bank_code',{}).get('setting_value','MB') }}" placeholder="MB"></div>
+                <div class="as-field"><label>Tên ngân hàng</label><input class="as-input" type="text" name="bank_name" value="{{ settings.get('bank_name',{}).get('setting_value','MBBANK') }}" placeholder="MBBANK"></div>
+              </div>
+              <div class="as-row">
+                <div class="as-field"><label>Số tài khoản</label><input class="as-input" type="text" name="account_number" value="{{ settings.get('account_number',{}).get('setting_value','') }}"></div>
+                <div class="as-field"><label>Tên chủ tài khoản</label><input class="as-input" type="text" name="account_name" value="{{ settings.get('account_name',{}).get('setting_value','') }}"></div>
+              </div>
+            </div>
+          </div>
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-blue"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm-1 5h2v6H9V7zm1 8a1 1 0 110-2 1 1 0 010 2z" stroke="currentColor" stroke-width="1.3"/></svg></div>
+              <h3>PayPal</h3>
+            </div>
+            <div class="as-card-body">
+              <div class="as-info"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Lấy Client ID và Secret từ <a href="https://developer.paypal.com/dashboard/" target="_blank">PayPal Developer Dashboard</a></div>
+              <div class="as-field"><label>Client ID</label><input class="as-input" type="text" name="paypal_client_id" value="{{ settings.get('paypal_client_id',{}).get('setting_value','') }}" placeholder="AXxxxxxxxx..."></div>
+              <div class="as-field">
+                <label>Client Secret</label>
+                <div class="as-pwd-wrap">
+                  <input class="as-input" type="password" id="paypal_secret" name="paypal_client_secret" value="{{ settings.get('paypal_client_secret',{}).get('setting_value','') }}" placeholder="Để trống = không thay đổi">
+                  <button type="button" class="as-pwd-toggle" onclick="togglePwd('paypal_secret',this)"><svg viewBox="0 0 20 20" fill="none"><path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z" stroke="currentColor" stroke-width="1.4"/><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.4"/></svg></button>
+                </div>
+              </div>
+              <div class="as-row">
+                <div class="as-field">
+                  <label>Tỷ giá VND/USD</label>
+                  <input class="as-input" type="number" name="vnd_usd_rate" value="{{ settings.get('vnd_usd_rate',{}).get('setting_value','') }}" placeholder="Để trống = tự động" min="20000" max="30000" step="1">
+                </div>
+                <div class="as-field">
+                  <label>Chế độ Sandbox</label>
+                  <label class="as-check-label">
+                    <input type="checkbox" name="paypal_sandbox" value="1" {% if settings.get('paypal_sandbox',{}).get('setting_value','1')=='1' %}checked{% endif %}>
+                    <span>Bật Sandbox (test)</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-purple"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.4"/><path d="M10 6v8M7 8h6M7 12h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+              <h3>Thanh toán USDT (Web3)</h3>
+            </div>
+            <div class="as-card-body">
+              <input type="hidden" name="web3_testnet_mode" id="web3_testnet_mode_hidden" value="{{ settings.get('web3_testnet_mode',{}).get('setting_value','0') }}">
+              <div class="as-field">
+                <label>Chế độ thanh toán</label>
+                <div class="as-toggle-group">
+                  <button type="button" class="as-toggle-btn {% if settings.get('web3_testnet_mode',{}).get('setting_value','0')=='0' %}active{% endif %}" onclick="setTestnet(0,this)">
+                    <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 4v4l3 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                    Mainnet (tiền thật)
+                  </button>
+                  <button type="button" class="as-toggle-btn {% if settings.get('web3_testnet_mode',{}).get('setting_value','0')=='1' %}active{% endif %}" onclick="setTestnet(1,this)">
+                    <svg viewBox="0 0 16 16" fill="none"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 3v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                    Testnet (miễn phí)
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ EMAIL ══ -->
+        <div class="as-panel" id="panel-email">
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-green"><svg viewBox="0 0 20 20" fill="none"><path d="M3 6h14a1 1 0 011 1v8a1 1 0 01-1 1H3a1 1 0 01-1-1V7a1 1 0 011-1zm7 5L3 7m14 0l-7 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+              <h3>Cấu hình Email SMTP</h3>
+            </div>
+            <div class="as-card-body">
+              <label class="as-check-label">
+                <input type="checkbox" name="email_enabled" value="1" {% if settings.get('email_enabled',{}).get('setting_value','0')=='1' %}checked{% endif %}>
+                <span>Bật gửi email tự động</span>
+              </label>
+              <div class="as-row">
+                <div class="as-field"><label>SMTP Server</label><input class="as-input" type="text" name="smtp_server" value="{{ settings.get('smtp_server',{}).get('setting_value','smtp.gmail.com') }}" placeholder="smtp.gmail.com"></div>
+                <div class="as-field"><label>SMTP Port</label><input class="as-input" type="number" name="smtp_port" value="{{ settings.get('smtp_port',{}).get('setting_value','587') }}"></div>
+              </div>
+              <div class="as-row">
+                <div class="as-field"><label>Email gửi</label><input class="as-input" type="text" name="sender_email" value="{{ settings.get('sender_email',{}).get('setting_value','') }}" placeholder="noreply@domain.com"></div>
+                <div class="as-field">
+                  <label>Mật khẩu email</label>
+                  <div class="as-pwd-wrap">
+                    <input class="as-input" type="password" id="smtp_pass" name="sender_password" placeholder="Để trống = không thay đổi">
+                    <button type="button" class="as-pwd-toggle" onclick="togglePwd('smtp_pass',this)"><svg viewBox="0 0 20 20" fill="none"><path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z" stroke="currentColor" stroke-width="1.4"/><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.4"/></svg></button>
+                  </div>
+                  <small>Để trống nếu không muốn thay đổi</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ SHIPPING ══ -->
+        <div class="as-panel" id="panel-shipping">
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-amber"><svg viewBox="0 0 20 20" fill="none"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3m-1 11h6m-3-3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <h3>Cài đặt vận chuyển</h3>
+            </div>
+            <div class="as-card-body">
+              <div class="as-row">
+                <div class="as-field">
+                  <label>Phí vận chuyển (₫)</label>
+                  <input class="as-input" type="number" name="shipping_fee" value="{{ settings.get('shipping_fee',{}).get('setting_value','30000') }}" min="0" step="1000">
+                </div>
+                <div class="as-field">
+                  <label>Miễn phí ship cho đơn trên (₫)</label>
+                  <input class="as-input" type="number" name="free_shipping_threshold" value="{{ settings.get('free_shipping_threshold',{}).get('setting_value','5000000') }}" min="0" step="100000">
+                  <small>Đặt 0 để tắt</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ SEO ══ -->
+        <div class="as-panel" id="panel-seo">
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-dark"><svg viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M19 19l-4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+              <h3>SEO & Analytics</h3>
+            </div>
+            <div class="as-card-body">
+              <div class="as-field"><label>Meta Description</label><textarea class="as-textarea" name="meta_description" maxlength="160">{{ settings.get('meta_description',{}).get('setting_value','') }}</textarea><small>Tối đa 160 ký tự</small></div>
+              <div class="as-field"><label>Meta Keywords</label><input class="as-input" type="text" name="meta_keywords" value="{{ settings.get('meta_keywords',{}).get('setting_value','') }}" placeholder="nội thất, ghế sofa, bàn ăn"></div>
+              <div class="as-field"><label>Google Analytics ID</label><input class="as-input" type="text" name="google_analytics" value="{{ settings.get('google_analytics',{}).get('setting_value','') }}" placeholder="G-XXXXXXXXXX"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ SOCIAL ══ -->
+        <div class="as-panel" id="panel-social">
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-blue"><svg viewBox="0 0 20 20" fill="none"><circle cx="5" cy="10" r="2" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="5" r="2" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="15" r="2" stroke="currentColor" stroke-width="1.4"/><path d="M7 9l6-3M7 11l6 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+              <h3>Mạng xã hội</h3>
+            </div>
+            <div class="as-card-body">
+              <div class="as-row">
+                <div class="as-field"><label>Facebook</label><input class="as-input" type="text" name="contact_facebook" value="{{ settings.get('contact_facebook',{}).get('setting_value','') }}" placeholder="https://facebook.com/yourpage"></div>
+                <div class="as-field"><label>Zalo</label><input class="as-input" type="text" name="contact_zalo" value="{{ settings.get('contact_zalo',{}).get('setting_value','') }}" placeholder="Số điện thoại Zalo"></div>
+              </div>
+              <div class="as-row">
+                <div class="as-field"><label>Instagram</label><input class="as-input" type="text" name="contact_instagram" value="{{ settings.get('contact_instagram',{}).get('setting_value','') }}" placeholder="https://instagram.com/yourpage"></div>
+                <div class="as-field"><label>YouTube</label><input class="as-input" type="text" name="contact_youtube" value="{{ settings.get('contact_youtube',{}).get('setting_value','') }}" placeholder="https://youtube.com/yourchannel"></div>
+              </div>
+              <div class="as-field" style="max-width:50%"><label>TikTok</label><input class="as-input" type="text" name="contact_tiktok" value="{{ settings.get('contact_tiktok',{}).get('setting_value','') }}" placeholder="https://tiktok.com/@yourpage"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ SECURITY ══ -->
+        <div class="as-panel" id="panel-security">
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-red"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2l6 2.5v5c0 4-2.5 7-6 8.5C4.5 16.5 2 13.5 2 9.5v-5L10 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></div>
+              <h3>Bảo mật & phiên đăng nhập</h3>
+            </div>
+            <div class="as-card-body">
+              <div class="as-row">
+                <div class="as-field"><label>Thời gian hết hạn phiên (phút)</label><input class="as-input" type="number" name="session_timeout" value="{{ settings.get('session_timeout',{}).get('setting_value','60') }}" min="5" max="1440"><small>Thời gian không hoạt động trước khi đăng xuất</small></div>
+                <div class="as-field"><label>Độ dài mật khẩu tối thiểu</label><input class="as-input" type="number" name="password_min_length" value="{{ settings.get('password_min_length',{}).get('setting_value','6') }}" min="4" max="32"></div>
+              </div>
+            </div>
+          </div>
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-amber"><svg viewBox="0 0 20 20" fill="none"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <h3>Chế độ bảo trì</h3>
+            </div>
+            <div class="as-card-body">
+              <label class="as-check-label">
+                <input type="checkbox" name="maintenance_mode" value="1" {% if settings.get('maintenance_mode',{}).get('setting_value','0')=='1' %}checked{% endif %}>
+                <span>Bật chế độ bảo trì (chỉ admin có thể truy cập)</span>
+              </label>
+              <div class="as-field"><label>Thông báo bảo trì</label><textarea class="as-textarea" name="maintenance_message">{{ settings.get('maintenance_message',{}).get('setting_value','Website đang được bảo trì. Vui lòng quay lại sau!') }}</textarea></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ DISPLAY ══ -->
+        <div class="as-panel" id="panel-display">
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-dark"><svg viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M7 19h6M10 15v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+              <h3>Cài đặt hiển thị</h3>
+            </div>
+            <div class="as-card-body">
+              <div class="as-row">
+                <div class="as-field"><label>Số sản phẩm mỗi trang</label><input class="as-input" type="number" name="products_per_page" value="{{ settings.get('products_per_page',{}).get('setting_value','12') }}" min="6" max="48" step="6"></div>
+                <div class="as-field"><label>Số đơn hàng mỗi trang (admin)</label><input class="as-input" type="number" name="orders_per_page" value="{{ settings.get('orders_per_page',{}).get('setting_value','20') }}" min="10" max="100" step="10"></div>
+              </div>
+            </div>
+          </div>
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-green"><svg viewBox="0 0 20 20" fill="none"><path d="M9 12l2 2 4-4M5 3h10a1 1 0 011 1v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <h3>Tính năng</h3>
+            </div>
+            <div class="as-card-body">
+              <label class="as-check-label"><input type="checkbox" name="enable_reviews" value="1" {% if settings.get('enable_reviews',{}).get('setting_value','1')=='1' %}checked{% endif %}><span>Bật đánh giá sản phẩm</span></label>
+              <label class="as-check-label"><input type="checkbox" name="enable_coupons" value="1" {% if settings.get('enable_coupons',{}).get('setting_value','1')=='1' %}checked{% endif %}><span>Bật mã giảm giá</span></label>
+              <label class="as-check-label"><input type="checkbox" name="enable_notifications" value="1" {% if settings.get('enable_notifications',{}).get('setting_value','1')=='1' %}checked{% endif %}><span>Bật thông báo email tự động</span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ NFT ══ -->
+        <div class="as-panel" id="panel-nft">
+          <div class="as-card">
+            <div class="as-card-head">
+              <div class="as-card-icon aci-purple"><svg viewBox="0 0 20 20" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></div>
+              <h3>NFT chứng nhận sở hữu</h3>
+            </div>
+            <div class="as-card-body">
+              <label class="as-check-label"><input type="checkbox" name="nft_enabled" value="1" {% if settings.get('nft_enabled',{}).get('setting_value','0')=='1' %}checked{% endif %}><span>Bật mint NFT khi thanh toán USDT thành công</span></label>
+              <div class="as-field"><label>Contract NFT (BSC Mainnet)</label><input class="as-input as-mono" type="text" name="nft_contract_address" value="{{ settings.get('nft_contract_address',{}).get('setting_value','') }}" placeholder="0x..."></div>
+              <div class="as-field"><label>Contract NFT (BSC Testnet)</label><input class="as-input as-mono" type="text" name="nft_testnet_contract_address" value="{{ settings.get('nft_testnet_contract_address',{}).get('setting_value','') }}" placeholder="0x... (tùy chọn)"></div>
+              <div class="as-field">
+                <label>Private Key Minter</label>
+                <div class="as-pwd-wrap">
+                  <input class="as-input as-mono" type="password" id="nft_pk" name="nft_minter_private_key" placeholder="0x... (để trống = không thay đổi)" style="padding-right:2.75rem">
+                  <button type="button" class="as-pwd-toggle" onclick="togglePwd('nft_pk',this)"><svg viewBox="0 0 20 20" fill="none"><path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z" stroke="currentColor" stroke-width="1.4"/><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.4"/></svg></button>
+                </div>
+                <small>Không chia sẻ private key với ai</small>
+              </div>
+              <div class="as-field"><label>Site URL (metadata NFT)</label><input class="as-input" type="text" name="site_url" value="{{ settings.get('site_url',{}).get('setting_value','') }}" placeholder="https://yourdomain.com"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit bar -->
+        <div class="as-submit-bar">
+          <div class="as-submit-info">Thay đổi có hiệu lực <strong>ngay sau khi lưu</strong></div>
+          <div class="as-submit-btns">
+            <a href="{{ url_for('admin_dashboard') }}" class="as-btn-cancel">Hủy</a>
+            <button type="submit" class="as-btn-save" id="saveBtn">
+              <svg viewBox="0 0 16 16" fill="none" id="saveIcon">
+                <path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Lưu thay đổi
+            </button>
+          </div>
+        </div>
+
+      </div><!-- end right col -->
+    </div><!-- end layout -->
+  </form>
 </div>
 
-<form method="POST" action="{{ url_for('admin_settings') }}" id="settingsForm">
-    <div class="settings-container">
-        <div class="settings-tabs">
-            <button type="button" class="settings-tab active" data-tab="general" onclick="switchSettingsTab('general', this)">Thông Tin Chung</button>
-            <button type="button" class="settings-tab" data-tab="branding" onclick="switchSettingsTab('branding', this)">Logo & Banner</button>
-            <button type="button" class="settings-tab" data-tab="contact" onclick="switchSettingsTab('contact', this)">Liên Hệ</button>
-            <button type="button" class="settings-tab" data-tab="payment" onclick="switchSettingsTab('payment', this)">Thanh Toán</button>
-            <button type="button" class="settings-tab" data-tab="email" onclick="switchSettingsTab('email', this)">Email</button>
-            <button type="button" class="settings-tab" data-tab="shipping" onclick="switchSettingsTab('shipping', this)">Vận Chuyển</button>
-            <button type="button" class="settings-tab" data-tab="seo" onclick="switchSettingsTab('seo', this)">SEO</button>
-            <button type="button" class="settings-tab" data-tab="social" onclick="switchSettingsTab('social', this)">Mạng Xã Hội</button>
-            <button type="button" class="settings-tab" data-tab="security" onclick="switchSettingsTab('security', this)">Bảo Mật</button>
-            <button type="button" class="settings-tab" data-tab="display" onclick="switchSettingsTab('display', this)">Hiển Thị</button>
-            <button type="button" class="settings-tab" data-tab="nft" onclick="switchSettingsTab('nft', this)">NFT</button>
-        </div>
-
-        <div id="general" class="settings-tab-content active">
-            <div class="settings-section">
-                <h3>Thông Tin Website</h3>
-                
-                <div class="form-group">
-                    <label for="site_name">Tên Website</label>
-                    <input type="text" 
-                           id="site_name" 
-                           name="site_name" 
-                           value="{{ settings.get('site_name', {}).get('setting_value', 'HOMESTEAD') }}"
-                           required>
-                    <small>Tên hiển thị của website</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="site_description">Mô Tả Website</label>
-                    <textarea id="site_description" 
-                              name="site_description" 
-                              rows="3">{{ settings.get('site_description', {}).get('setting_value', 'Cửa hàng nội thất cao cấp') }}</textarea>
-                    <small>Mô tả ngắn về website</small>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="currency">Đơn Vị Tiền Tệ</label>
-                        <select id="currency" name="currency">
-                            <option value="VND" {% if settings.get('currency', {}).get('setting_value', 'VND') == 'VND' %}selected{% endif %}>VND (₫)</option>
-                            <option value="USD" {% if settings.get('currency', {}).get('setting_value') == 'USD' %}selected{% endif %}>USD ($)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="tax_rate">Thuế VAT (%)</label>
-                        <input type="number" 
-                               id="tax_rate" 
-                               name="tax_rate" 
-                               value="{{ settings.get('tax_rate', {}).get('setting_value', '10') }}"
-                               min="0" max="100" step="0.1">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="branding" class="settings-tab-content">
-            <div class="settings-section">
-                <h3>Logo Website</h3>
-                
-                <div class="form-group">
-                    <label for="site_logo">URL Logo</label>
-                    <input type="url" 
-                           id="site_logo" 
-                           name="site_logo" 
-                           value="{{ settings.get('site_logo', {}).get('setting_value', '') }}"
-                           placeholder="https://example.com/logo.png">
-                    <small>URL hình ảnh logo (khuyến nghị: 300x100px, PNG hoặc SVG)</small>
-                    {% if settings.get('site_logo') and settings.get('site_logo').get('setting_value') %}
-                    <img src="{{ settings.get('site_logo').get('setting_value') }}" 
-                         alt="Logo Preview" 
-                         class="preview-image logo-preview"
-                         referrerpolicy="no-referrer"
-                         loading="lazy"
-                         onerror="this.style.display='none'">
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3>Banner Trang Chủ</h3>
-                
-                <div class="form-group">
-                    <label for="hero_banner_image">URL Hình Ảnh Banner</label>
-                    <input type="url" 
-                           id="hero_banner_image" 
-                           name="hero_banner_image" 
-                           value="{{ settings.get('hero_banner_image', {}).get('setting_value', '') }}"
-                           placeholder="https://example.com/banner.jpg">
-                    <small>URL hình ảnh banner (khuyến nghị: 1920x600px, JPG hoặc PNG)</small>
-                    {% if settings.get('hero_banner_image') and settings.get('hero_banner_image').get('setting_value') %}
-                    <img src="{{ settings.get('hero_banner_image').get('setting_value') }}" 
-                         alt="Banner Preview" 
-                         class="preview-image banner-preview"
-                         referrerpolicy="no-referrer"
-                         loading="lazy"
-                         onerror="this.style.display='none'">
-                    {% endif %}
-                </div>
-
-                <div class="form-group">
-                    <label for="hero_banner_title">Tiêu Đề Banner</label>
-                    <input type="text" 
-                           id="hero_banner_title" 
-                           name="hero_banner_title" 
-                           value="{{ settings.get('hero_banner_title', {}).get('setting_value', '') }}">
-                    <small>Tiêu đề chính hiển thị trên banner</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="hero_banner_subtitle">Phụ Đề Banner</label>
-                    <input type="text" 
-                           id="hero_banner_subtitle" 
-                           name="hero_banner_subtitle" 
-                           value="{{ settings.get('hero_banner_subtitle', {}).get('setting_value', '') }}">
-                    <small>Mô tả ngắn dưới tiêu đề</small>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="hero_banner_button_text">Text Nút</label>
-                        <input type="text" 
-                               id="hero_banner_button_text" 
-                               name="hero_banner_button_text" 
-                               value="{{ settings.get('hero_banner_button_text', {}).get('setting_value', 'Khám Phá Ngay') }}">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="hero_banner_button_link">Link Nút</label>
-                        <input type="text" 
-                               id="hero_banner_button_link" 
-                               name="hero_banner_button_link" 
-                               value="{{ settings.get('hero_banner_button_link', {}).get('setting_value', '/products') }}">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="contact" class="settings-tab-content">
-            <div class="settings-section">
-                <h3>Thông Tin Liên Hệ</h3>
-                
-                <div class="form-group">
-                    <label for="contact_phone">Số Điện Thoại</label>
-                    <input type="text" 
-                           id="contact_phone" 
-                           name="contact_phone" 
-                           value="{{ settings.get('contact_phone', {}).get('setting_value', '') }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="contact_email">Email</label>
-                    <input type="email" 
-                           id="contact_email" 
-                           name="contact_email" 
-                           value="{{ settings.get('contact_email', {}).get('setting_value', '') }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="contact_address">Địa Chỉ</label>
-                    <textarea id="contact_address" 
-                              name="contact_address" 
-                              rows="3">{{ settings.get('contact_address', {}).get('setting_value', '') }}</textarea>
-                </div>
-            </div>
-        </div>
-
-        <div id="payment" class="settings-tab-content">
-            <div class="settings-section">
-                <h3>Thông Tin Ngân Hàng</h3>
-                
-                <div class="info-box">
-                    <p>Thông tin tài khoản ngân hàng để khách hàng chuyển khoản thanh toán</p>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="bank_code">Mã Ngân Hàng</label>
-                        <input type="text" 
-                               id="bank_code" 
-                               name="bank_code" 
-                               value="{{ settings.get('bank_code', {}).get('setting_value', 'MB') }}">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="bank_name">Tên Ngân Hàng</label>
-                        <input type="text" 
-                               id="bank_name" 
-                               name="bank_name" 
-                               value="{{ settings.get('bank_name', {}).get('setting_value', 'MBBANK') }}">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="account_number">Số Tài Khoản</label>
-                        <input type="text" 
-                               id="account_number" 
-                               name="account_number" 
-                               value="{{ settings.get('account_number', {}).get('setting_value', '') }}">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="account_name">Tên Chủ Tài Khoản</label>
-                        <input type="text" 
-                               id="account_name" 
-                               name="account_name" 
-                               value="{{ settings.get('account_name', {}).get('setting_value', '') }}">
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3>PayPal</h3>
-                
-                <div class="info-box">
-                    <p>Cấu hình PayPal để thanh toán online. Lấy Client ID và Secret từ <a href="https://developer.paypal.com/dashboard/" target="_blank">PayPal Developer Dashboard</a></p>
-                </div>
-
-                <div class="form-group">
-                    <label for="paypal_client_id">Client ID</label>
-                    <input type="text" 
-                           id="paypal_client_id" 
-                           name="paypal_client_id" 
-                           value="{{ settings.get('paypal_client_id', {}).get('setting_value', '') }}"
-                           placeholder="AXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
-                </div>
-
-                <div class="form-group">
-                    <label for="paypal_client_secret">Client Secret</label>
-                    <input type="password" 
-                           id="paypal_client_secret" 
-                           name="paypal_client_secret" 
-                           value="{{ settings.get('paypal_client_secret', {}).get('setting_value', '') }}"
-                           placeholder="Exxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
-                    <small>Để trống nếu không muốn thay đổi</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="vnd_usd_rate">Tỷ giá VND/USD (1 USD = ? VND)</label>
-                    <input type="number" 
-                           id="vnd_usd_rate" 
-                           name="vnd_usd_rate" 
-                           value="{{ settings.get('vnd_usd_rate', {}).get('setting_value', '') }}"
-                           placeholder="Để trống = tự động lấy tỷ giá thị trường"
-                           min="20000" max="30000" step="1"
-                           style="max-width: 200px;">
-                    <small style="display: block; margin-top: 8px;">Để trống để dùng tỷ giá thị trường tự động (API). Nhập số nếu muốn cố định (vd: 25500).</small>
-                </div>
-
-                <div class="form-group" style="position: relative; z-index: 10;">
-                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; margin: 0; padding: 12px 16px; background: #f8f9fa; border-radius: 8px; border: 2px solid #e9ecef;">
-                        <input type="checkbox" 
-                               id="paypal_sandbox" 
-                               name="paypal_sandbox" 
-                               value="1"
-                               style="width: 22px; height: 22px; cursor: pointer; flex-shrink: 0;"
-                               {% if settings.get('paypal_sandbox', {}).get('setting_value', '1') == '1' %}checked{% endif %}>
-                        <span>Chế độ Sandbox (test)</span>
-                    </label>
-                    <small style="display: block; margin-top: 8px;">Bật để test với tài khoản PayPal sandbox. Tắt khi chạy production.</small>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3>Thanh Toán USDT (Web3)</h3>
-                
-                <div class="info-box">
-                    <p>Chế độ Testnet: dùng BSC Testnet, không tốn tiền thật. Lấy tBNB và USDT test miễn phí từ faucet.</p>
-                </div>
-
-                <div class="form-group" style="position: relative; z-index: 100;">
-                    <input type="hidden" name="web3_testnet_mode" id="web3_testnet_mode_hidden" value="{{ settings.get('web3_testnet_mode', {}).get('setting_value', '0') }}">
-                    <label style="display: block; font-weight: 600; margin-bottom: 8px;">Chế độ thanh toán USDT:</label>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <button type="button" class="btn-testnet-toggle" data-value="0" style="padding: 12px 24px; border-radius: 8px; border: 2px solid #e9ecef; background: #fff; cursor: pointer; font-weight: 600; transition: all 0.2s; min-width: 44px; min-height: 44px;">
-                            Mainnet (tiền thật)
-                        </button>
-                        <button type="button" class="btn-testnet-toggle" data-value="1" style="padding: 12px 24px; border-radius: 8px; border: 2px solid #e9ecef; background: #fff; cursor: pointer; font-weight: 600; transition: all 0.2s; min-width: 44px; min-height: 44px;">
-                            Testnet (không tốn tiền)
-                        </button>
-                    </div>
-                    <small style="display: block; margin-top: 8px;">Chọn <strong>Testnet</strong> để test với BSC Testnet. Lấy tBNB + USDT test tại <a href="https://testnet.bnbchain.org/faucet-smart" target="_blank">BSC Faucet</a></small>
-                </div>
-            </div>
-        </div>
-
-        <div id="email" class="settings-tab-content">
-            <div class="settings-section">
-                <h3>Cấu Hình Email (SMTP)</h3>
-                
-                <div class="info-box">
-                    <p>Cấu hình SMTP để gửi email thông báo đơn hàng, xác nhận, v.v.</p>
-                </div>
-
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" 
-                               id="email_enabled" 
-                               name="email_enabled" 
-                               value="1"
-                               {% if settings.get('email_enabled', {}).get('setting_value', '0') == '1' %}checked{% endif %}>
-                        <label for="email_enabled" style="margin: 0;">Bật gửi email</label>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="smtp_server">SMTP Server</label>
-                        <input type="text" 
-                               id="smtp_server" 
-                               name="smtp_server" 
-                               value="{{ settings.get('smtp_server', {}).get('setting_value', 'smtp.gmail.com') }}">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="smtp_port">SMTP Port</label>
-                        <input type="number" 
-                               id="smtp_port" 
-                               name="smtp_port" 
-                               value="{{ settings.get('smtp_port', {}).get('setting_value', '587') }}">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="sender_email">Email Gửi</label>
-                        <input type="email" 
-                               id="sender_email" 
-                               name="sender_email" 
-                               value="{{ settings.get('sender_email', {}).get('setting_value', '') }}">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="sender_password">Mật Khẩu Email</label>
-                        <input type="password" 
-                               id="sender_password" 
-                               name="sender_password" 
-                               value="{{ settings.get('sender_password', {}).get('setting_value', '') }}"
-                               placeholder="Nhập mật khẩu để cập nhật">
-                        <small>Để trống nếu không muốn thay đổi</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="shipping" class="settings-tab-content">
-            <div class="settings-section">
-                <h3>Cài Đặt Vận Chuyển</h3>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="shipping_fee">Phí Vận Chuyển Mặc Định (₫)</label>
-                        <input type="number" 
-                               id="shipping_fee" 
-                               name="shipping_fee" 
-                               value="{{ settings.get('shipping_fee', {}).get('setting_value', '30000') }}"
-                               min="0" step="1000">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="free_shipping_threshold">Miễn Phí Ship Cho Đơn Trên (₫)</label>
-                        <input type="number" 
-                               id="free_shipping_threshold" 
-                               name="free_shipping_threshold" 
-                               value="{{ settings.get('free_shipping_threshold', {}).get('setting_value', '5000000') }}"
-                               min="0" step="100000">
-                        <small>Đặt 0 để tắt miễn phí ship</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="seo" class="settings-tab-content">
-            <div class="settings-section">
-                <h3>Cài Đặt SEO</h3>
-                
-                <div class="form-group">
-                    <label for="meta_description">Meta Description</label>
-                    <textarea id="meta_description" 
-                              name="meta_description" 
-                              rows="3"
-                              maxlength="160">{{ settings.get('meta_description', {}).get('setting_value', '') }}</textarea>
-                    <small>Tối đa 160 ký tự. Mô tả hiển thị trên kết quả tìm kiếm</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="meta_keywords">Meta Keywords</label>
-                    <input type="text" 
-                           id="meta_keywords" 
-                           name="meta_keywords" 
-                           value="{{ settings.get('meta_keywords', {}).get('setting_value', '') }}"
-                           placeholder="nội thất, ghế sofa, bàn ăn, tủ quần áo">
-                    <small>Các từ khóa cách nhau bởi dấu phẩy</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="google_analytics">Google Analytics ID</label>
-                    <input type="text" 
-                           id="google_analytics" 
-                           name="google_analytics" 
-                           value="{{ settings.get('google_analytics', {}).get('setting_value', '') }}"
-                           placeholder="G-XXXXXXXXXX">
-                    <small>ID theo dõi Google Analytics</small>
-                </div>
-            </div>
-        </div>
-
-        <div id="social" class="settings-tab-content">
-            <div class="settings-section">
-                <h3>Mạng Xã Hội</h3>
-                
-                <div class="form-group">
-                    <label for="contact_facebook">Facebook</label>
-                    <input type="url" 
-                           id="contact_facebook" 
-                           name="contact_facebook" 
-                           value="{{ settings.get('contact_facebook', {}).get('setting_value', '') }}"
-                           placeholder="https://facebook.com/yourpage">
-                </div>
-
-                <div class="form-group">
-                    <label for="contact_zalo">Zalo</label>
-                    <input type="text" 
-                           id="contact_zalo" 
-                           name="contact_zalo" 
-                           value="{{ settings.get('contact_zalo', {}).get('setting_value', '') }}"
-                           placeholder="Số điện thoại Zalo">
-                </div>
-
-                <div class="form-group">
-                    <label for="contact_instagram">Instagram</label>
-                    <input type="url" 
-                           id="contact_instagram" 
-                           name="contact_instagram" 
-                           value="{{ settings.get('contact_instagram', {}).get('setting_value', '') }}"
-                           placeholder="https://instagram.com/yourpage">
-                </div>
-
-                <div class="form-group">
-                    <label for="contact_youtube">YouTube</label>
-                    <input type="url" 
-                           id="contact_youtube" 
-                           name="contact_youtube" 
-                           value="{{ settings.get('contact_youtube', {}).get('setting_value', '') }}"
-                           placeholder="https://youtube.com/yourchannel">
-                </div>
-
-                <div class="form-group">
-                    <label for="contact_tiktok">TikTok</label>
-                    <input type="url" 
-                           id="contact_tiktok" 
-                           name="contact_tiktok" 
-                           value="{{ settings.get('contact_tiktok', {}).get('setting_value', '') }}"
-                           placeholder="https://tiktok.com/@yourpage">
-                </div>
-            </div>
-        </div>
-
-        <div id="security" class="settings-tab-content">
-            <div class="settings-section">
-                <h3>Bảo Mật & Phiên Đăng Nhập</h3>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="session_timeout">Thời Gian Hết Hạn Phiên (phút)</label>
-                        <input type="number" 
-                               id="session_timeout" 
-                               name="session_timeout" 
-                               value="{{ settings.get('session_timeout', {}).get('setting_value', '60') }}"
-                               min="5" max="1440">
-                        <small>Thời gian không hoạt động trước khi tự động đăng xuất</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password_min_length">Độ Dài Mật Khẩu Tối Thiểu</label>
-                        <input type="number" 
-                               id="password_min_length" 
-                               name="password_min_length" 
-                               value="{{ settings.get('password_min_length', {}).get('setting_value', '6') }}"
-                               min="4" max="32">
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3>Chế Độ Bảo Trì</h3>
-                
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" 
-                               id="maintenance_mode" 
-                               name="maintenance_mode" 
-                               value="1"
-                               {% if settings.get('maintenance_mode', {}).get('setting_value', '0') == '1' %}checked{% endif %}>
-                        <label for="maintenance_mode" style="margin: 0;">Bật chế độ bảo trì</label>
-                    </div>
-                    <small>Khi bật, chỉ admin mới có thể truy cập website</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="maintenance_message">Thông Báo Bảo Trì</label>
-                    <textarea id="maintenance_message" 
-                              name="maintenance_message" 
-                              rows="3">{{ settings.get('maintenance_message', {}).get('setting_value', 'Website đang được bảo trì. Vui lòng quay lại sau!') }}</textarea>
-                </div>
-            </div>
-        </div>
-
-        <div id="display" class="settings-tab-content">
-            <div class="settings-section">
-                <h3>Cài Đặt Hiển Thị</h3>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="products_per_page">Số Sản Phẩm Mỗi Trang</label>
-                        <input type="number" 
-                               id="products_per_page" 
-                               name="products_per_page" 
-                               value="{{ settings.get('products_per_page', {}).get('setting_value', '12') }}"
-                               min="6" max="48" step="6">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="orders_per_page">Số Đơn Hàng Mỗi Trang (Admin)</label>
-                        <input type="number" 
-                               id="orders_per_page" 
-                               name="orders_per_page" 
-                               value="{{ settings.get('orders_per_page', {}).get('setting_value', '20') }}"
-                               min="10" max="100" step="10">
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3>Tính Năng</h3>
-                
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" 
-                               id="enable_reviews" 
-                               name="enable_reviews" 
-                               value="1"
-                               {% if settings.get('enable_reviews', {}).get('setting_value', '1') == '1' %}checked{% endif %}>
-                        <label for="enable_reviews" style="margin: 0;">Bật đánh giá sản phẩm</label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" 
-                               id="enable_coupons" 
-                               name="enable_coupons" 
-                               value="1"
-                               {% if settings.get('enable_coupons', {}).get('setting_value', '1') == '1' %}checked{% endif %}>
-                        <label for="enable_coupons" style="margin: 0;">Bật mã giảm giá</label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" 
-                               id="enable_notifications" 
-                               name="enable_notifications" 
-                               value="1"
-                               {% if settings.get('enable_notifications', {}).get('setting_value', '1') == '1' %}checked{% endif %}>
-                        <label for="enable_notifications" style="margin: 0;">Bật thông báo email</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="nft" class="settings-tab-content">
-            <div class="settings-section">
-                <h3>NFT Chứng Nhận Sở Hữu</h3>
-                
-                <div class="info-box">
-                    <p>Mint NFT chứng nhận sở hữu (ERC-721 trên BSC) cho khách thanh toán USDT. Cần deploy contract FurnitureCertificate và cấu hình địa chỉ + private key minter.</p>
-                </div>
-
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" 
-                               id="nft_enabled" 
-                               name="nft_enabled" 
-                               value="1"
-                               {% if settings.get('nft_enabled', {}).get('setting_value', '0') == '1' %}checked{% endif %}>
-                        <label for="nft_enabled" style="margin: 0;">Bật mint NFT khi thanh toán USDT thành công</label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="nft_contract_address">Địa Chỉ Contract NFT (BSC Mainnet)</label>
-                    <input type="text" 
-                           id="nft_contract_address" 
-                           name="nft_contract_address" 
-                           value="{{ settings.get('nft_contract_address', {}).get('setting_value', '') }}"
-                           placeholder="0x...">
-                    <small>Địa chỉ contract FurnitureCertificate đã deploy trên BSC Mainnet</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="nft_testnet_contract_address">Địa Chỉ Contract NFT (BSC Testnet - tùy chọn)</label>
-                    <input type="text" 
-                           id="nft_testnet_contract_address" 
-                           name="nft_testnet_contract_address" 
-                           value="{{ settings.get('nft_testnet_contract_address', {}).get('setting_value', '') }}"
-                           placeholder="0x...">
-                    <small>Dùng khi test chế độ Testnet. Để trống = dùng địa chỉ mainnet (sẽ fail nếu chưa deploy trên testnet)</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="nft_minter_private_key">Private Key Minter (Owner)</label>
-                    <input type="password" 
-                           id="nft_minter_private_key" 
-                           name="nft_minter_private_key" 
-                           value="{{ settings.get('nft_minter_private_key', {}).get('setting_value', '') }}"
-                           placeholder="0x...">
-                    <small>Private key của owner contract (chỉ dùng để mint). Để trống nếu không muốn thay đổi.</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="site_url">Site URL (cho metadata NFT)</label>
-                    <input type="url" 
-                           id="site_url" 
-                           name="site_url" 
-                           value="{{ settings.get('site_url', {}).get('setting_value', '') }}"
-                           placeholder="https://yourdomain.com">
-                    <small>URL gốc website (dùng cho tokenURI metadata). Để trống = tự động dùng domain hiện tại.</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="btn-group">
-        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Hủy</a>
-        <button type="submit" class="btn btn-primary">Lưu Tất Cả Thay Đổi</button>
-    </div>
-</form>
-
 <script>
-// Global function for tab switching - works better on mobile
-function switchSettingsTab(tabId, buttonElement) {
-    console.log('switchSettingsTab called:', tabId, buttonElement);
-    
-    // Remove active from all tabs and contents
-    const tabs = document.querySelectorAll('.settings-tab');
-    const tabContents = document.querySelectorAll('.settings-tab-content');
-    
-    tabs.forEach(t => t.classList.remove('active'));
-    tabContents.forEach(content => content.classList.remove('active'));
-    
-    // Add active to clicked tab
-    if (buttonElement) {
-        buttonElement.classList.add('active');
-    }
-    
-    // Show target content
-    const targetContent = document.getElementById(tabId);
-    if (targetContent) {
-        targetContent.classList.add('active');
-        console.log('Tab switched successfully to:', tabId);
-    } else {
-        console.error('Target content not found:', tabId);
-    }
-    
-    return false;
+/* ── Tab switching ── */
+function switchTab(tabId, triggerEl) {
+  document.querySelectorAll('.as-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.as-nav-btn,.as-mobile-tab').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('panel-' + tabId);
+  if (panel) panel.classList.add('active');
+  document.querySelectorAll('[data-tab="' + tabId + '"]').forEach(b => b.classList.add('active'));
+  if (triggerEl?.classList.contains('as-mobile-tab')) {
+    triggerEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Settings page loaded');
-    
-    // Testnet toggle buttons
-    const hiddenInput = document.getElementById('web3_testnet_mode_hidden');
-    const currentValue = hiddenInput ? hiddenInput.value : '0';
-    document.querySelectorAll('.btn-testnet-toggle').forEach(btn => {
-        const val = btn.getAttribute('data-value');
-        if (val === currentValue) {
-            btn.style.background = '#3498db';
-            btn.style.color = 'white';
-            btn.style.borderColor = '#3498db';
-        }
-        btn.addEventListener('click', function() {
-            if (hiddenInput) hiddenInput.value = val;
-            document.querySelectorAll('.btn-testnet-toggle').forEach(b => {
-                b.style.background = '#fff';
-                b.style.color = '';
-                b.style.borderColor = '#e9ecef';
-            });
-            this.style.background = '#3498db';
-            this.style.color = 'white';
-            this.style.borderColor = '#3498db';
-        });
-    });
-    
-    // Ensure overlay doesn't block clicks when sidebar is closed
-    const overlay = document.querySelector('.sidebar-overlay');
-    if (overlay) {
-        console.log('Overlay found, setting up...');
-        // Force overlay to not block when sidebar is closed
-        const checkOverlay = function() {
-            const sidebar = document.querySelector('.sidebar');
-            if (sidebar && !sidebar.classList.contains('active')) {
-                overlay.style.pointerEvents = 'none';
-                overlay.style.display = 'none';
-                overlay.style.zIndex = '-1';
-            } else {
-                overlay.style.pointerEvents = 'auto';
-            }
-        };
-        checkOverlay();
-        // Check periodically
-        setInterval(checkOverlay, 100);
-    } else {
-        console.log('No overlay found');
-    }
-    
-    // Force all tabs to be clickable
-    const tabs = document.querySelectorAll('.settings-tab');
-    console.log('Found tabs:', tabs.length);
-    
-    tabs.forEach((tab, index) => {
-        const tabId = tab.getAttribute('data-tab');
-        console.log('Setting up tab:', tabId, index);
-        
-        // Force styles
-        tab.style.pointerEvents = 'auto';
-        tab.style.zIndex = '10000';
-        tab.style.position = 'relative';
-        
-        // Remove any existing listeners
-        const newTab = tab.cloneNode(true);
-        tab.parentNode.replaceChild(newTab, tab);
-        
-        // Add click listener
-        newTab.addEventListener('click', function(e) {
-            console.log('Tab clicked:', tabId);
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            switchSettingsTab(tabId, this);
-            return false;
-        }, { capture: true });
-        
-        // Add touch listener
-        newTab.addEventListener('touchend', function(e) {
-            console.log('Tab touched:', tabId);
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            switchSettingsTab(tabId, this);
-            return false;
-        }, { capture: true, passive: false });
-    });
-    
-    // Check if any element is covering the tabs
-    setTimeout(function() {
-        const tabsContainer = document.querySelector('.settings-tabs');
-        if (tabsContainer) {
-            const rect = tabsContainer.getBoundingClientRect();
-            const elementAtPoint = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
-            console.log('Element at center of tabs:', elementAtPoint);
-            if (elementAtPoint && !elementAtPoint.classList.contains('settings-tab') && !tabsContainer.contains(elementAtPoint)) {
-                console.warn('Something is covering the tabs!', elementAtPoint);
-            }
-        }
-    }, 500);
+/* ── Slide/Banner accordion toggle ── */
+function toggleSlide(n) {
+  const el = document.getElementById('slide-' + n);
+  if (el) el.classList.toggle('open');
+}
+function togglePromo(n) {
+  const el = document.getElementById('promo-' + n);
+  if (el) el.classList.toggle('open');
+}
 
-    // Form submission handling
-    const form = document.getElementById('settingsForm');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            // Disable empty password fields để không gửi giá trị rỗng
-            const passwordField = document.getElementById('sender_password');
-            if (passwordField && passwordField.value === '') {
-                passwordField.disabled = true;
-            }
-            const nftKeyField = document.getElementById('nft_minter_private_key');
-            if (nftKeyField && nftKeyField.value === '') {
-                nftKeyField.disabled = true;
-            }
-            
-            // Đảm bảo tất cả checkbox được xử lý đúng
-            const checkboxes = form.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                if (!checkbox.checked) {
-                    // Tạo hidden input để gửi giá trị '0' khi checkbox không được check
-                    const hiddenInput = document.createElement('input');
-                    hiddenInput.type = 'hidden';
-                    hiddenInput.name = checkbox.name;
-                    hiddenInput.value = '0';
-                    form.appendChild(hiddenInput);
-                }
-            });
-            
-            // Show loading state
-            const submitBtn = form.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
-            }
-        });
+/* ── Live image preview (works immediately on input) ── */
+function livePreview(inputId, previewId) {
+  const inp  = document.getElementById(inputId);
+  const prev = document.getElementById(previewId);
+  if (!inp || !prev) return;
+  const url = inp.value.trim();
+  if (!url) { prev.classList.remove('show'); return; }
+  prev.src = url;
+  prev.onload  = () => prev.classList.add('show');
+  prev.onerror = () => prev.classList.remove('show');
+}
+
+/* ── Password toggle ── */
+function togglePwd(id, btn) {
+  const inp = document.getElementById(id);
+  if (!inp) return;
+  const hidden = inp.type === 'password';
+  inp.type = hidden ? 'text' : 'password';
+  btn.querySelector('svg').innerHTML = hidden
+    ? `<path d="M1 1l18 18M7.5 7.6A4.5 4.5 0 0014.4 14M5.2 5.3A9 9 0 001 10s3.5 6 9 6a8.9 8.9 0 004.8-1.4M9 4.1A9 9 0 0119 10s-1.2 2-3 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>`
+    : `<path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z" stroke="currentColor" stroke-width="1.4"/><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.4"/>`;
+}
+
+/* ── Testnet toggle ── */
+function setTestnet(val, btn) {
+  document.getElementById('web3_testnet_mode_hidden').value = val;
+  document.querySelectorAll('.as-toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ── Logo preview (main) ── */
+document.addEventListener('DOMContentLoaded', function() {
+  const logoInp  = document.getElementById('site_logo');
+  const logoPrev = document.getElementById('logo_preview');
+  if (logoInp && logoPrev) {
+    logoInp.addEventListener('input', function() {
+      const url = this.value.trim();
+      if (!url) { logoPrev.classList.remove('show'); return; }
+      logoPrev.src = url;
+      logoPrev.onload  = () => logoPrev.classList.add('show');
+      logoPrev.onerror = () => logoPrev.classList.remove('show');
+    });
+  }
+
+  /* ── Form submit ── */
+  const form    = document.getElementById('settingsForm');
+  const saveBtn = document.getElementById('saveBtn');
+  const saveIcon = document.getElementById('saveIcon');
+
+  form.addEventListener('submit', function(e) {
+    // FIX 2: Chỉ disable sensitive fields khi trống (không disable các field khác)
+    ['sender_password', 'paypal_client_secret', 'nft_minter_private_key'].forEach(name => {
+      const el = form.querySelector('[name="' + name + '"]');
+      if (el && el.value.trim() === '') el.disabled = true;
+    });
+
+    // Unchecked checkboxes → submit hidden=0
+    form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      if (!cb.checked) {
+        const h = document.createElement('input');
+        h.type = 'hidden'; h.name = cb.name; h.value = '0';
+        form.appendChild(h);
+      }
+    });
+
+    // Loading state
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveIcon.innerHTML = `<circle cx="8" cy="8" r="6" stroke="rgba(255,255,255,.3)" stroke-width="2"/><path d="M8 2a6 6 0 016 6" stroke="white" stroke-width="2" stroke-linecap="round" style="animation:spin .7s linear infinite;transform-origin:8px 8px"/>`;
+      saveBtn.lastChild.textContent = ' Đang lưu...';
     }
-    
-    // Preview image khi thay đổi URL
-    const imageInputs = document.querySelectorAll('input[type="url"][id*="image"], input[type="url"][id*="logo"]');
-    imageInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            const preview = this.parentElement.querySelector('.preview-image');
-            if (preview && this.value) {
-                preview.src = this.value;
-                preview.style.display = 'block';
-                preview.onerror = function() {
-                    this.style.display = 'none';
-                };
-            } else if (preview) {
-                preview.style.display = 'none';
-            }
-        });
+  });
+
+  // Number input min/max clamp
+  form.querySelectorAll('input[type="number"]').forEach(inp => {
+    inp.addEventListener('blur', function() {
+      const min = parseFloat(this.min), max = parseFloat(this.max), v = parseFloat(this.value);
+      if (!isNaN(min) && v < min) this.value = min;
+      if (!isNaN(max) && v > max) this.value = max;
     });
-    
-    // Validate form inputs
-    const numberInputs = form.querySelectorAll('input[type="number"]');
-    numberInputs.forEach(input => {
-        input.addEventListener('blur', function() {
-            const min = parseFloat(this.getAttribute('min'));
-            const max = parseFloat(this.getAttribute('max'));
-            const value = parseFloat(this.value);
-            
-            if (min !== null && value < min) {
-                this.value = min;
-            }
-            if (max !== null && value > max) {
-                this.value = max;
-            }
-        });
-    });
-    
-    // Auto-save notification (optional - có thể bật sau)
-    let autoSaveTimeout;
-    const formInputs = form.querySelectorAll('input, textarea, select');
-    formInputs.forEach(input => {
-        input.addEventListener('change', function() {
-            // Có thể thêm auto-save feature ở đây nếu cần
-        });
-    });
+  });
 });
 </script>
 {% endblock %}

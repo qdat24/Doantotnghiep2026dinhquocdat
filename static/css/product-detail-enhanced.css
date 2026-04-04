@@ -1,616 +1,366 @@
-/* ============================================
-   PRODUCT DETAIL PAGE - MODERN DESIGN
-   Trang chi tiết sản phẩm đẹp và chuyên nghiệp
-   ============================================ */
+/* ============================================================
+   DQD Nội Thất — Responsive Patches + Chatbot Fix
+   Dán vào cuối style.css hoặc admin.css
+   ============================================================ */
 
-/* ====== BREADCRUMB ====== */
-.breadcrumb-section {
-    background: linear-gradient(135deg, #faf8f5 0%, #f5f3ef 100%);
-    padding: 1.25rem 0;
-    border-bottom: 1px solid rgba(157, 184, 146, 0.15);
+
+/* ══════════════════════════════════════════════════════════
+   CHATBOT FIX — hidden attribute bị override bởi display:flex
+   ══════════════════════════════════════════════════════════ */
+
+/* Cách 1: quick fix dùng !important */
+.dqd-window[hidden],
+#dqd-window[hidden] {
+  display: none !important;
 }
 
-.breadcrumb-nav {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    font-size: 0.9375rem;
+/* Cách 2 (tốt hơn) — nếu bạn sửa JS dùng class thay hidden attribute:
+   Trong _open():  win.classList.add('is-open')
+   Trong _close(): win.classList.remove('is-open')
+*/
+.dqd-window           { display: none !important; }
+.dqd-window.is-open   { display: flex !important; }
+
+
+/* ══════════════════════════════════════════════════════════
+   FIX 1 — Tablet landscape gap (768–900px)
+   Promo 4-col → 2-col, testimonials stack, footer 2-col
+   ══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .promo-grid-new {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+  .testimonial-grid {
+    grid-template-columns: 1fr;
+  }
+  .footer-content {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .account-container {
+    grid-template-columns: 240px 1fr;
+  }
 }
 
-.breadcrumb-nav a {
-    color: var(--text-light);
-    text-decoration: none;
-    transition: color 0.3s ease;
-    font-weight: 500;
-}
 
-.breadcrumb-nav a:hover {
-    color: var(--sage-dark);
-}
-
-.breadcrumb-nav .separator {
-    color: var(--text-muted);
-}
-
-.breadcrumb-nav .current {
-    color: var(--text-dark);
-    font-weight: 600;
-}
-
-/* ====== PRODUCT DETAIL SECTION ====== */
-.product-detail {
-    padding: clamp(60px, 10vh, 100px) 0;
-    background: white;
-}
-
-.product-detail-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: start;
-}
-
-/* ====== PRODUCT IMAGE ====== */
-.product-image-container {
-    position: sticky;
-    top: 100px;
-}
-
-.product-image-large {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1;
-    object-fit: cover;
-    border-radius: var(--radius-2xl);
-    box-shadow: 0 12px 40px rgba(75, 63, 53, 0.15);
-    transition: transform 0.4s ease;
-}
-
-.product-image-large:hover {
-    transform: scale(1.02);
-}
-
-/* Image Gallery (if multiple images) */
-.product-gallery-thumbs {
-    display: flex;
+/* ══════════════════════════════════════════════════════════
+   FIX 2 — Tablet portrait nav (601–767px)
+   Logo và cart bị đẩy nhau trước khi nav collapse
+   ══════════════════════════════════════════════════════════ */
+@media (min-width: 601px) and (max-width: 767px) {
+  .navbar .container {
     gap: 1rem;
-    margin-top: 1.5rem;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
+  }
+  .logo {
+    font-size: 1.375rem;
+    padding: 6px 8px;
+  }
+  .logo img {
+    height: 38px;
+    max-width: 160px;
+  }
+  .nav-links a {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+  .products-grid-new,
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
 }
 
-.product-gallery-thumbs::-webkit-scrollbar {
-    height: 6px;
-}
 
-.product-gallery-thumbs::-webkit-scrollbar-track {
-    background: var(--beige);
-    border-radius: 3px;
-}
+/* ══════════════════════════════════════════════════════════
+   FIX 3 — Touch target ≥ 44×44px (WCAG 2.5.5)
+   Chỉ áp dụng trên thiết bị cảm ứng, không ảnh hưởng desktop
+   ══════════════════════════════════════════════════════════ */
+@media (hover: none) and (pointer: coarse) {
+  .btn,
+  .account-menu a,
+  .pagination a,
+  .pagination button,
+  .dropdown-content a,
+  .nav-links a {
+    min-height: 44px;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
 
-.product-gallery-thumbs::-webkit-scrollbar-thumb {
-    background: var(--sage-medium);
-    border-radius: 3px;
-}
+  .mobile-menu-toggle {
+    width: 44px;
+    height: 44px;
+    padding: 8px;
+  }
 
-.gallery-thumb {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.3s ease;
-    flex-shrink: 0;
-}
-
-.gallery-thumb:hover {
-    border-color: var(--sage-light);
-}
-
-.gallery-thumb.active {
-    border-color: var(--sage-medium);
-}
-
-/* ====== PRODUCT INFO ====== */
-.product-detail-info {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-/* Category Badge */
-.product-detail-info .product-category {
-    display: inline-block;
-    padding: 0.625rem 1.25rem;
-    background: linear-gradient(135deg, #d4e3d0 0%, #c8dcc3 100%);
-    color: var(--sage-dark);
-    font-size: 0.875rem;
-    font-weight: 800;
-    border-radius: var(--radius-full);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    align-self: flex-start;
-}
-
-/* Product Title */
-.product-detail-info h1 {
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    font-weight: 800;
-    color: var(--text-dark);
-    line-height: 1.2;
-    margin: 0;
-}
-
-/* Rating */
-.product-detail-info .product-rating {
-    display: flex;
+  .cart-icon {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
     align-items: center;
-    gap: 1rem;
+    justify-content: center;
+  }
+
+  /* Chatbot toggle button */
+  .dqd-toggle {
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  /* Quick reply buttons */
+  .dqd-qr {
+    min-height: 36px;
+    padding: 0.5rem 0.875rem;
+  }
 }
 
-.product-rating .stars {
-    display: flex;
-    gap: 0.25rem;
-}
 
-.product-rating .stars i {
-    color: var(--gold);
-    font-size: 1.25rem;
-}
+/* ══════════════════════════════════════════════════════════
+   FIX 4 — iPhone SE / small phones (320–374px)
+   Logo text bị clip, overflow horizontal
+   ══════════════════════════════════════════════════════════ */
+@media (max-width: 374px) {
+  .container {
+    padding: 0 0.75rem;
+  }
 
-.product-rating .stars i.far {
-    color: var(--gray-light);
-}
+  /* Logo: ẩn text, chỉ hiện ảnh */
+  .logo {
+    font-size: 1rem;
+    padding: 3px 5px;
+    gap: 0.375rem;
+  }
+  .logo img {
+    height: 32px;
+    max-width: 110px;
+  }
+  .logo span { display: none; }
 
-.rating-text {
-    color: var(--text-light);
-    font-size: 0.9375rem;
-    font-weight: 500;
-}
-
-.rating-text strong {
-    color: var(--text-dark);
-    font-weight: 700;
-}
-
-/* Price Section */
-.product-detail-price {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    padding: 1.5rem 0;
-    border-top: 2px solid var(--beige);
-    border-bottom: 2px solid var(--beige);
-}
-
-.product-detail-price .price {
-    font-size: 2.5rem;
-    font-weight: 900;
-    background: linear-gradient(135deg, #a08968 0%, #8b7355 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -0.02em;
-}
-
-.product-detail-price .original-price {
-    font-size: 1.5rem;
-    color: var(--text-muted);
-    text-decoration: line-through;
-    font-weight: 500;
-}
-
-.product-detail-price .product-badge {
-    position: static;
-    background: linear-gradient(135deg, #e09380 0%, #d4826f 100%);
-    color: white;
-    padding: 0.625rem 1.25rem;
-    border-radius: var(--radius-full);
-    font-weight: 800;
-    font-size: 0.9375rem;
-    box-shadow: 0 4px 16px rgba(212, 130, 111, 0.35);
-    letter-spacing: 0.03em;
-}
-
-/* Description */
-.product-description {
-    color: var(--text-light);
-    font-size: 1.0625rem;
-    line-height: 1.8;
-}
-
-.product-description p {
-    margin: 0;
-}
-
-/* Features */
-.product-features {
-    background: linear-gradient(135deg, #faf8f5 0%, #f5f3ef 100%);
-    padding: 2rem;
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--border-color);
-}
-
-.product-features h3 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-dark);
-    margin: 0 0 1.25rem 0;
-}
-
-.product-features ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.875rem;
-}
-
-.product-features li {
-    position: relative;
-    padding-left: 2rem;
-    color: var(--text-light);
-    font-size: 0.9375rem;
-    line-height: 1.6;
-}
-
-.product-features li::before {
-    content: '✓';
-    position: absolute;
-    left: 0;
-    top: 0;
+  .mobile-menu-toggle {
     width: 24px;
     height: 24px;
-    background: var(--gradient-sage);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 0.875rem;
-}
+  }
+  .mobile-menu-toggle span { height: 2px; }
 
-/* Quantity Selector */
-.quantity-selector {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.quantity-selector label {
-    font-weight: 600;
-    color: var(--text-dark);
-    font-size: 1rem;
-}
-
-.quantity-controls {
-    display: flex;
-    align-items: center;
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-}
-
-.quantity-btn {
-    width: 48px;
-    height: 48px;
-    background: white;
-    border: none;
-    color: var(--text-dark);
-    font-size: 1.25rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.quantity-btn:hover {
-    background: var(--sage-light);
-    color: var(--sage-dark);
-}
-
-.quantity-btn:active {
-    transform: scale(0.95);
-}
-
-.quantity-input {
-    width: 80px;
-    height: 48px;
-    border: none;
-    border-left: 2px solid var(--border-color);
-    border-right: 2px solid var(--border-color);
-    text-align: center;
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--text-dark);
-    background: white;
-}
-
-.quantity-input:focus {
-    outline: none;
-    background: var(--bg-cream);
-}
-
-/* Remove spinner buttons */
-.quantity-input::-webkit-inner-spin-button,
-.quantity-input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.quantity-input[type=number] {
-    -moz-appearance: textfield;
-}
-
-/* Action Buttons */
-.product-actions {
-    display: flex;
+  /* Products */
+  .products-grid-new,
+  .products-grid {
+    grid-template-columns: 1fr;
     gap: 1rem;
-    margin-top: 1.5rem;
+  }
+  .prod-details,
+  .product-info { padding: 0.875rem; }
+  .prod-name,
+  .product-name { font-size: 0.9375rem; }
+  .price-current,
+  .price        { font-size: 1.125rem; }
+  .price-old    { font-size: 0.875rem; }
+
+  /* Categories */
+  .cat-item {
+    width: 130px;
+    min-width: 130px;
+    padding: 1rem 0.75rem;
+  }
+  .cat-icon { width: 52px; height: 52px; font-size: 1.25rem; }
+  .cat-item h3 { font-size: 0.9375rem; }
+
+  /* Footer */
+  .footer-content { grid-template-columns: 1fr; }
+
+  /* Chatbot nhỏ hơn */
+  .dqd-window {
+    width: calc(100vw - 1.25rem) !important;
+    right: -0.125rem !important;
+  }
 }
 
-.product-actions .btn {
-    flex: 1;
-    padding: 1.125rem 2rem;
-    font-size: 1.0625rem;
-    font-weight: 700;
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    transition: all 0.3s ease;
+
+/* ══════════════════════════════════════════════════════════
+   FIX 5 — Foldable / ultra-small (< 320px)
+   Galaxy Z Fold half-open, Galaxy A series nhỏ
+   ══════════════════════════════════════════════════════════ */
+@media (max-width: 319px) {
+  .container { padding: 0 0.625rem; }
+
+  .logo img  { height: 28px; max-width: 90px; }
+  .logo span { display: none; }
+
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.375rem; }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+  }
+
+  .products-grid-new,
+  .products-grid,
+  .promo-grid-new,
+  .footer-content {
+    grid-template-columns: 1fr;
+  }
+
+  .cat-grid  { gap: 0.625rem; }
+  .cat-item  { width: 120px; min-width: 120px; padding: 0.875rem 0.625rem; }
+  .cat-icon  { width: 44px; height: 44px; font-size: 1.125rem; }
+
+  .account-container { grid-template-columns: 1fr; }
+
+  /* Chatbot full width */
+  .dqd-window {
+    width: calc(100vw - 1rem) !important;
+    right: 0 !important;
+    border-radius: 12px 12px 0 0 !important;
+  }
 }
 
-.product-actions .btn-add-cart {
-    background: var(--gradient-sage);
-    color: white;
-    border: none;
+
+/* ══════════════════════════════════════════════════════════
+   FIX 6 — Phone landscape (max-height: 500px + landscape)
+   Nav drawer che khuất gần hết viewport khi xoay ngang
+   ══════════════════════════════════════════════════════════ */
+@media (max-height: 500px) and (orientation: landscape) {
+  /* Header compact hơn */
+  .header {
+    min-height: calc(52px + env(safe-area-inset-top));
+  }
+  .navbar { padding: 0.5rem 0; }
+  .logo img { height: 30px; }
+
+  /* Nav drawer scroll được, padding tối thiểu */
+  .nav-links {
+    padding-top: max(calc(60px + env(safe-area-inset-top)), 60px);
+    padding-bottom: 1rem;
+    overflow-y: auto;
+    gap: 0.125rem;
+  }
+  .nav-links a {
+    padding: 0.5rem 1rem;
+    min-height: 40px;
+    font-size: 0.9rem;
+  }
+
+  /* Hero & CTA giảm padding */
+  .hero-modern   { padding: clamp(32px, 6vh, 60px) 0; }
+  .cta-section   { padding: 2rem 0; }
+
+  /* Chatbot — giảm chiều cao */
+  .dqd-window {
+    max-height: calc(100vh - 70px) !important;
+    bottom: 60px !important;
+  }
+  .dqd-msgs { max-height: 160px; }
 }
 
-.product-actions .btn-add-cart:hover {
-    background: linear-gradient(135deg, #7a9c6f 0%, #5a7a51 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(157, 184, 146, 0.3);
+
+/* ══════════════════════════════════════════════════════════
+   FIX 7 — 4K / Ultra-wide (≥ 1920px)
+   Font quá nhỏ, container quá hẹp trên màn hình lớn
+   ══════════════════════════════════════════════════════════ */
+@media (min-width: 1920px) {
+  html { font-size: clamp(16px, 0.9vw, 20px); }
+
+  .container { max-width: 1680px; }
+
+  h1 { font-size: clamp(3.5rem, 4vw,   5rem); }
+  h2 { font-size: clamp(2.75rem, 3.2vw, 4rem); }
+
+  .products-grid-new,
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 3rem;
+  }
+
+  .promo-grid-new {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+
+  .cat-item { width: 240px; min-width: 240px; }
+  .cat-icon { width: 86px; height: 86px; font-size: 2.5rem; }
+
+  .hero-modern { padding: clamp(100px, 12vh, 180px) 0; }
+
+  .footer-content { grid-template-columns: repeat(4, 1fr); }
 }
 
-.product-actions .btn-buy-now {
-    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
-    color: white;
-    border: none;
+
+/* ══════════════════════════════════════════════════════════
+   EXTRA 1 — Safe-area notch / Dynamic Island / Home indicator
+   ══════════════════════════════════════════════════════════ */
+@supports (padding: max(0px)) {
+  .header {
+    padding-left:  max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+  .nav-links {
+    padding-left:  max(2rem, env(safe-area-inset-left));
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
+  }
+  .footer-bottom {
+    padding-bottom: max(clamp(1.5rem, 3vh, 2rem), env(safe-area-inset-bottom));
+  }
+  /* Chatbot tránh home indicator */
+  #dqd-chat {
+    bottom: max(1.5rem, env(safe-area-inset-bottom));
+    right:  max(1.5rem, env(safe-area-inset-right));
+  }
 }
 
-.product-actions .btn-buy-now:hover {
-    background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
-}
 
-/* Benefits/Guarantees Section */
-.product-benefits {
-    margin-top: 2rem;
-    padding: 2rem;
-    background: linear-gradient(135deg, #faf8f5 0%, #f5f3ef 100%);
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--border-color);
-}
+/* ══════════════════════════════════════════════════════════
+   EXTRA 2 — Print
+   ══════════════════════════════════════════════════════════ */
+@media print {
+  .header,
+  .footer,
+  .mobile-menu-toggle,
+  .cart-icon,
+  .hero-modern,
+  .cta-section,
+  .promo-section,
+  #dqd-chat,
+  .dqd-toggle,
+  .dqd-window,
+  .btn:not(.btn-print) { display: none !important; }
 
-.benefits-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
-}
-
-.benefit-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.benefit-item i {
-    font-size: 2rem;
-    color: var(--terracotta);
-}
-
-.benefit-item strong {
-    font-size: 1rem;
-    color: var(--text-dark);
-    font-weight: 700;
-}
-
-.benefit-item p {
-    color: var(--text-light);
-    font-size: 0.875rem;
-    margin: 0;
+  body {
+    background: #fff;
+    color: #000;
+    font-size: 12pt;
     line-height: 1.5;
+  }
+  .container { max-width: 100%; padding: 0; }
+  a          { color: #000; text-decoration: underline; }
+  h1, h2, h3 { color: #000; page-break-after: avoid; }
+
+  .product-new,
+  .product-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+
+  .products-grid-new,
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-/* ====== RELATED PRODUCTS ====== */
-.related-products-section {
-    padding: clamp(60px, 10vh, 100px) 0;
-    background: linear-gradient(180deg, #faf8f5 0%, #ffffff 100%);
-}
 
-.related-products-section .section-title {
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--text-dark);
-    margin-bottom: 3rem;
-    text-align: center;
+/* ══════════════════════════════════════════════════════════
+   EXTRA 3 — prefers-reduced-motion (consolidated once)
+   ══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration:        0.01ms !important;
+    animation-iteration-count: 1      !important;
+    transition-duration:       0.01ms !important;
+    scroll-behavior:           auto   !important;
+  }
+  /* Chatbot typing indicator dừng lại */
+  .dqd-typing-bubble span { animation: none !important; }
 }
-
-/* ====== RESPONSIVE ====== */
-@media (max-width: 1024px) {
-    .product-detail-container {
-        grid-template-columns: 1fr;
-        gap: 3rem;
-    }
-    
-    .product-image-container {
-        position: static;
-    }
-    
-    .product-detail-info h1 {
-        font-size: 2rem;
-    }
-    
-    .product-detail-price .price {
-        font-size: 2rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .product-detail {
-        padding: 40px 0;
-    }
-    
-    .product-detail-container {
-        gap: 2rem;
-    }
-    
-    .product-detail-info {
-        gap: 1.25rem;
-    }
-    
-    .product-detail-info h1 {
-        font-size: 1.75rem;
-    }
-    
-    .product-detail-price {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-    
-    .product-detail-price .price {
-        font-size: 1.75rem;
-    }
-    
-    .product-detail-price .original-price {
-        font-size: 1.25rem;
-    }
-    
-    .product-actions {
-        flex-direction: column;
-    }
-    
-    .product-actions .btn {
-        width: 100%;
-    }
-    
-    .benefits-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    
-    .quantity-selector {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-
-@media (max-width: 480px) {
-    .product-features {
-        padding: 1.5rem;
-    }
-    
-    .product-benefits {
-        padding: 1.5rem;
-    }
-    
-    .quantity-input {
-        width: 60px;
-    }
-    
-    .quantity-btn {
-        width: 40px;
-        height: 40px;
-    }
-}
-
-/* ====== DARK MODE ====== */
-body.dark-mode .product-detail {
-    background: var(--dark-bg-primary);
-}
-
-body.dark-mode .breadcrumb-section {
-    background: var(--dark-bg-secondary);
-    border-bottom-color: var(--dark-border);
-}
-
-body.dark-mode .product-detail-info h1 {
-    color: var(--dark-text-primary);
-}
-
-body.dark-mode .product-description {
-    color: var(--dark-text-secondary);
-}
-
-body.dark-mode .product-features,
-body.dark-mode .product-benefits {
-    background: var(--dark-bg-card);
-    border-color: var(--dark-border);
-}
-
-body.dark-mode .product-features h3,
-body.dark-mode .benefit-item strong {
-    color: var(--dark-text-primary);
-}
-
-body.dark-mode .product-features li,
-body.dark-mode .benefit-item p {
-    color: var(--dark-text-secondary);
-}
-
-body.dark-mode .quantity-controls {
-    border-color: var(--dark-border);
-}
-
-body.dark-mode .quantity-btn {
-    background: var(--dark-bg-elevated);
-    color: var(--dark-text-primary);
-}
-
-body.dark-mode .quantity-input {
-    background: var(--dark-bg-elevated);
-    color: var(--dark-text-primary);
-    border-color: var(--dark-border);
-}
-
-body.dark-mode .product-detail-price {
-    border-color: var(--dark-border);
-}
-
-/* ====== ANIMATIONS ====== */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.product-detail-container > * {
-    animation: fadeInUp 0.6s ease-out;
-    animation-fill-mode: both;
-}
-
-.product-detail-container > *:nth-child(1) {
-    animation-delay: 0.1s;
-}
-
-.product-detail-container > *:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-/* ====== END PRODUCT DETAIL ====== */

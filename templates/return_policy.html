@@ -1,467 +1,452 @@
 {% extends "base.html" %}
-
 {% block title %}Chính Sách Đổi Trả - HOMESTEAD{% endblock %}
 
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
+<div class="rt-root">
+
+  <!-- Header -->
+  <div class="rt-header">
+    <div class="rth-inner">
+      <div class="rth-bc">
+        <a href="/">Trang chủ</a>
+        <svg viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span>Chính sách đổi trả</span>
+      </div>
+      <h1>Chính sách <span class="gold">đổi trả</span></h1>
+      <p>Cam kết đổi trả linh hoạt, bảo vệ quyền lợi khách hàng</p>
+    </div>
+  </div>
+
+  <!-- Quick overview -->
+  <div class="rt-overview">
+    <div class="rto-inner">
+      <div class="rto-item">
+        <div class="rto-icon rto-green">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 100 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4 8v4h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <strong>30 ngày đổi trả</strong>
+          <span>Sản phẩm lỗi nhà sản xuất</span>
+        </div>
+      </div>
+      <div class="rto-sep"></div>
+      <div class="rto-item">
+        <div class="rto-icon rto-amber">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <strong>7 ngày đổi ý</strong>
+          <span>Nếu không muốn mua nữa</span>
+        </div>
+      </div>
+      <div class="rto-sep"></div>
+      <div class="rto-item">
+        <div class="rto-icon rto-blue">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3m-1 11h6m-3-3l3 3-3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <strong>Miễn phí vận chuyển</strong>
+          <span>Khi lỗi từ nhà sản xuất</span>
+        </div>
+      </div>
+      <div class="rto-sep"></div>
+      <div class="rto-item">
+        <div class="rto-icon rto-dark">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <strong>Xử lý 24h</strong>
+          <span>Phản hồi nhanh chóng</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="rt-body">
+    <div class="rtb-inner">
+
+      <!-- Sidebar -->
+      <nav class="rt-nav">
+        <div class="rtn-title">Mục lục</div>
+        <a href="#s1" class="rtn-item rtn-active">Điều kiện đổi trả</a>
+        <a href="#s2" class="rtn-item">Thời gian đổi trả</a>
+        <a href="#s3" class="rtn-item">Quy trình 5 bước</a>
+        <a href="#s4" class="rtn-item">Điều kiện sản phẩm</a>
+        <a href="#s5" class="rtn-item">Không áp dụng</a>
+        <a href="#s6" class="rtn-item">Chi phí đổi trả</a>
+        <div class="rtn-divider"></div>
+        <div class="rtn-hotline">
+          <div class="rtn-ht">Cần hỗ trợ ngay?</div>
+          <a href="tel:0345211386" class="rtn-phone">0345 211 386</a>
+          <a href="/contact" class="rtn-cta">Liên hệ</a>
+        </div>
+      </nav>
+
+      <!-- Content -->
+      <main class="rt-content">
+
+        <!-- S1: Điều kiện -->
+        <section class="rt-sec" id="s1">
+          <div class="rts-head">
+            <div class="rts-icon rts-green">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>Điều kiện đổi trả</h2>
+          </div>
+          <p class="rts-desc">Quý khách có thể đổi/trả sản phẩm trong các trường hợp sau:</p>
+          <ul class="rts-check">
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Sản phẩm lỗi nhà sản xuất</strong><span>Vết xước, bể vỡ, lỗi kỹ thuật</span></div></li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Sản phẩm không đúng mô tả</strong><span>Màu sắc, kích thước, mẫu mã khác</span></div></li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Giao sai sản phẩm</strong><span>Không đúng với đơn hàng đã đặt</span></div></li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Thiếu phụ kiện</strong><span>Không đủ linh kiện, phụ kiện đi kèm</span></div></li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Đổi ý không muốn mua</strong><span>Trong vòng 7 ngày, điều kiện áp dụng</span></div></li>
+          </ul>
+        </section>
+
+        <!-- S2: Thời gian -->
+        <section class="rt-sec" id="s2">
+          <div class="rts-head">
+            <div class="rts-icon rts-amber">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h2>Thời gian đổi trả</h2>
+          </div>
+
+          <div class="rts-time-grid">
+            <div class="rts-time-card rts-time-green">
+              <div class="rtc-dur">30 ngày</div>
+              <div class="rtc-label">Sản phẩm lỗi nhà sản xuất</div>
+              <ul class="rtc-bullets">
+                <li>Kể từ ngày nhận hàng</li>
+                <li>Miễn phí vận chuyển đổi trả</li>
+                <li>Đổi mới hoặc hoàn tiền 100%</li>
+              </ul>
+            </div>
+            <div class="rts-time-card rts-time-amber">
+              <div class="rtc-dur">7 ngày</div>
+              <div class="rtc-label">Đổi ý không mua</div>
+              <ul class="rtc-bullets">
+                <li>Kể từ ngày nhận hàng</li>
+                <li>Sản phẩm còn nguyên tem, nhãn</li>
+                <li>Khách hàng chịu phí vận chuyển</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- S3: Quy trình -->
+        <section class="rt-sec" id="s3">
+          <div class="rts-head">
+            <div class="rts-icon rts-dark">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M9 5H7a2 2 0 00-2 2v9a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h0a2 2 0 002-2M9 5a2 2 0 012-2h0a2 2 0 012 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>Quy trình đổi trả 5 bước</h2>
+          </div>
+
+          <div class="rts-steps">
+            <div class="rts-step">
+              <div class="rtss-num">1</div>
+              <div class="rtss-body">
+                <strong>Liên hệ với chúng tôi</strong>
+                <p>Hotline <b>0345 211 386 </b> hoặc email <b> quocdat30075@gmail.com</b>. Cung cấp mã đơn hàng, lý do đổi trả và hình ảnh sản phẩm nếu bị lỗi.</p>
+              </div>
+            </div>
+            <div class="rts-step-line"></div>
+            <div class="rts-step">
+              <div class="rtss-num">2</div>
+              <div class="rtss-body">
+                <strong>Xác nhận yêu cầu</strong>
+                <p>Bộ phận CSKH kiểm tra yêu cầu và phản hồi trong vòng <b>24 giờ</b> làm việc với hướng dẫn tiếp theo.</p>
+              </div>
+            </div>
+            <div class="rts-step-line"></div>
+            <div class="rts-step">
+              <div class="rtss-num">3</div>
+              <div class="rtss-body">
+                <strong>Gửi hàng hoàn trả</strong>
+                <p>Lỗi nhà sản xuất: chúng tôi thu hồi tận nơi <b> miễn phí</b>. Đổi ý: quý khách gửi về kho, đóng gói cẩn thận kèm hóa đơn.</p>
+              </div>
+            </div>
+            <div class="rts-step-line"></div>
+            <div class="rts-step">
+              <div class="rtss-num">4</div>
+              <div class="rtss-body">
+                <strong>Kiểm tra & xử lý</strong>
+                <p>Chúng tôi kiểm tra tình trạng sản phẩm và thông báo kết quả trong <b> 3–5 ngày </b> làm việc qua email hoặc điện thoại.</p>
+              </div>
+            </div>
+            <div class="rts-step-line"></div>
+            <div class="rts-step">
+              <div class="rtss-num rtss-done">5</div>
+              <div class="rtss-body">
+                <strong>Hoàn tiền / Đổi hàng mới</strong>
+                <p><b>Đổi hàng:</b> giao hàng mới trong 3–5 ngày. <b>Hoàn tiền:</b> chuyển khoản trong 5–7 ngày làm việc.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- S4: Điều kiện sản phẩm -->
+        <section class="rt-sec" id="s4">
+          <div class="rts-head">
+            <div class="rts-icon rts-blue">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>Điều kiện sản phẩm đổi trả</h2>
+          </div>
+          <p class="rts-desc">Sản phẩm đổi trả cần đảm bảo đầy đủ các điều kiện sau:</p>
+          <ul class="rts-check">
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Còn nguyên tem, nhãn mác</strong><span>Nhãn của nhà sản xuất chưa bị gỡ</span></div></li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Chưa qua sử dụng</strong><span>Không có dấu hiệu hư hỏng do tác động bên ngoài</span></div></li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Đầy đủ phụ kiện, hộp, giấy tờ</strong><span>Tất cả linh kiện đi kèm còn nguyên vẹn</span></div></li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Hóa đơn mua hàng</strong><span>Hóa đơn hoặc phiếu giao hàng còn hiệu lực</span></div></li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>Trong thời gian quy định</strong><span>30 ngày (lỗi) hoặc 7 ngày (đổi ý)</span></div></li>
+          </ul>
+        </section>
+
+        <!-- S5: Không áp dụng -->
+        <section class="rt-sec" id="s5">
+          <div class="rts-head">
+            <div class="rts-icon rts-red">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M7 7l6 6M13 7l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h2>Không áp dụng đổi trả</h2>
+          </div>
+          <p class="rts-desc">Chúng tôi không chấp nhận đổi/trả trong các trường hợp sau:</p>
+          <ul class="rts-cross">
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><div>Quá thời hạn đổi trả quy định</div></li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><div>Sản phẩm đã qua sử dụng, có dấu hiệu hư hỏng</div></li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><div>Mất tem, nhãn, hộp, phụ kiện đi kèm</div></li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><div>Sản phẩm làm theo yêu cầu riêng (đơn đặt hàng)</div></li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><div>Lỗi do người dùng: va đập, tiếp xúc nước, hỏa hoạn…</div></li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><div>Sản phẩm giảm giá, thanh lý (trừ lỗi nhà sản xuất)</div></li>
+          </ul>
+        </section>
+
+        <!-- S6: Chi phí -->
+        <section class="rt-sec" id="s6">
+          <div class="rts-head">
+            <div class="rts-icon rts-dark">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-12v4m0 2v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M8 10h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h2>Chi phí đổi trả</h2>
+          </div>
+
+          <div class="rts-cost-table">
+            <div class="rct-row rct-head">
+              <span>Trường hợp</span><span>Chi phí</span>
+            </div>
+            <div class="rct-row">
+              <span>Lỗi nhà sản xuất</span>
+              <span class="rct-free">Miễn phí 100%</span>
+            </div>
+            <div class="rct-row">
+              <span>Giao sai sản phẩm</span>
+              <span class="rct-free">Miễn phí 100%</span>
+            </div>
+            <div class="rct-row">
+              <span>Đổi ý không mua (7 ngày)</span>
+              <span>Khách hàng trả phí vận chuyển</span>
+            </div>
+            <div class="rct-row">
+              <span>Đổi sang sản phẩm khác</span>
+              <span>Bù chênh lệch giá (nếu có)</span>
+            </div>
+          </div>
+
+          <div class="rts-note-green">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 3v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            Hoàn tiền được thực hiện qua chuyển khoản trong 5–7 ngày làm việc sau khi xác nhận đổi trả hợp lệ.
+          </div>
+        </section>
+
+        <!-- CTA card -->
+        <div class="rt-cta">
+          <div class="rtcta-left">
+            <svg viewBox="0 0 32 32" fill="none"><path d="M16 3l13 5v9c0 8-5.4 13.4-13 15C8.4 30.4 3 25 3 17V8L16 3z" stroke="white" stroke-width="2" stroke-linejoin="round"/><path d="M11 16l3.5 3.5 7-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div>
+              <strong>Cam kết của chúng tôi</strong>
+              <span>Xử lý nhanh chóng, minh bạch và công bằng. Sự hài lòng là ưu tiên hàng đầu!</span>
+            </div>
+          </div>
+          <div class="rtcta-right">
+            <a href="tel:0345211386" class="rtcta-phone">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M5 2h-1A1.5 1.5 0 002.5 3.5v1C2.5 10.4 6.6 14.5 13.5 14.5h1A1.5 1.5 0 0016 13v-1.5a.5.5 0 00-.3-.46l-2.5-1a.5.5 0 00-.56.12l-1 1.25a8 8 0 01-3.5-3.5l1.25-1a.5.5 0 00.12-.57l-1-2.5A.5.5 0 005 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+              0345 211 386
+            </a>
+            <a href="/contact" class="rtcta-btn">Liên hệ ngay</a>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+</div>
+
 <style>
-    .return-hero {
-        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
-        color: white;
-        padding: clamp(3rem, 6vh, 5rem) 0;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .return-hero::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
-        opacity: 0.3;
-        pointer-events: none;
-    }
-    
-    .return-hero .container {
-        position: relative;
-        z-index: 1;
-    }
-    
-    .return-hero h1 {
-        font-size: clamp(2rem, 5vw, 3rem);
-        font-weight: 800;
-        margin-bottom: clamp(0.75rem, 1.5vh, 1rem);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-    
-    .return-hero p {
-        font-size: clamp(1rem, 2vw, 1.25rem);
-        opacity: 0.95;
-        color: white;
-    }
-    
-    .return-content {
-        padding: clamp(3rem, 6vh, 4rem) 0;
-        background: var(--bg-cream);
-    }
-    
-    .return-wrapper {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 clamp(1rem, 3vw, 2rem);
-    }
-    
-    .return-section {
-        background: white;
-        padding: clamp(1.75rem, 3.5vw, 2.5rem);
-        border-radius: var(--radius-xl);
-        margin-bottom: clamp(1.5rem, 3vh, 2rem);
-        box-shadow: var(--shadow-md);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 2px solid transparent;
-    }
-    
-    .return-section:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-xl);
-        border-color: var(--sage-light);
-    }
-    
-    .return-section h2 {
-        color: var(--text-dark);
-        margin-bottom: clamp(1rem, 2vh, 1.5rem);
-        font-size: clamp(1.375rem, 2.8vw, 1.75rem);
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-    
-    .return-section h2 i {
-        color: var(--sage-medium);
-        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-    }
-    
-    .return-section p {
-        color: var(--text-medium);
-        line-height: 1.8;
-        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-    }
-    
-    .return-section ul {
-        color: var(--text-medium);
-        line-height: 1.8;
-        margin-left: clamp(1.5rem, 3vw, 2rem);
-        margin-bottom: 0;
-    }
-    
-    .return-section li {
-        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-    }
-    
-    .return-section strong {
-        color: var(--sage-dark);
-        font-weight: 600;
-    }
-    
-    .return-section li i {
-        margin-right: 0.5rem;
-    }
-    
-    .return-section li i.fa-check {
-        color: var(--sage-medium);
-    }
-    
-    .return-section li i.fa-times {
-        color: var(--terracotta);
-    }
-    
-    .return-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-        overflow: hidden;
-        border-radius: var(--radius-md);
-    }
-    
-    .return-table thead {
-        background: var(--gradient-sage);
-        color: white;
-    }
-    
-    .return-table th {
-        padding: clamp(12px, 2vw, 16px);
-        text-align: left;
-        font-weight: 600;
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-    }
-    
-    .return-table tbody tr {
-        border-bottom: 1px solid var(--border-color);
-        transition: background 0.3s ease;
-    }
-    
-    .return-table tbody tr:hover {
-        background: var(--bg-cream);
-    }
-    
-    .return-table tbody tr:nth-child(even) {
-        background: var(--bg-cream);
-    }
-    
-    .return-table tbody tr:nth-child(even):hover {
-        background: var(--bg-sage);
-    }
-    
-    .return-table td {
-        padding: clamp(12px, 2vw, 16px);
-        color: var(--text-medium);
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-        border: 1px solid var(--border-color);
-    }
-    
-    .return-table td strong {
-        color: var(--sage-dark);
-    }
-    
-    .return-table td strong.free {
-        color: var(--sage-dark);
-    }
-    
-    .return-process {
-        margin-top: 1rem;
-    }
-    
-    .return-process p {
-        font-weight: 600;
-        color: var(--text-dark);
-        font-size: clamp(1rem, 2vw, 1.125rem);
-        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
-        margin-top: clamp(1rem, 2vh, 1.25rem);
-    }
-    
-    .return-process p:first-child {
-        margin-top: 0;
-    }
-    
-    .return-process ul {
-        margin-bottom: clamp(1rem, 2vh, 1.25rem);
-    }
-    
-    .return-cta {
-        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
-        color: white;
-        padding: clamp(2.5rem, 5vw, 3.5rem);
-        border-radius: var(--radius-xl);
-        text-align: center;
-        margin-top: clamp(2rem, 4vh, 3rem);
-        box-shadow: var(--shadow-lg);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .return-cta::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: pulse 3s ease-in-out infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 0.5; }
-        50% { transform: scale(1.1); opacity: 0.8; }
-    }
-    
-    .return-cta .container {
-        position: relative;
-        z-index: 1;
-    }
-    
-    .return-cta h3 {
-        margin-bottom: clamp(1rem, 2vh, 1.5rem);
-        font-size: clamp(1.5rem, 3vw, 2rem);
-        font-weight: 700;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-    }
-    
-    .return-cta p {
-        font-size: clamp(1rem, 2vw, 1.125rem);
-        line-height: 1.8;
-        margin-bottom: clamp(1rem, 2vh, 1.5rem);
-        opacity: 0.95;
-        color: white;
-    }
-    
-    .return-cta .contact-info {
-        margin-top: clamp(1rem, 2vh, 1.5rem);
-    }
-    
-    .return-cta .contact-info p {
-        font-size: clamp(1rem, 2vw, 1.25rem);
-        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
-    }
-    
-    .return-cta strong {
-        font-weight: 700;
-    }
-    
-    @media (max-width: 768px) {
-        .return-content {
-            padding: 2rem 0;
-        }
-        
-        .return-section {
-            padding: 1.5rem;
-        }
-        
-        .return-table {
-            font-size: 0.875rem;
-        }
-        
-        .return-table th,
-        .return-table td {
-            padding: 10px 8px;
-        }
-        
-        .return-cta {
-            padding: 2rem 1.5rem;
-        }
-    }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--font:'Be Vietnam Pro',sans-serif;--dark:#1a1a18;--gold:#b8922a;--border:#e8e3db;--text:#2a2520;--muted:#7a7060;--light:#f5f4f1}
+body{font-family:var(--font);color:var(--text)}
+a{text-decoration:none;color:inherit}
+
+/* Header */
+.rt-header{background:var(--dark);padding:3rem 2rem;text-align:center;position:relative;overflow:hidden}
+.rt-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 100%,rgba(196,160,100,.12) 0%,transparent 60%)}
+.rth-inner{position:relative;z-index:1;max-width:1280px;margin:0 auto}
+.rth-bc{display:flex;align-items:center;justify-content:center;gap:.375rem;margin-bottom:.875rem}
+.rth-bc a,.rth-bc span{font-size:.75rem;color:rgba(255,255,255,.45)}
+.rth-bc a:hover{color:rgba(255,255,255,.8)}
+.rth-bc svg{width:11px;height:11px;color:rgba(255,255,255,.25)}
+.rt-header h1{font-size:clamp(1.875rem,4vw,2.75rem);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:.5rem}
+.rt-header h1 .gold{color:#c4a064;font-weight:300}
+.rt-header p{font-size:.9rem;color:rgba(255,255,255,.5);font-weight:300}
+
+/* Overview strip */
+.rt-overview{background:#fff;border-bottom:1.5px solid var(--border);padding:1.5rem 2rem}
+.rto-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap}
+.rto-item{display:flex;align-items:center;gap:.875rem}
+.rto-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rto-icon svg{width:20px;height:20px}
+.rto-green{background:#f0faf4;color:#16a34a}
+.rto-amber{background:#fffbeb;color:#d97706}
+.rto-blue{background:#eff6ff;color:#2563eb}
+.rto-dark{background:var(--light);color:var(--dark)}
+.rto-item strong{display:block;font-size:.875rem;font-weight:700;color:var(--dark)}
+.rto-item span{font-size:.75rem;color:var(--muted)}
+.rto-sep{width:1px;height:2.5rem;background:var(--border)}
+
+/* Body */
+.rt-body{background:var(--light);padding:2rem}
+.rtb-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:210px 1fr;gap:2rem;align-items:start}
+
+/* Nav */
+.rt-nav{background:#fff;border-radius:10px;border:1.5px solid var(--border);padding:1.125rem;position:sticky;top:1.5rem;display:flex;flex-direction:column;gap:.125rem}
+.rtn-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:.25rem .5rem;margin-bottom:.25rem}
+.rtn-item{display:block;padding:.45rem .625rem;border-radius:7px;font-size:.78rem;font-weight:500;color:var(--muted);transition:all .18s}
+.rtn-item:hover{background:var(--light);color:var(--dark)}
+.rtn-active{background:var(--light);color:var(--dark);font-weight:600}
+.rtn-divider{height:1px;background:var(--border);margin:.625rem 0}
+.rtn-hotline{padding:.25rem .5rem;display:flex;flex-direction:column;gap:.375rem}
+.rtn-ht{font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.rtn-phone{font-size:.9rem;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+.rtn-cta{display:flex;align-items:center;justify-content:center;padding:.5rem;background:var(--dark);color:#fff;border-radius:7px;font-size:.78rem;font-weight:600;transition:background .18s}
+.rtn-cta:hover{background:#2e2e2a}
+
+/* Content */
+.rt-content{display:flex;flex-direction:column;gap:1.125rem}
+
+.rt-sec{background:#fff;border-radius:10px;border:1.5px solid var(--border);padding:1.75rem;scroll-margin-top:1.5rem}
+.rts-head{display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1.5px solid var(--border)}
+.rts-head h2{font-size:1rem;font-weight:700;color:var(--dark);letter-spacing:-.01em}
+.rts-icon{width:42px;height:42px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rts-icon svg{width:20px;height:20px}
+.rts-green{background:#f0faf4;color:#16a34a}
+.rts-amber{background:#fffbeb;color:#d97706}
+.rts-blue{background:#eff6ff;color:#2563eb}
+.rts-dark{background:var(--light);color:var(--dark)}
+.rts-red{background:#fff5f5;color:#dc2626}
+
+.rts-desc{font-size:.875rem;color:var(--muted);line-height:1.7;margin-bottom:1rem}
+
+/* Check/cross lists */
+.rts-check,.rts-cross{list-style:none;display:flex;flex-direction:column;gap:.625rem}
+.rts-check li,.rts-cross li{display:flex;align-items:flex-start;gap:.625rem;font-size:.875rem;line-height:1.4}
+.rts-check li svg{width:14px;height:14px;color:#16a34a;flex-shrink:0;margin-top:2px}
+.rts-cross li svg{width:14px;height:14px;color:#dc2626;flex-shrink:0;margin-top:2px}
+.rts-check li>div,.rts-cross li>div{display:flex;flex-direction:column;gap:.1rem}
+.rts-check li>div strong,.rts-cross li>div{font-size:.875rem;color:var(--dark);font-weight:600}
+.rts-check li>div span{font-size:.78rem;color:var(--muted)}
+.rts-cross li>div{color:var(--text);font-weight:400}
+
+/* Time grid */
+.rts-time-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.25rem}
+.rts-time-card{border-radius:10px;border:1.5px solid var(--border);padding:1.375rem;display:flex;flex-direction:column;gap:.5rem}
+.rts-time-green{border-color:#bbf7d0;background:#f0faf4}
+.rts-time-amber{border-color:#fde68a;background:#fffbeb}
+.rtc-dur{font-size:2.25rem;font-weight:700;color:var(--dark);letter-spacing:-.02em;line-height:1}
+.rtc-label{font-size:.8125rem;font-weight:600;color:var(--dark);margin-bottom:.25rem}
+.rtc-bullets{list-style:none;display:flex;flex-direction:column;gap:.25rem}
+.rtc-bullets li{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:.375rem}
+.rtc-bullets li::before{content:'·';color:var(--gold);font-weight:700}
+
+/* Steps */
+.rts-steps{display:flex;flex-direction:column}
+.rts-step{display:grid;grid-template-columns:40px 1fr;gap:1rem;align-items:flex-start}
+.rts-step-line{width:2px;height:1.75rem;background:var(--border);margin-left:19px}
+.rtss-num{width:40px;height:40px;border-radius:50%;background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.875rem;font-weight:700;flex-shrink:0}
+.rtss-done{background:#16a34a}
+.rtss-body{padding:.5rem 0 1.25rem}
+.rtss-body strong{display:block;font-size:.9rem;font-weight:700;color:var(--dark);margin-bottom:.375rem}
+.rtss-body p{font-size:.8125rem;color:var(--muted);line-height:1.65}
+.rtss-body b{color:var(--dark);font-weight:600}
+
+/* Cost table */
+.rts-cost-table{border:1.5px solid var(--border);border-radius:8px;overflow:hidden;margin:.875rem 0;font-size:.8125rem}
+.rct-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border)}
+.rct-row:last-child{border-bottom:none}
+.rct-row span{padding:.75rem 1rem;color:var(--text)}
+.rct-row span:first-child{font-weight:500;color:var(--dark);border-right:1px solid var(--border);background:var(--light)}
+.rct-head span{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--light)!important}
+.rct-free{color:#16a34a!important;font-weight:700!important}
+
+.rts-note-green{display:flex;align-items:flex-start;gap:.625rem;background:#f0faf4;border:1.5px solid #bbf7d0;border-radius:8px;padding:.875rem 1rem;font-size:.8125rem;color:#166534;margin-top:.25rem}
+.rts-note-green svg{width:15px;height:15px;color:#16a34a;flex-shrink:0;margin-top:1px}
+
+/* CTA */
+.rt-cta{background:var(--dark);border-radius:10px;padding:1.75rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;position:relative;overflow:hidden}
+.rt-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(196,160,100,.1) 0%,transparent 60%);pointer-events:none}
+.rtcta-left{display:flex;align-items:flex-start;gap:1rem;position:relative;z-index:1;flex:1}
+.rtcta-left svg{width:36px;height:36px;flex-shrink:0;margin-top:2px}
+.rtcta-left strong{display:block;font-size:.9375rem;font-weight:700;color:#fff;margin-bottom:.25rem}
+.rtcta-left span{font-size:.8125rem;color:rgba(255,255,255,.55);line-height:1.5}
+.rtcta-right{display:flex;align-items:center;gap:.875rem;flex-wrap:wrap;position:relative;z-index:1}
+.rtcta-phone{display:inline-flex;align-items:center;gap:.375rem;font-size:.9rem;font-weight:700;color:#c4a064;font-variant-numeric:tabular-nums}
+.rtcta-phone svg{width:15px;height:15px}
+.rtcta-btn{display:inline-flex;padding:.7rem 1.5rem;background:#fff;color:var(--dark);border-radius:8px;font-family:var(--font);font-size:.875rem;font-weight:600;transition:all .18s}
+.rtcta-btn:hover{background:var(--gold);color:#fff}
+
+/* Responsive */
+@media(max-width:900px){
+  .rtb-inner{grid-template-columns:1fr}
+  .rt-nav{position:static;flex-direction:row;flex-wrap:wrap;gap:.375rem;padding:.875rem}
+  .rtn-title,.rtn-divider,.rtn-hotline{display:none}
+  .rtn-item{font-size:.75rem;padding:.4rem .625rem}
+  .rts-time-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .rt-body,.rt-overview{padding:1rem}
+  .rto-inner{gap:1rem;justify-content:flex-start}
+  .rto-sep{display:none}
+  .rt-cta{flex-direction:column;align-items:flex-start}
+  .rct-row{grid-template-columns:1fr}
+  .rct-row span:first-child{border-right:none;border-bottom:1px solid var(--border)}
+}
 </style>
 
-<!-- Page Header -->
-<section class="return-hero">
-    <div class="container">
-        <h1>
-            <i class="fas fa-exchange-alt"></i> Chính Sách Đổi Trả
-        </h1>
-        <p>Cam kết đổi trả linh hoạt, bảo vệ quyền lợi khách hàng</p>
-    </div>
-</section>
+<script>
+const secs = document.querySelectorAll('.rt-sec');
+const links = document.querySelectorAll('.rtn-item');
+const obs = new IntersectionObserver(e => {
+  e.forEach(entry => {
+    if (entry.isIntersecting) {
+      links.forEach(l => l.classList.remove('rtn-active'));
+      document.querySelector(`.rtn-item[href="#${entry.target.id}"]`)?.classList.add('rtn-active');
+    }
+  });
+}, {rootMargin:'-20% 0px -60% 0px'});
+secs.forEach(s => obs.observe(s));
+links.forEach(l => l.addEventListener('click', e => {
+  const h = l.getAttribute('href');
+  if (h?.startsWith('#')) { e.preventDefault(); document.querySelector(h)?.scrollIntoView({behavior:'smooth',block:'start'}); }
+}));
+</script>
 
-<!-- Return Content -->
-<section class="return-content">
-    <div class="return-wrapper">
-
-        <!-- Điều kiện đổi trả -->
-        <div class="return-section">
-            <h2>
-                <i class="fas fa-clipboard-check"></i> Điều Kiện Đổi Trả
-            </h2>
-            <p>Quý khách có thể đổi/trả sản phẩm trong các trường hợp sau:</p>
-            <ul>
-                <li><i class="fas fa-check"></i> <strong>Sản phẩm lỗi do nhà sản xuất:</strong> Vết xước, bể vỡ, lỗi kỹ thuật</li>
-                <li><i class="fas fa-check"></i> <strong>Sản phẩm không đúng mô tả:</strong> Màu sắc, kích thước, mẫu mã</li>
-                <li><i class="fas fa-check"></i> <strong>Giao sai sản phẩm:</strong> Không đúng với đơn hàng đã đặt</li>
-                <li><i class="fas fa-check"></i> <strong>Thiếu phụ kiện:</strong> Không đủ linh kiện đi kèm</li>
-                <li><i class="fas fa-check"></i> <strong>Đổi ý không muốn mua:</strong> Trong vòng 7 ngày (điều kiện áp dụng)</li>
-            </ul>
-        </div>
-
-        <!-- Thời gian đổi trả -->
-        <div class="return-section">
-            <h2>
-                <i class="fas fa-clock"></i> Thời Gian Đổi Trả
-            </h2>
-            <p><strong style="color: var(--terracotta);"><i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 0.5rem;"></i> Sản phẩm lỗi:</strong></p>
-            <ul>
-                <li>Đổi/trả trong vòng <strong>30 ngày</strong> kể từ ngày nhận hàng</li>
-                <li>Miễn phí vận chuyển đổi trả</li>
-            </ul>
-
-            <p style="margin-top: 1.5rem;"><strong style="color: var(--oak);"><i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 0.5rem;"></i> Đổi ý không mua:</strong></p>
-            <ul>
-                <li>Đổi/trả trong vòng <strong>7 ngày</strong> kể từ ngày nhận hàng</li>
-                <li>Sản phẩm còn nguyên tem, nhãn, chưa qua sử dụng</li>
-                <li>Khách hàng chịu phí vận chuyển</li>
-            </ul>
-        </div>
-
-        <!-- Quy trình đổi trả -->
-        <div class="return-section">
-            <h2>
-                <i class="fas fa-clipboard-list"></i> Quy Trình Đổi Trả
-            </h2>
-            <div class="return-process">
-                <p>Bước 1: Liên hệ</p>
-                <ul>
-                    <li>Hotline: <strong>0345211386</strong></li>
-                    <li>Email: <strong>quocdat30075@gmail.com</strong></li>
-                    <li>Cung cấp: Mã đơn hàng, lý do đổi trả, hình ảnh sản phẩm (nếu lỗi)</li>
-                </ul>
-
-                <p>Bước 2: Xác nhận</p>
-                <ul>
-                    <li>Bộ phận CSKH kiểm tra yêu cầu</li>
-                    <li>Phản hồi trong vòng <strong>24 giờ</strong></li>
-                    <li>Hướng dẫn quy trình tiếp theo</li>
-                </ul>
-
-                <p>Bước 3: Gửi hàng hoàn trả</p>
-                <ul>
-                    <li><strong>Lỗi nhà sản xuất:</strong> Chúng tôi thu hồi tận nơi miễn phí</li>
-                    <li><strong>Đổi ý:</strong> Quý khách gửi hàng về kho hoặc showroom</li>
-                    <li>Đóng gói cẩn thận, kèm theo hóa đơn</li>
-                </ul>
-
-                <p>Bước 4: Kiểm tra & xử lý</p>
-                <ul>
-                    <li>Kiểm tra tình trạng sản phẩm</li>
-                    <li>Thời gian xử lý: 3-5 ngày làm việc</li>
-                    <li>Thông báo kết quả qua email/điện thoại</li>
-                </ul>
-
-                <p>Bước 5: Hoàn tiền/Đổi hàng</p>
-                <ul>
-                    <li><strong>Đổi hàng:</strong> Giao hàng mới trong 3-5 ngày</li>
-                    <li><strong>Hoàn tiền:</strong> Chuyển khoản trong 5-7 ngày làm việc</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Điều kiện sản phẩm -->
-        <div class="return-section">
-            <h2>
-                <i class="fas fa-check-circle"></i> Điều Kiện Sản Phẩm Đổi Trả
-            </h2>
-            <p>Sản phẩm đổi trả cần đảm bảo:</p>
-            <ul>
-                <li><i class="fas fa-check"></i> Còn nguyên tem, nhãn mác của nhà sản xuất</li>
-                <li><i class="fas fa-check"></i> Chưa qua sử dụng, không có dấu hiệu hư hỏng</li>
-                <li><i class="fas fa-check"></i> Đầy đủ phụ kiện, hộp, giấy tờ đi kèm</li>
-                <li><i class="fas fa-check"></i> Hóa đơn mua hàng hoặc phiếu giao hàng</li>
-                <li><i class="fas fa-check"></i> Trong thời gian đổi trả quy định</li>
-            </ul>
-        </div>
-
-        <!-- Không áp dụng -->
-        <div class="return-section">
-            <h2>
-                <i class="fas fa-times-circle"></i> Không Áp Dụng Đổi Trả
-            </h2>
-            <p>Chúng tôi không chấp nhận đổi/trả trong các trường hợp:</p>
-            <ul>
-                <li><i class="fas fa-times"></i> Quá thời hạn đổi trả quy định</li>
-                <li><i class="fas fa-times"></i> Sản phẩm đã qua sử dụng, có dấu hiệu hư hỏng</li>
-                <li><i class="fas fa-times"></i> Mất tem, nhãn, hộp, phụ kiện đi kèm</li>
-                <li><i class="fas fa-times"></i> Sản phẩm làm theo yêu cầu riêng (đơn đặt hàng)</li>
-                <li><i class="fas fa-times"></i> Lỗi do người sử dụng (va đập, nước, hỏa hoạn...)</li>
-                <li><i class="fas fa-times"></i> Sản phẩm giảm giá, thanh lý (trừ lỗi nhà sản xuất)</li>
-            </ul>
-        </div>
-
-        <!-- Phí đổi trả -->
-        <div class="return-section">
-            <h2>
-                <i class="fas fa-dollar-sign"></i> Chi Phí Đổi Trả
-            </h2>
-            <table class="return-table">
-                <thead>
-                    <tr>
-                        <th>Trường hợp</th>
-                        <th>Chi phí</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Lỗi nhà sản xuất</td>
-                        <td><strong class="free">Miễn phí 100%</strong></td>
-                    </tr>
-                    <tr>
-                        <td>Giao sai sản phẩm</td>
-                        <td><strong class="free">Miễn phí 100%</strong></td>
-                    </tr>
-                    <tr>
-                        <td>Đổi ý không mua (7 ngày)</td>
-                        <td>Khách hàng trả phí vận chuyển</td>
-                    </tr>
-                    <tr>
-                        <td>Đổi sang sản phẩm khác</td>
-                        <td>Bù chênh lệch giá (nếu có)</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Cam kết -->
-        <div class="return-cta">
-            <div class="container">
-                <h3>
-                    <i class="fas fa-gem"></i> Cam Kết Của Chúng Tôi
-                </h3>
-                <p>
-                    Chúng tôi cam kết xử lý mọi yêu cầu đổi/trả một cách nhanh chóng, minh bạch và công bằng. 
-                    Sự hài lòng của quý khách là ưu tiên hàng đầu!
-                </p>
-                <div class="contact-info">
-                    <p>
-                        <i class="fas fa-phone"></i> Hotline: <strong>0345211386</strong>
-                    </p>
-                    <p>
-                        <i class="fas fa-envelope"></i> Email: <strong>quocdat30075@gmail.com</strong>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-    </div>
-</section>
 {% endblock %}

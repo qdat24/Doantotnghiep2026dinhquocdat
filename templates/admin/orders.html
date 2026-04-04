@@ -1,101 +1,304 @@
 {% extends "admin/base.html" %}
-
 {% block title %}Quản Lý Đơn Hàng{% endblock %}
 
-{% block content %}
-<div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
-    <div>
-        <h1>🛒 Quản Lý Đơn Hàng</h1>
-        <p>Danh sách tất cả đơn hàng</p>
-    </div>
-    <div>
-        <a href="{{ url_for('admin_export_orders') }}" class="btn btn-primary" style="padding: 10px 20px;">
-            <i class="fas fa-download"></i> Export CSV
-        </a>
-    </div>
-</div>
+{% block extra_css %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+:root{
+  --font:'Be Vietnam Pro',ui-sans-serif,system-ui,sans-serif;
+  --dark:#1a1a18;--gold:#b8922a;--border:#e8e3db;
+  --text:#2a2520;--muted:#7a7060;--light:#f5f4f1;--white:#fff;
+  --green:#16a34a;--red:#dc2626;--amber:#d97706;--blue:#2563eb;--purple:#7c3aed;
+}
+.ao-page{font-family:var(--font);color:var(--text)}
+.ao-page *{box-sizing:border-box}
 
-<div class="card">
-    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <h3>Danh Sách Đơn Hàng ({{ orders|length }})</h3>
-        <a href="{{ url_for('admin_export_orders') }}" class="btn btn-secondary" style="padding: 5px 15px; font-size: 12px;">
-            <i class="fas fa-file-csv"></i> Export
-        </a>
+/* Head */
+.ao-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1.5px solid var(--border);flex-wrap:wrap}
+.ao-head h1{font-size:1.375rem;font-weight:700;color:var(--dark);margin:0 0 .25rem;letter-spacing:-.02em}
+.ao-head p{font-size:.8125rem;color:var(--muted);margin:0}
+.ao-export-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.25rem;background:var(--dark);color:var(--white);border:none;border-radius:8px;font-family:var(--font);font-size:.8125rem;font-weight:600;text-decoration:none;transition:background .18s;white-space:nowrap}
+.ao-export-btn svg{width:15px;height:15px}
+.ao-export-btn:hover{background:#2e2e2a}
+
+/* Search + filter bar */
+.ao-toolbar{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;padding:.875rem 1.25rem;border-bottom:1.5px solid var(--border);background:var(--light)}
+.ao-search-wrap{position:relative;flex:1;min-width:200px;max-width:320px}
+.ao-search-wrap svg{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted);pointer-events:none}
+.ao-search{width:100%;padding:.6rem .875rem .6rem 2.375rem;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font);font-size:.8125rem;color:var(--text);background:var(--white);outline:none;transition:border-color .18s}
+.ao-search:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,146,42,.1)}
+.ao-search::placeholder{color:#c0b9ae}
+.ao-filters{display:flex;gap:.375rem;flex-wrap:wrap;margin-left:auto}
+.ao-filter{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .8rem;border:1.5px solid var(--border);border-radius:99px;font-family:var(--font);font-size:.72rem;font-weight:600;color:var(--muted);background:var(--white);cursor:pointer;transition:all .15s;white-space:nowrap}
+.ao-filter:hover{border-color:var(--dark);color:var(--dark)}
+.ao-filter.ao-active{background:var(--dark);border-color:var(--dark);color:var(--white)}
+.ao-filter svg{width:10px;height:10px}
+.ao-count-badge{background:var(--white);border:1.5px solid var(--border);border-radius:99px;font-size:.72rem;font-weight:600;color:var(--muted);padding:.2rem .6rem;margin-left:.25rem}
+
+/* Card */
+.ao-card{background:var(--white);border:1.5px solid var(--border);border-radius:10px;overflow:hidden}
+
+/* Table */
+.ao-table-wrap{overflow-x:auto}
+.ao-table{width:100%;border-collapse:collapse;font-size:.8125rem}
+.ao-table th{padding:.75rem 1rem;text-align:left;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1.5px solid var(--border);white-space:nowrap;background:var(--light)}
+.ao-table td{padding:.875rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.ao-table tbody tr:last-child td{border-bottom:none}
+.ao-table tbody tr:hover td{background:#fdfcfb}
+
+/* Cell styles */
+.td-oid{font-size:.72rem;font-family:'Courier New',monospace;color:var(--muted)}
+.td-oid strong{font-size:.8rem;color:var(--dark);font-family:var(--font)}
+.td-customer strong{display:block;font-size:.8125rem;font-weight:600;color:var(--dark)}
+.td-customer span{font-size:.72rem;color:var(--muted)}
+.td-amount{font-weight:700;color:var(--dark);white-space:nowrap}
+.td-date{font-size:.75rem;color:var(--muted);white-space:nowrap}
+
+/* Payment badge */
+.pm-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:5px;font-size:.72rem;font-weight:600;white-space:nowrap}
+.pm-cod   {background:#fffbeb;color:#854d0e}
+.pm-bank  {background:#f0faf4;color:#166534}
+.pm-paypal{background:#eff6ff;color:#1e40af}
+.pm-card  {background:#faf5ff;color:#6d28d9}
+.pm-usdt  {background:#eff6ff;color:#2563eb}
+.pm-other {background:var(--light);color:var(--muted)}
+
+/* Order status badge */
+.os-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .625rem;border-radius:6px;font-size:.72rem;font-weight:700}
+.os-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.os-pending  {background:#fffbeb;color:#854d0e}.os-pending .os-dot{background:#d97706}
+.os-confirmed{background:#eff6ff;color:#1e40af}.os-confirmed .os-dot{background:#2563eb}
+.os-shipping {background:#faf5ff;color:#6d28d9}.os-shipping .os-dot{background:#7c3aed}
+.os-completed{background:#f0faf4;color:#166534}.os-completed .os-dot{background:#16a34a}
+.os-cancelled{background:#fff5f5;color:#991b1b}.os-cancelled .os-dot{background:#dc2626}
+
+/* Payment status */
+.ps-badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.72rem;font-weight:600}
+.ps-paid   {color:#16a34a}
+.ps-pending{color:#d97706}
+
+/* Action button */
+.ao-detail-btn{display:inline-flex;align-items:center;gap:.375rem;padding:.45rem .875rem;background:var(--light);border:1.5px solid var(--border);border-radius:7px;font-family:var(--font);font-size:.75rem;font-weight:600;color:var(--dark);text-decoration:none;transition:all .18s;white-space:nowrap}
+.ao-detail-btn svg{width:13px;height:13px}
+.ao-detail-btn:hover{background:var(--dark);border-color:var(--dark);color:var(--white)}
+
+/* Empty */
+.ao-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.625rem;padding:3.5rem;color:var(--muted);text-align:center}
+.ao-empty svg{width:44px;height:44px;color:#d0c8bc}
+.ao-empty p{font-size:.875rem}
+
+/* Table foot info */
+.ao-table-foot{display:flex;align-items:center;justify-content:space-between;padding:.875rem 1.25rem;border-top:1.5px solid var(--border);font-size:.78rem;color:var(--muted);flex-wrap:wrap;gap:.5rem}
+.ao-table-foot strong{color:var(--dark)}
+
+@media(max-width:768px){.ao-head{flex-direction:column};.ao-toolbar{flex-direction:column;align-items:stretch};.ao-search-wrap{max-width:100%};.ao-filters{margin-left:0}}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ao-page">
+
+  <!-- Head -->
+  <div class="ao-head">
+    <div>
+      <h1>Quản lý đơn hàng</h1>
+      <p>Danh sách và theo dõi tất cả đơn hàng của khách hàng</p>
+    </div>
+    <a href="{{ url_for('admin_export_orders') }}" class="ao-export-btn">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3M3 13h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Xuất CSV
+    </a>
+  </div>
+
+  <!-- Card -->
+  <div class="ao-card">
+
+    <!-- Toolbar: search + filters -->
+    <div class="ao-toolbar">
+      <div class="ao-search-wrap">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M12 12l-2.5-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <input type="text" class="ao-search" id="orderSearch" placeholder="Tìm theo mã đơn, tên khách…">
+      </div>
+
+      <div class="ao-filters" id="filterBtns">
+        <button class="ao-filter ao-active" data-filter="all" onclick="filterOrders('all',this)">Tất cả <span class="ao-count-badge" id="cnt-all">{{ orders|length }}</span></button>
+        <button class="ao-filter" data-filter="pending"   onclick="filterOrders('pending',this)">
+          <svg viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.1"/><path d="M5 3v2.5l1.5 1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+          Chờ xử lý <span class="ao-count-badge" id="cnt-pending">0</span>
+        </button>
+        <button class="ao-filter" data-filter="confirmed" onclick="filterOrders('confirmed',this)">
+          <svg viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.1"/><path d="M3 5l1.5 1.5 2.5-2.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Đã xác nhận <span class="ao-count-badge" id="cnt-confirmed">0</span>
+        </button>
+        <button class="ao-filter" data-filter="shipping"  onclick="filterOrders('shipping',this)">
+          <svg viewBox="0 0 10 10" fill="none"><path d="M1 4h6v4H1V4zm6 1h2l1 2v1H7V5z" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/></svg>
+          Đang giao <span class="ao-count-badge" id="cnt-shipping">0</span>
+        </button>
+        <button class="ao-filter" data-filter="completed" onclick="filterOrders('completed',this)">
+          <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 4-4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Hoàn thành <span class="ao-count-badge" id="cnt-completed">0</span>
+        </button>
+        <button class="ao-filter" data-filter="cancelled" onclick="filterOrders('cancelled',this)">
+          <svg viewBox="0 0 10 10" fill="none"><path d="M3 3l4 4M7 3L3 7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+          Đã hủy <span class="ao-count-badge" id="cnt-cancelled">0</span>
+        </button>
+      </div>
     </div>
 
     {% if orders %}
-    <div style="overflow-x: auto;">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Mã Đơn</th>
-                    <th>Khách Hàng</th>
-                    <th>Số Điện Thoại</th>
-                    <th>Tổng Tiền</th>
-                    <th>Phương Thức</th>
-                    <th>Trạng Thái</th>
-                    <th>Thanh Toán</th>
-                    <th>Ngày Đặt</th>
-                    <th>Thao Tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for order in orders %}
-                <tr>
-                    <td><strong>{{ order.order_id }}</strong></td>
-                    <td>{{ order.customer_name }}</td>
-                    <td>{{ order.phone }}</td>
-                    <td><strong>{{ "{:,.0f}".format(order.total) }} ₫</strong></td>
-                    <td>
-                        {% if order.payment_method == 'cod' %}
-                            💵 COD
-                        {% elif order.payment_method == 'bank_transfer' %}
-                            🏦 Chuyển khoản
-                        {% elif order.payment_method == 'paypal' %}
-                            💳 PayPal
-                        {% elif order.payment_method == 'credit_card' %}
-                            💳 Thẻ tín dụng
-                        {% elif order.payment_method == 'usdt' %}
-                            💰 USDT
-                        {% else %}
-                            {{ order.payment_method }}
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if order.status == 'pending' %}
-                            <span style="color: #f39c12; font-weight: bold;">⏳ Chờ xử lý</span>
-                        {% elif order.status == 'confirmed' %}
-                            <span style="color: #3498db; font-weight: bold;">✓ Đã xác nhận</span>
-                        {% elif order.status == 'shipping' %}
-                            <span style="color: #9b59b6; font-weight: bold;">🚚 Đang giao</span>
-                        {% elif order.status == 'completed' %}
-                            <span style="color: #27ae60; font-weight: bold;">✓ Hoàn thành</span>
-                        {% elif order.status == 'cancelled' %}
-                            <span style="color: #e74c3c; font-weight: bold;">✗ Đã hủy</span>
-                        {% else %}
-                            <span>{{ order.status }}</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if order.payment_status == 'pending' %}
-                            <span style="color: #f39c12;">Chưa thanh toán</span>
-                        {% elif order.payment_status == 'paid' %}
-                            <span style="color: #27ae60; font-weight: bold;">✓ Đã thanh toán</span>
-                        {% else %}
-                            {{ order.payment_status }}
-                        {% endif %}
-                    </td>
-                    <td>{{ order.created_at.strftime('%d/%m/%Y %H:%M') if order.created_at else 'N/A' }}</td>
-                    <td>
-                        <a href="{{ url_for('admin_order_detail', order_id=order.order_id) }}" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Chi Tiết</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="ao-table-wrap">
+      <table class="ao-table" id="ordersTable">
+        <thead>
+          <tr>
+            <th>Mã đơn</th>
+            <th>Khách hàng</th>
+            <th>Tổng tiền</th>
+            <th>Phương thức</th>
+            <th>Đơn hàng</th>
+            <th>Thanh toán</th>
+            <th>Ngày đặt</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr data-status="{{ order.status }}"
+              data-search="{{ order.order_id|lower }} {{ order.customer_name|lower }} {{ order.phone }}">
+
+            <td class="td-oid">
+              <strong>{{ order.order_id }}</strong>
+            </td>
+
+            <td class="td-customer">
+              <strong>{{ order.customer_name }}</strong>
+              <span>{{ order.phone }}</span>
+            </td>
+
+            <td class="td-amount">{{ "{:,.0f}".format(order.total) }} ₫</td>
+
+            <td>
+              {% if order.payment_method == 'cod' %}
+              <span class="pm-badge pm-cod">💵 COD</span>
+              {% elif order.payment_method == 'bank_transfer' %}
+              <span class="pm-badge pm-bank">🏦 Chuyển khoản</span>
+              {% elif order.payment_method == 'paypal' %}
+              <span class="pm-badge pm-paypal">💳 PayPal</span>
+              {% elif order.payment_method == 'credit_card' %}
+              <span class="pm-badge pm-card">💳 Thẻ</span>
+              {% elif order.payment_method == 'usdt' %}
+              <span class="pm-badge pm-usdt">💰 USDT</span>
+              {% else %}
+              <span class="pm-badge pm-other">{{ order.payment_method }}</span>
+              {% endif %}
+            </td>
+
+            <td>
+              {% if order.status == 'pending' %}
+              <span class="os-badge os-pending"><span class="os-dot"></span>Chờ xử lý</span>
+              {% elif order.status == 'confirmed' %}
+              <span class="os-badge os-confirmed"><span class="os-dot"></span>Đã xác nhận</span>
+              {% elif order.status == 'shipping' %}
+              <span class="os-badge os-shipping"><span class="os-dot"></span>Đang giao</span>
+              {% elif order.status == 'completed' %}
+              <span class="os-badge os-completed"><span class="os-dot"></span>Hoàn thành</span>
+              {% elif order.status == 'cancelled' %}
+              <span class="os-badge os-cancelled"><span class="os-dot"></span>Đã hủy</span>
+              {% else %}
+              <span class="os-badge" style="background:var(--light);color:var(--muted)">{{ order.status }}</span>
+              {% endif %}
+            </td>
+
+            <td>
+              {% if order.payment_status == 'paid' %}
+              <span class="ps-badge ps-paid">✓ Đã thanh toán</span>
+              {% elif order.payment_status == 'pending' %}
+              <span class="ps-badge ps-pending">⏳ Chưa thanh toán</span>
+              {% else %}
+              <span class="ps-badge" style="color:var(--muted)">{{ order.payment_status }}</span>
+              {% endif %}
+            </td>
+
+            <td class="td-date">{{ order.created_at.strftime('%d/%m/%Y %H:%M') if order.created_at else '—' }}</td>
+
+            <td>
+              <a href="{{ url_for('admin_order_detail', order_id=order.order_id) }}" class="ao-detail-btn">
+                <svg viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Chi tiết
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+
+    <div class="ao-table-foot">
+      <span id="footInfo">Hiển thị <strong>{{ orders|length }}</strong> / <strong>{{ orders|length }}</strong> đơn hàng</span>
+      <a href="{{ url_for('admin_export_orders') }}" style="font-size:.75rem;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:.375rem">
+        <svg viewBox="0 0 14 14" fill="none" style="width:13px;height:13px"><path d="M7 2v7M4 6l3 3 3-3M2 12h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Xuất tất cả ra CSV
+      </a>
+    </div>
+
     {% else %}
-    <p style="text-align: center; color: #7f8c8d; padding: 40px;">Chưa có đơn hàng nào</p>
+    <div class="ao-empty">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 2h12l3 7H3L6 2zM3 9h18v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <p>Chưa có đơn hàng nào</p>
+    </div>
     {% endif %}
-</div>
+
+  </div><!-- end card -->
+
+</div><!-- end page -->
+
+<script>
+/* ── Build status counts ── */
+const allRows = document.querySelectorAll('#ordersTable tbody tr');
+const statuses = ['pending','confirmed','shipping','completed','cancelled'];
+
+function buildCounts() {
+  const counts = {};
+  statuses.forEach(s => counts[s] = 0);
+  allRows.forEach(row => {
+    const s = row.dataset.status;
+    if (counts[s] !== undefined) counts[s]++;
+  });
+  statuses.forEach(s => {
+    const el = document.getElementById('cnt-' + s);
+    if (el) el.textContent = counts[s];
+  });
+}
+buildCounts();
+
+/* ── Filter ── */
+let currentFilter = 'all';
+let currentSearch = '';
+
+function applyFilters() {
+  let shown = 0;
+  allRows.forEach(row => {
+    const statusMatch = currentFilter === 'all' || row.dataset.status === currentFilter;
+    const searchMatch = !currentSearch || row.dataset.search.includes(currentSearch);
+    const visible = statusMatch && searchMatch;
+    row.style.display = visible ? '' : 'none';
+    if (visible) shown++;
+  });
+  const total = allRows.length;
+  const footInfo = document.getElementById('footInfo');
+  if (footInfo) footInfo.innerHTML = `Hiển thị <strong>${shown}</strong> / <strong>${total}</strong> đơn hàng`;
+}
+
+function filterOrders(status, btn) {
+  currentFilter = status;
+  document.querySelectorAll('.ao-filter').forEach(b => b.classList.remove('ao-active'));
+  btn.classList.add('ao-active');
+  applyFilters();
+}
+
+/* ── Search ── */
+document.getElementById('orderSearch')?.addEventListener('input', function() {
+  currentSearch = this.value.toLowerCase().trim();
+  applyFilters();
+});
+</script>
 {% endblock %}

@@ -1,422 +1,436 @@
 {% extends "base.html" %}
+{% block title %}Chuyển Khoản - HOMESTEAD{% endblock %}
 
-{% block title %}Chuyển Khoản - Nội Thất Sang Trọng{% endblock %}
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
-<section style="background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); color: white; padding: 40px 0; text-align: center;">
-    <div class="container">
-        <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">
-            <i class="fas fa-university"></i> Thanh Toán Chuyển Khoản
-        </h1>
-        <p>Quét mã QR hoặc chuyển khoản thủ công</p>
+<div class="bt-root">
+
+  <!-- Header -->
+  <div class="bt-header">
+    <div class="bth-inner">
+      <div class="bth-breadcrumb">
+        <a href="/">Trang chủ</a>
+        <svg viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <a href="/cart">Giỏ hàng</a>
+        <svg viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Thanh toán chuyển khoản</span>
+      </div>
+      <h1>Thanh toán chuyển khoản</h1>
+      <p>Quét mã QR hoặc chuyển khoản thủ công theo thông tin bên dưới</p>
     </div>
-</section>
+  </div>
 
-<!-- Bank Transfer Section -->
-<section class="cart-section">
-    <div class="container">
-        <div style="max-width: 900px; margin: 0 auto;">
-            
-            <!-- Countdown Timer -->
-            <div style="background: #fff3cd; padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem; text-align: center; border: 2px solid #ffc107;">
-                <div style="color: #856404; font-size: 1.1rem; margin-bottom: 0.5rem;">
-                    <i class="fas fa-clock"></i> Thời gian còn lại để thanh toán:
-                </div>
-                <div id="countdown" style="font-size: 2.5rem; font-weight: bold; color: #e67e22; font-family: 'Courier New', monospace;">
-                    15:00
-                </div>
-                <div style="color: #856404; font-size: 0.9rem; margin-top: 0.5rem;">
-                    Vui lòng hoàn tất thanh toán trong thời gian trên
-                </div>
+  <div class="bt-body">
+    <div class="bti">
+
+      <!-- Countdown -->
+      <div class="bt-timer" id="timerBox">
+        <div class="timer-icon">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="timer-body">
+          <span class="timer-label">Thời gian còn lại</span>
+          <span class="timer-val" id="countdown">15:00</span>
+          <span class="timer-note">Vui lòng hoàn tất thanh toán trước khi hết giờ</span>
+        </div>
+      </div>
+
+      <!-- Main grid -->
+      <div class="bt-grid">
+
+        <!-- QR Column -->
+        <div class="bt-card">
+          <h2 class="btc-title">
+            <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="2" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="2" y="11" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="13" y="13" width="2" height="2" stroke="currentColor" stroke-width="1.4"/><rect x="16" y="13" width="2" height="2" stroke="currentColor" stroke-width="1.4"/><rect x="13" y="16" width="2" height="2" stroke="currentColor" stroke-width="1.4"/><rect x="16" y="16" width="2" height="2" stroke="currentColor" stroke-width="1.4"/></svg>
+            Quét mã QR
+          </h2>
+
+          <div class="qr-wrap" onclick="openQRZoom()">
+            <img id="qrCodeImage"
+                 src="https://img.vietqr.io/image/{{ bank_code }}-{{ account_number }}-compact2.jpg?amount={{ total }}&addInfo={{ order_id }}&accountName={{ account_name|urlencode }}"
+                 alt="QR Code chuyển khoản">
+            <div class="qr-zoom-hint">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="M15 15l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M6.5 8.5h4M8.5 6.5v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              Nhấn để phóng to
+            </div>
+          </div>
+
+          <div class="qr-steps">
+            <div class="qs-title">Cách thanh toán:</div>
+            <ol>
+              <li>Mở app ngân hàng trên điện thoại</li>
+              <li>Chọn <strong>Quét mã QR</strong></li>
+              <li>Quét mã QR phía trên</li>
+              <li>Kiểm tra thông tin và xác nhận</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Bank info Column -->
+        <div class="bt-card">
+          <h2 class="btc-title">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M2 7l8-5 8 5v2H2V7zm0 4h16v7H2v-7zm4 2v3m4-3v3m4-3v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Thông tin chuyển khoản
+          </h2>
+
+          <div class="bank-rows">
+
+            <div class="bank-row">
+              <span class="br-label">Ngân hàng</span>
+              <div class="br-val br-bank">
+                <img src="https://api.vietqr.io/img/{{ bank_code }}.png"
+                     alt="{{ bank_name }}" class="bank-logo"
+                     onerror="this.style.display='none'">
+                <strong>{{ bank_name }}</strong>
+              </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                
-                <!-- QR Code -->
-                <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
-                    <h2 style="color: #2c3e50; margin-bottom: 1.5rem;">
-                        <i class="fas fa-qrcode"></i> Quét Mã QR
-                    </h2>
-                    
-                    <div style="position: relative; display: inline-block; margin-bottom: 1rem;">
-                        <div style="background: white; padding: 1rem; border: 3px solid #3498db; border-radius: 10px; display: inline-block;">
-                            <!-- VietQR Code -->
-                            <img id="qrCodeImage" 
-                                 src="https://img.vietqr.io/image/{{ bank_code }}-{{ account_number }}-compact2.jpg?amount={{ total }}&addInfo={{ order_id }}&accountName={{ account_name | urlencode }}" 
-                                 alt="QR Code" 
-                                 style="width: 280px; height: 280px; display: block; cursor: pointer;"
-                                 onclick="openQRZoom()">
-                        </div>
-                        <!-- Zoom Button -->
-                        <button onclick="openQRZoom()" 
-                                style="position: absolute; top: 10px; right: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.3s ease; z-index: 10;"
-                                onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.6)'"
-                                onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.4)'"
-                                title="Phóng to mã QR">
-                            <i class="fas fa-search-plus"></i>
-                        </button>
-                    </div>
-                    
-                    <div style="background: #e3f2fd; padding: 1rem; border-radius: 5px; margin-top: 1rem;">
-                        <div style="color: #1976d2; font-weight: 600; margin-bottom: 0.5rem;">
-                            <i class="fas fa-mobile-alt"></i> Cách quét:
-                        </div>
-                        <div style="color: #555; font-size: 0.9rem; text-align: left;">
-                            1. Mở app ngân hàng<br>
-                            2. Chọn "Quét mã QR"<br>
-                            3. Quét mã QR phía trên<br>
-                            4. Xác nhận thanh toán
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Bank Info -->
-                <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                    <h2 style="color: #2c3e50; margin-bottom: 1.5rem;">
-                        <i class="fas fa-info-circle"></i> Thông Tin Chuyển Khoản
-                    </h2>
-                    
-                    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 5px; margin-bottom: 1rem;">
-                        <div style="margin-bottom: 1.5rem;">
-                            <div style="color: #7f8c8d; font-size: 0.9rem; margin-bottom: 0.3rem;">Ngân hàng</div>
-                            <div style="font-size: 1.2rem; font-weight: bold; color: #2c3e50;">
-                                <img src="https://api.vietqr.io/img/{{ bank_code }}.png" 
-                                     style="height: 24px; vertical-align: middle; margin-right: 0.5rem;" 
-                                     onerror="this.style.display='none'">
-                                {{ bank_name }}
-                            </div>
-                        </div>
-                        
-                        <div style="margin-bottom: 1.5rem;">
-                            <div style="color: #7f8c8d; font-size: 0.9rem; margin-bottom: 0.3rem;">Số tài khoản</div>
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <div id="accountNumber" style="font-size: 1.5rem; font-weight: bold; color: #e67e22; font-family: 'Courier New', monospace;">
-                                    {{ account_number }}
-                                </div>
-                                <button onclick="copyToClipboard('{{ account_number }}', 'Đã copy số tài khoản!')" 
-                                        style="padding: 0.5rem 1rem; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem;">
-                                    <i class="fas fa-copy"></i> Copy
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div style="margin-bottom: 1.5rem;">
-                            <div style="color: #7f8c8d; font-size: 0.9rem; margin-bottom: 0.3rem;">Chủ tài khoản</div>
-                            <div style="font-size: 1.2rem; font-weight: bold; color: #2c3e50;">
-                                {{ account_name }}
-                            </div>
-                        </div>
-                        
-                        <div style="margin-bottom: 1.5rem;">
-                            <div style="color: #7f8c8d; font-size: 0.9rem; margin-bottom: 0.3rem;">Số tiền</div>
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <div id="amount" style="font-size: 1.8rem; font-weight: bold; color: #27ae60;">
-                                    {{ total | format_currency }}
-                                </div>
-                                <button onclick="copyToClipboard('{{ total }}', 'Đã copy số tiền!')" 
-                                        style="padding: 0.5rem 1rem; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem;">
-                                    <i class="fas fa-copy"></i> Copy
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div style="margin-bottom: 0;">
-                            <div style="color: #7f8c8d; font-size: 0.9rem; margin-bottom: 0.3rem;">
-                                Nội dung chuyển khoản 
-                                <span style="color: #e74c3c; font-weight: bold;">*</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <div id="transferContent" style="font-size: 1.2rem; font-weight: bold; color: #e67e22; font-family: 'Courier New', monospace;">
-                                    {{ order_id }}
-                                </div>
-                                <button onclick="copyToClipboard('{{ order_id }}', 'Đã copy nội dung!')" 
-                                        style="padding: 0.5rem 1rem; background: #e67e22; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem;">
-                                    <i class="fas fa-copy"></i> Copy
-                                </button>
-                            </div>
-                            <div style="color: #e74c3c; font-size: 0.85rem; margin-top: 0.5rem; font-weight: 600;">
-                                ⚠️ Vui lòng nhập ĐÚNG nội dung để đơn hàng được xử lý tự động
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="background: #d4edda; padding: 1rem; border-radius: 5px; border-left: 4px solid #28a745;">
-                        <div style="color: #155724; font-size: 0.9rem;">
-                            <i class="fas fa-check-circle"></i> <strong>Lưu ý:</strong><br>
-                            • Đơn hàng sẽ được xử lý tự động sau khi nhận được thanh toán<br>
-                            • Thời gian xử lý: 1-5 phút<br>
-                            • Nếu quá 15 phút không thanh toán, đơn hàng sẽ tự động hủy
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-            
-            <!-- Order Info -->
-            <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 2rem;">
-                <h3 style="color: #2c3e50; margin-bottom: 1rem;">
-                    <i class="fas fa-shopping-bag"></i> Thông Tin Đơn Hàng
-                </h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; color: #555;">
-                    <div>
-                        <strong>Mã đơn hàng:</strong> {{ order_id }}
-                    </div>
-                    <div>
-                        <strong>Người nhận:</strong> {{ order.customer_name }}
-                    </div>
-                    <div>
-                        <strong>Số điện thoại:</strong> {{ order.phone }}
-                    </div>
-                    <div>
-                        <strong>Email:</strong> {{ order.email }}
-                    </div>
-                    <div style="grid-column: 1 / -1;">
-                        <strong>Địa chỉ:</strong> {{ order.address }}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Actions -->
-            <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: center;">
-                <button onclick="checkPaymentStatus()" class="btn" style="padding: 15px 30px;">
-                    <i class="fas fa-sync-alt"></i> Kiểm Tra Thanh Toán
+            <div class="bank-row">
+              <span class="br-label">Số tài khoản</span>
+              <div class="br-val br-copy-row">
+                <span class="br-mono" id="accountNumber">{{ account_number }}</span>
+                <button class="copy-btn" onclick="copyText('{{ account_number }}', this, 'Đã copy!')">
+                  <svg viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M11 5V3a1 1 0 00-1-1H3a1 1 0 00-1 1v7a1 1 0 001 1h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  Sao chép
                 </button>
-                <a href="/" class="btn" style="padding: 15px 30px; background: #6c757d;">
-                    <i class="fas fa-home"></i> Về Trang Chủ
-                </a>
+              </div>
             </div>
-            
+
+            <div class="bank-row">
+              <span class="br-label">Chủ tài khoản</span>
+              <div class="br-val"><strong>{{ account_name }}</strong></div>
+            </div>
+
+            <div class="bank-row">
+              <span class="br-label">Số tiền</span>
+              <div class="br-val br-copy-row">
+                <span class="br-amount">{{ total|format_currency }} ₫</span>
+                <button class="copy-btn copy-btn-green" onclick="copyText('{{ total }}', this, 'Đã copy!')">
+                  <svg viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M11 5V3a1 1 0 00-1-1H3a1 1 0 00-1 1v7a1 1 0 001 1h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  Sao chép
+                </button>
+              </div>
+            </div>
+
+            <div class="bank-row bank-row-important">
+              <span class="br-label">
+                Nội dung CK
+                <span class="req-star">*</span>
+              </span>
+              <div class="br-val br-copy-row">
+                <span class="br-mono br-transfer-content" id="transferContent">{{ order_id }}</span>
+                <button class="copy-btn copy-btn-amber" onclick="copyText('{{ order_id }}', this, 'Đã copy!')">
+                  <svg viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M11 5V3a1 1 0 00-1-1H3a1 1 0 00-1 1v7a1 1 0 001 1h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  Sao chép
+                </button>
+              </div>
+              <p class="br-warn">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M8 1l7 13H1L8 1zm0 4v4m0 2v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Nhập ĐÚNG nội dung để đơn hàng được xử lý tự động
+              </p>
+            </div>
+
+          </div>
+
+          <div class="bank-note">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 3v4m0 2v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            <ul>
+              <li>Đơn hàng xử lý tự động sau khi nhận thanh toán</li>
+              <li>Thời gian xử lý: 1–5 phút</li>
+              <li>Đơn tự động hủy nếu không thanh toán sau 15 phút</li>
+            </ul>
+          </div>
         </div>
-    </div>
-</section>
 
-<script>
-// Countdown timer
-let timeLeft = 15 * 60; // 15 minutes
-const countdownElement = document.getElementById('countdown');
+      </div>
 
-function updateCountdown() {
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    
-    if (timeLeft <= 0) {
-        alert('Hết thời gian thanh toán! Đơn hàng sẽ bị hủy.');
-        window.location.href = '/';
-    } else if (timeLeft <= 60) {
-        countdownElement.style.color = '#e74c3c';
-    } else if (timeLeft <= 300) {
-        countdownElement.style.color = '#f39c12';
-    }
-    
-    timeLeft--;
-}
+      <!-- Order info -->
+      <div class="bt-order-info">
+        <h3 class="boi-title">
+          <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="14" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M7 4V3a3 3 0 016 0v1M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Thông tin đơn hàng
+        </h3>
+        <div class="boi-grid">
+          <div class="boi-item"><span>Mã đơn hàng</span><strong>{{ order_id }}</strong></div>
+          <div class="boi-item"><span>Người nhận</span><strong>{{ order.customer_name }}</strong></div>
+          <div class="boi-item"><span>Điện thoại</span><strong>{{ order.phone }}</strong></div>
+          <div class="boi-item"><span>Email</span><strong>{{ order.email }}</strong></div>
+          <div class="boi-item boi-full"><span>Địa chỉ</span><strong>{{ order.address }}</strong></div>
+        </div>
+      </div>
 
-setInterval(updateCountdown, 1000);
-
-// Copy to clipboard
-function copyToClipboard(text, message) {
-    navigator.clipboard.writeText(text).then(() => {
-        showToast(message || 'Đã copy!', 'success');
-    }).catch(err => {
-        // Fallback for older browsers
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        showToast(message || 'Đã copy!', 'success');
-    });
-}
-
-// Check payment status
-async function checkPaymentStatus() {
-    const btn = event.target;
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang kiểm tra...';
-    btn.disabled = true;
-    
-    try {
-        const response = await fetch('/api/check-payment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                order_id: '{{ order_id }}'
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.paid) {
-            showToast('Thanh toán thành công!', 'success');
-            setTimeout(() => {
-                window.location.href = '/order-success?order_id={{ order_id }}';
-            }, 1000);
-        } else {
-            showToast('Chưa nhận được thanh toán. Vui lòng thử lại sau!', 'error');
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        showToast('Có lỗi xảy ra!', 'error');
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-    }
-}
-
-// Toast notification
-function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.remove();
-    }, 3000);
-}
-
-// Auto refresh status every 10 seconds
-setInterval(() => {
-    fetch('/api/check-payment', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            order_id: '{{ order_id }}',
-            auto: true
-        })
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.paid) {
-            showToast('Đã nhận được thanh toán! Đang chuyển hướng...', 'success');
-            setTimeout(() => {
-                window.location.href = '/order-success?order_id={{ order_id }}';
-            }, 2000);
-        }
-    })
-    .catch(error => console.error('Auto check error:', error));
-}, 10000); // Check every 10 seconds
-
-// QR Code Zoom Functions
-function openQRZoom() {
-    const modal = document.getElementById('qrZoomModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Prevent background scroll
-    }
-}
-
-function closeQRZoom() {
-    const modal = document.getElementById('qrZoomModal');
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto'; // Restore scroll
-    }
-}
-
-// Close modal on ESC key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeQRZoom();
-    }
-});
-</script>
-
-<!-- QR Code Zoom Modal -->
-<div id="qrZoomModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 10000; align-items: center; justify-content: center; cursor: pointer;"
-     onclick="closeQRZoom()">
-    <div style="position: relative; max-width: 90vw; max-height: 90vh; background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);"
-         onclick="event.stopPropagation()">
-        <!-- Close Button -->
-        <button onclick="closeQRZoom()" 
-                style="position: absolute; top: -15px; right: -15px; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; z-index: 10001; transition: all 0.3s ease;"
-                onmouseover="this.style.transform='scale(1.1)'; this.style.background='#c0392b'"
-                onmouseout="this.style.transform='scale(1)'; this.style.background='#e74c3c'"
-                aria-label="Đóng">
-            <i class="fas fa-times"></i>
+      <!-- Actions -->
+      <div class="bt-actions">
+        <button class="btn-check" onclick="checkPaymentStatus(event)">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M4 10a6 6 0 100 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M4 6v4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Kiểm tra thanh toán
         </button>
-        
-        <!-- Zoomed QR Code -->
-        <div style="text-align: center;">
-            <h3 style="color: #2c3e50; margin-bottom: 1.5rem; font-size: 1.5rem;">
-                <i class="fas fa-qrcode"></i> Mã QR Chuyển Khoản
-            </h3>
-            <div style="background: white; padding: 1.5rem; border: 4px solid #3498db; border-radius: 15px; display: inline-block;">
-                <img id="zoomedQRCode" 
-                     src="https://img.vietqr.io/image/{{ bank_code }}-{{ account_number }}-compact2.jpg?amount={{ total }}&addInfo={{ order_id }}&accountName={{ account_name | urlencode }}" 
-                     alt="QR Code Zoomed" 
-                     style="max-width: 500px; max-height: 500px; width: auto; height: auto; display: block;">
-            </div>
-            <p style="color: #7f8c8d; margin-top: 1rem; font-size: 0.9rem;">
-                <i class="fas fa-mobile-alt"></i> Quét mã QR bằng app ngân hàng của bạn
-            </p>
-        </div>
+        <a href="/" class="btn-home">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 18v-6h4v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Về trang chủ
+        </a>
+      </div>
+
     </div>
+  </div>
+
 </div>
 
+<!-- QR Zoom Modal -->
+<div id="qrModal" class="qr-modal" onclick="if(event.target===this)closeQRZoom()">
+  <div class="qrm-box">
+    <button class="qrm-close" onclick="closeQRZoom()">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <h3>Mã QR chuyển khoản</h3>
+    <div class="qrm-img-wrap">
+      <img src="https://img.vietqr.io/image/{{ bank_code }}-{{ account_number }}-compact2.jpg?amount={{ total }}&addInfo={{ order_id }}&accountName={{ account_name|urlencode }}"
+           alt="QR Code phóng to">
+    </div>
+    <p>Quét mã QR bằng app ngân hàng của bạn</p>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="bt-toast"></div>
+
 <style>
-/* QR Zoom Modal Styles */
-#qrZoomModal {
-    animation: fadeIn 0.3s ease;
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--font:'Be Vietnam Pro',sans-serif;--dark:#1a1a18;--gold:#b8922a;--border:#e8e3db;--text:#2a2520;--muted:#7a7060;--light:#f5f4f1}
+body{font-family:var(--font);color:var(--text)}
+a{text-decoration:none;color:inherit}
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
+/* Header */
+.bt-header{background:var(--dark);padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.bt-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 100%,rgba(196,160,100,.12) 0%,transparent 60%)}
+.bth-inner{position:relative;z-index:1;max-width:1280px;margin:0 auto}
+.bth-breadcrumb{display:flex;align-items:center;justify-content:center;gap:.375rem;margin-bottom:.75rem}
+.bth-breadcrumb a,.bth-breadcrumb span{font-size:.75rem;color:rgba(255,255,255,.45)}
+.bth-breadcrumb a:hover{color:rgba(255,255,255,.8)}
+.bth-breadcrumb svg{width:11px;height:11px;color:rgba(255,255,255,.25)}
+.bt-header h1{font-size:clamp(1.625rem,4vw,2.25rem);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:.375rem}
+.bt-header p{font-size:.875rem;color:rgba(255,255,255,.5);font-weight:300}
 
-#qrZoomModal > div {
-    animation: zoomIn 0.3s ease;
-}
+/* Body */
+.bt-body{background:var(--light);padding:2rem}
+.bti{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:1.25rem}
 
-@keyframes zoomIn {
-    from {
-        transform: scale(0.8);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
+/* Timer */
+.bt-timer{background:#fff;border:1.5px solid #fde68a;border-radius:10px;padding:1.125rem 1.5rem;display:flex;align-items:center;gap:1.25rem}
+.timer-icon{width:44px;height:44px;background:#fffbeb;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#d97706}
+.timer-icon svg{width:22px;height:22px}
+.timer-body{display:flex;flex-direction:column;gap:.1rem;flex:1}
+.timer-label{font-size:.78rem;color:#7a7060;text-transform:uppercase;letter-spacing:.06em}
+.timer-val{font-size:1.875rem;font-weight:700;color:#1a1a18;font-variant-numeric:tabular-nums;line-height:1.1}
+.timer-note{font-size:.78rem;color:#a09880}
+.timer-urgent .timer-val{color:#dc2626}
+.timer-warn .timer-val{color:#d97706}
 
-/* Responsive cho modal */
-@media (max-width: 768px) {
-    #qrZoomModal > div {
-        max-width: 95vw;
-        padding: 1.5rem;
-    }
-    
-    #zoomedQRCode {
-        max-width: 100% !important;
-        max-height: 60vh !important;
-    }
-    
-    #qrZoomModal > div > div > button {
-        top: -10px !important;
-        right: -10px !important;
-        width: 35px !important;
-        height: 35px !important;
-        font-size: 1rem !important;
-    }
-    
-    #qrZoomModal > div > div > h3 {
-        font-size: 1.2rem !important;
-        margin-bottom: 1rem !important;
-    }
+/* Grid */
+.bt-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+
+/* Cards */
+.bt-card{background:#fff;border-radius:10px;border:1.5px solid var(--border);padding:1.5rem}
+.btc-title{display:flex;align-items:center;gap:.625rem;font-size:.9375rem;font-weight:700;color:var(--dark);padding-bottom:1rem;border-bottom:1.5px solid var(--border);margin-bottom:1.25rem}
+.btc-title svg{width:18px;height:18px;color:var(--gold);flex-shrink:0}
+
+/* QR */
+.qr-wrap{position:relative;cursor:pointer;border:2px solid var(--border);border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--light);margin-bottom:1rem;transition:border-color .2s}
+.qr-wrap:hover{border-color:var(--gold)}
+.qr-wrap img{width:100%;display:block;aspect-ratio:1;object-fit:contain}
+.qr-zoom-hint{position:absolute;bottom:0;left:0;right:0;background:rgba(26,26,24,.75);color:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;gap:.375rem;font-size:.78rem;font-weight:500;padding:.5rem;opacity:0;transition:opacity .2s}
+.qr-zoom-hint svg{width:15px;height:15px}
+.qr-wrap:hover .qr-zoom-hint{opacity:1}
+
+.qr-steps{background:var(--light);border-radius:8px;padding:.875rem 1rem}
+.qs-title{font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
+.qr-steps ol{padding-left:1.25rem;display:flex;flex-direction:column;gap:.3rem}
+.qr-steps li{font-size:.8125rem;color:var(--text);line-height:1.5}
+
+/* Bank rows */
+.bank-rows{display:flex;flex-direction:column;gap:0;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1rem}
+.bank-row{display:flex;flex-direction:column;gap:.375rem;padding:.875rem 1rem;border-bottom:1px solid var(--border)}
+.bank-row:last-child{border-bottom:none}
+.bank-row-important{background:#fffbeb}
+.br-label{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:.25rem}
+.req-star{color:#dc2626}
+.br-val{font-size:.9375rem;color:var(--dark)}
+.br-bank{display:flex;align-items:center;gap:.5rem}
+.bank-logo{height:20px;object-fit:contain}
+.br-copy-row{display:flex;align-items:center;gap:.625rem;flex-wrap:wrap}
+.br-mono{font-size:1rem;font-weight:700;color:var(--dark);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.br-amount{font-size:1.125rem;font-weight:700;color:#16a34a}
+.br-transfer-content{color:var(--gold)}
+.br-warn{display:flex;align-items:flex-start;gap:.375rem;font-size:.75rem;color:#dc2626;font-weight:500;margin-top:.375rem}
+.br-warn svg{width:13px;height:13px;flex-shrink:0;margin-top:1px}
+
+/* Copy buttons */
+.copy-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .75rem;border:1.5px solid var(--border);border-radius:6px;background:#fff;font-family:var(--font);font-size:.75rem;font-weight:500;color:var(--dark);cursor:pointer;transition:all .18s;flex-shrink:0}
+.copy-btn svg{width:13px;height:13px}
+.copy-btn:hover{background:var(--dark);border-color:var(--dark);color:#fff}
+.copy-btn-green:hover{background:#16a34a;border-color:#16a34a;color:#fff}
+.copy-btn-amber:hover{background:#d97706;border-color:#d97706;color:#fff}
+.copy-btn.copied{background:#16a34a;border-color:#16a34a;color:#fff}
+
+.bank-note{display:flex;align-items:flex-start;gap:.75rem;background:#f0faf4;border:1.5px solid #bbf7d0;border-radius:8px;padding:.875rem 1rem;font-size:.8125rem;color:#166534}
+.bank-note svg{width:16px;height:16px;flex-shrink:0;margin-top:2px;color:#16a34a}
+.bank-note ul{list-style:none;display:flex;flex-direction:column;gap:.25rem}
+.bank-note li::before{content:'•';margin-right:.375rem;color:#16a34a}
+
+/* Order info */
+.bt-order-info{background:#fff;border-radius:10px;border:1.5px solid var(--border);padding:1.5rem}
+.boi-title{display:flex;align-items:center;gap:.625rem;font-size:.9375rem;font-weight:700;color:var(--dark);padding-bottom:1rem;border-bottom:1.5px solid var(--border);margin-bottom:1.125rem}
+.boi-title svg{width:17px;height:17px;color:var(--gold)}
+.boi-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.boi-item{display:flex;flex-direction:column;gap:.2rem}
+.boi-item span{font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.boi-item strong{font-size:.875rem;color:var(--dark)}
+.boi-full{grid-column:1/-1}
+
+/* Actions */
+.bt-actions{display:flex;gap:.875rem;justify-content:center}
+.btn-check{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.75rem;background:var(--dark);color:#fff;border:none;border-radius:9px;font-family:var(--font);font-size:.9rem;font-weight:600;cursor:pointer;transition:background .2s,transform .15s}
+.btn-check svg{width:17px;height:17px}
+.btn-check:hover{background:#2e2e2a;transform:translateY(-1px)}
+.btn-check:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-home{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.75rem;border:1.5px solid var(--border);color:var(--dark);border-radius:9px;font-family:var(--font);font-size:.9rem;font-weight:500;transition:all .2s;background:#fff}
+.btn-home svg{width:17px;height:17px}
+.btn-home:hover{border-color:var(--dark);background:var(--dark);color:#fff}
+
+/* QR Modal */
+.qr-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);z-index:9000;align-items:center;justify-content:center;padding:1.5rem}
+.qrm-box{background:#fff;border-radius:14px;padding:2rem;max-width:520px;width:100%;text-align:center;position:relative;box-shadow:0 24px 64px rgba(0,0,0,.25)}
+.qrm-close{position:absolute;top:.875rem;right:.875rem;width:36px;height:36px;background:var(--light);border:1.5px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--dark);transition:all .18s}
+.qrm-close svg{width:16px;height:16px}
+.qrm-close:hover{background:var(--dark);border-color:var(--dark);color:#fff}
+.qrm-box h3{font-size:1.0625rem;font-weight:700;color:var(--dark);margin-bottom:1.25rem}
+.qrm-img-wrap{border:2px solid var(--border);border-radius:10px;overflow:hidden;display:inline-block;margin-bottom:1rem}
+.qrm-img-wrap img{max-width:100%;display:block}
+.qrm-box p{font-size:.8125rem;color:var(--muted)}
+
+/* Toast */
+.bt-toast{position:fixed;bottom:1.75rem;right:1.75rem;background:var(--dark);color:#fff;padding:.875rem 1.25rem;border-radius:10px;font-family:var(--font);font-size:.875rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:99999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none}
+.bt-toast.show{opacity:1;transform:translateY(0)}
+.bt-toast.toast-green{background:#16a34a}
+.bt-toast.toast-red{background:#dc2626}
+
+/* Responsive */
+@media(max-width:700px){
+  .bt-grid{grid-template-columns:1fr}
+  .boi-grid{grid-template-columns:1fr}
+  .boi-full{grid-column:auto}
+  .bt-actions{flex-direction:column;align-items:stretch}
+  .btn-check,.btn-home{justify-content:center}
+  .bt-body{padding:1rem}
 }
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin .7s linear infinite}
 </style>
+
+<script>
+/* ── Countdown ── */
+let timeLeft = 15 * 60;
+const countdownEl = document.getElementById('countdown');
+const timerBox = document.getElementById('timerBox');
+
+setInterval(() => {
+  const m = String(Math.floor(timeLeft/60)).padStart(2,'0');
+  const s = String(timeLeft % 60).padStart(2,'0');
+  countdownEl.textContent = `${m}:${s}`;
+
+  if (timeLeft <= 0) {
+    alert('Hết thời gian thanh toán! Đơn hàng sẽ bị hủy.');
+    window.location.href = '/';
+  } else if (timeLeft <= 60) {
+    timerBox.classList.add('timer-urgent');
+    timerBox.style.borderColor = '#fecaca';
+    timerBox.style.background = '#fff5f5';
+  } else if (timeLeft <= 300) {
+    timerBox.classList.add('timer-warn');
+    timerBox.style.borderColor = '#fde68a';
+  }
+  timeLeft--;
+}, 1000);
+
+/* ── Copy ── */
+function copyText(text, btn, msg) {
+  navigator.clipboard.writeText(text).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+  const orig = btn.innerHTML;
+  btn.classList.add('copied');
+  btn.innerHTML = `<svg viewBox="0 0 16 16" fill="none" style="width:13px;height:13px"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> ${msg||'Đã copy'}`;
+  showToast(msg||'Đã copy vào clipboard!', 'green');
+  setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+}
+
+/* ── Toast ── */
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'bt-toast show' + (type ? ` toast-${type}` : '');
+  setTimeout(() => { t.className = 'bt-toast'; }, 3000);
+}
+
+/* ── QR Modal ── */
+function openQRZoom() {
+  document.getElementById('qrModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeQRZoom() {
+  document.getElementById('qrModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeQRZoom(); });
+
+/* ── Check payment ── */
+async function checkPaymentStatus(e) {
+  const btn = e.currentTarget;
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<svg viewBox="0 0 20 20" fill="none" class="spin" style="width:17px;height:17px"><circle cx="10" cy="10" r="8" stroke="rgba(255,255,255,.3)" stroke-width="2.5"/><path d="M10 2a8 8 0 018 8" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg> Đang kiểm tra...`;
+
+  try {
+    const res = await fetch('/api/check-payment', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({order_id: '{{ order_id }}'})
+    });
+    const d = await res.json();
+    if (d.paid) {
+      showToast('Thanh toán thành công! Đang chuyển hướng...', 'green');
+      setTimeout(() => window.location.href = '/order-success?order_id={{ order_id }}', 1500);
+    } else {
+      showToast('Chưa nhận được thanh toán. Vui lòng thử lại!', 'red');
+      btn.innerHTML = orig; btn.disabled = false;
+    }
+  } catch(err) {
+    showToast('Có lỗi xảy ra. Vui lòng thử lại!', 'red');
+    btn.innerHTML = orig; btn.disabled = false;
+  }
+}
+
+/* ── Auto check every 10s ── */
+setInterval(async () => {
+  try {
+    const res = await fetch('/api/check-payment', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({order_id:'{{ order_id }}', auto:true})
+    });
+    const d = await res.json();
+    if (d.paid) {
+      showToast('Đã nhận được thanh toán! Đang chuyển hướng...', 'green');
+      setTimeout(() => window.location.href='/order-success?order_id={{ order_id }}', 2000);
+    }
+  } catch(e) {}
+}, 10000);
+</script>
 
 {% endblock %}

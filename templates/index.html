@@ -1,1587 +1,1377 @@
 {% extends "base.html" %}
+{% block title %}Trang Chủ - {{ site_settings.get('site_name', 'HOMESTEAD') }}{% endblock %}
 
-{% block title %}Trang Chủ - {{ site_settings.get('site_name', 'Nội Thất Sang Trọng') }}{% endblock %}
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&display=swap" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
+
+{# ── Build danh sách slides từ site_settings ─────────────────────────────
+   Admin cấu hình tại: Cài đặt > Hero Slider
+   Key: hero_1_image, hero_1_title, hero_1_subtitle, hero_1_link, hero_1_btn, hero_1_eyebrow
+        hero_2_* ... hero_5_*
+   Nếu chỉ có hero_banner_image (cũ) → tự động tạo 1 slide
+#}
+{% set slides = [] %}
+{% for i in range(1, 6) %}
+  {% set img = site_settings.get('hero_' ~ i ~ '_image', '') %}
+  {% if img %}
+    {% set _ = slides.append({
+      'image':    img,
+      'eyebrow':  site_settings.get('hero_' ~ i ~ '_eyebrow', 'Bộ sưu tập 2025'),
+      'title':    site_settings.get('hero_' ~ i ~ '_title',   'Không gian sống hoàn hảo'),
+      'subtitle': site_settings.get('hero_' ~ i ~ '_subtitle','Khám phá hàng nghìn sản phẩm nội thất cao cấp'),
+      'link':     site_settings.get('hero_' ~ i ~ '_link',    '/products'),
+      'btn':      site_settings.get('hero_' ~ i ~ '_btn',     'Mua sắm ngay'),
+    }) %}
+  {% endif %}
+{% endfor %}
+
+{# Fallback: dùng hero_banner_image cũ nếu chưa cấu hình slides mới #}
+{% if not slides %}
+  {% set _ = slides.append({
+    'image':    site_settings.get('hero_banner_image', 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1920'),
+    'eyebrow':  'Bộ sưu tập 2025',
+    'title':    site_settings.get('hero_banner_title',    'Không gian sống hoàn hảo bắt đầu từ đây'),
+    'subtitle': site_settings.get('hero_banner_subtitle', 'Khám phá hàng nghìn sản phẩm nội thất cao cấp, được tuyển chọn kỹ lưỡng'),
+    'link':     site_settings.get('hero_banner_button_link', '/products'),
+    'btn':      site_settings.get('hero_banner_button_text', 'Mua sắm ngay'),
+  }) %}
+  {# Thêm slide demo thứ 2 nếu chỉ có 1 #}
+  {% set _ = slides.append({
+    'image':    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1920',
+    'eyebrow':  'Phòng khách sang trọng',
+    'title':    'Sofa cao cấp — Điểm nhấn không gian',
+    'subtitle': 'Bộ sưu tập sofa nhập khẩu, bảo hành 2 năm, giao hàng miễn phí toàn quốc',
+    'link':     '/products?category=Ph%C3%B2ng%20Kh%C3%A1ch',
+    'btn':      'Khám phá ngay',
+  }) %}
+  {% set _ = slides.append({
+    'image':    'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920',
+    'eyebrow':  'Ưu đãi đặc biệt',
+    'title':    'Giảm đến 35% toàn bộ sản phẩm mới',
+    'subtitle': 'Chương trình khuyến mãi có hạn — áp dụng cho đơn hàng từ 3 triệu trở lên',
+    'link':     '/products',
+    'btn':      'Xem ưu đãi',
+  }) %}
+{% endif %}
+
+<!-- ANNOUNCE BAR -->
+<div class="announce-bar">
+  <span>🚚 Miễn phí vận chuyển đơn từ 5 triệu</span>
+  <span class="sep">·</span>
+  <span>🎁 Giảm 20% cho thành viên mới</span>
+  <span class="sep">·</span>
+  <span>⭐ Bảo hành chính hãng 1–3 năm</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     HERO SLIDER
+     ══════════════════════════════════════════════════ -->
+<section class="hero-slider" id="heroSlider"
+         data-count="{{ slides|length }}"
+         data-interval="{{ site_settings.get('hero_interval', '5000') }}">
+
+  <!-- Slides -->
+  <div class="hs-track" id="hsTrack">
+    {% for slide in slides %}
+    <div class="hs-slide {% if loop.first %}is-active{% endif %}"
+         data-index="{{ loop.index0 }}"
+         style="background-image:url('{{ slide.image }}')">
+      <div class="hs-overlay"></div>
+      <div class="hs-content">
+        <div class="wrap">
+          <div class="hs-inner">
+            <div class="hs-text">
+              <span class="hs-eyebrow">{{ slide.eyebrow }}</span>
+              <h1 class="hs-title">{{ slide.title }}</h1>
+              <p class="hs-sub">{{ slide.subtitle }}</p>
+              <div class="hs-cta">
+                <a href="{{ slide.link }}" class="hs-btn-primary">
+                  {{ slide.btn }}
+                  <svg viewBox="0 0 20 20" fill="none"><path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+                <a href="#categories" class="hs-btn-ghost">Xem danh mục</a>
+              </div>
+            </div>
+
+            {% if loop.first %}
+            <div class="hs-stats">
+              <div class="hst"><strong>10k+</strong><span>Khách hàng</span></div>
+              <div class="hst-d"></div>
+              <div class="hst"><strong>5k+</strong><span>Sản phẩm</span></div>
+              <div class="hst-d"></div>
+              <div class="hst"><strong>4.9★</strong><span>Đánh giá</span></div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if slides|length > 1 %}
+  <!-- Prev / Next arrows -->
+  <button class="hs-arrow hs-prev" id="hsPrev" aria-label="Slide trước">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <button class="hs-arrow hs-next" id="hsNext" aria-label="Slide tiếp">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
+  <!-- Dots -->
+  <div class="hs-dots" id="hsDots">
+    {% for slide in slides %}
+    <button class="hs-dot {% if loop.first %}is-active{% endif %}"
+            data-index="{{ loop.index0 }}"
+            aria-label="Chuyển đến slide {{ loop.index }}"></button>
+    {% endfor %}
+  </div>
+
+  <!-- Progress bar -->
+  <div class="hs-progress" id="hsProgress">
+    <div class="hs-progress-bar" id="hsProgressBar"></div>
+  </div>
+
+  <!-- Slide counter -->
+  <div class="hs-counter">
+    <span id="hsCurrent">01</span>
+    <span class="hs-counter-sep">/</span>
+    <span>{{ '%02d' % slides|length }}</span>
+  </div>
+  {% endif %}
+
+</section>
+
+<!-- SEARCH STRIP -->
+<div class="search-strip">
+  <div class="search-inner">
+    <div class="search-box">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="M15 15l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm, danh mục..."
+             onkeypress="if(event.key==='Enter')window.location.href='/products?search='+this.value">
+    </div>
+    <select class="search-select" onchange="if(this.value)window.location.href='/products?category='+this.value">
+      <option value="">Tất cả danh mục</option>
+      <option value="Phòng Khách">Phòng Khách</option>
+      <option value="Phòng Ngủ">Phòng Ngủ</option>
+      <option value="Nhà Bếp">Nhà Bếp</option>
+      <option value="Văn Phòng">Văn Phòng</option>
+      <option value="Phòng Ăn">Phòng Ăn</option>
+    </select>
+    <select class="search-select" onchange="if(this.value)window.location.href='/products?price='+this.value">
+      <option value="">Mức giá</option>
+      <option value="0-5000000">Dưới 5 triệu</option>
+      <option value="5000000-10000000">5 – 10 triệu</option>
+      <option value="10000000-20000000">10 – 20 triệu</option>
+      <option value="20000000-999999999">Trên 20 triệu</option>
+    </select>
+    <button class="search-btn" onclick="window.location.href='/products?search='+document.getElementById('searchInput').value">Tìm kiếm</button>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="section" id="categories">
+  <div class="wrap">
+    <div class="section-head">
+      <div><h2>Danh mục sản phẩm</h2><p>Lựa chọn theo phòng và phong cách sống</p></div>
+      <a href="/products" class="see-all">Xem tất cả <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    </div>
+    <div class="cat-grid">
+      <a href="/products?category=Ph%C3%B2ng%20Kh%C3%A1ch" class="cat-card cat-tall" style="--img:url('https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600')">
+        <div class="cat-overlay"></div><div class="cat-label"><h3>Phòng Khách</h3><span>Sofa · Bàn trà · Kệ TV</span></div>
+      </a>
+      <a href="/products?category=Ph%C3%B2ng%20Ng%E1%BB%A7" class="cat-card" style="--img:url('https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=600')">
+        <div class="cat-overlay"></div><div class="cat-label"><h3>Phòng Ngủ</h3><span>Giường · Tủ · Đầu giường</span></div>
+      </a>
+      <a href="/products?category=Nh%C3%A0%20B%E1%BA%BFp" class="cat-card" style="--img:url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600')">
+        <div class="cat-overlay"></div><div class="cat-label"><h3>Nhà Bếp</h3><span>Tủ bếp · Bàn đảo · Kệ</span></div>
+      </a>
+      <a href="/products?category=V%C4%83n%20Ph%C3%B2ng" class="cat-card cat-tall" style="--img:url('https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600')">
+        <div class="cat-overlay"></div><div class="cat-label"><h3>Văn Phòng</h3><span>Bàn · Ghế · Kệ tài liệu</span></div>
+      </a>
+      <a href="/products?category=Ph%C3%B2ng%20%C4%82n" class="cat-card" style="--img:url('https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600')">
+        <div class="cat-overlay"></div><div class="cat-label"><h3>Phòng Ăn</h3><span>Bàn ăn · Ghế ăn · Tủ rượu</span></div>
+      </a>
+      <a href="/products" class="cat-card" style="--img:url('https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=600')">
+        <div class="cat-overlay"></div><div class="cat-label"><h3>Tất cả</h3><span>Xem toàn bộ →</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-inner">
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3m-1 11h6m-3-3l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><strong>Miễn phí vận chuyển</strong><span>Đơn hàng từ 5 triệu đồng</span></div>
+    </div>
+    <div class="trust-div"></div>
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><strong>Đổi trả 30 ngày</strong><span>Hoàn tiền 100% nếu lỗi</span></div>
+    </div>
+    <div class="trust-div"></div>
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      <div><strong>Bảo hành chính hãng</strong><span>Từ 1 đến 3 năm</span></div>
+    </div>
+    <div class="trust-div"></div>
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><strong>Hỗ trợ 24/7</strong><span>Tư vấn nội thất miễn phí</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURED PRODUCTS — MOHO style slider -->
+<section class="section fp-section">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2>Sản phẩm nổi bật</h2>
+        <p>Được khách hàng tin dùng và đánh giá cao nhất</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:.75rem">
+        <div class="fp-arrows">
+          <button class="fp-arrow" id="fpPrev" aria-label="Trước">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M12 5l-5 5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="fp-arrow" id="fpNext" aria-label="Tiếp">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M8 5l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <a href="/products" class="see-all">Xem thêm <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+    </div>
+
+    <!-- Slider wrapper -->
+    <div class="fp-slider-wrap">
+      <div class="fp-track" id="fpTrack">
+        {% for product in featured_products %}
+        {% set discount = ((product.original_price - product.price) / product.original_price * 100)|int if product.original_price > product.price else 0 %}
+        <div class="fp-card" onclick="window.location.href='/product/{{ product.id }}'">
+
+          <!-- Image area -->
+          <div class="fp-img-wrap">
+            <!-- Primary image -->
+            <img class="fp-img fp-img-1"
+                 src="{{ product.image }}" alt="{{ product.name }}" loading="lazy">
+            <!-- Secondary image (hover) — nếu có product.image2, dùng nó; fallback dùng ảnh gốc với effect -->
+            <img class="fp-img fp-img-2"
+                 src="{{ product.image2 if product.image2 else product.image }}"
+                 alt="{{ product.name }}" loading="lazy">
+
+            <!-- Badges -->
+            {% if discount > 0 %}
+            <span class="fp-badge fp-badge-disc">-{{ discount }}%</span>
+            {% endif %}
+            {% if product.reviews > 100 %}
+            <span class="fp-badge fp-badge-best">BEST SELLER</span>
+            {% endif %}
+
+            <!-- Quick add button (hiện khi hover) -->
+            <button class="fp-quick-add"
+                    onclick="event.stopPropagation();addToCart({{ product.id }})"
+                    title="Thêm vào giỏ">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M6 16a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2zM2 2h1.5l1.5 9h9l1.5-6H5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Thêm vào giỏ
+            </button>
+          </div>
+
+          <!-- Info area -->
+          <div class="fp-body">
+            <h3 class="fp-name">{{ product.name }}</h3>
+
+            <!-- Stars + reviews + sold -->
+            <div class="fp-meta">
+              <div class="fp-stars">
+                {% for i in range(5) %}
+                <svg viewBox="0 0 12 12" width="12" height="12">
+                  <path d="M6 1l1.4 2.8 3.1.4-2.2 2.2.5 3.1L6 8l-2.8 1.5.5-3.1L1.5 4.2l3.1-.4z"
+                        fill="{% if i < product.rating %}#f59e0b{% else %}#e0d8d0{% endif %}"/>
+                </svg>
+                {% endfor %}
+                <span class="fp-rc">({{ product.reviews }})</span>
+              </div>
+              {% if product.sold_count is defined and product.sold_count %}
+              <span class="fp-sold">Đã bán {{ product.sold_count }}</span>
+              {% endif %}
+            </div>
+
+            <!-- Price -->
+            <div class="fp-price-row">
+              <span class="fp-price-now">{{ product.price|format_currency }}₫</span>
+              {% if discount > 0 %}
+              <span class="fp-price-was">{{ product.original_price|format_currency }}₫</span>
+              {% endif %}
+            </div>
+
+            <!-- Color dots if available -->
+            {% if product.colors is defined and product.colors %}
+            <div class="fp-colors">
+              {% for color in product.colors[:4] %}
+              <span class="fp-color-dot" style="background:{{ color }}" title="{{ color }}"></span>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <style>
-/* CSS bổ sung cho index page - tương thích với CSS hiện có */
-.hero-modern {
-    background: var(--gradient-hero), 
-                url('{{ site_settings.get('hero_banner_image', 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1920') }}') center/cover fixed;
-    color: white;
-    padding: clamp(100px, 18vh, 160px) 0;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-@media (max-width: 768px) {
-    .hero-modern {
-        padding: clamp(3rem, 8vh, 5rem) 0 !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .hero-modern {
-        padding: clamp(2.5rem, 6vh, 4rem) 0 !important;
-    }
-}
-
-.hero-modern::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 50%, rgba(157, 184, 146, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(212, 130, 111, 0.15) 0%, transparent 50%);
-    animation: gradient-shift 8s ease-in-out infinite;
-    pointer-events: none;
-}
-
-@keyframes gradient-shift {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
-}
-
-.hero-modern .container {
-    position: relative;
-    z-index: 2;
-}
-
-.hero-modern h1 {
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
-    font-weight: 900;
-    margin-bottom: clamp(1.25rem, 3vh, 2rem);
-    text-shadow: 0 4px 20px rgba(0,0,0,0.4);
-    animation: fadeInUp 0.8s ease-out;
-    color: white;
-    line-height: 1.2;
-}
-
-.hero-modern p {
-    font-size: clamp(1.125rem, 2.5vw, 1.5rem);
-    margin-bottom: clamp(2rem, 4vh, 3rem);
-    opacity: 0.95;
-    animation: fadeInUp 1s ease-out 0.2s both;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.6;
-}
-
-.hero-buttons {
-    display: flex;
-    gap: clamp(0.875rem, 2vw, 1.25rem);
-    justify-content: center;
-    flex-wrap: wrap;
-    animation: fadeInUp 1.2s ease-out 0.4s both;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(40px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Search Bar */
-.search-section {
-    background: white;
-    padding: clamp(2rem, 4vh, 2.5rem) 0;
-    box-shadow: var(--shadow-md);
-    position: relative;
-    z-index: 10;
-    margin-top: -2rem;
-    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
-}
-
-@media (max-width: 768px) {
-    .search-section {
-        padding: clamp(1.25rem, 3vh, 1.75rem) 0 !important;
-        margin-top: -1rem !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .search-section {
-        padding: clamp(1rem, 2.5vh, 1.5rem) 0 !important;
-        margin-top: -0.75rem !important;
-    }
-}
-
-.search-wrapper {
-    display: flex;
-    gap: clamp(0.875rem, 2vw, 1.25rem);
-    max-width: 1000px;
-    margin: 0 auto;
-    flex-wrap: wrap;
-}
-
-.search-box-new {
-    flex: 2;
-    min-width: 280px;
-    position: relative;
-}
-
-.search-box-new i {
-    position: absolute;
-    left: 24px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-light);
-    font-size: 1.25rem;
-    transition: color 0.3s ease;
-    z-index: 1;
-}
-
-.search-box-new input {
-    width: 100%;
-    padding: clamp(14px, 2vw, 18px) 20px clamp(14px, 2vw, 18px) 56px;
-    border: 2px solid var(--border-color);
-    border-radius: 50px;
-    font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: var(--bg-white);
-}
-
-.search-box-new input:focus {
-    outline: none;
-    border-color: var(--sage-medium);
-    box-shadow: 0 0 0 4px var(--sage-light);
-    transform: translateY(-2px);
-}
-
-.search-box-new input:focus + i {
-    color: var(--sage-medium);
-}
-
-.filter-select-new {
-    flex: 1;
-    min-width: 180px;
-    padding: clamp(14px, 2vw, 18px) 20px;
-    border: 2px solid var(--border-color);
-    border-radius: 50px;
-    font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-    cursor: pointer;
-    background: white;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%233d3229' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 20px center;
-    padding-right: 50px;
-}
-
-.filter-select-new:hover {
-    border-color: var(--sage-light);
-}
-
-.filter-select-new:focus {
-    outline: none;
-    border-color: var(--sage-medium);
-    box-shadow: 0 0 0 4px var(--sage-light);
-}
-
-/* Categories Grid */
-.categories-modern {
-    padding: clamp(60px, 10vh, 100px) 0;
-    background: var(--bg-cream);
-    position: relative;
-}
-
-@media (max-width: 768px) {
-    .categories-modern {
-        padding: clamp(2rem, 5vh, 3rem) 0 !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .categories-modern {
-        padding: clamp(1.5rem, 4vh, 2.5rem) 0 !important;
-    }
-}
-
-.cat-grid {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    gap: clamp(1.5rem, 3vw, 2.5rem);
-    margin-top: clamp(2rem, 4vh, 3.5rem);
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-bottom: 1rem;
-}
-
-@media (max-width: 768px) {
-    .cat-grid {
-        margin-top: 1.5rem !important;
-    }
-    
-    .cat-item {
-        padding: 1.25rem 1rem !important;
-    }
-    
-    .cat-icon {
-        width: 55px !important;
-        height: 55px !important;
-        font-size: 1.5rem !important;
-        margin-bottom: 0.75rem !important;
-    }
-    
-    .cat-item h3 {
-        font-size: clamp(0.9375rem, 2.5vw, 1.125rem) !important;
-        margin-bottom: 0.5rem !important;
-    }
-    
-    .cat-item p {
-        font-size: clamp(0.8125rem, 2vw, 0.875rem) !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .cat-grid {
-        margin-top: 1.25rem !important;
-    }
-    
-    .cat-item {
-        padding: 1rem 0.875rem !important;
-    }
-    
-    .cat-icon {
-        width: 50px !important;
-        height: 50px !important;
-        font-size: 1.375rem !important;
-        margin-bottom: 0.625rem !important;
-    }
-}
-
-.cat-item {
-    background: white;
-    padding: clamp(2rem, 4vw, 2.5rem) clamp(1.25rem, 2.5vw, 1.5rem);
-    border-radius: var(--radius-xl);
-    text-align: center;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
-    text-decoration: none;
-    color: var(--text-dark);
-    border: 2px solid transparent;
-    box-shadow: var(--shadow-sm);
-    position: relative;
-    overflow: hidden;
-    flex: 0 0 auto !important;
-    flex-shrink: 0 !important;
-    min-width: 200px;
-    width: 200px;
-}
-
-.cat-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: var(--gradient-sage);
-    opacity: 0.05;
-    transition: left 0.5s ease;
-    z-index: 0;
-}
-
-.cat-item:hover::before {
-    left: 0;
-}
-
-.cat-item:hover {
-    transform: translateY(-12px);
-    box-shadow: var(--shadow-xl);
-    border-color: var(--sage-light);
-}
-
-.cat-icon {
-    width: clamp(65px, 8vw, 80px);
-    height: clamp(65px, 8vw, 80px);
-    margin: 0 auto clamp(1rem, 2vh, 1.5rem);
-    background: var(--gradient-sage);
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: clamp(1.75rem, 3vw, 2.25rem);
-    color: white;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    z-index: 1;
-    box-shadow: var(--shadow-md);
-}
-
-.cat-item:hover .cat-icon {
-    transform: scale(1.15) rotate(8deg);
-    box-shadow: var(--shadow-lg);
-}
-
-.cat-item h3 {
-    font-size: clamp(1rem, 2vw, 1.25rem);
-    margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
-    font-weight: 600;
-    color: var(--text-dark);
-    position: relative;
-    z-index: 1;
-}
-
-.cat-item p {
-    color: var(--text-light);
-    font-size: clamp(0.875rem, 1.6vw, 0.9375rem);
-    margin: 0;
-    position: relative;
-    z-index: 1;
-}
-
-/* Features Bar */
-.features-bar {
-    padding: clamp(2rem, 4vh, 3rem) 0;
-    background: white;
-}
-
-@media (max-width: 768px) {
-    .features-bar {
-        padding: clamp(1.5rem, 4vh, 2.5rem) 0 !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .features-bar {
-        padding: clamp(1.25rem, 3vh, 2rem) 0 !important;
-    }
-}
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
-    position: relative;
-}
-
-.features-flex {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: clamp(1.5rem, 3vw, 2.5rem);
-}
-
-.feat-item {
-    display: flex;
-    align-items: center;
-    gap: clamp(0.875rem, 2vw, 1.25rem);
-    transition: transform 0.3s ease;
-    padding: 0.5rem;
-    border-radius: var(--radius-lg);
-}
-
-.feat-item:hover {
-    transform: translateX(8px);
-}
-
-.feat-icon {
-    width: clamp(50px, 6vw, 60px);
-    height: clamp(50px, 6vw, 60px);
-    background: var(--gradient-sage);
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: clamp(1.375rem, 2.5vw, 1.75rem);
-    color: white;
-    flex-shrink: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: var(--shadow-sm);
-}
-
-.feat-item:hover .feat-icon {
-    transform: scale(1.1) rotate(5deg);
-    box-shadow: var(--shadow-md);
-}
-
-.feat-text h4 {
-    font-size: clamp(0.9375rem, 1.8vw, 1.125rem);
-    margin-bottom: 0.25rem;
-    font-weight: 600;
-    color: var(--text-dark);
-}
-
-.feat-text p {
-    font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
-    color: var(--text-light);
-    margin: 0;
-    line-height: 1.5;
-}
-
-/* Products Enhanced */
-.products-enhanced {
-    padding: clamp(60px, 10vh, 100px) 0;
-    background: var(--bg-white);
-}
-
-.section-head {
-    text-align: center;
-    margin-bottom: clamp(2.5rem, 5vh, 4rem);
-}
-
-.section-head h2 {
-    font-size: clamp(2rem, 4.5vw, 3rem);
-    margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
-    font-weight: 700;
-    color: var(--text-dark);
-    position: relative;
-    display: inline-block;
-    padding-bottom: 1rem;
-}
-
-.section-head h2::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 4px;
-    background: var(--gradient-sage);
-    border-radius: var(--radius-full);
-}
-
-.section-head p {
-    color: var(--text-light);
-    font-size: clamp(1rem, 2vw, 1.25rem);
-    margin-top: 1rem;
-}
-
-.products-grid-new {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: clamp(1.5rem, 3vw, 2.5rem);
-    margin-top: clamp(2rem, 4vh, 3rem);
-}
-
-.product-new {
-    background: white;
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 2px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
-    position: relative;
-}
-
-.product-new:hover {
-    transform: translateY(-10px);
-    box-shadow: var(--shadow-xl);
-    border-color: var(--sage-light);
-}
-
-.prod-img-wrap {
-    position: relative;
-    padding-top: 100%;
-    background: var(--bg-cream);
-    overflow: hidden;
-}
-
-.prod-img-wrap img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.product-new:hover .prod-img-wrap img {
-    transform: scale(1.1);
-}
-
-.disc-badge {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: var(--gradient-sunset);
-    color: white;
-    padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.875rem, 2vw, 1.125rem);
-    border-radius: var(--radius-full);
-    font-weight: 700;
-    font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
-    box-shadow: var(--shadow-md);
-    z-index: 2;
-    animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-.prod-details {
-    padding: clamp(1rem, 2vw, 1.5rem);
-}
-
-.prod-cat {
-    display: inline-block;
-    padding: clamp(0.25rem, 0.5vw, 0.375rem) clamp(0.625rem, 1.2vw, 0.875rem);
-    background: var(--bg-sage);
-    color: var(--sage-dark);
-    border-radius: var(--radius-full);
-    font-size: clamp(0.625rem, 1.2vw, 0.75rem);
-    margin-bottom: clamp(0.375rem, 0.8vh, 0.625rem);
-    font-weight: 500;
-}
-
-.prod-name {
-    font-size: clamp(0.9375rem, 1.8vw, 1.125rem);
-    margin-bottom: clamp(0.375rem, 0.8vh, 0.625rem);
-    color: var(--text-dark);
-    font-weight: 600;
-    line-height: 1.35;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.prod-rating {
-    color: #ffa500;
-    font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
-    margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-}
-
-.prod-rating .review-cnt {
-    color: var(--text-light);
-    font-size: clamp(0.75rem, 1.4vw, 0.875rem);
-}
-
-.prod-price-new {
-    display: flex;
-    align-items: center;
-    gap: clamp(0.5rem, 1vw, 0.75rem);
-    margin-bottom: clamp(0.75rem, 1.2vh, 1rem);
-}
-
-.price-current {
-    font-size: clamp(1.125rem, 2.2vw, 1.5rem);
-    font-weight: 700;
-    color: var(--sage-dark);
-}
-
-.price-old {
-    font-size: clamp(0.875rem, 1.6vw, 1rem);
-    color: var(--text-light);
-    text-decoration: line-through;
-}
-
-/* Promo Boxes */
-.promo-section {
-    padding: clamp(60px, 10vh, 100px) 0;
-    background: var(--bg-cream);
-    position: relative;
-}
-
-.promo-grid-new {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: clamp(1.5rem, 3vw, 2.5rem);
-}
-
-.promo-box {
-    background: var(--gradient-wood);
-    border-radius: var(--radius-2xl);
-    padding: clamp(2.5rem, 5vw, 3.5rem);
-    color: white;
-    text-align: center;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    box-shadow: var(--shadow-md);
-}
-
-.promo-box::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-    transition: transform 0.6s ease;
-    transform: scale(0);
-}
-
-.promo-box:hover::before {
-    transform: scale(1);
-}
-
-.promo-box:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: var(--shadow-xl);
-}
-
-.promo-box h3 {
-    font-size: clamp(1.5rem, 3vw, 2rem);
-    margin-bottom: clamp(0.875rem, 1.5vh, 1.25rem);
-    font-weight: 700;
-    position: relative;
-    z-index: 1;
-}
-
-.promo-box p {
-    margin-bottom: clamp(1.25rem, 2.5vh, 1.75rem);
-    opacity: 0.95;
-    font-size: clamp(0.9375rem, 1.8vw, 1.125rem);
-    line-height: 1.6;
-    position: relative;
-    z-index: 1;
-}
-
-.promo-box.orange {
-    background: var(--gradient-sunset);
-}
-
-.promo-box.blue {
-    background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
-}
-
-.promo-box.crypto {
-    background: linear-gradient(135deg, var(--sage) 0%, var(--forest) 100%);
-}
-
-/* Testimonials */
-.testimonials {
-    padding: clamp(60px, 10vh, 100px) 0;
-    background: var(--bg-white);
-}
-
-@media (max-width: 768px) {
-    .testimonials {
-        padding: clamp(2rem, 5vh, 3rem) 0 !important;
-    }
-    
-    .testimonial-grid {
-        margin-top: 1.5rem !important;
-        gap: 1rem !important;
-    }
-    
-    .testi-card {
-        padding: 1.25rem 1rem !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .testimonials {
-        padding: clamp(1.5rem, 4vh, 2.5rem) 0 !important;
-    }
-    
-    .testimonial-grid {
-        margin-top: 1.25rem !important;
-        gap: 0.875rem !important;
-    }
-    
-    .testi-card {
-        padding: 1rem 0.875rem !important;
-    }
-}
-
-.testimonial-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: clamp(1.5rem, 3vw, 2.5rem);
-    margin-top: clamp(2rem, 4vh, 3.5rem);
-}
-
-.testi-card {
-    background: white;
-    padding: clamp(1.75rem, 3.5vw, 2.5rem);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-md);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 2px solid transparent;
-    position: relative;
-}
-
-.testi-card::before {
-    content: '"';
-    position: absolute;
-    top: -10px;
-    left: 20px;
-    font-size: 80px;
-    color: var(--sage-light);
-    font-family: Georgia, serif;
-    line-height: 1;
-    opacity: 0.3;
-}
-
-.testi-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-xl);
-    border-color: var(--sage-light);
-}
-
-.testi-stars {
-    color: #ffa500;
-    font-size: clamp(1rem, 2vw, 1.25rem);
-    margin-bottom: clamp(0.875rem, 1.5vh, 1.25rem);
-    display: flex;
-    gap: 0.25rem;
-}
-
-.testi-text {
-    font-style: italic;
-    margin-bottom: clamp(1.25rem, 2.5vh, 1.75rem);
-    line-height: 1.8;
-    color: var(--text-medium);
-    font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-    position: relative;
-    z-index: 1;
-}
-
-.testi-author {
-    display: flex;
-    align-items: center;
-    gap: clamp(0.875rem, 2vw, 1.25rem);
-}
-
-.testi-author img {
-    width: clamp(50px, 6vw, 60px);
-    height: clamp(50px, 6vw, 60px);
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid var(--sage-light);
-    box-shadow: var(--shadow-sm);
-}
-
-.testi-author strong {
-    display: block;
-    margin-bottom: 0.25rem;
-    font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-    color: var(--text-dark);
-}
-
-.testi-author span {
-    font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
-    color: var(--text-light);
-}
-
-/* CTA Section */
-.cta-section {
-    padding: clamp(60px, 12vh, 120px) 0;
-    background: var(--gradient-hero), 
-                url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1920') center/cover fixed;
-    color: white;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.cta-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 50%, rgba(157, 184, 146, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(212, 130, 111, 0.15) 0%, transparent 50%);
-    animation: gradient-shift 8s ease-in-out infinite;
-    pointer-events: none;
-}
-
-.cta-section .container {
-    position: relative;
-    z-index: 2;
-}
-
-.cta-section h2 {
-    font-size: clamp(2rem, 4.5vw, 3rem);
-    margin-bottom: clamp(1rem, 2vh, 1.5rem);
-    font-weight: 700;
-    text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-
-.cta-section p {
-    font-size: clamp(1.125rem, 2.5vw, 1.375rem);
-    margin-bottom: clamp(2rem, 4vh, 2.5rem);
-    opacity: 0.95;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.6;
-}
-
-/* Utility Classes */
-.btn-white {
-    background: white;
-    color: var(--sage-dark);
-    border: 2px solid white;
-    box-shadow: var(--shadow-md);
-}
-
-.btn-white:hover {
-    background: var(--gradient-sage);
-    color: white;
-    border-color: transparent;
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-lg);
-}
-
-.btn-outline-white {
-    background: transparent;
-    border: 2px solid white;
-    color: white;
-    box-shadow: 0 0 0 0 rgba(255,255,255,0.3);
-}
-
-.btn-outline-white:hover {
-    background: white;
-    color: var(--sage-dark);
-    box-shadow: 0 0 0 8px rgba(255,255,255,0.2);
-    transform: translateY(-3px);
-}
-
-.text-center {
-    text-align: center;
-}
-
-.mt-3 {
-    margin-top: clamp(2rem, 4vh, 3rem);
-}
+/* ── Featured Products — MOHO style ── */
+.fp-section { background: #fff; padding: 3rem 0; }
+
+.fp-arrows { display: flex; gap: .375rem; }
+.fp-arrow {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .18s; flex-shrink: 0;
+}
+.fp-arrow svg { width: 16px; height: 16px; color: var(--dk); }
+.fp-arrow:hover { background: var(--dk); border-color: var(--dk); }
+.fp-arrow:hover svg { color: #fff; }
+.fp-arrow:disabled { opacity: .35; pointer-events: none; }
+
+/* Slider */
+.fp-slider-wrap { overflow: hidden; }
+.fp-track {
+  display: flex;
+  gap: 1rem;
+  transition: transform .42s cubic-bezier(.4,0,.2,1);
+  will-change: transform;
+}
+
+/* Card */
+.fp-card {
+  flex: 0 0 calc((100% - 3rem) / 4); /* 4 per view desktop */
+  background: #fff;
+  border: 1.5px solid #f0ece6;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow .25s, transform .25s, border-color .25s;
+}
+.fp-card:hover {
+  box-shadow: 0 8px 28px rgba(0,0,0,.1);
+  transform: translateY(-3px);
+  border-color: #e0d8d0;
+}
+
+/* Image */
+.fp-img-wrap {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #f8f6f3;
+}
+.fp-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: opacity .45s ease, transform .45s ease;
+}
+.fp-img-1 { opacity: 1; transform: scale(1); z-index: 1; }
+.fp-img-2 { opacity: 0; transform: scale(1.04); z-index: 2; }
+/* Hover: swap images */
+.fp-card:hover .fp-img-1 { opacity: 0; transform: scale(1.04); }
+.fp-card:hover .fp-img-2 { opacity: 1; transform: scale(1); }
+
+/* Badges */
+.fp-badge {
+  position: absolute;
+  top: 10px;
+  font-size: .68rem; font-weight: 700;
+  padding: 3px 8px; border-radius: 4px;
+  z-index: 3; line-height: 1.4;
+}
+.fp-badge-disc { left: 10px; background: #e53e3e; color: #fff; }
+.fp-badge-best {
+  left: 10px; top: auto; bottom: 10px;
+  background: #1a1a18; color: #fff;
+  letter-spacing: .04em;
+}
+/* Khi có cả 2 badge */
+.fp-badge-disc ~ .fp-badge-best { top: 38px; bottom: auto; }
+
+/* Quick add button */
+.fp-quick-add {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(26,26,24,.85);
+  color: #fff;
+  border: none;
+  padding: .65rem;
+  font-family: var(--font); font-size: .8125rem; font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: .5rem;
+  z-index: 4;
+  transform: translateY(100%);
+  transition: transform .25s cubic-bezier(.4,0,.2,1), background .18s;
+}
+.fp-quick-add svg { width: 15px; height: 15px; }
+.fp-quick-add:hover { background: var(--gd); }
+.fp-card:hover .fp-quick-add { transform: translateY(0); }
+
+/* Body */
+.fp-body { padding: .875rem; }
+.fp-name {
+  font-size: .875rem; font-weight: 600; color: var(--dk);
+  line-height: 1.4; margin-bottom: .5rem;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; min-height: 2.5em;
+}
+.fp-meta {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: .5rem; gap: .5rem; flex-wrap: wrap;
+}
+.fp-stars { display: flex; align-items: center; gap: 1px; }
+.fp-rc { font-size: .72rem; color: var(--mu); margin-left: 3px; }
+.fp-sold { font-size: .72rem; color: var(--mu); white-space: nowrap; }
+.fp-price-row {
+  display: flex; align-items: baseline;
+  gap: .5rem; flex-wrap: wrap; margin-bottom: .5rem;
+}
+.fp-price-now {
+  font-size: 1rem; font-weight: 700;
+  color: #e53e3e; /* đỏ như MOHO */
+}
+.fp-price-was {
+  font-size: .78rem; color: #a09880;
+  text-decoration: line-through;
+}
+.fp-colors {
+  display: flex; gap: .375rem; margin-top: .25rem;
+}
+.fp-color-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,.12);
+  cursor: pointer; transition: transform .15s;
+}
+.fp-color-dot:hover { transform: scale(1.2); }
 
 /* Responsive */
-@media (max-width: 1024px) {
-    .cat-grid {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-    }
-    
-    .products-grid-new {
-        grid-template-columns: repeat(3, 1fr);
-    }
+@media(max-width:1024px){
+  .fp-card { flex: 0 0 calc((100% - 2rem) / 3); }
 }
-
-@media (max-width: 768px) {
-    .hero-modern {
-        padding: clamp(3rem, 8vh, 5rem) 0 !important;
-    }
-    
-    .hero-modern h1 {
-        font-size: clamp(1.75rem, 5vw, 2.25rem) !important;
-        margin-bottom: 1rem !important;
-        line-height: 1.3 !important;
-    }
-    
-    .hero-modern p {
-        font-size: clamp(0.9375rem, 2.5vw, 1.125rem) !important;
-        margin-bottom: 1.5rem !important;
-        line-height: 1.5 !important;
-    }
-    
-    .hero-buttons {
-        gap: 0.75rem !important;
-        flex-direction: column !important;
-        align-items: stretch !important;
-    }
-    
-    .hero-buttons .btn {
-        width: 100% !important;
-        padding: 0.75rem 1.25rem !important;
-        font-size: 0.9375rem !important;
-    }
-    
-    .search-section {
-        margin-top: -1rem !important;
-        padding: clamp(1.25rem, 3vh, 1.75rem) 0 !important;
-        border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
-    }
-    
-    .search-wrapper {
-        flex-direction: column;
-        gap: 0.75rem !important;
-    }
-    
-    .search-box-new,
-    .filter-select-new {
-        width: 100%;
-        padding: 0.75rem 1rem 0.75rem 2.75rem !important;
-        font-size: 0.9375rem !important;
-    }
-    
-    .categories-section {
-        padding: clamp(2rem, 5vh, 3rem) 0 !important;
-    }
-    
-    .cat-grid {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        gap: 1rem !important;
-        margin-top: 1.5rem !important;
-    }
-    
-    .products-enhanced {
-        padding: clamp(2rem, 5vh, 3rem) 0 !important;
-    }
-    
-    .section-head {
-        margin-bottom: clamp(1.5rem, 3vh, 2rem) !important;
-    }
-    
-    .section-head h2 {
-        font-size: clamp(1.5rem, 4vw, 1.875rem) !important;
-        margin-bottom: 0.5rem !important;
-        padding-bottom: 0.75rem !important;
-    }
-    
-    .section-head p {
-        font-size: clamp(0.875rem, 2vw, 1rem) !important;
-        margin-top: 0.5rem !important;
-    }
-    
-    .products-grid-new {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.875rem !important;
-        margin-top: 1.5rem !important;
-    }
-    
-    .product-new {
-        border-radius: var(--radius-lg) !important;
-        border-width: 1px !important;
-    }
-    
-    .prod-details {
-        padding: 0.875rem !important;
-    }
-    
-    .prod-cat {
-        padding: 0.25rem 0.625rem !important;
-        font-size: 0.625rem !important;
-        margin-bottom: 0.5rem !important;
-    }
-    
-    .prod-name {
-        font-size: 0.875rem !important;
-        margin-bottom: 0.5rem !important;
-        line-height: 1.3 !important;
-    }
-    
-    .prod-rating {
-        font-size: 0.75rem !important;
-        margin-bottom: 0.5rem !important;
-        gap: 0.25rem !important;
-    }
-    
-    .prod-rating .review-cnt {
-        font-size: 0.6875rem !important;
-    }
-    
-    .prod-price-new {
-        gap: 0.5rem !important;
-        margin-bottom: 0.75rem !important;
-    }
-    
-    .price-current {
-        font-size: 1rem !important;
-    }
-    
-    .price-old {
-        font-size: 0.8125rem !important;
-    }
-    
-    .prod-details .btn {
-        padding: 0.5rem 0.875rem !important;
-        font-size: 0.8125rem !important;
-        min-height: 36px !important;
-    }
-    
-    .promo-section {
-        padding: clamp(2rem, 5vh, 3rem) 0 !important;
-    }
-    
-    .promo-grid-new {
-        grid-template-columns: 1fr;
-        gap: 1rem !important;
-    }
-    
-    .promo-box {
-        padding: 1.5rem 1.25rem !important;
-        min-height: auto !important;
-    }
-    
-    .promo-box h3 {
-        font-size: clamp(1.125rem, 3vw, 1.375rem) !important;
-        margin-bottom: 0.75rem !important;
-    }
-    
-    .promo-box p {
-        font-size: clamp(0.875rem, 2vw, 1rem) !important;
-        margin-bottom: 1rem !important;
-    }
-    
-    .features-bar {
-        padding: clamp(1.5rem, 4vh, 2.5rem) 0 !important;
-    }
-    
-    .features-flex {
-        grid-template-columns: 1fr !important;
-        gap: 1rem !important;
-    }
-    
-    .feat-item {
-        padding: 0.875rem !important;
-    }
-    
-    .feat-icon {
-        width: 50px !important;
-        height: 50px !important;
-        font-size: 1.5rem !important;
-    }
-    
-    .feat-text h4 {
-        font-size: clamp(0.9375rem, 2.5vw, 1.0625rem) !important;
-        margin-bottom: 0.25rem !important;
-    }
-    
-    .feat-text p {
-        font-size: clamp(0.8125rem, 2vw, 0.9375rem) !important;
-    }
-    
-    .cta-section {
-        padding: clamp(2.5rem, 6vh, 4rem) 0 !important;
-    }
-    
-    .cta-section h2 {
-        font-size: clamp(1.5rem, 4vw, 2rem) !important;
-        margin-bottom: 1rem !important;
-    }
-    
-    .cta-section p {
-        font-size: clamp(0.9375rem, 2.5vw, 1.125rem) !important;
-        margin-bottom: 1.5rem !important;
-    }
-    
-    .testimonial-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem !important;
-    }
-    
-    .mt-3 {
-        margin-top: clamp(1.5rem, 3vh, 2rem) !important;
-    }
+@media(max-width:768px){
+  .fp-card { flex: 0 0 calc((100% - 1rem) / 2); }
 }
-
-@media (max-width: 480px) {
-    .hero-modern {
-        padding: clamp(2.5rem, 6vh, 4rem) 0 !important;
-    }
-    
-    .hero-modern h1 {
-        font-size: clamp(1.5rem, 4.5vw, 2rem) !important;
-        margin-bottom: 0.75rem !important;
-    }
-    
-    .hero-modern p {
-        font-size: clamp(0.875rem, 2.5vw, 1rem) !important;
-        margin-bottom: 1.25rem !important;
-    }
-    
-    .search-section {
-        margin-top: -0.75rem !important;
-        padding: clamp(1rem, 2.5vh, 1.5rem) 0 !important;
-    }
-    
-    .categories-section {
-        padding: clamp(1.5rem, 4vh, 2.5rem) 0 !important;
-    }
-    
-    .cat-grid {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        gap: 0.875rem !important;
-    }
-    
-    .products-enhanced {
-        padding: clamp(1.5rem, 4vh, 2.5rem) 0 !important;
-    }
-    
-    .section-head {
-        margin-bottom: clamp(1.25rem, 2.5vh, 1.75rem) !important;
-    }
-    
-    .section-head h2 {
-        font-size: clamp(1.375rem, 3.5vw, 1.75rem) !important;
-    }
-    
-    .products-grid-new {
-        grid-template-columns: 1fr;
-        gap: 0.75rem !important;
-    }
-    
-    .product-new {
-        border-radius: var(--radius-md) !important;
-    }
-    
-    .prod-details {
-        padding: 0.75rem !important;
-    }
-    
-    .prod-cat {
-        padding: 0.25rem 0.5rem !important;
-        font-size: 0.5625rem !important;
-        margin-bottom: 0.375rem !important;
-    }
-    
-    .prod-name {
-        font-size: 0.8125rem !important;
-        margin-bottom: 0.375rem !important;
-        line-height: 1.25 !important;
-    }
-    
-    .prod-rating {
-        font-size: 0.6875rem !important;
-        margin-bottom: 0.375rem !important;
-        gap: 0.25rem !important;
-    }
-    
-    .prod-rating .review-cnt {
-        font-size: 0.625rem !important;
-    }
-    
-    .prod-price-new {
-        gap: 0.375rem !important;
-        margin-bottom: 0.625rem !important;
-    }
-    
-    .price-current {
-        font-size: 0.9375rem !important;
-    }
-    
-    .price-old {
-        font-size: 0.75rem !important;
-    }
-    
-    .prod-details .btn {
-        padding: 0.4375rem 0.75rem !important;
-        font-size: 0.75rem !important;
-        min-height: 34px !important;
-    }
-    
-    .promo-section {
-        padding: clamp(1.5rem, 4vh, 2.5rem) 0 !important;
-    }
-    
-    .promo-box {
-        padding: 1.25rem 1rem !important;
-    }
-    
-    .features-bar {
-        padding: clamp(1.25rem, 3vh, 2rem) 0 !important;
-    }
-    
-    .features-flex {
-        gap: 0.875rem !important;
-    }
-    
-    .feat-item {
-        padding: 0.75rem !important;
-    }
-    
-    .cta-section {
-        padding: clamp(2rem, 5vh, 3rem) 0 !important;
-    }
-    
-    .cta-section h2 {
-        font-size: clamp(1.375rem, 3.5vw, 1.75rem) !important;
-    }
+@media(max-width:480px){
+  .fp-card { flex: 0 0 calc(100% - 2rem); }
 }
 </style>
 
-<!-- Hero Section -->
-<section class="hero-modern">
-    <div class="container">
-        <h1>{{ site_settings.get('hero_banner_title', 'Nội Thất Sang Trọng Cho Ngôi Nhà Của Bạn') }}</h1>
-        <p>{{ site_settings.get('hero_banner_subtitle', 'Khám phá bộ sưu tập nội thất hiện đại, chất lượng cao với giá tốt nhất') }}</p>
-        <div class="hero-buttons">
-            <a href="{{ site_settings.get('hero_banner_button_link', '/products') }}" class="btn" style="background: var(--secondary-color); color: white;">{{ site_settings.get('hero_banner_button_text', 'Khám Phá Ngay') }}</a>
-            <a href="#categories" class="btn btn-outline-white">Danh Mục</a>
-        </div>
+<script>
+/* ── Featured Products Slider ── */
+(function(){
+  const track   = document.getElementById('fpTrack');
+  const prevBtn = document.getElementById('fpPrev');
+  const nextBtn = document.getElementById('fpNext');
+  if (!track) return;
+
+  const cards = track.querySelectorAll('.fp-card');
+  let idx = 0;
+
+  function perView() {
+    const w = window.innerWidth;
+    if (w <= 480)  return 1;
+    if (w <= 768)  return 2;
+    if (w <= 1024) return 3;
+    return 4;
+  }
+
+  function cardW() {
+    const pv  = perView();
+    const gap = 16;
+    const tw  = track.parentElement.offsetWidth;
+    return (tw - gap * (pv - 1)) / pv + gap;
+  }
+
+  function maxIdx() { return Math.max(0, cards.length - perView()); }
+
+  function update() {
+    track.style.transform = `translateX(-${idx * cardW()}px)`;
+    if (prevBtn) prevBtn.disabled = idx === 0;
+    if (nextBtn) nextBtn.disabled = idx >= maxIdx();
+  }
+
+  prevBtn?.addEventListener('click', () => { idx = Math.max(0, idx - 1); update(); });
+  nextBtn?.addEventListener('click', () => { idx = Math.min(maxIdx(), idx + 1); update(); });
+
+  window.addEventListener('resize', () => { idx = Math.min(idx, maxIdx()); update(); });
+  update();
+})();
+</script>
+
+
+
+{# ══════════════════════════════════════════════════════════
+   PROMO BANNERS — hỗ trợ 1–6 banner, cấu hình trong Admin
+   Key: promo_1_image … promo_6_image (chỉ hiển thị khi có ảnh)
+   Layout tự động:
+     1 banner  → full-width
+     2 banners → 50/50
+     3 banners → 1 lớn + 2 nhỏ xếp dọc (layout cũ)
+     4–6 banner→ slider ngang, 3 cột trên desktop
+   ══════════════════════════════════════════════════════════ #}
+{% set pb_defaults = [
+  {'img':'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800','tag':'Ưu đãi mùa hè','title':'Giảm đến 35%\nbộ sưu tập mới','link':'/products','btn':'Khám phá ngay'},
+  {'img':'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600','tag':'Dịch vụ mới','title':'Thiết kế 3D\nmiễn phí','link':'/contact','btn':'Đăng ký'},
+  {'img':'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=600','tag':'Freeship','title':'Miễn phí vận\nchuyển toàn quốc','link':'/products','btn':'Mua ngay'},
+] %}
+
+{% set pb = namespace(list=[]) %}
+{% for i in range(1, 7) %}
+  {% set d = pb_defaults[i-1] if i <= pb_defaults|length else {} %}
+  {% set img = site_settings.get('promo_' ~ i ~ '_image', d.get('img','')) %}
+  {% if img %}
+    {% set _ = pb.list.append({
+      'img':   img,
+      'tag':   site_settings.get('promo_' ~ i ~ '_tag',   d.get('tag','')),
+      'title': site_settings.get('promo_' ~ i ~ '_title', d.get('title','')),
+      'link':  site_settings.get('promo_' ~ i ~ '_link',  d.get('link','/products')),
+      'btn':   site_settings.get('promo_' ~ i ~ '_btn',   d.get('btn','Xem ngay')),
+    }) %}
+  {% endif %}
+{% endfor %}
+
+{% if pb.list %}
+<section class="section pb-section">
+  <div class="wrap">
+    <div class="section-head">
+      <div><h2>Ưu đãi đặc biệt</h2><p>Khuyến mãi và bộ sưu tập nổi bật</p></div>
+      {% if pb.list|length > 3 %}
+      <div class="pb-nav">
+        <button class="pb-arrow" id="pbPrev" aria-label="Trước">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M12 5l-5 5 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="pb-arrow" id="pbNext" aria-label="Tiếp">
+          <svg viewBox="0 0 20 20" fill="none"><path d="M8 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      {% endif %}
     </div>
-</section>
 
-<!-- Search & Filter Bar -->
-<section class="search-section">
-    <div class="container">
-        <div class="search-wrapper">
-            <div class="search-box-new">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Tìm kiếm sản phẩm..." onkeypress="if(event.key==='Enter') window.location.href='/products?search='+this.value">
-            </div>
-            <select class="filter-select-new" onchange="if(this.value) window.location.href='/products?category='+this.value">
-                <option value="">Tất cả danh mục</option>
-                <option value="Phòng Khách">Phòng Khách</option>
-                <option value="Phòng Ngủ">Phòng Ngủ</option>
-                <option value="Nhà Bếp">Nhà Bếp</option>
-                <option value="Văn Phòng">Văn Phòng</option>
-                <option value="Phòng Ăn">Phòng Ăn</option>
-            </select>
-            <select class="filter-select-new" onchange="if(this.value) window.location.href='/products?price='+this.value">
-                <option value="">Mức giá</option>
-                <option value="0-5000000">Dưới 5 triệu</option>
-                <option value="5000000-10000000">5 - 10 triệu</option>
-                <option value="10000000-20000000">10 - 20 triệu</option>
-                <option value="20000000-999999999">Trên 20 triệu</option>
-            </select>
+    {# Layout 1: 1 banner — full width #}
+    {% if pb.list|length == 1 %}
+    <a href="{{ pb.list[0].link }}" class="promo-card promo-full"
+       style="background-image:url('{{ pb.list[0].img }}')">
+      <div class="promo-veil"></div>
+      <div class="promo-body">
+        {% if pb.list[0].tag %}<span class="promo-tag">{{ pb.list[0].tag }}</span>{% endif %}
+        <h3>{{ pb.list[0].title | replace('\\n','<br>') | safe }}</h3>
+        <span class="promo-btn">{{ pb.list[0].btn }}</span>
+      </div>
+    </a>
+
+    {# Layout 2: 2 banners — 50/50 #}
+    {% elif pb.list|length == 2 %}
+    <div class="promo-half">
+      {% for p in pb.list %}
+      <a href="{{ p.link }}" class="promo-card"
+         style="background-image:url('{{ p.img }}')">
+        <div class="promo-veil"></div>
+        <div class="promo-body">
+          {% if p.tag %}<span class="promo-tag">{{ p.tag }}</span>{% endif %}
+          <h3>{{ p.title | replace('\\n','<br>') | safe }}</h3>
+          <span class="promo-btn">{{ p.btn }}</span>
         </div>
+      </a>
+      {% endfor %}
     </div>
-</section>
 
-<!-- Categories -->
-<section class="categories-modern" id="categories">
-    <div class="container">
-        <div class="section-head">
-            <h2>Danh Mục Sản Phẩm</h2>
-            <p>Lựa chọn theo phòng và phong cách</p>
+    {# Layout 3: 3 banners — 1 lớn + 2 nhỏ (layout cổ điển) #}
+    {% elif pb.list|length == 3 %}
+    <div class="promo-duo">
+      <a href="{{ pb.list[0].link }}" class="promo-card promo-big"
+         style="background-image:url('{{ pb.list[0].img }}')">
+        <div class="promo-veil"></div>
+        <div class="promo-body">
+          {% if pb.list[0].tag %}<span class="promo-tag">{{ pb.list[0].tag }}</span>{% endif %}
+          <h3>{{ pb.list[0].title | replace('\\n','<br>') | safe }}</h3>
+          <span class="promo-btn">{{ pb.list[0].btn }}</span>
         </div>
-        <div class="cat-grid">
-            <a href="/products?category=Phòng%20Khách" class="cat-item">
-                <div class="cat-icon"><i class="fas fa-couch"></i></div>
-                <h3>Phòng Khách</h3>
-                <p>Sofa, bàn trà, kệ</p>
-            </a>
-            <a href="/products?category=Phòng%20Ngủ" class="cat-item">
-                <div class="cat-icon"><i class="fas fa-bed"></i></div>
-                <h3>Phòng Ngủ</h3>
-                <p>Giường, tủ quần áo</p>
-            </a>
-            <a href="/products?category=Nhà%20Bếp" class="cat-item">
-                <div class="cat-icon"><i class="fas fa-utensils"></i></div>
-                <h3>Nhà Bếp</h3>
-                <p>Tủ bếp, bàn đảo</p>
-            </a>
-            <a href="/products?category=Văn%20Phòng" class="cat-item">
-                <div class="cat-icon"><i class="fas fa-briefcase"></i></div>
-                <h3>Văn Phòng</h3>
-                <p>Bàn, ghế làm việc</p>
-            </a>
-            <a href="/products?category=Phòng%20Ăn" class="cat-item">
-                <div class="cat-icon"><i class="fas fa-chair"></i></div>
-                <h3>Phòng Ăn</h3>
-                <p>Bàn ăn, ghế ăn</p>
-            </a>
-            <a href="/products" class="cat-item">
-                <div class="cat-icon"><i class="fas fa-th"></i></div>
-                <h3>Tất Cả</h3>
-                <p>Xem toàn bộ</p>
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- Features Bar -->
-<section class="features-bar">
-    <div class="container">
-        <div class="features-flex">
-            <div class="feat-item">
-                <div class="feat-icon"><i class="fas fa-shipping-fast"></i></div>
-                <div class="feat-text">
-                    <h4>Miễn Phí Vận Chuyển</h4>
-                    <p>Đơn hàng từ 5 triệu</p>
-                </div>
-            </div>
-            <div class="feat-item">
-                <div class="feat-icon"><i class="fas fa-undo"></i></div>
-                <div class="feat-text">
-                    <h4>Đổi Trả 30 Ngày</h4>
-                    <p>Hoàn tiền 100%</p>
-                </div>
-            </div>
-            <div class="feat-item">
-                <div class="feat-icon"><i class="fas fa-shield-alt"></i></div>
-                <div class="feat-text">
-                    <h4>Bảo Hành Chính Hãng</h4>
-                    <p>Từ 1-3 năm</p>
-                </div>
-            </div>
-            <div class="feat-item">
-                <div class="feat-icon"><i class="fas fa-headset"></i></div>
-                <div class="feat-text">
-                    <h4>Hỗ Trợ 24/7</h4>
-                    <p>Tư vấn nhiệt tình</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Featured Products -->
-<section class="products-enhanced">
-    <div class="container">
-        <div class="section-head">
-            <h2>Sản Phẩm Nổi Bật</h2>
-            <p>Được khách hàng yêu thích nhất</p>
-        </div>
-        <div class="products-grid-new">
-            {% for product in featured_products %}
-            <div class="product-new" onclick="window.location.href='/product/{{ product.id }}'">
-                <div class="prod-img-wrap">
-                    <img src="{{ product.image }}" alt="{{ product.name }}">
-                    {% if product.original_price > product.price %}
-                    <div class="disc-badge">
-                        -{{ ((product.original_price - product.price) / product.original_price * 100) | int }}%
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="prod-details">
-                    <span class="prod-cat">{{ product.category }}</span>
-                    <h3 class="prod-name">{{ product.name }}</h3>
-                    <div class="prod-rating">
-                        {% for i in range(5) %}
-                            {% if i < product.rating %}
-                                <i class="fas fa-star"></i>
-                            {% else %}
-                                <i class="far fa-star"></i>
-                            {% endif %}
-                        {% endfor %}
-                        <span class="review-cnt">({{ product.reviews }})</span>
-                    </div>
-                    <div class="prod-price-new">
-                        <span class="price-current">{{ product.price | format_currency }}</span>
-                        {% if product.original_price > product.price %}
-                        <span class="price-old">{{ product.original_price | format_currency }}</span>
-                        {% endif %}
-                    </div>
-                    <button class="btn" onclick="event.stopPropagation(); addToCart({{ product.id }})" style="width: 100%; background: var(--primary-color); color: white;">
-                        <i class="fas fa-shopping-cart"></i> Thêm Vào Giỏ
-                    </button>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        <div class="text-center mt-3">
-            <a href="/products" class="btn" style="background: var(--primary-color); color: white; padding: 1rem 3rem; font-size: 1.1rem;">
-                Xem Tất Cả Sản Phẩm <i class="fas fa-arrow-right"></i>
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- Promotional Boxes -->
-<section class="promo-section">
-    <div class="container">
-        <div class="promo-grid-new">
-            <div class="promo-box">
-                <h3>🎉 Bộ Sưu Tập Mới</h3>
-                <p>Giảm giá lên đến 35% cho toàn bộ sản phẩm mới ra mắt</p>
-                <a href="/products" class="btn btn-white">Khám Phá Ngay</a>
-            </div>
-            <div class="promo-box orange">
-                <h3>🚚 Freeship 0Đ</h3>
-                <p>Miễn phí vận chuyển toàn quốc cho mọi đơn hàng</p>
-                <a href="/products" class="btn btn-white">Mua Ngay</a>
-            </div>
-            <div class="promo-box blue">
-                <h3>🎨 Thiết Kế Miễn Phí</h3>
-                <p>Tư vấn thiết kế 3D không gian nội thất</p>
-                <a href="/contact" class="btn btn-white">Đăng Ký</a>
-            </div>
-            <div class="promo-box crypto">
-                <h3>💰 Thanh Toán Crypto</h3>
-                <p>Hỗ trợ thanh toán USDT qua Web3 - An toàn & nhanh chóng</p>
-                <a href="/checkout" class="btn btn-white">Tìm Hiểu Thêm</a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Testimonials -->
-<section class="testimonials">
-    <div class="container">
-        <div class="section-head">
-            <h2>Khách Hàng Nói Gì</h2>
-            <p>Đánh giá từ hàng nghìn khách hàng hài lòng</p>
-        </div>
-        <div class="testimonial-grid">
-            <div class="testi-card">
-                <div class="testi-stars">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                </div>
-                <p class="testi-text">"Sản phẩm chất lượng tuyệt vời, giao hàng nhanh chóng và đóng gói cẩn thận. Nhân viên tư vấn rất nhiệt tình!"</p>
-                <div class="testi-author">
-                    <img src="https://i.pravatar.cc/100?img=1" alt="Customer">
-                    <div>
-                        <strong>Nguyễn Văn An</strong>
-                        <span>Đã mua 3 sản phẩm</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="testi-card">
-                <div class="testi-stars">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                </div>
-                <p class="testi-text">"Thiết kế đẹp, chất liệu tốt, giá cả hợp lý. Đội ngũ lắp đặt chuyên nghiệp. Rất đáng để đầu tư!"</p>
-                <div class="testi-author">
-                    <img src="https://i.pravatar.cc/100?img=5" alt="Customer">
-                    <div>
-                        <strong>Trần Thị Bích</strong>
-                        <span>Khách hàng thân thiết</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="testi-card">
-                <div class="testi-stars">
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i>
-                </div>
-                <p class="testi-text">"Mua sofa ở đây được 6 tháng rồi, chất lượng vẫn như mới. Bảo hành chu đáo, rất uy tín!"</p>
-                <div class="testi-author">
-                    <img src="https://i.pravatar.cc/100?img=12" alt="Customer">
-                    <div>
-                        <strong>Lê Minh Châu</strong>
-                        <span>Đã mua 5 sản phẩm</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Partners Logo Section -->
-<section class="partners-logo-section" style="background: var(--bg-cream); padding: clamp(3rem, 6vh, 5rem) 0;">
-    <div class="container">
-        <div class="section-head" style="text-align: center; margin-bottom: clamp(2rem, 4vh, 3rem);">
-            <h2 style="font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; color: var(--text-dark); margin-bottom: 0.75rem;">
-                <i class="fas fa-handshake"></i> Đối Tác Của Chúng Tôi
-            </h2>
-            <p style="font-size: clamp(1rem, 2vw, 1.125rem); color: var(--text-medium);">
-                Hợp tác cùng các đối tác uy tín trong lĩnh vực nội thất và công nghệ
-            </p>
-        </div>
-        
-        <div class="partners-logo-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: clamp(2rem, 4vw, 3rem); align-items: center; justify-items: center; max-width: 1200px; margin: 0 auto;">
-            <!-- Nội Thất Hoàng Gia -->
-            <div class="partner-logo-item" style="text-align: center; transition: transform 0.3s ease;">
-                <a href="/partners" style="text-decoration: none; display: block;">
-                    <div class="partner-logo-box" style="width: 150px; height: 150px; margin: 0 auto 1rem; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; padding: 20px;">
-                        <img src="https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-6/368370209_671084131719706_4843289841186139566_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=YXEufYhOObEQ7kNvwGo19b_&_nc_oc=AdkvrCRQA1NAuBVLntrOBluzPtw-6QAKE4axwC1Y9qRibbclndRY9ODBHgBoAiADb-JfiMg8s5_J4eShIRuUnE3m&_nc_zt=23&_nc_ht=scontent.fhan15-1.fna&_nc_gid=iOOG2bwS6bBF7AL6K5xtmw&oh=00_AfkITWQyk1aVngGQvjKQmf3eAgjYAmL2F6FDjYRgb4AsVw&oe=69521E27" 
-                             alt="Nội Thất Hoàng Gia"
-                             style="max-width: 100%; max-height: 100%; object-fit: contain;"
-                             onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fas fa-crown\' style=\'font-size: 3rem; color: #f6d365;\'></i>';">
-                    </div>
-                    <h4 style="font-size: clamp(0.9rem, 1.8vw, 1.1rem); color: var(--text-dark); font-weight: 600; margin-top: 0.5rem;">Nội Thất Hoàng Gia</h4>
-                </a>
-            </div>
-            
-            <!-- AIC Group -->
-            <div class="partner-logo-item" style="text-align: center; transition: transform 0.3s ease;">
-                <a href="/partners" style="text-decoration: none; display: block;">
-                    <div class="partner-logo-box" style="width: 150px; height: 150px; margin: 0 auto 1rem; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; padding: 20px;">
-                        <img src="https://office.aicjsc.com/wp-content/uploads/2023/10/LOGO-MOI-04-3.png" 
-                             alt="AIC Group"
-                             style="max-width: 100%; max-height: 100%; object-fit: contain;"
-                             onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fas fa-building\' style=\'font-size: 3rem; color: #667eea;\'></i>';">
-                    </div>
-                    <h4 style="font-size: clamp(0.9rem, 1.8vw, 1.1rem); color: var(--text-dark); font-weight: 600; margin-top: 0.5rem;">AIC Group</h4>
-                </a>
-            </div>
-            
-            <!-- Nhà Xinh -->
-            <div class="partner-logo-item" style="text-align: center; transition: transform 0.3s ease;">
-                <a href="/partners" style="text-decoration: none; display: block;">
-                    <div class="partner-logo-box" style="width: 150px; height: 150px; margin: 0 auto 1rem; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; padding: 20px;">
-                        <img src="https://nhaxinh.com/wp-content/uploads/2025/07/logo-NX-moi-798x800.webp" 
-                             alt="Nhà Xinh"
-                             style="max-width: 100%; max-height: 100%; object-fit: contain;"
-                             onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fas fa-home\' style=\'font-size: 3rem; color: #f093fb;\'></i>';">
-                    </div>
-                    <h4 style="font-size: clamp(0.9rem, 1.8vw, 1.1rem); color: var(--text-dark); font-weight: 600; margin-top: 0.5rem;">Nhà Xinh</h4>
-                </a>
-            </div>
-            
-            <!-- DevMaster -->
-            <div class="partner-logo-item" style="text-align: center; transition: transform 0.3s ease;">
-                <a href="/partners" style="text-decoration: none; display: block;">
-                    <div class="partner-logo-box devmaster-logo-box" id="devmaster-logo-home" style="width: 150px; height: 150px; margin: 0 auto 1rem; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; padding: 20px;">
-                        <img src="https://devmaster.edu.vn/logo.png" 
-                             alt="DevMaster"
-                             style="max-width: 100%; max-height: 100%; object-fit: contain;"
-                             onerror="this.onerror=null; this.src='https://devmaster.edu.vn/images/logo.png'; this.onerror=function(){this.style.display='none'; const logoDiv=document.getElementById('devmaster-logo-home'); if(logoDiv){logoDiv.innerHTML='<i class=\'fas fa-laptop-code\' style=\'font-size: 3rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;\'></i>'; logoDiv.style.background='white';}}">
-                    </div>
-                    <h4 style="font-size: clamp(0.9rem, 1.8vw, 1.1rem); color: var(--text-dark); font-weight: 600; margin-top: 0.5rem;">DevMaster</h4>
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<style>
-.partner-logo-item:hover {
-    transform: translateY(-5px);
-}
-
-.partner-logo-item:hover .partner-logo-box {
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    transform: scale(1.05);
-}
-
-@media (max-width: 768px) {
-    .partners-logo-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 2rem !important;
-    }
-    
-    .partner-logo-box {
-        width: 120px !important;
-        height: 120px !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .partners-logo-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 1.5rem !important;
-    }
-    
-    .partner-logo-box {
-        width: 100px !important;
-        height: 100px !important;
-        padding: 15px !important;
-    }
-    
-    .partner-logo-item h4 {
-        font-size: 0.85rem !important;
-    }
-}
-</style>
-
-<!-- Call to Action -->
-<section class="cta-section">
-    <div class="container">
-        <h2>Tư Vấn Miễn Phí Thiết Kế Nội Thất</h2>
-        <p>Đội ngũ chuyên gia của chúng tôi sẵn sàng tư vấn và thiết kế không gian hoàn hảo cho bạn</p>
-        <a href="/contact" class="btn btn-white" style="padding: 1rem 3rem; font-size: 1.1rem;">
-            <i class="fas fa-phone-alt"></i> Liên Hệ Ngay
+      </a>
+      <div class="promo-stack">
+        {% for p in pb.list[1:] %}
+        <a href="{{ p.link }}" class="promo-card"
+           style="background-image:url('{{ p.img }}')">
+          <div class="promo-veil"></div>
+          <div class="promo-body">
+            {% if p.tag %}<span class="promo-tag">{{ p.tag }}</span>{% endif %}
+            <h3>{{ p.title | replace('\\n','<br>') | safe }}</h3>
+            <span class="promo-btn">{{ p.btn }}</span>
+          </div>
         </a>
+        {% endfor %}
+      </div>
     </div>
+
+    {# Layout 4–6: slider ngang #}
+    {% else %}
+    <div class="pb-slider-wrap">
+      <div class="pb-track" id="pbTrack">
+        {% for p in pb.list %}
+        <a href="{{ p.link }}" class="promo-card pb-slide"
+           style="background-image:url('{{ p.img }}')">
+          <div class="promo-veil"></div>
+          <div class="promo-body">
+            {% if p.tag %}<span class="promo-tag">{{ p.tag }}</span>{% endif %}
+            <h3>{{ p.title | replace('\\n','<br>') | safe }}</h3>
+            <span class="promo-btn">{{ p.btn }}</span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      <!-- dots -->
+      <div class="pb-dots" id="pbDots">
+        {% for p in pb.list %}
+        <button class="pb-dot {% if loop.first %}is-active{% endif %}"
+                data-index="{{ loop.index0 }}"></button>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
 </section>
+{% endif %}
+
+<!-- TESTIMONIALS -->
+<section class="section section-gray">
+  <div class="wrap">
+    <div class="section-head center-head">
+      <h2>Khách hàng nói gì về chúng tôi</h2>
+      <p>Hơn 10.000 khách hàng đã tin tưởng lựa chọn {{ site_settings.get('site_name','HOMESTEAD') }}</p>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card"><div class="testi-stars">★★★★★</div><p>"Sản phẩm chất lượng tuyệt vời, giao hàng nhanh chóng và đóng gói cẩn thận. Nhân viên tư vấn rất nhiệt tình và chuyên nghiệp!"</p><div class="testi-author"><img src="https://i.pravatar.cc/80?img=1" alt=""><div><strong>Nguyễn Văn An</strong><span>Đã mua 3 sản phẩm</span></div></div></div>
+      <div class="testi-card"><div class="testi-stars">★★★★★</div><p>"Thiết kế đẹp, chất liệu tốt, giá hợp lý. Đội ngũ lắp đặt chuyên nghiệp. Nhà tôi thay đổi hoàn toàn sau khi mua đồ ở đây!"</p><div class="testi-author"><img src="https://i.pravatar.cc/80?img=5" alt=""><div><strong>Trần Thị Bích</strong><span>Khách hàng thân thiết</span></div></div></div>
+      <div class="testi-card"><div class="testi-stars">★★★★★</div><p>"Mua sofa được 6 tháng, chất lượng vẫn như mới. Bảo hành chu đáo, đội hỗ trợ phản hồi rất nhanh. Rất đáng để đầu tư!"</p><div class="testi-author"><img src="https://i.pravatar.cc/80?img=12" alt=""><div><strong>Lê Minh Châu</strong><span>Đã mua 5 sản phẩm</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+{% if partners %}
+<section class="section">
+  <div class="wrap">
+    <div class="section-head center-head">
+      <h2>Đối tác của chúng tôi</h2>
+      <p>Hợp tác cùng các thương hiệu uy tín hàng đầu</p>
+    </div>
+    <div class="{% if partners|length > 4 %}partners-track-wrap{% else %}partners-static{% endif %}">
+      {% if partners|length > 4 %}
+      <div class="partners-inner" id="partnersInner">
+        {% for _ in range(2) %}
+        {% for p in partners %}
+        <a href="{{ p.url or p.website or '#' }}" class="partner-card"
+           {% if (p.url or p.website or '') not in ('#','') %}target="_blank" rel="noopener"{% endif %}>
+          <div class="pc-logo">
+            {% if p.logo %}
+            <img src="{{ p.logo }}" alt="{{ p.name }}" loading="lazy"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <span class="pc-text" style="display:none">{{ p.name }}</span>
+            {% else %}
+            <span class="pc-text">{{ p.name }}</span>
+            {% endif %}
+          </div>
+          <span class="pc-name">{{ p.name }}</span>
+        </a>
+        {% endfor %}
+        {% endfor %}
+      </div>
+      {% else %}
+      {% for p in partners %}
+      <a href="{{ p.url or p.website or '#' }}" class="partner-card"
+         {% if (p.url or p.website or '') not in ('#','') %}target="_blank" rel="noopener"{% endif %}>
+        <div class="pc-logo">
+          {% if p.logo %}
+          <img src="{{ p.logo }}" alt="{{ p.name }}" loading="lazy"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+          <span class="pc-text" style="display:none">{{ p.name }}</span>
+          {% else %}
+          <span class="pc-text">{{ p.name }}</span>
+          {% endif %}
+        </div>
+        <span class="pc-name">{{ p.name }}</span>
+      </a>
+      {% endfor %}
+      {% endif %}
+    </div>
+    <div class="partners-footer"><a href="/partners" class="see-all">Xem tất cả đối tác <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+  </div>
+</section>
+{% endif %}
+
+<!-- CTA -->
+<section class="cta-banner">
+  <div class="cta-inner">
+    <h2>Tư vấn thiết kế nội thất miễn phí</h2>
+    <p>Đội ngũ chuyên gia sẵn sàng giúp bạn tạo nên không gian sống hoàn hảo nhất</p>
+    <div class="cta-btns">
+      <a href="/contact" class="cta-btn-white">Liên hệ ngay</a>
+      <a href="/products" class="cta-btn-outline">Xem sản phẩm</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════
+     STYLES
+     ══════════════════════════════════════════════════ -->
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --font:'Be Vietnam Pro',sans-serif;
+  --dk:#1a1a18;--gd:#b8922a;--cream:#faf9f7;
+  --border:#e8e3db;--text:#2a2520;--mu:#7a7060;--lt:#f5f4f1;
+}
+body{font-family:var(--font);color:var(--text)}
+img{display:block;max-width:100%}
+a{text-decoration:none}
+.wrap{max-width:1280px;margin:0 auto;padding:0 2rem}
+
+/* announce */
+.announce-bar{background:var(--dk);color:rgba(255,255,255,.8);text-align:center;padding:.5rem 1rem;font-size:.78rem;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap}
+.sep{opacity:.3}
+
+/* ══════════════════════════════════════
+   HERO SLIDER — CSS background approach
+   → không bao giờ tràn ảnh
+   ══════════════════════════════════════ */
+.hero-slider{
+  position:relative;
+  width:100%;
+  overflow:hidden;           /* clip tất cả */
+  height:clamp(380px,52vw,580px);  /* cân đối như MOHO */
+  background:#2c2018;        /* fallback màu nâu */
+}
+
+.hs-track{position:relative;width:100%;height:100%}
+
+.hs-slide{
+  position:absolute;inset:0;
+  /* ảnh là CSS background → không bao giờ overflow */
+  background-size:cover;
+  background-position:center center;
+  background-repeat:no-repeat;
+  opacity:0;
+  transition:opacity .8s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;
+}
+.hs-slide.is-active{opacity:1;pointer-events:auto}
+
+/* Ken Burns: zoom nhẹ bằng CSS animation, không dùng transform trên img */
+@media(prefers-reduced-motion:no-preference){
+  .hs-slide.is-active{
+    animation:hsBgZoom 7s ease-out forwards;
+  }
+  @keyframes hsBgZoom{
+    from{background-size:108%}
+    to  {background-size:100%}
+  }
+}
+
+/* Overlay: gradient dọc + ngang — text đọc được, ảnh vẫn thấy */
+.hs-overlay{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(to right,
+      rgba(15,10,5,.72) 0%,
+      rgba(15,10,5,.35) 50%,
+      rgba(15,10,5,.08) 100%),
+    linear-gradient(to top,
+      rgba(15,10,5,.55) 0%,
+      rgba(15,10,5,.0)  45%);
+}
+
+.hs-content{
+  position:absolute;inset:0;
+  display:flex;align-items:center;    /* vertically centered như MOHO */
+  padding:0;
+}
+.hs-inner{
+  display:flex;flex-direction:column;
+  gap:2rem;
+  padding-bottom:2rem;    /* slight offset down for stats */
+}
+
+/* text animations */
+.hs-eyebrow{
+  display:inline-flex;align-items:center;gap:.375rem;
+  font-size:.6875rem;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:#fff;background:rgba(184,146,42,.85);
+  padding:.3rem .875rem;border-radius:4px;
+  margin-bottom:.875rem;width:fit-content;
+  opacity:0;transform:translateY(10px);
+  transition:opacity .5s .1s,transform .5s .1s;
+}
+.hs-title{
+  font-size:clamp(1.75rem,4vw,3.25rem);
+  font-weight:800;color:#fff;
+  line-height:1.1;letter-spacing:-.02em;
+  max-width:600px;
+  margin-bottom:.875rem;
+  opacity:0;transform:translateY(16px);
+  transition:opacity .6s .2s,transform .6s .2s;
+  text-shadow:0 2px 12px rgba(0,0,0,.3);
+}
+.hs-sub{
+  font-size:clamp(.875rem,1.5vw,1.0625rem);
+  color:rgba(255,255,255,.85);
+  max-width:480px;line-height:1.65;
+  margin-bottom:1.75rem;font-weight:400;
+  opacity:0;transform:translateY(12px);
+  transition:opacity .6s .3s,transform .6s .3s;
+}
+.hs-cta{
+  display:flex;gap:.875rem;flex-wrap:wrap;
+  opacity:0;transform:translateY(10px);
+  transition:opacity .5s .45s,transform .5s .45s;
+}
+.hs-slide.is-active .hs-eyebrow,
+.hs-slide.is-active .hs-title,
+.hs-slide.is-active .hs-sub,
+.hs-slide.is-active .hs-cta{opacity:1;transform:translateY(0)}
+
+.hs-btn-primary{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.8125rem 1.875rem;
+  background:#fff;color:var(--dk);
+  font-family:var(--font);font-weight:700;font-size:.9375rem;
+  border-radius:6px;transition:background .2s,color .2s,transform .2s;
+  box-shadow:0 4px 16px rgba(0,0,0,.2);
+}
+.hs-btn-primary svg{width:16px;height:16px;transition:transform .2s}
+.hs-btn-primary:hover{background:var(--gd);color:#fff;transform:translateY(-1px)}
+.hs-btn-primary:hover svg{transform:translateX(3px)}
+.hs-btn-ghost{
+  display:inline-flex;align-items:center;
+  padding:.8125rem 1.875rem;
+  border:2px solid rgba(255,255,255,.55);
+  color:#fff;font-family:var(--font);font-weight:600;font-size:.9375rem;
+  border-radius:6px;transition:all .2s;
+  background:rgba(255,255,255,.06);
+}
+.hs-btn-ghost:hover{background:rgba(255,255,255,.15);border-color:#fff}
+
+/* stats */
+.hs-stats{
+  display:flex;align-items:center;gap:1.75rem;
+  background:rgba(255,255,255,.1);backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.2);
+  padding:1rem 1.75rem;border-radius:10px;width:fit-content;
+  margin-top:.5rem;
+}
+.hst{text-align:center}
+.hst strong{display:block;font-size:1.375rem;font-weight:800;color:#fff;line-height:1.1}
+.hst span{font-size:.625rem;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.1em;margin-top:2px;display:block}
+.hst-d{width:1px;height:2rem;background:rgba(255,255,255,.2)}
+
+/* arrows */
+.hs-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:44px;height:44px;
+  background:rgba(255,255,255,.15);
+  border:1.5px solid rgba(255,255,255,.3);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:10;color:#fff;
+  transition:background .2s,border-color .2s;
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+.hs-arrow:hover{background:rgba(255,255,255,.28);border-color:rgba(255,255,255,.6)}
+.hs-arrow svg{width:18px;height:18px}
+.hs-prev{left:1.25rem}
+.hs-next{right:1.25rem}
+
+/* dots */
+.hs-dots{
+  position:absolute;bottom:1.25rem;left:50%;transform:translateX(-50%);
+  display:flex;gap:.5rem;z-index:10;
+}
+.hs-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(255,255,255,.4);border:none;cursor:pointer;padding:0;
+  transition:background .25s,width .25s,border-radius .25s;
+}
+.hs-dot.is-active{width:24px;border-radius:4px;background:#fff}
+
+/* progress bar */
+.hs-progress{
+  position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:rgba(255,255,255,.15);z-index:10;
+}
+.hs-progress-bar{height:100%;width:0;background:var(--gd);transition:width linear}
+
+/* counter */
+.hs-counter{
+  position:absolute;bottom:1.375rem;right:4.5rem;
+  color:rgba(255,255,255,.6);font-size:.75rem;font-weight:600;
+  z-index:10;display:flex;align-items:center;gap:.25rem;
+}
+#hsCurrent{color:#fff;font-weight:700}
+.hs-counter-sep{opacity:.35}
+
+/* search */
+.search-strip{background:#fff;border-bottom:1.5px solid var(--border);padding:1rem 2rem;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.search-inner{max-width:1280px;margin:0 auto;display:flex;gap:.75rem;align-items:center}
+.search-box{flex:2;position:relative;display:flex;align-items:center}
+.search-box svg{position:absolute;left:.875rem;width:18px;height:18px;color:#a09880;pointer-events:none}
+.search-box input{width:100%;padding:.7rem 1rem .7rem 2.75rem;border:1.5px solid var(--border);border-radius:8px;font-size:.875rem;font-family:var(--font);color:var(--text);background:var(--lt);outline:none;transition:border-color .2s,box-shadow .2s}
+.search-box input:focus{border-color:var(--gd);box-shadow:0 0 0 3px rgba(184,146,42,.1);background:#fff}
+.search-box input::placeholder{color:#c0b9ae}
+.search-select{flex:1;min-width:150px;padding:.7rem 2rem .7rem .875rem;border:1.5px solid var(--border);border-radius:8px;font-size:.875rem;font-family:var(--font);color:var(--text);background:var(--lt);outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237a7060' d='M6 9L1 4h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center;transition:border-color .2s}
+.search-select:focus{border-color:var(--gd);outline:none}
+.search-btn{padding:.7rem 1.5rem;background:var(--dk);color:#fff;border:none;border-radius:8px;font-size:.875rem;font-family:var(--font);font-weight:500;cursor:pointer;white-space:nowrap;transition:background .2s}
+.search-btn:hover{background:#2e2e2a}
+
+/* section */
+.section{padding:4rem 0}
+.section-gray{background:var(--lt)}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem;gap:1rem}
+.section-head h2{font-size:clamp(1.5rem,3vw,2rem);font-weight:700;color:var(--dk);letter-spacing:-.02em}
+.section-head p{font-size:.875rem;color:var(--mu);margin-top:.25rem}
+.center-head{flex-direction:column;align-items:center;text-align:center}
+.see-all{display:inline-flex;align-items:center;gap:.375rem;font-size:.875rem;font-weight:500;color:var(--dk);border-bottom:1px solid var(--dk);padding-bottom:1px;white-space:nowrap;transition:color .2s,border-color .2s}
+.see-all svg{width:14px;height:14px;transition:transform .2s}
+.see-all:hover{color:var(--gd);border-color:var(--gd)}
+.see-all:hover svg{transform:translateX(3px)}
+
+/* categories */
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:200px 200px;gap:.875rem}
+.cat-card{position:relative;border-radius:10px;overflow:hidden;background-image:var(--img);background-size:cover;background-position:center;display:flex;align-items:flex-end;transition:transform .3s,box-shadow .3s}
+.cat-tall{grid-row:span 2}
+.cat-card:hover{transform:scale(1.015);box-shadow:0 12px 40px rgba(0,0,0,.2)}
+.cat-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,8,.75) 0%,rgba(10,10,8,.1) 60%);transition:background .3s}
+.cat-card:hover .cat-overlay{background:linear-gradient(to top,rgba(10,10,8,.85) 0%,rgba(10,10,8,.2) 60%)}
+.cat-label{position:relative;z-index:1;padding:1.25rem;color:#fff}
+.cat-label h3{font-size:1.0625rem;font-weight:700;margin-bottom:.25rem}
+.cat-label span{font-size:.78rem;opacity:.75}
+
+/* trust */
+.trust-bar{background:#fff;border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border);padding:1.5rem 2rem}
+.trust-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:2.5rem;flex-wrap:wrap}
+.trust-item{display:flex;align-items:center;gap:.875rem}
+.trust-item svg{width:26px;height:26px;color:var(--gd);flex-shrink:0}
+.trust-item strong{display:block;font-size:.875rem;font-weight:600;color:var(--dk)}
+.trust-item span{font-size:.78rem;color:var(--mu)}
+.trust-div{width:1px;height:2rem;background:var(--border)}
+
+/* products */
+.prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem}
+.prod-card{background:#fff;border-radius:10px;overflow:hidden;border:1.5px solid var(--border);cursor:pointer;transition:transform .25s,box-shadow .25s}
+.prod-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.1)}
+.prod-img{position:relative;aspect-ratio:1;overflow:hidden;background:var(--lt)}
+.prod-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.prod-card:hover .prod-img img{transform:scale(1.06)}
+.prod-badge{position:absolute;top:10px;left:10px;background:#dc2626;color:#fff;font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:4px}
+.prod-actions{position:absolute;bottom:10px;right:10px;opacity:0;transform:translateY(6px);transition:opacity .2s,transform .2s}
+.prod-card:hover .prod-actions{opacity:1;transform:translateY(0)}
+.prod-btn-cart{width:36px;height:36px;background:#fff;border:1.5px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.prod-btn-cart svg{width:16px;height:16px}
+.prod-btn-cart:hover{background:var(--dk);border-color:var(--dk);color:#fff}
+.prod-body{padding:1rem}
+.prod-cat-tag{font-size:.6875rem;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.375rem;display:block}
+.prod-name{font-size:.9rem;font-weight:600;color:var(--dk);line-height:1.4;margin-bottom:.5rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.prod-stars{font-size:.8125rem;margin-bottom:.5rem}
+.s-on{color:#f59e0b}.s-off{color:#d0c8bc}
+.prod-rc{color:var(--mu);font-size:.75rem;margin-left:.25rem}
+.prod-price{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
+.price-now{font-size:1rem;font-weight:700;color:var(--dk)}
+.price-was{font-size:.8125rem;color:#a09880;text-decoration:line-through}
+.prod-add{width:100%;padding:.6rem;background:var(--dk);color:#fff;border:none;border-radius:7px;font-size:.8125rem;font-family:var(--font);font-weight:500;cursor:pointer;transition:background .2s}
+.prod-add:hover{background:#2e2e2a}
+.view-all-wrap{text-align:center;margin-top:2.5rem}
+.btn-view-all{display:inline-flex;padding:.875rem 2.5rem;border:1.5px solid var(--dk);color:var(--dk);border-radius:8px;font-family:var(--font);font-weight:500;font-size:.9375rem;transition:all .2s}
+.btn-view-all:hover{background:var(--dk);color:#fff}
+
+/* promo */
+/* ── Container heights ── */
+--pb-h: 520px;   /* tổng chiều cao container promo */
+--pb-sm: calc((var(--pb-h) - 1rem) / 2); /* chiều cao mỗi banner nhỏ */
+
+.promo-duo{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;  /* left slightly wider = focal point */
+  gap:1rem;
+  height:var(--pb-h,520px);
+}
+.promo-stack{
+  display:flex;flex-direction:column;gap:1rem;
+  height:100%;
+}
+.promo-stack .promo-card{
+  flex:1;          /* share height equally */
+  min-height:0;    /* override min-height */
+}
+.promo-half{
+  display:grid;grid-template-columns:1fr 1fr;gap:1rem;
+  height:320px;
+}
+.promo-half .promo-card{height:100%;min-height:0}
+
+.promo-card{
+  position:relative;border-radius:12px;overflow:hidden;
+  background-size:cover;background-position:center;
+  display:flex;align-items:flex-end;
+  transition:transform .35s cubic-bezier(.4,0,.2,1),box-shadow .35s;
+}
+/* big fills full column height */
+.promo-big{height:100%;min-height:0}
+/* full-width single banner */
+.promo-full{height:340px;width:100%}
+
+.promo-card:hover{transform:scale(1.015);box-shadow:0 16px 40px rgba(0,0,0,.18)}
+.promo-veil{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(10,10,8,.8) 0%,rgba(10,10,8,.25) 50%,rgba(10,10,8,.04) 100%);
+  transition:background .35s;
+}
+.promo-card:hover .promo-veil{background:linear-gradient(to top,rgba(10,10,8,.88) 0%,rgba(10,10,8,.32) 55%,rgba(10,10,8,.06) 100%)}
+.promo-body{position:relative;z-index:1;padding:1.75rem;color:#fff}
+.promo-tag{
+  display:inline-block;background:rgba(196,160,100,.92);color:#fff;
+  font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 11px;border-radius:99px;margin-bottom:.75rem;
+}
+.promo-body h3{
+  font-size:clamp(1.125rem,2vw,1.375rem);font-weight:700;
+  line-height:1.22;margin-bottom:1.125rem;
+}
+.promo-btn{
+  display:inline-flex;align-items:center;gap:.375rem;
+  padding:.5rem 1.25rem;background:#fff;color:var(--dk);
+  border-radius:6px;font-family:var(--font);font-size:.8125rem;font-weight:700;
+  transition:background .2s,color .2s;
+}
+.promo-btn:hover{background:var(--gd);color:#fff}
+
+/* promo slider (4+ banners) */
+.pb-section .section-head{margin-bottom:1.5rem}
+.pb-nav{display:flex;gap:.5rem}
+.pb-arrow{
+  width:36px;height:36px;border-radius:50%;
+  border:1.5px solid var(--border);background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;flex-shrink:0;
+}
+.pb-arrow svg{width:16px;height:16px;color:var(--dk)}
+.pb-arrow:hover{background:var(--dk);border-color:var(--dk)}
+.pb-arrow:hover svg{color:#fff}
+.pb-slider-wrap{overflow:hidden;position:relative}
+.pb-track{display:flex;gap:1rem;transition:transform .45s cubic-bezier(.4,0,.2,1)}
+.pb-slide{
+  flex:0 0 calc((100% - 2rem) / 3);
+  aspect-ratio:4/3;           /* ← consistent ratio replaces min-height */
+  min-height:220px;
+}
+.pb-dots{display:flex;justify-content:center;gap:.5rem;margin-top:1.25rem}
+.pb-dot{
+  width:8px;height:8px;border-radius:50%;border:none;
+  background:var(--border);cursor:pointer;padding:0;
+  transition:background .2s,width .2s,border-radius .2s;
+}
+.pb-dot.is-active{width:24px;border-radius:4px;background:var(--dk)}
+
+/* testimonials */
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:2rem}
+.testi-card{background:#fff;border-radius:10px;padding:1.75rem;border:1.5px solid var(--border);transition:box-shadow .2s}
+.testi-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.testi-stars{color:#f59e0b;font-size:1.125rem;margin-bottom:1rem;letter-spacing:2px}
+.testi-card p{font-size:.875rem;color:var(--mu);line-height:1.75;font-style:italic;margin-bottom:1.25rem}
+.testi-author{display:flex;align-items:center;gap:.75rem}
+.testi-author img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
+.testi-author strong{display:block;font-size:.875rem;font-weight:600;color:var(--dk)}
+.testi-author span{font-size:.75rem;color:var(--mu)}
+
+/* partners */
+.partners-track-wrap{
+  position:relative;overflow:hidden;
+  padding:1.5rem 0;
+  --fade:80px;
+}
+.partners-track-wrap::before,
+.partners-track-wrap::after{
+  content:'';position:absolute;top:0;bottom:0;width:var(--fade);z-index:2;pointer-events:none;
+}
+.partners-track-wrap::before{left:0;background:linear-gradient(to right,#fff,transparent)}
+.partners-track-wrap::after{right:0;background:linear-gradient(to left,#fff,transparent)}
+.partners-inner{
+  display:flex;align-items:center;gap:1rem;
+  width:max-content;
+}
+@media(prefers-reduced-motion:no-preference){
+  .partners-inner{animation:partnersScroll 30s linear infinite}
+  .partners-inner:hover{animation-play-state:paused}
+}
+@keyframes partnersScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.partners-static{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:1rem;padding:1.5rem 0}
+.partner-card{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.375rem;
+  width:155px;height:92px;flex-shrink:0;
+  background:#fff;border:1.5px solid var(--border);border-radius:10px;
+  padding:1rem .875rem;cursor:pointer;
+  transition:box-shadow .2s,transform .2s,border-color .2s;
+}
+.partner-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.09);transform:translateY(-3px);border-color:var(--gd)}
+.pc-logo{display:flex;align-items:center;justify-content:center;height:44px;width:100%}
+.pc-logo img{max-width:100%;max-height:44px;object-fit:contain;filter:grayscale(15%);transition:filter .2s}
+.partner-card:hover .pc-logo img{filter:grayscale(0%)}
+.pc-text{font-size:.9375rem;font-weight:700;color:var(--dk);text-align:center}
+.pc-name{
+  font-size:.6875rem;font-weight:600;color:var(--mu);
+  text-align:center;max-width:100%;
+  word-break:break-word;
+  line-height:1.3;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}.partners-footer{text-align:center;margin-top:1.5rem}
+
+/* cta */
+.cta-banner{background:var(--dk);position:relative;overflow:hidden;padding:5rem 2rem;text-align:center}
+.cta-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(196,160,100,.12) 0%,transparent 60%)}
+.cta-inner{position:relative;z-index:1;max-width:640px;margin:0 auto}
+.cta-inner h2{font-size:clamp(1.75rem,4vw,2.5rem);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:1rem}
+.cta-inner p{font-size:1rem;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:2rem;font-weight:300}
+.cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.cta-btn-white{display:inline-flex;padding:.875rem 2rem;background:#fff;color:var(--dk);border-radius:8px;font-family:var(--font);font-weight:600;font-size:.9375rem;transition:all .2s}
+.cta-btn-white:hover{background:var(--gd);color:#fff}
+.cta-btn-outline{display:inline-flex;padding:.875rem 2rem;border:1.5px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;font-family:var(--font);font-weight:500;font-size:.9375rem;transition:all .2s}
+.cta-btn-outline:hover{border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.08)}
+
+@media(max-width:1024px){.prod-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){
+  .hero-slider{height:clamp(320px,56vw,480px)}
+  .hs-stats{flex-wrap:wrap;gap:1rem;padding:.875rem 1.25rem}.hst-d{display:none}
+  .cat-grid{grid-template-columns:repeat(2,1fr);grid-template-rows:auto}.cat-tall{grid-row:auto}.cat-card{min-height:170px}
+  .promo-duo{grid-template-columns:1fr;height:auto}
+  .promo-big{height:300px}
+  .promo-stack{flex-direction:row;height:200px}
+  .promo-stack .promo-card{flex:1}
+  .promo-half{grid-template-columns:1fr 1fr;height:220px}
+  .pb-slide{flex:0 0 calc((100% - 1rem) / 2)}
+  .testi-grid{grid-template-columns:1fr 1fr}
+  .prod-grid{grid-template-columns:repeat(2,1fr)}
+  .hs-counter{display:none}
+}
+@media(max-width:640px){
+  .hero-slider{height:clamp(280px,70vw,420px)}
+  .hs-title{font-size:clamp(1.5rem,5.5vw,2rem)}
+  .hs-sub{font-size:.875rem;max-width:90%}
+  .hs-stats{display:none}   /* ẩn stats trên mobile nhỏ */
+  .hs-btn-primary,.hs-btn-ghost{padding:.6875rem 1.25rem;font-size:.875rem}
+  .hs-arrow{width:36px;height:36px}.hs-arrow svg{width:14px;height:14px}
+  .hs-prev{left:.625rem}.hs-next{right:.625rem}
+  .search-inner{flex-wrap:wrap}.search-select{min-width:0;flex:1}
+  .section{padding:2.5rem 0}
+  .cat-grid{grid-template-columns:1fr 1fr}.cat-card{min-height:140px}
+  .trust-inner{flex-direction:column;align-items:flex-start;gap:1rem}.trust-div{display:none}
+  .testi-grid{grid-template-columns:1fr}
+  /* promo mobile: full stack */
+  .promo-duo{grid-template-columns:1fr;height:auto}
+  .promo-big{height:260px}
+  .promo-stack{flex-direction:column;height:auto}
+  .promo-stack .promo-card{height:200px;flex:none}
+  .promo-half{grid-template-columns:1fr;height:auto}
+  .promo-half .promo-card{height:200px}
+  .promo-full{height:240px}
+  .pb-slide{flex:0 0 100%;aspect-ratio:16/9;min-height:180px}
+  .announce-bar .sep{display:none}.announce-bar{flex-direction:column;gap:.2rem}
+  .partner-card{...width:155px;min-height:92px;height:auto;...}
+}
+@media(max-width:480px){
+  .wrap{padding:0 1rem}
+  .prod-grid{grid-template-columns:1fr 1fr;gap:.75rem}
+  .prod-body{padding:.75rem}.prod-name{font-size:.8125rem}
+  .search-strip{padding:.875rem 1rem}
+  .hs-dots{bottom:1.25rem}
+}
+</style>
+
+<!-- ══════════════════════════════════════════════════
+     HERO SLIDER JS
+     ══════════════════════════════════════════════════ -->
+<script>
+(function(){
+  'use strict';
+
+  const slider   = document.getElementById('heroSlider');
+  if (!slider) return;
+
+  const total    = parseInt(slider.dataset.count, 10);
+  if (total < 2) return;            // 1 slide → không cần JS
+
+  const interval = parseInt(slider.dataset.interval, 10) || 5000;
+  const slides   = slider.querySelectorAll('.hs-slide');
+  const dots     = slider.querySelectorAll('.hs-dot');
+  const prev     = document.getElementById('hsPrev');
+  const next     = document.getElementById('hsNext');
+  const current  = document.getElementById('hsCurrent');
+  const bar      = document.getElementById('hsProgressBar');
+
+  let idx     = 0;
+  let timer   = null;
+  let paused  = false;
+  let startX  = 0;
+
+  // ── Progress bar
+  function startProgress() {
+    if (!bar) return;
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+    requestAnimationFrame(() => {
+      bar.style.transition = `width ${interval}ms linear`;
+      bar.style.width = '100%';
+    });
+  }
+
+  // ── Go to slide
+  function goTo(n) {
+    slides[idx].classList.remove('is-active');
+    dots[idx]?.classList.remove('is-active');
+
+    idx = (n + total) % total;
+
+    slides[idx].classList.add('is-active');
+    dots[idx]?.classList.add('is-active');
+    if (current) current.textContent = String(idx + 1).padStart(2, '0');
+    startProgress();
+  }
+
+  // ── Auto play
+  function play() {
+    timer = setInterval(() => {
+      if (!paused) goTo(idx + 1);
+    }, interval);
+  }
+  function stop() { clearInterval(timer); }
+  function restart() { stop(); play(); }
+
+  // ── Arrow buttons
+  prev?.addEventListener('click', () => { goTo(idx - 1); restart(); });
+  next?.addEventListener('click', () => { goTo(idx + 1); restart(); });
+
+  // ── Dots
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      goTo(parseInt(dot.dataset.index, 10));
+      restart();
+    });
+  });
+
+  // ── Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft')  { goTo(idx - 1); restart(); }
+    if (e.key === 'ArrowRight') { goTo(idx + 1); restart(); }
+  });
+
+  // ── Touch / swipe
+  slider.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    paused = true;
+  }, { passive: true });
+  slider.addEventListener('touchend', e => {
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { goTo(diff > 0 ? idx + 1 : idx - 1); restart(); }
+    paused = false;
+  }, { passive: true });
+
+  // ── Pause on hover
+  slider.addEventListener('mouseenter', () => { paused = true; });
+  slider.addEventListener('mouseleave', () => { paused = false; });
+
+  // ── Pause when tab hidden (battery saving)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { stop(); } else { play(); startProgress(); }
+  });
+
+  // ── Start
+  startProgress();
+  play();
+
+})(); // ← end hero slider IIFE
+
+/* ── Promo banner slider (4+ banners) ── */
+(function(){
+  const track = document.getElementById('pbTrack');
+  if (!track) return;
+
+  const slides   = track.querySelectorAll('.pb-slide');
+  const total    = slides.length;
+  if (total < 2) return;
+
+  const dots     = document.querySelectorAll('.pb-dot');
+  const prevBtn  = document.getElementById('pbPrev');
+  const nextBtn  = document.getElementById('pbNext');
+
+  let idx = 0;
+
+  function perView() {
+    const w = window.innerWidth;
+    if (w <= 640)  return 1;
+    if (w <= 900)  return 2;
+    return 3;
+  }
+
+  function slideWidth() {
+    const tw  = track.parentElement.offsetWidth;
+    const pv  = perView();
+    const gap = 16;
+    return (tw - gap * (pv - 1)) / pv + gap;
+  }
+
+  function update() {
+    track.style.transform = `translateX(-${idx * slideWidth()}px)`;
+    dots.forEach((d, i) => d.classList.toggle('is-active', i === idx));
+  }
+
+  function maxIdx() { return Math.max(0, total - perView()); }
+  function next()   { idx = idx >= maxIdx() ? 0 : idx + 1; update(); }
+  function prev()   { idx = idx <= 0 ? maxIdx() : idx - 1; update(); }
+
+  nextBtn?.addEventListener('click', next);
+  prevBtn?.addEventListener('click', prev);
+  dots.forEach(d => d.addEventListener('click', () => {
+    idx = Math.min(parseInt(d.dataset.index, 10), maxIdx());
+    update();
+  }));
+
+  // Touch swipe
+  let sx = 0;
+  track.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, {passive:true});
+  track.addEventListener('touchend',   e => {
+    const diff = sx - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) diff > 0 ? next() : prev();
+  }, {passive:true});
+
+  // Auto-play 4s, pause on hover
+  let autoTimer = setInterval(next, 4000);
+  track.parentElement.addEventListener('mouseenter', () => clearInterval(autoTimer));
+  track.parentElement.addEventListener('mouseleave', () => { autoTimer = setInterval(next, 4000); });
+
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
 
 {% endblock %}

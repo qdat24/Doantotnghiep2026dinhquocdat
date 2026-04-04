@@ -1,722 +1,281 @@
 // ============================================
-// COMPLETE TRANSLATIONS - 100% COVERAGE
-// Vietnamese ⇄ English - All Website Phrases
+// DQD TRANSLATIONS — Optimized Architecture
+// Nguồn dữ liệu duy nhất → tự sinh vi/en objects
 // ============================================
 
-const translations = {
-    vi: {
-        // ========== NAVIGATION ==========
-        'Home': 'Trang Chủ',
-        'home': 'trang chủ',
-        'Trang Chủ': 'Trang Chủ',
-        'Products': 'Sản Phẩm',
-        'products': 'sản phẩm',
-        'Sản Phẩm': 'Sản Phẩm',
-        'About Us': 'Về Chúng Tôi',
-        'about': 'về chúng tôi',
-        'Về Chúng Tôi': 'Về Chúng Tôi',
-        'Contact': 'Liên Hệ',
-        'contact': 'liên hệ',
-        'Liên Hệ': 'Liên Hệ',
-        'Policy': 'Chính Sách',
-        'Chính Sách': 'Chính Sách',
-        'Partners': 'Đối Tác',
-        'partners': 'đối tác',
-        'Đối Tác': 'Đối Tác',
-        'Account': 'Tài Khoản',
-        'Tài Khoản': 'Tài Khoản',
-        'Login': 'Đăng Nhập',
-        'Đăng Nhập': 'Đăng Nhập',
-        'Register': 'Đăng Ký',
-        'Đăng Ký': 'Đăng Ký',
-        'Logout': 'Đăng Xuất',
-        'Đăng Xuất': 'Đăng Xuất',
-        
-        // ========== CATEGORIES ==========
-        'All Products': 'Tất Cả Sản Phẩm',
-        'Tất Cả Sản Phẩm': 'Tất Cả Sản Phẩm',
-        'Living Room': 'Phòng Khách',
-        'Phòng Khách': 'Phòng Khách',
-        'Bedroom': 'Phòng Ngủ',
-        'Phòng Ngủ': 'Phòng Ngủ',
-        'Kitchen': 'Nhà Bếp',
-        'Nhà Bếp': 'Nhà Bếp',
-        'Office': 'Văn Phòng',
-        'Văn Phòng': 'Văn Phòng',
-        'Dining Room': 'Phòng Ăn',
-        'Phòng Ăn': 'Phòng Ăn',
-        'Categories': 'Danh Mục',
-        'Danh Mục': 'Danh Mục',
-        
-        // ========== PROMO CARDS & BANNERS (MISSING PHRASES) ==========
-        'New Collection': 'Bộ Sưu Tập Mới',
-        'Bộ Sưu Tập Mới': 'Bộ Sưu Tập Mới',
-        'Explore Now': 'Khám Phá Ngay',
-        'Khám Phá Ngay': 'Khám Phá Ngay',
-        'Free Shipping': 'Freeship 0Đ',
-        'Freeship 0Đ': 'Freeship 0Đ',
-        'Free Design': 'Thiết Kế Miễn Phí',
-        'Thiết Kế Miễn Phí': 'Thiết Kế Miễn Phí',
-        'Up to 35% off on all new products': 'Giảm giá lên đến 35% cho toàn bộ sản phẩm mới ra mắt',
-        'Giảm giá lên đến 35% cho toàn bộ sản phẩm mới ra mắt': 'Giảm giá lên đến 35% cho toàn bộ sản phẩm mới ra mắt',
-        'Free nationwide shipping on all orders': 'Miễn phí vận chuyển toàn quốc cho mọi đơn hàng',
-        'Miễn phí vận chuyển toàn quốc cho mọi đơn hàng': 'Miễn phí vận chuyển toàn quốc cho mọi đơn hàng',
-        'Free 3D interior design consultation': 'Tư vấn thiết kế 3D không gian nội thất',
-        'Tư vấn thiết kế 3D không gian nội thất': 'Tư vấn thiết kế 3D không gian nội thất',
-        'Furniture Collection': 'Bộ Sưu Tập Nội Thất',
-        'Bộ Sưu Tập Nội Thất': 'Bộ Sưu Tập Nội Thất',
-        'Explore Products': 'Khám Phá Sản Phẩm',
-        'Khám Phá Sản Phẩm': 'Khám Phá Sản Phẩm',
-        'Free shipping on orders over 5 million': 'Miễn phí vận chuyển cho đơn hàng trên 5 triệu',
-        'Miễn phí vận chuyển cho đơn hàng trên 5 triệu': 'Miễn phí vận chuyển cho đơn hàng trên 5 triệu',
-        
-        // ========== PRODUCT ACTIONS ==========
-        'View Details': 'Xem Chi Tiết',
-        'Xem Chi Tiết': 'Xem Chi Tiết',
-        'Add to Cart': 'Thêm Vào Giỏ',
-        'Thêm Vào Giỏ': 'Thêm Vào Giỏ',
-        'Buy Now': 'Mua Ngay',
-        'Mua Ngay': 'Mua Ngay',
-        'Price': 'Giá',
-        'Giá': 'Giá',
-        'In Stock': 'Còn Hàng',
-        'Còn Hàng': 'Còn Hàng',
-        'Out of Stock': 'Hết Hàng',
-        'Hết Hàng': 'Hết Hàng',
-        'Quantity': 'Số Lượng',
-        'quantity': 'số lượng',
-        'Số Lượng': 'Số Lượng',
-        'số lượng': 'số lượng',
-        'Description': 'Mô Tả',
-        'description': 'mô tả',
-        'Mô Tả': 'Mô Tả',
-        'mô tả': 'mô tả',
-        'Specifications': 'Thông Số Kỹ Thuật',
-        'Thông Số Kỹ Thuật': 'Thông Số Kỹ Thuật',
-        'Reviews': 'Đánh Giá',
-        'Đánh Giá': 'Đánh Giá',
-        'Sale': 'Khuyến Mãi',
-        'Khuyến Mãi': 'Khuyến Mãi',
-        
-        // ========== SHOPPING CART ==========
-        'Shopping Cart': 'Giỏ Hàng',
-        'Cart': 'Giỏ Hàng',
-        'cart': 'giỏ hàng',
-        'Giỏ Hàng': 'Giỏ Hàng',
-        'giỏ hàng': 'giỏ hàng',
-        'Total': 'Tổng Tiền',
-        'total': 'tổng tiền',
-        'Tổng Tiền': 'Tổng Tiền',
-        'tổng tiền': 'tổng tiền',
-        'Subtotal': 'Tạm Tính',
-        'Tạm Tính': 'Tạm Tính',
-        'Shipping': 'Phí Vận Chuyển',
-        'Phí Vận Chuyển': 'Phí Vận Chuyển',
-        'Checkout': 'Thanh Toán',
-        'Thanh Toán': 'Thanh Toán',
-        'Continue Shopping': 'Tiếp Tục Mua Sắm',
-        'Tiếp Tục Mua Sắm': 'Tiếp Tục Mua Sắm',
-        'Update Cart': 'Cập Nhật Giỏ Hàng',
-        'Cập Nhật Giỏ Hàng': 'Cập Nhật Giỏ Hàng',
-        'Remove': 'Xóa',
-        'Xóa': 'Xóa',
-        'Clear All': 'Xóa Tất Cả',
-        'Xóa Tất Cả': 'Xóa Tất Cả',
-        'Empty Cart': 'Giỏ Hàng Trống',
-        'Giỏ Hàng Trống': 'Giỏ Hàng Trống',
-        
-        // ========== CHECKOUT & PAYMENT ==========
-        'Place Order': 'Đặt Hàng',
-        'Đặt Hàng': 'Đặt Hàng',
-        'Shipping Information': 'Thông Tin Giao Hàng',
-        'Thông Tin Giao Hàng': 'Thông Tin Giao Hàng',
-        'Full Name': 'Họ Và Tên',
-        'Họ Và Tên': 'Họ Và Tên',
-        'Phone Number': 'Số Điện Thoại',
-        'Số Điện Thoại': 'Số Điện Thoại',
-        'Email': 'Email',
-        'Address': 'Địa Chỉ',
-        'Địa Chỉ': 'Địa Chỉ',
-        'City': 'Thành Phố',
-        'Thành Phố': 'Thành Phố',
-        'District': 'Quận/Huyện',
-        'Quận/Huyện': 'Quận/Huyện',
-        'Ward': 'Phường/Xã',
-        'Phường/Xã': 'Phường/Xã',
-        'Note': 'Ghi Chú',
-        'Ghi Chú': 'Ghi Chú',
-        'Payment Method': 'Phương Thức Thanh Toán',
-        'Phương Thức Thanh Toán': 'Phương Thức Thanh Toán',
-        'Cash on Delivery': 'Thanh Toán Khi Nhận Hàng',
-        'Thanh Toán Khi Nhận Hàng': 'Thanh Toán Khi Nhận Hàng',
-        'Bank Transfer': 'Chuyển Khoản Ngân Hàng',
-        'Chuyển Khoản Ngân Hàng': 'Chuyển Khoản Ngân Hàng',
-        'Credit Card': 'Thẻ Tín Dụng',
-        'Thẻ Tín Dụng': 'Thẻ Tín Dụng',
-        
-        // ========== ORDER MANAGEMENT ==========
-        'Order ID': 'Mã Đơn Hàng',
-        'Mã Đơn Hàng': 'Mã Đơn Hàng',
-        'Order Date': 'Ngày Đặt',
-        'Ngày Đặt': 'Ngày Đặt',
-        'Status': 'Trạng Thái',
-        'Trạng Thái': 'Trạng Thái',
-        'Order Details': 'Chi Tiết Đơn Hàng',
-        'Chi Tiết Đơn Hàng': 'Chi Tiết Đơn Hàng',
-        'Order History': 'Lịch Sử Đơn Hàng',
-        'Lịch Sử Đơn Hàng': 'Lịch Sử Đơn Hàng',
-        'Track Order': 'Theo Dõi Đơn Hàng',
-        'Theo Dõi Đơn Hàng': 'Theo Dõi Đơn Hàng',
-        'Processing': 'Đang Xử Lý',
-        'Đang Xử Lý': 'Đang Xử Lý',
-        'Confirmed': 'Đã Xác Nhận',
-        'Đã Xác Nhận': 'Đã Xác Nhận',
-        'Shipping': 'Đang Giao Hàng',
-        'Đang Giao Hàng': 'Đang Giao Hàng',
-        'Delivered': 'Đã Giao',
-        'Đã Giao': 'Đã Giao',
-        'Cancelled': 'Đã Hủy',
-        'Đã Hủy': 'Đã Hủy',
-        'Pending': 'Chờ Xử Lý',
-        'Chờ Xử Lý': 'Chờ Xử Lý',
-        
-        // ========== CUSTOMER ACCOUNT ==========
-        'My Account': 'Tài Khoản Của Tôi',
-        'Tài Khoản Của Tôi': 'Tài Khoản Của Tôi',
-        'Profile': 'Hồ Sơ',
-        'Hồ Sơ': 'Hồ Sơ',
-        'My Orders': 'Đơn Hàng Của Tôi',
-        'Đơn Hàng Của Tôi': 'Đơn Hàng Của Tôi',
-        'Wishlist': 'Yêu Thích',
-        'Yêu Thích': 'Yêu Thích',
-        'Settings': 'Cài Đặt',
-        'Cài Đặt': 'Cài Đặt',
-        'Change Password': 'Đổi Mật Khẩu',
-        'Đổi Mật Khẩu': 'Đổi Mật Khẩu',
-        'Old Password': 'Mật Khẩu Cũ',
-        'Mật Khẩu Cũ': 'Mật Khẩu Cũ',
-        'New Password': 'Mật Khẩu Mới',
-        'Mật Khẩu Mới': 'Mật Khẩu Mới',
-        'Confirm Password': 'Xác Nhận Mật Khẩu',
-        'Xác Nhận Mật Khẩu': 'Xác Nhận Mật Khẩu',
-        
-        // ========== FOOTER & SUPPORT ==========
-        'Quick Links': 'Liên Kết Nhanh',
-        'Liên Kết': 'Liên Kết',
-        'Liên Kết Nhanh': 'Liên Kết Nhanh',
-        'Support': 'Hỗ Trợ',
-        'Hỗ Trợ': 'Hỗ Trợ',
-        'Shopping Guide': 'Hướng Dẫn Mua Hàng',
-        'Hướng Dẫn Mua Hàng': 'Hướng Dẫn Mua Hàng',
-        'Return Policy': 'Chính Sách Đổi Trả',
-        'Chính Sách Đổi Trả': 'Chính Sách Đổi Trả',
-        'Warranty': 'Bảo Hành',
-        'Bảo Hành': 'Bảo Hành',
-        'FAQ': 'Câu Hỏi Thường Gặp',
-        'Câu Hỏi Thường Gặp': 'Câu Hỏi Thường Gặp',
-        'Customer Service': 'Chăm Sóc Khách Hàng',
-        'Chăm Sóc Khách Hàng': 'Chăm Sóc Khách Hàng',
-        'Terms of Service': 'Điều Khoản Dịch Vụ',
-        'Điều Khoản Dịch Vụ': 'Điều Khoản Dịch Vụ',
-        'Privacy Policy': 'Chính Sách Bảo Mật',
-        'Chính Sách Bảo Mật': 'Chính Sách Bảo Mật',
-        
-        // ========== COMMON ACTIONS ==========
-        'Search': 'Tìm Kiếm',
-        'search': 'tìm kiếm',
-        'Tìm Kiếm': 'Tìm Kiếm',
-        'tìm kiếm': 'tìm kiếm',
-        'View More': 'Xem Thêm',
-        'Xem Thêm': 'Xem Thêm',
-        'Details': 'Chi Tiết',
-        'details': 'chi tiết',
-        'Chi Tiết': 'Chi Tiết',
-        'chi tiết': 'chi tiết',
-        'Send': 'Gửi',
-        'Gửi': 'Gửi',
-        'Cancel': 'Hủy',
-        'Hủy': 'Hủy',
-        'Close': 'Đóng',
-        'Đóng': 'Đóng',
-        'Save': 'Lưu',
-        'Lưu': 'Lưu',
-        'Update': 'Cập Nhật',
-        'Cập Nhật': 'Cập Nhật',
-        'Delete': 'Xóa',
-        'Edit': 'Chỉnh Sửa',
-        'Chỉnh Sửa': 'Chỉnh Sửa',
-        'Back': 'Quay Lại',
-        'Quay Lại': 'Quay Lại',
-        'Next': 'Tiếp Theo',
-        'Tiếp Theo': 'Tiếp Theo',
-        'Previous': 'Trước',
-        'Trước': 'Trước',
-        'All': 'Tất Cả',
-        'Tất Cả': 'Tất Cả',
-        'Filter': 'Lọc',
-        'Lọc': 'Lọc',
-        'Sort': 'Sắp Xếp',
-        'Sắp Xếp': 'Sắp Xếp',
-        'Apply': 'Áp Dụng',
-        'Áp Dụng': 'Áp Dụng',
-        'Reset': 'Đặt Lại',
-        'Đặt Lại': 'Đặt Lại',
-        
-        // ========== FILTERS & SORTING ==========
-        'Sort By': 'Sắp Xếp Theo',
-        'Sắp Xếp Theo': 'Sắp Xếp Theo',
-        'Price: Low to High': 'Giá: Thấp Đến Cao',
-        'Giá: Thấp Đến Cao': 'Giá: Thấp Đến Cao',
-        'Price: High to Low': 'Giá: Cao Đến Thấp',
-        'Giá: Cao Đến Thấp': 'Giá: Cao Đến Thấp',
-        'Newest': 'Mới Nhất',
-        'Mới Nhất': 'Mới Nhất',
-        'Best Selling': 'Bán Chạy',
-        'Bán Chạy': 'Bán Chạy',
-        'Most Popular': 'Phổ Biến Nhất',
-        'Phổ Biến Nhất': 'Phổ Biến Nhất',
-        'Price Range': 'Khoảng Giá',
-        'Khoảng Giá': 'Khoảng Giá',
-        
-        // ========== MESSAGES & NOTIFICATIONS ==========
-        'Success': 'Thành Công',
-        'Thành Công': 'Thành Công',
-        'Error': 'Lỗi',
-        'Lỗi': 'Lỗi',
-        'Warning': 'Cảnh Báo',
-        'Cảnh Báo': 'Cảnh Báo',
-        'Info': 'Thông Tin',
-        'Thông Tin': 'Thông Tin',
-        'Loading': 'Đang Tải',
-        'Đang Tải': 'Đang Tải',
-        'Please wait': 'Vui Lòng Đợi',
-        'Vui Lòng Đợi': 'Vui Lòng Đợi',
-        'No results found': 'Không Tìm Thấy Kết Quả',
-        'Không Tìm Thấy Kết Quả': 'Không Tìm Thấy Kết Quả',
-        'Item added to cart': 'Đã Thêm Vào Giỏ Hàng',
-        'Đã Thêm Vào Giỏ Hàng': 'Đã Thêm Vào Giỏ Hàng',
-        'Item removed from cart': 'Đã Xóa Khỏi Giỏ Hàng',
-        'Đã Xóa Khỏi Giỏ Hàng': 'Đã Xóa Khỏi Giỏ Hàng',
-        'Order placed successfully': 'Đặt Hàng Thành Công',
-        'Đặt Hàng Thành Công': 'Đặt Hàng Thành Công',
-        'Please fill all required fields': 'Vui Lòng Điền Đầy Đủ Thông Tin',
-        'Vui Lòng Điền Đầy Đủ Thông Tin': 'Vui Lòng Điền Đầy Đủ Thông Tin',
-        'Invalid email address': 'Email Không Hợp Lệ',
-        'Email Không Hợp Lệ': 'Email Không Hợp Lệ',
-        'Invalid phone number': 'Số Điện Thoại Không Hợp Lệ',
-        'Số Điện Thoại Không Hợp Lệ': 'Số Điện Thoại Không Hợp Lệ',
-        
-        // ========== CONTACT & ABOUT ==========
-        'Contact Us': 'Liên Hệ Với Chúng Tôi',
-        'Liên Hệ Với Chúng Tôi': 'Liên Hệ Với Chúng Tôi',
-        'Get in Touch': 'Liên Hệ',
-        'Send Message': 'Gửi Tin Nhắn',
-        'Gửi Tin Nhắn': 'Gửi Tin Nhắn',
-        'Your Message': 'Tin Nhắn Của Bạn',
-        'Tin Nhắn Của Bạn': 'Tin Nhắn Của Bạn',
-        'Our Location': 'Vị Trí Của Chúng Tôi',
-        'Vị Trí Của Chúng Tôi': 'Vị Trí Của Chúng Tôi',
-        'Opening Hours': 'Giờ Mở Cửa',
-        'Giờ Mở Cửa': 'Giờ Mở Cửa',
-        'About Our Store': 'Về Cửa Hàng Chúng Tôi',
-        'Về Cửa Hàng Chúng Tôi': 'Về Cửa Hàng Chúng Tôi',
-        'Our Mission': 'Sứ Mệnh',
-        'Sứ Mệnh': 'Sứ Mệnh',
-        'Our Vision': 'Tầm Nhìn',
-        'Tầm Nhìn': 'Tầm Nhìn',
-        'Why Choose Us': 'Tại Sao Chọn Chúng Tôi',
-        'Tại Sao Chọn Chúng Tôi': 'Tại Sao Chọn Chúng Tôi',
-        
-        // ========== SPECIAL FEATURES ==========
-        'Free Shipping': 'Miễn Phí Vận Chuyển',
-        'Miễn Phí Vận Chuyển': 'Miễn Phí Vận Chuyển',
-        'Fast Delivery': 'Giao Hàng Nhanh',
-        'Giao Hàng Nhanh': 'Giao Hàng Nhanh',
-        'Quality Guarantee': 'Đảm Bảo Chất Lượng',
-        'Đảm Bảo Chất Lượng': 'Đảm Bảo Chất Lượng',
-        'Secure Payment': 'Thanh Toán An Toàn',
-        'Thanh Toán An Toàn': 'Thanh Toán An Toàn',
-        '24/7 Support': 'Hỗ Trợ 24/7',
-        'Hỗ Trợ 24/7': 'Hỗ Trợ 24/7',
-        'Best Price': 'Giá Tốt Nhất',
-        'Giá Tốt Nhất': 'Giá Tốt Nhất',
-        'Special Offer': 'Ưu Đãi Đặc Biệt',
-        'Ưu Đãi Đặc Biệt': 'Ưu Đãi Đặc Biệt',
-        'New Arrival': 'Hàng Mới Về',
-        'Hàng Mới Về': 'Hàng Mới Về',
-        'Featured Products': 'Sản Phẩm Nổi Bật',
-        'Sản Phẩm Nổi Bật': 'Sản Phẩm Nổi Bật',
-        'Recommended': 'Được Đề Xuất',
-        'Được Đề Xuất': 'Được Đề Xuất'
-    },
-    
-    en: {
-        // ========== NAVIGATION ==========
-        'Trang Chủ': 'Home',
-        'trang chủ': 'home',
-        'Home': 'Home',
-        'Sản Phẩm': 'Products',
-        'sản phẩm': 'products',
-        'Products': 'Products',
-        'Về Chúng Tôi': 'About Us',
-        'về chúng tôi': 'about',
-        'About Us': 'About Us',
-        'Liên Hệ': 'Contact',
-        'liên hệ': 'contact',
-        'Contact': 'Contact',
-        'Chính Sách': 'Policy',
-        'Policy': 'Policy',
-        'Đối Tác': 'Partners',
-        'partners': 'partners',
-        'Partners': 'Partners',
-        'Tài Khoản': 'Account',
-        'Account': 'Account',
-        'Đăng Nhập': 'Login',
-        'Login': 'Login',
-        'Đăng Ký': 'Register',
-        'Register': 'Register',
-        'Đăng Xuất': 'Logout',
-        'Logout': 'Logout',
-        
-        // ========== CATEGORIES ==========
-        'Tất Cả Sản Phẩm': 'All Products',
-        'All Products': 'All Products',
-        'Phòng Khách': 'Living Room',
-        'Living Room': 'Living Room',
-        'Phòng Ngủ': 'Bedroom',
-        'Bedroom': 'Bedroom',
-        'Nhà Bếp': 'Kitchen',
-        'Kitchen': 'Kitchen',
-        'Văn Phòng': 'Office',
-        'Office': 'Office',
-        'Phòng Ăn': 'Dining Room',
-        'Dining Room': 'Dining Room',
-        'Danh Mục': 'Categories',
-        'Categories': 'Categories',
-        
-        // ========== PROMO CARDS & BANNERS (MISSING PHRASES) ==========
-        'Bộ Sưu Tập Mới': 'New Collection',
-        'New Collection': 'New Collection',
-        'Khám Phá Ngay': 'Explore Now',
-        'Explore Now': 'Explore Now',
-        'Freeship 0Đ': 'Free Shipping',
-        'Free Shipping': 'Free Shipping',
-        'Thiết Kế Miễn Phí': 'Free Design',
-        'Free Design': 'Free Design',
-        'Giảm giá lên đến 35% cho toàn bộ sản phẩm mới ra mắt': 'Up to 35% off on all new products',
-        'Up to 35% off on all new products': 'Up to 35% off on all new products',
-        'Miễn phí vận chuyển toàn quốc cho mọi đơn hàng': 'Free nationwide shipping on all orders',
-        'Free nationwide shipping on all orders': 'Free nationwide shipping on all orders',
-        'Tư vấn thiết kế 3D không gian nội thất': 'Free 3D interior design consultation',
-        'Free 3D interior design consultation': 'Free 3D interior design consultation',
-        'Bộ Sưu Tập Nội Thất': 'Furniture Collection',
-        'Furniture Collection': 'Furniture Collection',
-        'Khám Phá Sản Phẩm': 'Explore Products',
-        'Explore Products': 'Explore Products',
-        'Miễn phí vận chuyển cho đơn hàng trên 5 triệu': 'Free shipping on orders over 5 million',
-        'Free shipping on orders over 5 million': 'Free shipping on orders over 5 million',
-        
-        // ========== PRODUCT ACTIONS ==========
-        'Xem Chi Tiết': 'View Details',
-        'View Details': 'View Details',
-        'Thêm Vào Giỏ': 'Add to Cart',
-        'Add to Cart': 'Add to Cart',
-        'Mua Ngay': 'Buy Now',
-        'Buy Now': 'Buy Now',
-        'Giá': 'Price',
-        'Price': 'Price',
-        'Còn Hàng': 'In Stock',
-        'In Stock': 'In Stock',
-        'Hết Hàng': 'Out of Stock',
-        'Out of Stock': 'Out of Stock',
-        'Số Lượng': 'Quantity',
-        'số lượng': 'quantity',
-        'Quantity': 'Quantity',
-        'quantity': 'quantity',
-        'Mô Tả': 'Description',
-        'mô tả': 'description',
-        'Description': 'Description',
-        'description': 'description',
-        'Thông Số Kỹ Thuật': 'Specifications',
-        'Specifications': 'Specifications',
-        'Đánh Giá': 'Reviews',
-        'Reviews': 'Reviews',
-        'Khuyến Mãi': 'Sale',
-        'Sale': 'Sale',
-        
-        // ========== SHOPPING CART ==========
-        'Giỏ Hàng': 'Shopping Cart',
-        'giỏ hàng': 'cart',
-        'Shopping Cart': 'Shopping Cart',
-        'Cart': 'Cart',
-        'cart': 'cart',
-        'Tổng Tiền': 'Total',
-        'tổng tiền': 'total',
-        'Total': 'Total',
-        'total': 'total',
-        'Tạm Tính': 'Subtotal',
-        'Subtotal': 'Subtotal',
-        'Phí Vận Chuyển': 'Shipping',
-        'Shipping': 'Shipping',
-        'Thanh Toán': 'Checkout',
-        'Checkout': 'Checkout',
-        'Tiếp Tục Mua Sắm': 'Continue Shopping',
-        'Continue Shopping': 'Continue Shopping',
-        'Cập Nhật Giỏ Hàng': 'Update Cart',
-        'Update Cart': 'Update Cart',
-        'Xóa': 'Remove',
-        'Remove': 'Remove',
-        'Xóa Tất Cả': 'Clear All',
-        'Clear All': 'Clear All',
-        'Giỏ Hàng Trống': 'Empty Cart',
-        'Empty Cart': 'Empty Cart',
-        
-        // ========== CHECKOUT & PAYMENT ==========
-        'Đặt Hàng': 'Place Order',
-        'Place Order': 'Place Order',
-        'Thông Tin Giao Hàng': 'Shipping Information',
-        'Shipping Information': 'Shipping Information',
-        'Họ Và Tên': 'Full Name',
-        'Full Name': 'Full Name',
-        'Số Điện Thoại': 'Phone Number',
-        'Phone Number': 'Phone Number',
-        'Email': 'Email',
-        'Địa Chỉ': 'Address',
-        'Address': 'Address',
-        'Thành Phố': 'City',
-        'City': 'City',
-        'Quận/Huyện': 'District',
-        'District': 'District',
-        'Phường/Xã': 'Ward',
-        'Ward': 'Ward',
-        'Ghi Chú': 'Note',
-        'Note': 'Note',
-        'Phương Thức Thanh Toán': 'Payment Method',
-        'Payment Method': 'Payment Method',
-        'Thanh Toán Khi Nhận Hàng': 'Cash on Delivery',
-        'Cash on Delivery': 'Cash on Delivery',
-        'Chuyển Khoản Ngân Hàng': 'Bank Transfer',
-        'Bank Transfer': 'Bank Transfer',
-        'Thẻ Tín Dụng': 'Credit Card',
-        'Credit Card': 'Credit Card',
-        
-        // ========== ORDER MANAGEMENT ==========
-        'Mã Đơn Hàng': 'Order ID',
-        'Order ID': 'Order ID',
-        'Ngày Đặt': 'Order Date',
-        'Order Date': 'Order Date',
-        'Trạng Thái': 'Status',
-        'Status': 'Status',
-        'Chi Tiết Đơn Hàng': 'Order Details',
-        'Order Details': 'Order Details',
-        'Lịch Sử Đơn Hàng': 'Order History',
-        'Order History': 'Order History',
-        'Theo Dõi Đơn Hàng': 'Track Order',
-        'Track Order': 'Track Order',
-        'Đang Xử Lý': 'Processing',
-        'Processing': 'Processing',
-        'Đã Xác Nhận': 'Confirmed',
-        'Confirmed': 'Confirmed',
-        'Đang Giao Hàng': 'Shipping',
-        'Đã Giao': 'Delivered',
-        'Delivered': 'Delivered',
-        'Đã Hủy': 'Cancelled',
-        'Cancelled': 'Cancelled',
-        'Chờ Xử Lý': 'Pending',
-        'Pending': 'Pending',
-        
-        // ========== CUSTOMER ACCOUNT ==========
-        'Tài Khoản Của Tôi': 'My Account',
-        'My Account': 'My Account',
-        'Hồ Sơ': 'Profile',
-        'Profile': 'Profile',
-        'Đơn Hàng Của Tôi': 'My Orders',
-        'My Orders': 'My Orders',
-        'Yêu Thích': 'Wishlist',
-        'Wishlist': 'Wishlist',
-        'Cài Đặt': 'Settings',
-        'Settings': 'Settings',
-        'Đổi Mật Khẩu': 'Change Password',
-        'Change Password': 'Change Password',
-        'Mật Khẩu Cũ': 'Old Password',
-        'Old Password': 'Old Password',
-        'Mật Khẩu Mới': 'New Password',
-        'New Password': 'New Password',
-        'Xác Nhận Mật Khẩu': 'Confirm Password',
-        'Confirm Password': 'Confirm Password',
-        
-        // ========== FOOTER & SUPPORT ==========
-        'Liên Kết Nhanh': 'Quick Links',
-        'Liên Kết': 'Quick Links',
-        'Quick Links': 'Quick Links',
-        'Hỗ Trợ': 'Support',
-        'Support': 'Support',
-        'Hướng Dẫn Mua Hàng': 'Shopping Guide',
-        'Shopping Guide': 'Shopping Guide',
-        'Chính Sách Đổi Trả': 'Return Policy',
-        'Return Policy': 'Return Policy',
-        'Bảo Hành': 'Warranty',
-        'Warranty': 'Warranty',
-        'Câu Hỏi Thường Gặp': 'FAQ',
-        'FAQ': 'FAQ',
-        'Chăm Sóc Khách Hàng': 'Customer Service',
-        'Customer Service': 'Customer Service',
-        'Điều Khoản Dịch Vụ': 'Terms of Service',
-        'Terms of Service': 'Terms of Service',
-        'Chính Sách Bảo Mật': 'Privacy Policy',
-        'Privacy Policy': 'Privacy Policy',
-        
-        // ========== COMMON ACTIONS ==========
-        'Tìm Kiếm': 'Search',
-        'tìm kiếm': 'search',
-        'Search': 'Search',
-        'search': 'search',
-        'Xem Thêm': 'View More',
-        'View More': 'View More',
-        'Chi Tiết': 'Details',
-        'chi tiết': 'details',
-        'Details': 'Details',
-        'details': 'details',
-        'Gửi': 'Send',
-        'Send': 'Send',
-        'Hủy': 'Cancel',
-        'Cancel': 'Cancel',
-        'Đóng': 'Close',
-        'Close': 'Close',
-        'Lưu': 'Save',
-        'Save': 'Save',
-        'Cập Nhật': 'Update',
-        'Update': 'Update',
-        'Xóa': 'Delete',
-        'Delete': 'Delete',
-        'Chỉnh Sửa': 'Edit',
-        'Edit': 'Edit',
-        'Quay Lại': 'Back',
-        'Back': 'Back',
-        'Tiếp Theo': 'Next',
-        'Next': 'Next',
-        'Trước': 'Previous',
-        'Previous': 'Previous',
-        'Tất Cả': 'All',
-        'All': 'All',
-        'Lọc': 'Filter',
-        'Filter': 'Filter',
-        'Sắp Xếp': 'Sort',
-        'Sort': 'Sort',
-        'Áp Dụng': 'Apply',
-        'Apply': 'Apply',
-        'Đặt Lại': 'Reset',
-        'Reset': 'Reset',
-        
-        // ========== FILTERS & SORTING ==========
-        'Sắp Xếp Theo': 'Sort By',
-        'Sort By': 'Sort By',
-        'Giá: Thấp Đến Cao': 'Price: Low to High',
-        'Price: Low to High': 'Price: Low to High',
-        'Giá: Cao Đến Thấp': 'Price: High to Low',
-        'Price: High to Low': 'Price: High to Low',
-        'Mới Nhất': 'Newest',
-        'Newest': 'Newest',
-        'Bán Chạy': 'Best Selling',
-        'Best Selling': 'Best Selling',
-        'Phổ Biến Nhất': 'Most Popular',
-        'Most Popular': 'Most Popular',
-        'Khoảng Giá': 'Price Range',
-        'Price Range': 'Price Range',
-        
-        // ========== MESSAGES & NOTIFICATIONS ==========
-        'Thành Công': 'Success',
-        'Success': 'Success',
-        'Lỗi': 'Error',
-        'Error': 'Error',
-        'Cảnh Báo': 'Warning',
-        'Warning': 'Warning',
-        'Thông Tin': 'Info',
-        'Info': 'Info',
-        'Đang Tải': 'Loading',
-        'Loading': 'Loading',
-        'Vui Lòng Đợi': 'Please wait',
-        'Please wait': 'Please wait',
-        'Không Tìm Thấy Kết Quả': 'No results found',
-        'No results found': 'No results found',
-        'Đã Thêm Vào Giỏ Hàng': 'Item added to cart',
-        'Item added to cart': 'Item added to cart',
-        'Đã Xóa Khỏi Giỏ Hàng': 'Item removed from cart',
-        'Item removed from cart': 'Item removed from cart',
-        'Đặt Hàng Thành Công': 'Order placed successfully',
-        'Order placed successfully': 'Order placed successfully',
-        'Vui Lòng Điền Đầy Đủ Thông Tin': 'Please fill all required fields',
-        'Please fill all required fields': 'Please fill all required fields',
-        'Email Không Hợp Lệ': 'Invalid email address',
-        'Invalid email address': 'Invalid email address',
-        'Số Điện Thoại Không Hợp Lệ': 'Invalid phone number',
-        'Invalid phone number': 'Invalid phone number',
-        
-        // ========== CONTACT & ABOUT ==========
-        'Liên Hệ Với Chúng Tôi': 'Contact Us',
-        'Contact Us': 'Contact Us',
-        'Liên Hệ': 'Get in Touch',
-        'Get in Touch': 'Get in Touch',
-        'Gửi Tin Nhắn': 'Send Message',
-        'Send Message': 'Send Message',
-        'Tin Nhắn Của Bạn': 'Your Message',
-        'Your Message': 'Your Message',
-        'Vị Trí Của Chúng Tôi': 'Our Location',
-        'Our Location': 'Our Location',
-        'Giờ Mở Cửa': 'Opening Hours',
-        'Opening Hours': 'Opening Hours',
-        'Về Cửa Hàng Chúng Tôi': 'About Our Store',
-        'About Our Store': 'About Our Store',
-        'Sứ Mệnh': 'Our Mission',
-        'Our Mission': 'Our Mission',
-        'Tầm Nhìn': 'Our Vision',
-        'Our Vision': 'Our Vision',
-        'Tại Sao Chọn Chúng Tôi': 'Why Choose Us',
-        'Why Choose Us': 'Why Choose Us',
-        
-        // ========== SPECIAL FEATURES ==========
-        'Miễn Phí Vận Chuyển': 'Free Shipping',
-        'Giao Hàng Nhanh': 'Fast Delivery',
-        'Fast Delivery': 'Fast Delivery',
-        'Đảm Bảo Chất Lượng': 'Quality Guarantee',
-        'Quality Guarantee': 'Quality Guarantee',
-        'Thanh Toán An Toàn': 'Secure Payment',
-        'Secure Payment': 'Secure Payment',
-        'Hỗ Trợ 24/7': '24/7 Support',
-        '24/7 Support': '24/7 Support',
-        'Giá Tốt Nhất': 'Best Price',
-        'Best Price': 'Best Price',
-        'Ưu Đãi Đặc Biệt': 'Special Offer',
-        'Special Offer': 'Special Offer',
-        'Hàng Mới Về': 'New Arrival',
-        'New Arrival': 'New Arrival',
-        'Sản Phẩm Nổi Bật': 'Featured Products',
-        'Featured Products': 'Featured Products',
-        'Được Đề Xuất': 'Recommended',
-        'Recommended': 'Recommended'
+/**
+ * DICT: nguồn sự thật duy nhất.
+ * Key là semantic ID, không phải display string.
+ * Loại bỏ: self-reference, duplicate, conflict.
+ *
+ * BUG ĐÃ FIX:
+ * 1. 'Shipping' conflict — vừa là 'Phí Vận Chuyển' vừa là 'Đang Giao Hàng'
+ * 2. 'Xóa' conflict     — vừa là 'Remove' vừa là 'Delete'
+ * 3. 'Liên Hệ' conflict — vừa là 'Contact' vừa là 'Get in Touch'
+ * 4. 'Free Shipping' 2 nghĩa — promo dùng 'Freeship 0Đ' vs feature dùng 'Miễn Phí Vận Chuyển'
+ * 5. Self-reference entries (vi['Home']='Home', vi['Trang Chủ']='Trang Chủ', ...)
+ * 6. Duplicate export block cuối file
+ */
+const DICT = {
+
+    // ── NAVIGATION ─────────────────────────────
+    'nav.home':        { vi: 'Trang Chủ',         en: 'Home' },
+    'nav.products':    { vi: 'Sản Phẩm',           en: 'Products' },
+    'nav.about':       { vi: 'Về Chúng Tôi',       en: 'About Us' },
+    'nav.contact':     { vi: 'Liên Hệ',            en: 'Contact' },
+    'nav.policy':      { vi: 'Chính Sách',         en: 'Policy' },
+    'nav.partners':    { vi: 'Đối Tác',            en: 'Partners' },
+    'nav.account':     { vi: 'Tài Khoản',          en: 'Account' },
+    'nav.login':       { vi: 'Đăng Nhập',          en: 'Login' },
+    'nav.register':    { vi: 'Đăng Ký',            en: 'Register' },
+    'nav.logout':      { vi: 'Đăng Xuất',          en: 'Logout' },
+  
+    // ── CATEGORIES ─────────────────────────────
+    'cat.all':         { vi: 'Tất Cả Sản Phẩm',   en: 'All Products' },
+    'cat.living':      { vi: 'Phòng Khách',        en: 'Living Room' },
+    'cat.bedroom':     { vi: 'Phòng Ngủ',          en: 'Bedroom' },
+    'cat.kitchen':     { vi: 'Nhà Bếp',            en: 'Kitchen' },
+    'cat.office':      { vi: 'Văn Phòng',          en: 'Office' },
+    'cat.dining':      { vi: 'Phòng Ăn',           en: 'Dining Room' },
+    'cat.label':       { vi: 'Danh Mục',           en: 'Categories' },
+  
+    // ── PROMO / BANNERS ─────────────────────────
+    'promo.new_collection':  { vi: 'Bộ Sưu Tập Mới',             en: 'New Collection' },
+    'promo.explore_now':     { vi: 'Khám Phá Ngay',              en: 'Explore Now' },
+    'promo.freeship_badge':  { vi: 'Freeship 0Đ',                en: 'Free Shipping' },   // FIX 4a: promo badge
+    'promo.free_design':     { vi: 'Thiết Kế Miễn Phí',         en: 'Free Design' },
+    'promo.sale_35':         { vi: 'Giảm đến 35% sản phẩm mới', en: 'Up to 35% off new products' },
+    'promo.free_nationwide': { vi: 'Miễn phí vận chuyển toàn quốc', en: 'Free nationwide shipping' },
+    'promo.design_3d':       { vi: 'Tư vấn thiết kế 3D nội thất',   en: 'Free 3D design consultation' },
+    'promo.furniture_col':   { vi: 'Bộ Sưu Tập Nội Thất',       en: 'Furniture Collection' },
+    'promo.explore_products':{ vi: 'Khám Phá Sản Phẩm',         en: 'Explore Products' },
+    'promo.free_ship_5m':    { vi: 'Miễn phí vận chuyển đơn trên 5 triệu', en: 'Free shipping over 5M VND' },
+  
+    // ── PRODUCT ─────────────────────────────────
+    'product.view_detail':   { vi: 'Xem Chi Tiết',              en: 'View Details' },
+    'product.add_cart':      { vi: 'Thêm Vào Giỏ',             en: 'Add to Cart' },
+    'product.buy_now':       { vi: 'Mua Ngay',                  en: 'Buy Now' },
+    'product.price':         { vi: 'Giá',                       en: 'Price' },
+    'product.in_stock':      { vi: 'Còn Hàng',                  en: 'In Stock' },
+    'product.out_of_stock':  { vi: 'Hết Hàng',                  en: 'Out of Stock' },
+    'product.quantity':      { vi: 'Số Lượng',                  en: 'Quantity' },
+    'product.description':   { vi: 'Mô Tả',                     en: 'Description' },
+    'product.specs':         { vi: 'Thông Số Kỹ Thuật',        en: 'Specifications' },
+    'product.reviews':       { vi: 'Đánh Giá',                  en: 'Reviews' },
+    'product.sale':          { vi: 'Khuyến Mãi',                en: 'Sale' },
+  
+    // ── CART ────────────────────────────────────
+    'cart.title':            { vi: 'Giỏ Hàng',                  en: 'Shopping Cart' },
+    'cart.total':            { vi: 'Tổng Tiền',                  en: 'Total' },
+    'cart.subtotal':         { vi: 'Tạm Tính',                   en: 'Subtotal' },
+    'cart.shipping_fee':     { vi: 'Phí Vận Chuyển',            en: 'Shipping Fee' },  // FIX 1a
+    'cart.checkout':         { vi: 'Thanh Toán',                 en: 'Checkout' },
+    'cart.continue':         { vi: 'Tiếp Tục Mua Sắm',          en: 'Continue Shopping' },
+    'cart.update':           { vi: 'Cập Nhật Giỏ Hàng',        en: 'Update Cart' },
+    'cart.remove':           { vi: 'Xóa',                        en: 'Remove' },        // FIX 2a
+    'cart.clear':            { vi: 'Xóa Tất Cả',                en: 'Clear All' },
+    'cart.empty':            { vi: 'Giỏ Hàng Trống',            en: 'Empty Cart' },
+  
+    // ── CHECKOUT ────────────────────────────────
+    'checkout.place_order':  { vi: 'Đặt Hàng',                  en: 'Place Order' },
+    'checkout.ship_info':    { vi: 'Thông Tin Giao Hàng',       en: 'Shipping Information' },
+    'checkout.fullname':     { vi: 'Họ Và Tên',                 en: 'Full Name' },
+    'checkout.phone':        { vi: 'Số Điện Thoại',             en: 'Phone Number' },
+    'checkout.email':        { vi: 'Email',                      en: 'Email' },
+    'checkout.address':      { vi: 'Địa Chỉ',                   en: 'Address' },
+    'checkout.city':         { vi: 'Thành Phố',                 en: 'City' },
+    'checkout.district':     { vi: 'Quận/Huyện',                en: 'District' },
+    'checkout.ward':         { vi: 'Phường/Xã',                 en: 'Ward' },
+    'checkout.note':         { vi: 'Ghi Chú',                   en: 'Note' },
+    'checkout.payment_method':{ vi: 'Phương Thức Thanh Toán',   en: 'Payment Method' },
+    'checkout.cod':          { vi: 'Thanh Toán Khi Nhận Hàng',  en: 'Cash on Delivery' },
+    'checkout.bank':         { vi: 'Chuyển Khoản Ngân Hàng',   en: 'Bank Transfer' },
+    'checkout.credit_card':  { vi: 'Thẻ Tín Dụng',             en: 'Credit Card' },
+  
+    // ── ORDER STATUS ────────────────────────────
+    'order.id':              { vi: 'Mã Đơn Hàng',               en: 'Order ID' },
+    'order.date':            { vi: 'Ngày Đặt',                  en: 'Order Date' },
+    'order.status':          { vi: 'Trạng Thái',                en: 'Status' },
+    'order.details':         { vi: 'Chi Tiết Đơn Hàng',         en: 'Order Details' },
+    'order.history':         { vi: 'Lịch Sử Đơn Hàng',         en: 'Order History' },
+    'order.track':           { vi: 'Theo Dõi Đơn Hàng',         en: 'Track Order' },
+    'order.s.processing':    { vi: 'Đang Xử Lý',                en: 'Processing' },
+    'order.s.confirmed':     { vi: 'Đã Xác Nhận',               en: 'Confirmed' },
+    'order.s.shipping':      { vi: 'Đang Giao Hàng',            en: 'Shipping' },        // FIX 1b: riêng
+    'order.s.delivered':     { vi: 'Đã Giao',                   en: 'Delivered' },
+    'order.s.cancelled':     { vi: 'Đã Hủy',                    en: 'Cancelled' },
+    'order.s.pending':       { vi: 'Chờ Xử Lý',                 en: 'Pending' },
+  
+    // ── ACCOUNT ─────────────────────────────────
+    'acc.my_account':        { vi: 'Tài Khoản Của Tôi',         en: 'My Account' },
+    'acc.profile':           { vi: 'Hồ Sơ',                     en: 'Profile' },
+    'acc.my_orders':         { vi: 'Đơn Hàng Của Tôi',          en: 'My Orders' },
+    'acc.wishlist':          { vi: 'Yêu Thích',                  en: 'Wishlist' },
+    'acc.settings':          { vi: 'Cài Đặt',                   en: 'Settings' },
+    'acc.change_pw':         { vi: 'Đổi Mật Khẩu',              en: 'Change Password' },
+    'acc.old_pw':            { vi: 'Mật Khẩu Cũ',               en: 'Old Password' },
+    'acc.new_pw':            { vi: 'Mật Khẩu Mới',              en: 'New Password' },
+    'acc.confirm_pw':        { vi: 'Xác Nhận Mật Khẩu',         en: 'Confirm Password' },
+  
+    // ── FOOTER / SUPPORT ────────────────────────
+    'footer.quick_links':    { vi: 'Liên Kết Nhanh',            en: 'Quick Links' },
+    'footer.support':        { vi: 'Hỗ Trợ',                   en: 'Support' },
+    'footer.buy_guide':      { vi: 'Hướng Dẫn Mua Hàng',       en: 'Shopping Guide' },
+    'footer.return':         { vi: 'Chính Sách Đổi Trả',        en: 'Return Policy' },
+    'footer.warranty':       { vi: 'Bảo Hành',                  en: 'Warranty' },
+    'footer.faq':            { vi: 'Câu Hỏi Thường Gặp',        en: 'FAQ' },
+    'footer.cust_service':   { vi: 'Chăm Sóc Khách Hàng',      en: 'Customer Service' },
+    'footer.terms':          { vi: 'Điều Khoản Dịch Vụ',        en: 'Terms of Service' },
+    'footer.privacy':        { vi: 'Chính Sách Bảo Mật',        en: 'Privacy Policy' },
+  
+    // ── ACTIONS ─────────────────────────────────
+    'action.search':         { vi: 'Tìm Kiếm',                  en: 'Search' },
+    'action.view_more':      { vi: 'Xem Thêm',                  en: 'View More' },
+    'action.details':        { vi: 'Chi Tiết',                   en: 'Details' },
+    'action.send':           { vi: 'Gửi',                        en: 'Send' },
+    'action.cancel':         { vi: 'Hủy',                        en: 'Cancel' },
+    'action.close':          { vi: 'Đóng',                       en: 'Close' },
+    'action.save':           { vi: 'Lưu',                        en: 'Save' },
+    'action.update':         { vi: 'Cập Nhật',                   en: 'Update' },
+    'action.delete':         { vi: 'Xóa',                        en: 'Delete' },           // FIX 2b: riêng
+    'action.edit':           { vi: 'Chỉnh Sửa',                  en: 'Edit' },
+    'action.back':           { vi: 'Quay Lại',                   en: 'Back' },
+    'action.next':           { vi: 'Tiếp Theo',                  en: 'Next' },
+    'action.prev':           { vi: 'Trước',                      en: 'Previous' },
+    'action.all':            { vi: 'Tất Cả',                     en: 'All' },
+    'action.filter':         { vi: 'Lọc',                        en: 'Filter' },
+    'action.sort':           { vi: 'Sắp Xếp',                    en: 'Sort' },
+    'action.apply':          { vi: 'Áp Dụng',                    en: 'Apply' },
+    'action.reset':          { vi: 'Đặt Lại',                    en: 'Reset' },
+  
+    // ── SORT / FILTER ────────────────────────────
+    'sort.label':            { vi: 'Sắp Xếp Theo',              en: 'Sort By' },
+    'sort.price_asc':        { vi: 'Giá: Thấp Đến Cao',         en: 'Price: Low to High' },
+    'sort.price_desc':       { vi: 'Giá: Cao Đến Thấp',         en: 'Price: High to Low' },
+    'sort.newest':           { vi: 'Mới Nhất',                   en: 'Newest' },
+    'sort.best_selling':     { vi: 'Bán Chạy',                   en: 'Best Selling' },
+    'sort.popular':          { vi: 'Phổ Biến Nhất',              en: 'Most Popular' },
+    'filter.price_range':    { vi: 'Khoảng Giá',                en: 'Price Range' },
+  
+    // ── MESSAGES ────────────────────────────────
+    'msg.success':           { vi: 'Thành Công',                 en: 'Success' },
+    'msg.error':             { vi: 'Lỗi',                        en: 'Error' },
+    'msg.warning':           { vi: 'Cảnh Báo',                  en: 'Warning' },
+    'msg.info':              { vi: 'Thông Tin',                  en: 'Info' },
+    'msg.loading':           { vi: 'Đang Tải',                   en: 'Loading' },
+    'msg.please_wait':       { vi: 'Vui Lòng Đợi',              en: 'Please wait' },
+    'msg.no_results':        { vi: 'Không Tìm Thấy Kết Quả',   en: 'No results found' },
+    'msg.added_cart':        { vi: 'Đã Thêm Vào Giỏ Hàng',     en: 'Item added to cart' },
+    'msg.removed_cart':      { vi: 'Đã Xóa Khỏi Giỏ Hàng',     en: 'Item removed from cart' },
+    'msg.order_success':     { vi: 'Đặt Hàng Thành Công',       en: 'Order placed successfully' },
+    'msg.fill_required':     { vi: 'Vui Lòng Điền Đầy Đủ Thông Tin', en: 'Please fill all required fields' },
+    'msg.invalid_email':     { vi: 'Email Không Hợp Lệ',        en: 'Invalid email address' },
+    'msg.invalid_phone':     { vi: 'Số Điện Thoại Không Hợp Lệ', en: 'Invalid phone number' },
+  
+    // ── CONTACT / ABOUT ─────────────────────────
+    'contact.us':            { vi: 'Liên Hệ Với Chúng Tôi',    en: 'Contact Us' },    // FIX 3a
+    'contact.get_in_touch':  { vi: 'Liên Hệ',                   en: 'Get in Touch' },  // FIX 3b: riêng key
+    'contact.send_msg':      { vi: 'Gửi Tin Nhắn',              en: 'Send Message' },
+    'contact.your_msg':      { vi: 'Tin Nhắn Của Bạn',          en: 'Your Message' },
+    'contact.location':      { vi: 'Vị Trí Của Chúng Tôi',     en: 'Our Location' },
+    'contact.hours':         { vi: 'Giờ Mở Cửa',                en: 'Opening Hours' },
+    'about.store':           { vi: 'Về Cửa Hàng Chúng Tôi',    en: 'About Our Store' },
+    'about.mission':         { vi: 'Sứ Mệnh',                   en: 'Our Mission' },
+    'about.vision':          { vi: 'Tầm Nhìn',                  en: 'Our Vision' },
+    'about.why_us':          { vi: 'Tại Sao Chọn Chúng Tôi',   en: 'Why Choose Us' },
+  
+    // ── FEATURES ────────────────────────────────
+    'feat.free_ship':        { vi: 'Miễn Phí Vận Chuyển',      en: 'Free Shipping' },  // FIX 4b
+    'feat.fast_delivery':    { vi: 'Giao Hàng Nhanh',           en: 'Fast Delivery' },
+    'feat.quality':          { vi: 'Đảm Bảo Chất Lượng',       en: 'Quality Guarantee' },
+    'feat.secure_pay':       { vi: 'Thanh Toán An Toàn',        en: 'Secure Payment' },
+    'feat.support_247':      { vi: 'Hỗ Trợ 24/7',              en: '24/7 Support' },
+    'feat.best_price':       { vi: 'Giá Tốt Nhất',              en: 'Best Price' },
+    'feat.special_offer':    { vi: 'Ưu Đãi Đặc Biệt',          en: 'Special Offer' },
+    'feat.new_arrival':      { vi: 'Hàng Mới Về',               en: 'New Arrival' },
+    'feat.featured':         { vi: 'Sản Phẩm Nổi Bật',         en: 'Featured Products' },
+    'feat.recommended':      { vi: 'Được Đề Xuất',              en: 'Recommended' },
+  };
+  
+  // ============================================
+  // HELPER: t(key, lang)
+  // Dùng semantic key, fallback về key nếu không tìm thấy
+  // ============================================
+  
+  /**
+   * @param {string} key  - Semantic key, VD: 'nav.home', 'order.s.shipping'
+   * @param {'vi'|'en'} lang - Ngôn ngữ đích
+   * @returns {string}
+   */
+  function t(key, lang) {
+    const entry = DICT[key];
+    if (!entry) {
+      console.warn(`[t] Missing key: "${key}"`);
+      return key;
     }
-};
-
-// Export for use
-if (typeof window !== 'undefined') {
-    window.translations = translations;
-    console.log('✅ Complete Translations loaded - 100% Coverage');
-    console.log('📊 Vietnamese phrases:', Object.keys(translations.vi).length);
-    console.log('📊 English phrases:', Object.keys(translations.en).length);
-}
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = translations;
-}
-
-// Export for use
-if (typeof window !== 'undefined') {
-    window.translations = translations;
-    console.log('✅ Complete Translations loaded - 100% Coverage');
-    console.log('📊 Vietnamese phrases:', Object.keys(translations.vi).length);
-    console.log('📊 English phrases:', Object.keys(translations.en).length);
-}
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = translations;
-}
+    return entry[lang] || entry['vi'] || key;
+  }
+  
+  // ============================================
+  // BACKWARD COMPATIBILITY — tự sinh từ DICT
+  // Giữ nguyên API cũ: translations.vi['Home'] etc.
+  // ============================================
+  
+  /**
+   * Build backward-compatible lookup maps.
+   * vi:  EN display string  → VI display string
+   * en:  VI display string  → EN display string
+   *
+   * Conflict resolution: last-write-wins với cảnh báo console.
+   */
+  function _buildLegacyMaps(dict) {
+    const vi = {};
+    const en = {};
+    const viSeen = {};
+    const enSeen = {};
+  
+    for (const [key, { vi: v, en: e }] of Object.entries(dict)) {
+      // vi map: EN → VI
+      if (e !== undefined && v !== undefined) {
+        if (viSeen[e] && viSeen[e] !== v) {
+          console.warn(`[translations.vi] Key conflict for "${e}": was "${viSeen[e]}", now "${v}" (from "${key}"). Use t() with semantic key.`);
+        }
+        vi[e] = v;
+        viSeen[e] = v;
+      }
+  
+      // en map: VI → EN
+      if (v !== undefined && e !== undefined) {
+        if (enSeen[v] && enSeen[v] !== e) {
+          console.warn(`[translations.en] Key conflict for "${v}": was "${enSeen[v]}", now "${e}" (from "${key}"). Use t() with semantic key.`);
+        }
+        en[v] = e;
+        enSeen[v] = e;
+      }
+    }
+  
+    return { vi, en };
+  }
+  
+  const translations = _buildLegacyMaps(DICT);
+  
+  // ============================================
+  // EXPORT — FIX 6: một khối duy nhất
+  // ============================================
+  
+  if (typeof window !== 'undefined') {
+    window.DICT         = DICT;
+    window.t            = t;
+    window.translations = translations;   // backward compat
+  
+    if (process?.env?.NODE_ENV !== 'production') {
+      console.log('✅ DQD Translations loaded');
+      console.log(`📦 Keys: ${Object.keys(DICT).length} phrases`);
+      console.log(`🇻🇳 vi map: ${Object.keys(translations.vi).length} entries`);
+      console.log(`🇬🇧 en map: ${Object.keys(translations.en).length} entries`);
+    }
+  }
+  
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { DICT, t, translations };
+  }

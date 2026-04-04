@@ -1,308 +1,247 @@
 {% extends "admin/base.html" %}
-
 {% block title %}Quản Lý Khách Hàng{% endblock %}
 
 {% block extra_css %}
 <style>
-    .customer-filters {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    }
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+:root{--f:'Be Vietnam Pro',ui-sans-serif,sans-serif;--dk:#1a1a18;--gd:#b8922a;--bd:#e8e3db;--tx:#2a2520;--mu:#7a7060;--lt:#f5f4f1;--wh:#fff;--gr:#16a34a;--rd:#dc2626;--am:#d97706;--bl:#2563eb}
+.cu{font-family:var(--f);color:var(--tx)}.cu *{box-sizing:border-box}
+/* Head */
+.cu-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1.5px solid var(--bd);flex-wrap:wrap}
+.cu-hd h1{font-size:1.375rem;font-weight:700;color:var(--dk);margin:0 0 .2rem;letter-spacing:-.02em}
+.cu-hd p{font-size:.8125rem;color:var(--mu);margin:0}
+/* Stats */
+.cu-sg{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+.cu-st{background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.875rem}
+.cu-st-ic{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cu-st-ic svg{width:20px;height:20px}
+.ig{background:#f0faf4;color:#16a34a}.ib{background:#eff6ff;color:#2563eb}.ir{background:#fff5f5;color:#dc2626}.ia{background:#fffbeb;color:#d97706}
+.cu-st-n{font-size:1.625rem;font-weight:700;color:var(--dk);line-height:1;letter-spacing:-.02em}
+.cu-st-l{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--mu);margin-top:.25rem}
+/* Filter bar */
+.cu-fb{background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;padding:1.125rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:flex-end;gap:.875rem;flex-wrap:wrap}
+.cu-ff{display:flex;flex-direction:column;gap:.375rem;flex:1;min-width:160px}
+.cu-ff label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--mu)}
+.cu-inp,.cu-sel{padding:.65rem .875rem;border:1.5px solid var(--bd);border-radius:8px;font-family:var(--f);font-size:.875rem;color:var(--tx);background:var(--wh);outline:none;transition:border-color .18s;width:100%;appearance:none;-webkit-appearance:none}
+.cu-inp:focus,.cu-sel:focus{border-color:var(--gd);box-shadow:0 0 0 3px rgba(184,146,42,.1)}
+.cu-sel-w{position:relative}.cu-sel{padding-right:2.25rem}
+.cu-arr{position:absolute;right:.625rem;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--mu);pointer-events:none}
+.cu-fb-btn{display:inline-flex;align-items:center;gap:.375rem;padding:.65rem 1.125rem;border-radius:8px;font-family:var(--f);font-size:.8125rem;font-weight:600;cursor:pointer;transition:all .18s;text-decoration:none;border:1.5px solid transparent;white-space:nowrap}
+.cu-fb-btn svg{width:14px;height:14px}
+.btn-srch{background:var(--dk);color:var(--wh);border-color:var(--dk)}.btn-srch:hover{background:#2e2e2a}
+.btn-rst{background:var(--wh);color:var(--mu);border-color:var(--bd)}.btn-rst:hover{border-color:var(--dk);color:var(--dk)}
+/* Card */
+.cu-card{background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;overflow:hidden}
+.cu-ch{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.875rem 1.25rem;border-bottom:1.5px solid var(--bd);background:var(--lt);flex-wrap:wrap}
+.cu-ch h3{font-size:.9rem;font-weight:700;color:var(--dk);margin:0}
+.cu-cnt{font-size:.72rem;color:var(--mu);font-weight:500;background:var(--wh);border:1.5px solid var(--bd);padding:.2rem .625rem;border-radius:99px}
+/* Table */
+.cu-tw{overflow-x:auto}
+.cu-t{width:100%;border-collapse:collapse;font-size:.8125rem}
+.cu-t th{padding:.75rem 1rem;text-align:left;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);border-bottom:1.5px solid var(--bd);background:var(--lt);white-space:nowrap}
+.cu-t td{padding:.75rem 1rem;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:middle}
+.cu-t tbody tr:last-child td{border-bottom:none}.cu-t tbody tr:hover td{background:#fdfcfb}
+/* Customer cell */
+.cu-cell{display:flex;align-items:center;gap:.75rem}
+.cu-av{width:36px;height:36px;border-radius:50%;background:var(--dk);color:var(--wh);font-size:.9rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:-.02em}
+.cu-nm{font-size:.875rem;font-weight:600;color:var(--dk)}
+.cu-em{font-size:.72rem;color:var(--mu)}
+.cu-id{font-size:.72rem;color:var(--mu);font-family:'Courier New',monospace}
+.cu-addr{font-size:.78rem;color:var(--mu);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cu-date{font-size:.75rem;color:var(--mu);white-space:nowrap}
+/* Status badges */
+.sb{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .625rem;border-radius:99px;font-size:.68rem;font-weight:700;white-space:nowrap}
+.dot{width:6px;height:6px;border-radius:50%}
+.s-on{background:#f0faf4;color:#166534}.s-on .dot{background:#16a34a}
+.s-off{background:#fff5f5;color:#991b1b}.s-off .dot{background:#dc2626}
+/* Action buttons */
+.cu-acts{display:flex;gap:.375rem;flex-wrap:wrap}
+.cu-btn{display:inline-flex;align-items:center;gap:.25rem;padding:.35rem .75rem;border:1.5px solid var(--bd);border-radius:7px;font-family:var(--f);font-size:.72rem;font-weight:600;color:var(--mu);text-decoration:none;transition:all .15s;background:var(--wh);cursor:pointer}
+.cu-btn svg{width:11px;height:11px}
+.cu-btn:hover{border-color:var(--dk);color:var(--dk)}
+.cu-btn.primary{background:var(--dk);border-color:var(--dk);color:var(--wh)}.cu-btn.primary:hover{background:#2e2e2a}
+.cu-btn.lock{border-color:#fecaca;color:var(--rd)}.cu-btn.lock:hover{background:var(--rd);border-color:var(--rd);color:var(--wh)}
+.cu-btn.unlock{border-color:#bbf7d0;color:var(--gr)}.cu-btn.unlock:hover{background:var(--gr);border-color:var(--gr);color:var(--wh)}
+/* Pagination */
+.cu-pg{display:flex;align-items:center;justify-content:center;gap:.375rem;padding:1.125rem;border-top:1.5px solid var(--bd);flex-wrap:wrap}
+.cu-pg-btn{display:inline-flex;align-items:center;gap:.25rem;padding:.5rem .75rem;border:1.5px solid var(--bd);border-radius:7px;font-family:var(--f);font-size:.78rem;font-weight:600;color:var(--mu);text-decoration:none;transition:all .15s;background:var(--wh)}
+.cu-pg-btn:hover{border-color:var(--dk);color:var(--dk)}
+.cu-pg-btn.active{background:var(--dk);border-color:var(--dk);color:var(--wh)}
+.cu-pg-btn.disabled{opacity:.35;pointer-events:none}
+.cu-pg-btn svg{width:12px;height:12px}
+/* Empty */
+.cu-em{display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:3rem;color:var(--mu);text-align:center}
+.cu-em svg{width:40px;height:40px;color:#d0c8bc}.cu-em p{font-size:.875rem}
 
-    .filter-row {
-        display: flex;
-        gap: 15px;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    .filter-item {
-        flex: 1;
-        min-width: 200px;
-    }
-
-    .filter-item label {
-        display: block;
-        margin-bottom: 5px;
-        font-size: 14px;
-        color: #2c3e50;
-        font-weight: 500;
-    }
-
-    .filter-item input,
-    .filter-item select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-size: 14px;
-    }
-
-    .filter-item button {
-        margin-top: 22px;
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 5px 12px;
-        border-radius: 15px;
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-    .status-active {
-        background: #d4edda;
-        color: #155724;
-    }
-
-    .status-inactive {
-        background: #f8d7da;
-        color: #721c24;
-    }
-
-    .customer-info {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .customer-avatar {
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-        font-size: 16px;
-    }
-
-    .customer-details h4 {
-        margin: 0;
-        font-size: 14px;
-        color: #2c3e50;
-    }
-
-    .customer-details p {
-        margin: 2px 0 0 0;
-        font-size: 12px;
-        color: #7f8c8d;
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 5px;
-    }
-
-    .btn-sm {
-        padding: 6px 12px;
-        font-size: 12px;
-    }
-
-    .pagination {
-        display: flex;
-        justify-content: center;
-        gap: 5px;
-        margin-top: 30px;
-    }
-
-    .pagination a,
-    .pagination span {
-        padding: 8px 12px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        text-decoration: none;
-        color: #2c3e50;
-    }
-
-    .pagination a:hover {
-        background: #3498db;
-        color: white;
-        border-color: #3498db;
-    }
-
-    .pagination .current {
-        background: #3498db;
-        color: white;
-        border-color: #3498db;
-    }
-
-    .stat-card-small {
-        background: white;
-        padding: 15px 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        text-align: center;
-    }
-
-    .stat-card-small h4 {
-        font-size: 24px;
-        margin: 0;
-        color: #2c3e50;
-    }
-
-    .stat-card-small p {
-        font-size: 12px;
-        color: #7f8c8d;
-        margin: 5px 0 0 0;
-        text-transform: uppercase;
-    }
-
-    .stats-mini-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        margin-bottom: 20px;
-    }
+@media(max-width:900px){.cu-sg{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.cu-sg{grid-template-columns:1fr 1fr};.cu-fb{flex-direction:column;align-items:stretch}}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>👥 Quản Lý Khách Hàng</h1>
-    <p>Quản lý thông tin khách hàng và đơn hàng</p>
-</div>
+<div class="cu">
 
-<!-- Statistics -->
-<div class="stats-mini-grid">
-    <div class="stat-card-small">
-        <h4>{{ stats.total }}</h4>
-        <p>Tổng Khách Hàng</p>
-    </div>
-    <div class="stat-card-small">
-        <h4>{{ stats.active }}</h4>
-        <p>Đang Hoạt Động</p>
-    </div>
-    <div class="stat-card-small">
-        <h4>{{ stats.inactive }}</h4>
-        <p>Bị Khóa</p>
-    </div>
-    <div class="stat-card-small">
-        <h4>{{ stats.new_this_month }}</h4>
-        <p>Mới Tháng Này</p>
-    </div>
-</div>
+  <div class="cu-hd">
+    <div><h1>Quản lý khách hàng</h1><p>Xem và quản lý toàn bộ tài khoản khách hàng DQD</p></div>
+  </div>
 
-<!-- Filters -->
-<div class="customer-filters">
-    <form method="GET" action="{{ url_for('admin_customers') }}">
-        <div class="filter-row">
-            <div class="filter-item">
-                <label>🔍 Tìm kiếm</label>
-                <input type="text" name="search" placeholder="Tên, Email, SĐT..." value="{{ search }}">
-            </div>
-            <div class="filter-item">
-                <label>📊 Trạng thái</label>
-                <select name="status">
-                    <option value="">Tất cả</option>
-                    <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Đang hoạt động</option>
-                    <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Bị khóa</option>
-                </select>
-            </div>
-            <div class="filter-item">
-                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-                <a href="{{ url_for('admin_customers') }}" class="btn btn-warning">Reset</a>
-            </div>
+  <!-- Stats -->
+  <div class="cu-sg">
+    <div class="cu-st">
+      <div class="cu-st-ic ib"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+      <div><div class="cu-st-n">{{ stats.total }}</div><div class="cu-st-l">Tổng khách hàng</div></div>
+    </div>
+    <div class="cu-st">
+      <div class="cu-st-ic ig"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div><div class="cu-st-n">{{ stats.active }}</div><div class="cu-st-l">Hoạt động</div></div>
+    </div>
+    <div class="cu-st">
+      <div class="cu-st-ic ir"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M13 7L7 13M7 7l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div><div class="cu-st-n">{{ stats.inactive }}</div><div class="cu-st-l">Bị khóa</div></div>
+    </div>
+    <div class="cu-st">
+      <div class="cu-st-ic ia"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 4v4l3 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+      <div><div class="cu-st-n">{{ stats.new_this_month }}</div><div class="cu-st-l">Mới tháng này</div></div>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <form method="GET" action="{{ url_for('admin_customers') }}">
+    <div class="cu-fb">
+      <div class="cu-ff">
+        <label>Tìm kiếm</label>
+        <input class="cu-inp" type="text" name="search" placeholder="Tên, email, số điện thoại..." value="{{ search }}">
+      </div>
+      <div class="cu-ff" style="max-width:200px">
+        <label>Trạng thái</label>
+        <div class="cu-sel-w">
+          <select class="cu-sel" name="status">
+            <option value="">Tất cả</option>
+            <option value="active" {% if status_filter=='active' %}selected{% endif %}>Đang hoạt động</option>
+            <option value="inactive" {% if status_filter=='inactive' %}selected{% endif %}>Bị khóa</option>
+          </select>
+          <svg class="cu-arr" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
         </div>
-    </form>
-</div>
+      </div>
+      <button type="submit" class="cu-fb-btn btn-srch">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M13 13l-3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Tìm kiếm
+      </button>
+      <a href="{{ url_for('admin_customers') }}" class="cu-fb-btn btn-rst">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 100 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M2 4v4h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Reset
+      </a>
+    </div>
+  </form>
 
-<!-- Customer List -->
-<div class="card">
-    <div class="card-header">
-        <h3>Danh sách khách hàng ({{ total_customers }} khách hàng)</h3>
+  <!-- List -->
+  <div class="cu-card">
+    <div class="cu-ch">
+      <h3>Danh sách khách hàng</h3>
+      <span class="cu-cnt">{{ total_customers }} khách hàng</span>
     </div>
 
     {% if customers %}
-    <table class="table">
+    <div class="cu-tw">
+      <table class="cu-t">
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Khách hàng</th>
-                <th>Số điện thoại</th>
-                <th>Địa chỉ</th>
-                <th>Trạng thái</th>
-                <th>Ngày tạo</th>
-                <th>Thao tác</th>
-            </tr>
+          <tr>
+            <th>ID</th>
+            <th>Khách hàng</th>
+            <th>Điện thoại</th>
+            <th>Địa chỉ</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th></th>
+          </tr>
         </thead>
         <tbody>
-            {% for customer in customers %}
-            <tr>
-                <td>#{{ customer.id }}</td>
-                <td>
-                    <div class="customer-info">
-                        <div class="customer-avatar">
-                            {{ customer.full_name[0].upper() }}
-                        </div>
-                        <div class="customer-details">
-                            <h4>{{ customer.full_name }}</h4>
-                            <p>{{ customer.email }}</p>
-                        </div>
-                    </div>
-                </td>
-                <td>{{ customer.phone or '-' }}</td>
-                <td>{{ customer.address[:50] + '...' if customer.address and customer.address|length > 50 else (customer.address or '-') }}</td>
-                <td>
-                    {% if customer.is_active %}
-                    <span class="status-badge status-active">✓ Hoạt động</span>
+          {% for c in customers %}
+          <tr>
+            <td class="cu-id">#{{ c.id }}</td>
+            <td>
+              <div class="cu-cell">
+                <div class="cu-av">{{ c.full_name[0].upper() }}</div>
+                <div>
+                  <div class="cu-nm">{{ c.full_name }}</div>
+                  <div class="cu-em">{{ c.email }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="cu-em">{{ c.phone or '—' }}</td>
+            <td><div class="cu-addr" title="{{ c.address or '' }}">{{ c.address[:50]+'…' if c.address and c.address|length>50 else (c.address or '—') }}</div></td>
+            <td>
+              {% if c.is_active %}
+              <span class="sb s-on"><span class="dot"></span>Hoạt động</span>
+              {% else %}
+              <span class="sb s-off"><span class="dot"></span>Bị khóa</span>
+              {% endif %}
+            </td>
+            <td class="cu-date">{{ c.created_at.strftime('%d/%m/%Y') if c.created_at else '—' }}</td>
+            <td>
+              <div class="cu-acts">
+                <a href="{{ url_for('admin_customer_detail', customer_id=c.id) }}" class="cu-btn primary">
+                  <svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="4" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M1 10c0-2.2 2-4 5-4s5 1.8 5 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+                  Chi tiết
+                </a>
+                <a href="{{ url_for('admin_edit_customer', customer_id=c.id) }}" class="cu-btn">
+                  <svg viewBox="0 0 12 12" fill="none"><path d="M7.5 2l2.5 2.5-6 6H1.5V8L7.5 2z" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Sửa
+                </a>
+                <form method="POST" action="{{ url_for('admin_toggle_customer_status', customer_id=c.id) }}"
+                      style="display:inline"
+                      onsubmit="return confirm('Thay đổi trạng thái khách hàng {{ c.full_name }}?')">
+                  <button type="submit" class="cu-btn {% if c.is_active %}lock{% else %}unlock{% endif %}">
+                    {% if c.is_active %}
+                    <svg viewBox="0 0 12 12" fill="none"><path d="M4 5V3.5a2 2 0 014 0V5M2 5h8a1 1 0 011 1v4a1 1 0 01-1 1H2a1 1 0 01-1-1V6a1 1 0 011-1z" stroke="currentColor" stroke-width="1.1"/></svg>
+                    Khóa
                     {% else %}
-                    <span class="status-badge status-inactive">✗ Bị khóa</span>
+                    <svg viewBox="0 0 12 12" fill="none"><path d="M4 5V3.5a2 2 0 014 0" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M2 5h8a1 1 0 011 1v4a1 1 0 01-1 1H2a1 1 0 01-1-1V6a1 1 0 011-1z" stroke="currentColor" stroke-width="1.1"/></svg>
+                    Mở khóa
                     {% endif %}
-                </td>
-                <td>{{ customer.created_at.strftime('%d/%m/%Y') if customer.created_at else '-' }}</td>
-                <td>
-                    <div class="action-buttons">
-                        <a href="{{ url_for('admin_customer_detail', customer_id=customer.id) }}" 
-                           class="btn btn-primary btn-sm">Chi tiết</a>
-                        <a href="{{ url_for('admin_edit_customer', customer_id=customer.id) }}" 
-                           class="btn btn-warning btn-sm">Sửa</a>
-                        <form method="POST" action="{{ url_for('admin_toggle_customer_status', customer_id=customer.id) }}" 
-                              style="display:inline;"
-                              onsubmit="return confirm('Bạn có chắc muốn thay đổi trạng thái khách hàng này?')">
-                            <button type="submit" class="btn btn-{% if customer.is_active %}danger{% else %}success{% endif %} btn-sm">
-                                {% if customer.is_active %}Khóa{% else %}Mở khóa{% endif %}
-                            </button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
         </tbody>
-    </table>
+      </table>
+    </div>
 
-    <!-- Pagination -->
     {% if total_pages > 1 %}
-    <div class="pagination">
-        {% if page > 1 %}
-        <a href="{{ url_for('admin_customers', page=page-1, search=search, status=status_filter) }}">‹ Trước</a>
-        {% endif %}
+    <div class="cu-pg">
+      <a href="{{ url_for('admin_customers', page=page-1, search=search, status=status_filter) }}"
+         class="cu-pg-btn {% if page<=1 %}disabled{% endif %}">
+        <svg viewBox="0 0 12 12" fill="none"><path d="M8 3L4 6l4 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Trước
+      </a>
 
-        {% for p in range(1, total_pages + 1) %}
-            {% if p == page %}
-            <span class="current">{{ p }}</span>
-            {% elif p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
-            <a href="{{ url_for('admin_customers', page=p, search=search, status=status_filter) }}">{{ p }}</a>
-            {% elif p == page - 3 or p == page + 3 %}
-            <span>...</span>
-            {% endif %}
-        {% endfor %}
-
-        {% if page < total_pages %}
-        <a href="{{ url_for('admin_customers', page=page+1, search=search, status=status_filter) }}">Sau ›</a>
+      {% for p in range(1, total_pages+1) %}
+        {% if p==page %}
+        <span class="cu-pg-btn active">{{ p }}</span>
+        {% elif p==1 or p==total_pages or (p>=page-2 and p<=page+2) %}
+        <a href="{{ url_for('admin_customers', page=p, search=search, status=status_filter) }}" class="cu-pg-btn">{{ p }}</a>
+        {% elif p==page-3 or p==page+3 %}
+        <span class="cu-pg-btn" style="border:none;background:none;pointer-events:none">…</span>
         {% endif %}
+      {% endfor %}
+
+      <a href="{{ url_for('admin_customers', page=page+1, search=search, status=status_filter) }}"
+         class="cu-pg-btn {% if page>=total_pages %}disabled{% endif %}">
+        Sau
+        <svg viewBox="0 0 12 12" fill="none"><path d="M4 3l4 3-4 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
     </div>
     {% endif %}
 
     {% else %}
-    <div style="padding: 40px; text-align: center; color: #7f8c8d;">
-        <p>Không tìm thấy khách hàng nào</p>
+    <div class="cu-em">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <p>Không tìm thấy khách hàng nào{% if search %} với từ khóa "{{ search }}"{% endif %}</p>
     </div>
     {% endif %}
+
+  </div>
 </div>
 {% endblock %}

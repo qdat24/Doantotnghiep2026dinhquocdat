@@ -1,389 +1,548 @@
 {% extends "base.html" %}
-
 {% block title %}Liên Hệ - HOMESTEAD{% endblock %}
 
-{% block content %}
-<style>
-.contact-hero {
-    background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
-    color: white;
-    padding: 4rem 0;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
 
-.contact-hero::before {
+{% block content %}
+<div class="ct-root">
+
+  <!-- Left: Info panel -->
+  <div class="ct-left">
+    <div class="ct-brand">
+      <span>🏠</span>
+      <span>HOMESTEAD</span>
+    </div>
+
+    <div class="ct-left-body">
+      <h1>Chúng tôi luôn<br><span class="gold">sẵn sàng lắng nghe.</span></h1>
+      <p>Hãy liên hệ với chúng tôi qua bất kỳ kênh nào bên dưới — đội ngũ hỗ trợ sẽ phản hồi trong vòng 24 giờ.</p>
+
+      <div class="info-list">
+
+        <div class="info-item">
+          <div class="info-icon">
+            <svg viewBox="0 0 20 20" fill="none">
+              <path d="M10 2a6 6 0 016 6c0 4-6 10-6 10S4 12 4 8a6 6 0 016-6z" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="10" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Địa chỉ</h4>
+            <p>{{ site_settings.get('contact_address', 'Hà Đông, Hà Nội') }}</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">
+            <svg viewBox="0 0 20 20" fill="none">
+              <path d="M6.5 3h-2A1.5 1.5 0 003 4.5v1C3 12.956 8.044 18 15.5 18h1A1.5 1.5 0 0018 16.5v-2a.5.5 0 00-.308-.462l-3-1.25a.5.5 0 00-.567.13l-1.25 1.5a9.5 9.5 0 01-4.793-4.793l1.5-1.25a.5.5 0 00.13-.567l-1.25-3A.5.5 0 006.5 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Điện thoại</h4>
+            <p>{{ site_settings.get('contact_phone', '0345 211 386') }}</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">
+            <svg viewBox="0 0 20 20" fill="none">
+              <path d="M2.5 5.5L10 11l7.5-5.5M3 4h14a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Email</h4>
+            <p>{{ site_settings.get('contact_email', 'hello@homestead.vn') }}</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">
+            <svg viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M10 6v4l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Giờ làm việc</h4>
+            <p>Thứ 2 – Thứ 6: 8:00 – 18:00<br>Thứ 7 – CN: 9:00 – 17:00</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="ct-left-footer">
+      <div class="stat"><strong>&lt; 24h</strong><span>Phản hồi</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><strong>100%</strong><span>Hài lòng</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><strong>7 ngày</strong><span>Hỗ trợ</span></div>
+    </div>
+  </div>
+
+  <!-- Right: Form + Map -->
+  <div class="ct-right">
+
+    <!-- Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">
+          <span>{% if category == 'success' %}✓{% elif category == 'warning' %}⚠{% else %}✕{% endif %}</span>
+          {{ message }}
+          <button onclick="this.parentElement.remove()">×</button>
+        </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="form-card">
+      <div class="form-card-header">
+        <h2>Gửi tin nhắn</h2>
+        <p>Điền thông tin bên dưới, chúng tôi sẽ liên hệ lại sớm nhất có thể.</p>
+      </div>
+
+      <form method="POST" action="{{ url_for('contact') }}" class="ct-form" id="ctForm">
+
+        <div class="field-row-2">
+          <div class="field">
+            <label>Họ và tên <span class="req">*</span></label>
+            <div class="input-wrap">
+              <svg class="fi" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              <input type="text" name="name" placeholder="Nguyễn Văn A" required>
+            </div>
+          </div>
+          <div class="field">
+            <label>Số điện thoại</label>
+            <div class="input-wrap">
+              <svg class="fi" viewBox="0 0 20 20" fill="none"><path d="M6.5 3h-2A1.5 1.5 0 003 4.5v1C3 12.956 8.044 18 15.5 18h1A1.5 1.5 0 0018 16.5v-2a.5.5 0 00-.308-.462l-3-1.25a.5.5 0 00-.567.13l-1.25 1.5a9.5 9.5 0 01-4.793-4.793l1.5-1.25a.5.5 0 00.13-.567l-1.25-3A.5.5 0 006.5 3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+              <input type="tel" name="phone" placeholder="0912 345 678">
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email <span class="req">*</span></label>
+          <div class="input-wrap">
+            <svg class="fi" viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5L10 11l7.5-5.5M3 4h14a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <input type="email" name="email" placeholder="email@example.com" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Chủ đề <span class="req">*</span></label>
+          <div class="input-wrap select-wrap">
+            <svg class="fi" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h10M3 15h7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <select name="subject" required>
+              <option value="">-- Chọn chủ đề --</option>
+              <option value="Tư vấn sản phẩm">Tư vấn sản phẩm</option>
+              <option value="Báo giá">Báo giá</option>
+              <option value="Hỗ trợ kỹ thuật">Hỗ trợ kỹ thuật</option>
+              <option value="Khiếu nại">Khiếu nại</option>
+              <option value="Hợp tác kinh doanh">Hợp tác kinh doanh</option>
+              <option value="Khác">Khác</option>
+            </select>
+            <svg class="select-arrow" viewBox="0 0 20 20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Nội dung <span class="req">*</span></label>
+          <textarea name="message" rows="5" placeholder="Nhập nội dung tin nhắn của bạn..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <span class="btn-label">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M3 10l14-7-7 14V10H3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            Gửi tin nhắn
+          </span>
+          <span class="btn-spinner" hidden>
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" stroke-width="3"/><path d="M12 2a10 10 0 0110 10" stroke="white" stroke-width="3" stroke-linecap="round"/></svg>
+            Đang gửi...
+          </span>
+        </button>
+
+      </form>
+    </div>
+
+    <!-- Map -->
+    <div class="map-card">
+      <div class="map-header">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 016 6c0 4-6 10-6 10S4 12 4 8a6 6 0 016-6z" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span>Vị trí của chúng tôi</span>
+      </div>
+      <div class="map-frame">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.4781408048125!2d105.80874507393352!3d21.013546088303517!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab438bbafeeb%3A0xb97ca6f7e88ba308!2sDevmaster!5e0!3m2!1svi!2sus!4v1761831922135!5m2!1svi!2sus"
+          width="100%" height="320" style="border:0;" allowfullscreen="" loading="lazy">
+        </iframe>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .ct-root {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    min-height: 100vh;
+    font-family: 'Be Vietnam Pro', sans-serif;
+  }
+
+  /* ── Left ── */
+  .ct-left {
+    background: #1a1a18;
+    color: #f5f0e8;
+    display: flex;
+    flex-direction: column;
+    padding: 2.5rem 2.5rem;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  .ct-left::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
-    opacity: 0.3;
-}
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 90% 15%, rgba(196,160,100,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 5% 90%,  rgba(196,160,100,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
 
-.contact-hero .container {
+  .ct-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #c4a064;
     position: relative;
     z-index: 1;
-}
+    margin-bottom: 0;
+  }
 
-.contact-hero h1 {
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 800;
-    margin-bottom: 1rem;
-    color: white;
+  .ct-left-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ct-left-body h1 {
+    font-size: clamp(1.625rem, 2.5vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.25;
+    color: #f5f0e8;
+    letter-spacing: -0.01em;
+  }
+
+  .gold { color: #c4a064; font-weight: 300; }
+
+  .ct-left-body > p {
+    font-size: 0.875rem;
+    line-height: 1.75;
+    color: #a09880;
+  }
+
+  /* Info list */
+  .info-list { display: flex; flex-direction: column; gap: 1rem; }
+
+  .info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.125rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    transition: background 0.2s;
+  }
+
+  .info-item:hover { background: rgba(196,160,100,0.08); border-color: rgba(196,160,100,0.2); }
+
+  .info-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    background: rgba(196,160,100,0.12);
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
-}
+    color: #c4a064;
+  }
 
-.contact-hero p {
-    font-size: 1.25rem;
-    opacity: 0.95;
-    color: white;
-}
+  .info-icon svg { width: 16px; height: 16px; }
 
-.contact-section {
-    padding: 4rem 0;
-    background: var(--bg-cream);
-}
+  .info-item h4 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #c8bfb0;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.25rem;
+  }
 
-.contact-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    margin-top: 3rem;
-}
-
-.contact-info {
-    background: white;
-    padding: 2.5rem;
-    border-radius: var(--radius-lg);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-}
-
-.contact-info h2 {
-    font-size: clamp(1.5rem, 3vw, 2rem);
-    margin-bottom: 2rem;
-    color: var(--text-dark);
-    font-weight: 700;
-}
-
-.info-item {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 1.5rem;
-    padding: 1.5rem;
-    background: var(--bg-beige);
-    border-radius: var(--radius-md);
-    transition: all var(--transition-normal);
-}
-
-.info-item:hover {
-    transform: translateX(5px);
-    box-shadow: 0 4px 12px rgba(157, 184, 146, 0.15);
-}
-
-.info-item i {
-    font-size: 1.75rem;
-    color: var(--sage-medium);
-    margin-right: 1.25rem;
-    min-width: 40px;
-    flex-shrink: 0;
-}
-
-.info-content h3 {
-    font-size: 1.125rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-dark);
-    font-weight: 700;
-}
-
-.info-content p {
-    margin: 0;
-    color: var(--text-medium);
-    line-height: 1.7;
-    font-size: 1rem;
-}
-
-.contact-form {
-    background: white;
-    padding: 2.5rem;
-    border-radius: var(--radius-lg);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-}
-
-.contact-form h2 {
-    font-size: clamp(1.5rem, 3vw, 2rem);
-    margin-bottom: 2rem;
-    color: var(--text-dark);
-    font-weight: 700;
-}
-
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-group label {
-    display: block;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    color: var(--text-dark);
-    font-size: 1rem;
-}
-
-.form-group label .required {
-    color: var(--terracotta);
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 0.875rem 1rem;
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-md);
-    font-size: 1rem;
-    font-family: var(--font-primary);
-    transition: all var(--transition-normal);
-    background: white;
-    color: var(--text-dark);
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: var(--sage-medium);
-    box-shadow: 0 0 0 3px rgba(157, 184, 146, 0.1);
-}
-
-.form-group textarea {
-    resize: vertical;
-    min-height: 150px;
-    font-family: var(--font-primary);
-}
-
-.btn-submit {
-    background: linear-gradient(135deg, var(--sage-medium), var(--sage-dark));
-    color: white;
-    padding: 1rem 2.5rem;
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: 1.125rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all var(--transition-normal);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    box-shadow: 0 4px 12px rgba(157, 184, 146, 0.3);
-}
-
-.btn-submit:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(157, 184, 146, 0.4);
-}
-
-.map-section {
-    margin-top: 4rem;
-}
-
-.map-section h2 {
-    text-align: center;
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    margin-bottom: 2.5rem;
-    color: var(--text-dark);
-    font-weight: 700;
-}
-
-.map-container {
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.alert {
-    padding: 1rem 1.25rem;
-    border-radius: var(--radius-md);
-    margin-bottom: 1.5rem;
-    font-size: 1rem;
+  .info-item p {
+    font-size: 0.875rem;
+    color: #f5f0e8;
     line-height: 1.6;
-}
+  }
 
-.alert-success {
-    background: var(--sage-light);
-    color: var(--sage-dark);
-    border: 2px solid var(--sage-medium);
-}
+  /* Footer stats */
+  .ct-left-footer {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 1;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
 
-.alert-error {
-    background: rgba(224, 147, 128, 0.15);
-    color: var(--rust);
-    border: 2px solid var(--coral);
-}
+  .stat { display: flex; flex-direction: column; gap: 0.15rem; }
+  .stat strong { font-size: 1.125rem; font-weight: 600; color: #f5f0e8; }
+  .stat span { font-size: 0.7rem; color: #6b6458; text-transform: uppercase; letter-spacing: 0.06em; }
+  .stat-div { width: 1px; height: 1.75rem; background: rgba(255,255,255,0.08); }
 
-@media (max-width: 768px) {
-    .contact-grid {
-        grid-template-columns: 1fr;
-        gap: 2rem;
+  /* ── Right ── */
+  .ct-right {
+    background: #f5f4f1;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    overflow-y: auto;
+  }
+
+  /* Flash */
+  .flash {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .flash button { margin-left: auto; background: none; border: none; cursor: pointer; font-size: 1.1rem; opacity: 0.5; }
+  .flash-success { background: #f0faf4; color: #166534; border: 1px solid #bbf7d0; }
+  .flash-danger, .flash-error { background: #fff5f5; color: #991b1b; border: 1px solid #fecaca; }
+  .flash-warning { background: #fffbeb; color: #854d0e; border: 1px solid #fde68a; }
+
+  /* Form card */
+  .form-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1.5px solid #e8e3db;
+  }
+
+  .form-card-header { margin-bottom: 1.5rem; }
+  .form-card-header h2 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: #1a1a18;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.25rem;
+  }
+  .form-card-header p { font-size: 0.875rem; color: #7a7060; }
+
+  /* Form */
+  .ct-form { display: flex; flex-direction: column; gap: 1rem; }
+  .field-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .field { display: flex; flex-direction: column; gap: 0.375rem; }
+
+  .field label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #3a3530;
+  }
+
+  .req { color: #dc2626; margin-left: 2px; }
+
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .fi {
+    position: absolute;
+    left: 0.75rem;
+    width: 15px;
+    height: 15px;
+    color: #a09880;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .input-wrap input,
+  .input-wrap select {
+    width: 100%;
+    padding: 0.75rem 0.875rem 0.75rem 2.5rem;
+    border: 1.5px solid #e0dbd2;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    color: #1a1a18;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .input-wrap input:focus,
+  .input-wrap select:focus {
+    border-color: #b8922a;
+    box-shadow: 0 0 0 3px rgba(184,146,42,0.12);
+  }
+
+  /* Select arrow */
+  .select-wrap { position: relative; }
+  .select-arrow {
+    position: absolute;
+    right: 0.75rem;
+    width: 16px;
+    height: 16px;
+    color: #a09880;
+    pointer-events: none;
+  }
+
+  .field textarea {
+    padding: 0.75rem 0.875rem;
+    border: 1.5px solid #e0dbd2;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    color: #1a1a18;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .field textarea:focus {
+    border-color: #b8922a;
+    box-shadow: 0 0 0 3px rgba(184,146,42,0.12);
+  }
+
+  .field textarea::placeholder,
+  .input-wrap input::placeholder { color: #c0b9ae; }
+
+  /* Submit */
+  .btn-submit {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    background: #1a1a18;
+    color: #f5f0e8;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 48px;
+    margin-top: 0.25rem;
+  }
+
+  .btn-label { display: flex; align-items: center; gap: 0.5rem; }
+  .btn-label svg { width: 16px; height: 16px; }
+
+  .btn-submit:hover { background: #2e2e2a; transform: translateY(-1px); }
+  .btn-submit:active { transform: none; }
+  .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+  .btn-spinner svg {
+    width: 16px; height: 16px;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Map card */
+  .map-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1.5px solid #e8e3db;
+  }
+
+  .map-header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1.5px solid #e8e3db;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #3a3530;
+  }
+
+  .map-header svg { width: 16px; height: 16px; color: #b8922a; }
+
+  .map-frame iframe { display: block; }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .ct-root { grid-template-columns: 1fr; }
+    .ct-left {
+      min-height: auto;
+      padding: 2rem 1.5rem;
     }
-    
-    .contact-hero {
-        padding: 3rem 0;
-    }
+    .ct-left-body { justify-content: flex-start; }
+    .ct-right { padding: 1.5rem 1rem; }
+  }
 
-    .contact-section {
-        padding: 3rem 0;
-    }
-
-    .contact-info,
-    .contact-form {
-        padding: 2rem;
-    }
-}
+  @media (max-width: 540px) {
+    .field-row-2 { grid-template-columns: 1fr; }
+    .form-card { padding: 1.25rem; }
+  }
 </style>
 
-<!-- Hero Section -->
-<section class="contact-hero">
-    <div class="container">
-        <h1>
-            <i class="fas fa-phone"></i> Liên Hệ Với Chúng Tôi
-        </h1>
-        <p>Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn</p>
-    </div>
-</section>
+<script>
+  document.getElementById('ctForm').addEventListener('submit', function() {
+    const btn     = document.getElementById('submitBtn');
+    const label   = btn.querySelector('.btn-label');
+    const spinner = btn.querySelector('.btn-spinner');
+    label.hidden   = true;
+    spinner.hidden = false;
+    btn.disabled   = true;
+    setTimeout(() => {
+      label.hidden   = false;
+      spinner.hidden = true;
+      btn.disabled   = false;
+    }, 6000);
+  });
 
-<!-- Contact Section -->
-<section class="contact-section">
-    <div class="container">
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <div class="contact-grid">
-            <!-- Contact Info -->
-            <div class="contact-info">
-                <h2>Thông Tin Liên Hệ</h2>
-                
-                <div class="info-item">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <div class="info-content">
-                        <h3>Địa Chỉ</h3>
-                        <p>{{ site_settings.get('contact_address', 'Hà Đông Hà Nội') }}</p>
-                    </div>
-                </div>
-
-                <div class="info-item">
-                    <i class="fas fa-phone"></i>
-                    <div class="info-content">
-                        <h3>Điện Thoại</h3>
-                        <p>{{ site_settings.get('contact_phone', '0345211386') }}</p>
-                    </div>
-                </div>
-
-                <div class="info-item">
-                    <i class="fas fa-envelope"></i>
-                    <div class="info-content">
-                        <h3>Email</h3>
-                        <p>{{ site_settings.get('contact_email', 'quocdat30075@gmail.com') }}</p>
-                    </div>
-                </div>
-
-                <div class="info-item">
-                    <i class="fas fa-clock"></i>
-                    <div class="info-content">
-                        <h3>Giờ Làm Việc</h3>
-                        <p>Thứ 2 - Thứ 6: 8:00 - 18:00<br>
-                           Thứ 7 - CN: 9:00 - 17:00</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Contact Form -->
-            <div class="contact-form">
-                <h2>Gửi Tin Nhắn</h2>
-                <form method="POST" action="{{ url_for('contact') }}">
-                    <div class="form-group">
-                        <label for="name">Họ và Tên <span class="required">*</span></label>
-                        <input type="text" 
-                               id="name" 
-                               name="name" 
-                               placeholder="Nguyễn Văn A"
-                               required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email">Email <span class="required">*</span></label>
-                        <input type="email" 
-                               id="email" 
-                               name="email" 
-                               placeholder="email@example.com"
-                               required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="phone">Số Điện Thoại</label>
-                        <input type="tel" 
-                               id="phone" 
-                               name="phone" 
-                               placeholder="0901234567">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="subject">Chủ Đề <span class="required">*</span></label>
-                        <select id="subject" name="subject" required>
-                            <option value="">-- Chọn chủ đề --</option>
-                            <option value="Tư vấn sản phẩm">Tư vấn sản phẩm</option>
-                            <option value="Báo giá">Báo giá</option>
-                            <option value="Hỗ trợ kỹ thuật">Hỗ trợ kỹ thuật</option>
-                            <option value="Khiếu nại">Khiếu nại</option>
-                            <option value="Hợp tác kinh doanh">Hợp tác kinh doanh</option>
-                            <option value="Khác">Khác</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="message">Nội Dung <span class="required">*</span></label>
-                        <textarea id="message" 
-                                  name="message" 
-                                  placeholder="Nhập nội dung tin nhắn của bạn..."
-                                  required></textarea>
-                    </div>
-
-                    <button type="submit" class="btn-submit">
-                        <i class="fas fa-paper-plane"></i> Gửi Tin Nhắn
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Map Section -->
-        <div class="map-section">
-            <h2>
-                <i class="fas fa-map-marker-alt"></i> Vị Trí Của Chúng Tôi
-            </h2>
-            <div class="map-container">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.4781408048125!2d105.80874507393352!3d21.013546088303517!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab438bbafeeb%3A0xb97ca6f7e88ba308!2sDevmaster!5e0!3m2!1svi!2sus!4v1761831922135!5m2!1svi!2sus" 
-                        width="100%" 
-                        height="450" 
-                        style="border:0;" 
-                        allowfullscreen="" 
-                        loading="lazy">
-                </iframe>
-            </div>
-        </div>
-    </div>
-</section>
+  document.querySelectorAll('.flash').forEach(el => {
+    setTimeout(() => {
+      el.style.transition = 'opacity 0.4s';
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 400);
+    }, 5000);
+  });
+</script>
 
 {% endblock %}

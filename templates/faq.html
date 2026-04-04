@@ -1,690 +1,486 @@
 {% extends "base.html" %}
+{% block title %}Câu Hỏi Thường Gặp - DQD{% endblock %}
 
-{% block title %}FAQ - Câu Hỏi Thường Gặp - HOMESTEAD{% endblock %}
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
 
 {% block content %}
+<div class="fq-root">
+
+  <!-- Header -->
+  <div class="fq-header">
+    <div class="fqh-inner">
+      <div class="fqh-bc">
+        <a href="/">Trang chủ</a>
+        <svg viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span>Câu hỏi thường gặp</span>
+      </div>
+      <h1>Câu hỏi <span class="gold">thường gặp</span></h1>
+      <p>Tìm câu trả lời nhanh cho những thắc mắc phổ biến nhất</p>
+    </div>
+  </div>
+
+  <!-- Search + filter -->
+  <div class="fq-toolbar">
+    <div class="fqt-inner">
+      <div class="fqt-search-wrap">
+        <svg viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="M15 15l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="text" id="faqSearch" placeholder="Tìm kiếm câu hỏi..." onkeyup="searchFAQ()">
+      </div>
+      <div class="fqt-filters">
+        <button class="fqt-filter fqt-active" onclick="filterFAQ('all', this)">
+          Tất cả
+        </button>
+        <button class="fqt-filter" onclick="filterFAQ('order', this)">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M5 13a1 1 0 100 2 1 1 0 000-2zm7 0a1 1 0 100 2 1 1 0 000-2zM1 1h1.5l1.5 8h8l1.5-5H4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Đặt hàng
+        </button>
+        <button class="fqt-filter" onclick="filterFAQ('payment', this)">
+          <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 7h14M4 10h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Thanh toán
+        </button>
+        <button class="fqt-filter" onclick="filterFAQ('shipping', this)">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M5 13H3a2 2 0 01-2-2V4a2 2 0 012-2h8a2 2 0 012 2v2m-2 9h4m-2-2l2 2-2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Vận chuyển
+        </button>
+        <button class="fqt-filter" onclick="filterFAQ('product', this)">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M1 5l7-4 7 4v7a1 1 0 01-1 1H2a1 1 0 01-1-1V5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          Sản phẩm
+        </button>
+        <button class="fqt-filter" onclick="filterFAQ('warranty', this)">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M8 1l5 2v4c0 4-2.5 6-5 7C5.5 13 3 11 3 7V3L8 1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          Bảo hành
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ list -->
+  <div class="fq-body">
+    <div class="fqb-inner">
+
+      <div id="faqList" class="fq-list">
+
+        <!-- Đặt hàng -->
+        <div class="fq-item" data-category="order">
+          <button class="fq-q" onclick="toggleFAQ(this)">
+            <div class="fqq-left">
+              <div class="fqq-icon fqq-amber">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M5 13a1 1 0 100 2 1 1 0 000-2zm7 0a1 1 0 100 2 1 1 0 000-2zM1 1h1.5l1.5 8h8l1.5-5H4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span>Làm thế nào để đặt hàng trên website?</span>
+            </div>
+            <svg class="fqq-chev" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="fq-a">
+            <div class="fqa-inner">
+              <p>Để đặt hàng trên DQD, bạn làm theo 6 bước đơn giản sau:</p>
+              <ol>
+                <li>Chọn sản phẩm và nhấn <strong>"Thêm vào giỏ hàng"</strong></li>
+                <li>Vào giỏ hàng kiểm tra lại sản phẩm và số lượng</li>
+                <li>Nhấn <strong>"Tiến hành thanh toán"</strong></li>
+                <li>Điền đầy đủ thông tin giao hàng</li>
+                <li>Chọn phương thức thanh toán phù hợp</li>
+                <li>Xác nhận đơn hàng — email xác nhận sẽ được gửi ngay</li>
+              </ol>
+              <a href="/guide" class="fqa-link">Xem hướng dẫn chi tiết →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="fq-item" data-category="order">
+          <button class="fq-q" onclick="toggleFAQ(this)">
+            <div class="fqq-left">
+              <div class="fqq-icon fqq-amber">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M5 13a1 1 0 100 2 1 1 0 000-2zm7 0a1 1 0 100 2 1 1 0 000-2zM1 1h1.5l1.5 8h8l1.5-5H4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span>Tôi có thể hủy đơn hàng không?</span>
+            </div>
+            <svg class="fqq-chev" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="fq-a">
+            <div class="fqa-inner">
+              <p>Bạn có thể hủy đơn hàng trong các trường hợp sau:</p>
+              <ul>
+                <li>Đơn hàng chưa được xác nhận (trong vòng 2 giờ sau khi đặt)</li>
+                <li>Đơn hàng chưa được giao cho đơn vị vận chuyển</li>
+              </ul>
+              <p>Để hủy đơn, liên hệ hotline <strong>0345 211 386</strong> hoặc email <strong>quocdat30075@gmail.com</strong> kèm mã đơn hàng.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thanh toán -->
+        <div class="fq-item" data-category="payment">
+          <button class="fq-q" onclick="toggleFAQ(this)">
+            <div class="fqq-left">
+              <div class="fqq-icon fqq-blue">
+                <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1 7h14M4 10h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <span>DQD hỗ trợ những phương thức thanh toán nào?</span>
+            </div>
+            <svg class="fqq-chev" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="fq-a">
+            <div class="fqa-inner">
+              <p>DQD hỗ trợ 4 phương thức thanh toán:</p>
+              <ul>
+                <li><strong>COD</strong> — Thanh toán tiền mặt khi nhận hàng</li>
+                <li><strong>Chuyển khoản ngân hàng</strong> — QR code hoặc số tài khoản</li>
+                <li><strong>Thẻ tín dụng/ghi nợ</strong> — Visa, Mastercard, JCB, Amex</li>
+                <li><strong>USDT</strong> — Thanh toán qua Blockchain (Ethereum, BSC, Polygon)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="fq-item" data-category="payment">
+          <button class="fq-q" onclick="toggleFAQ(this)">
+            <div class="fqq-left">
+              <div class="fqq-icon fqq-blue">
+                <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1 7h14M4 10h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <span>Thanh toán online có an toàn không?</span>
+            </div>
+            <svg class="fqq-chev" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="fq-a">
+            <div class="fqa-inner">
+              <p>Hoàn toàn an toàn! DQD sử dụng các biện pháp bảo mật:</p>
+              <ul>
+                <li><strong>SSL Certificate 256-bit</strong> — Mã hóa toàn bộ dữ liệu</li>
+                <li><strong>Cổng thanh toán uy tín</strong> — Đối tác với các gateway hàng đầu</li>
+                <li><strong>Không lưu trữ thông tin thẻ</strong> — Dữ liệu thẻ không lưu trên hệ thống</li>
+                <li><strong>PCI DSS Compliant</strong> — Tuân thủ chuẩn bảo mật quốc tế</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vận chuyển -->
+        <div class="fq-item" data-category="shipping">
+          <button class="fq-q" onclick="toggleFAQ(this)">
+            <div class="fqq-left">
+              <div class="fqq-icon fqq-green">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M5 13H3a2 2 0 01-2-2V4a2 2 0 012-2h8a2 2 0 012 2v2m-2 9h4m-2-2l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span>Phí vận chuyển là bao nhiêu?</span>
+            </div>
+            <svg class="fqq-chev" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="fq-a">
+            <div class="fqa-inner">
+              <div class="fqa-table">
+                <div class="fqat-row fqat-head"><span>Giá trị đơn hàng</span><span>Phí vận chuyển</span></div>
+                <div class="fqat-row"><span>Từ 5 triệu trở lên</span><span class="fqat-free">Miễn phí</span></div>
+                <div class="fqat-row"><span>Dưới 5 triệu</span><span>200.000 ₫</span></div>
+              </div>
+              <p style="margin-top:.875rem">Phí có thể thay đổi theo khu vực giao hàng, kích thước sản phẩm và dịch vụ đặc biệt (giao tận tầng, lắp đặt).</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="fq-item" data-category="shipping">
+          <button class="fq-q" onclick="toggleFAQ(this)">
+            <div class="fqq-left">
+              <div class="fqq-icon fqq-green">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M5 13H3a2 2 0 01-2-2V4a2 2 0 012-2h8a2 2 0 012 2v2m-2 9h4m-2-2l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span>Thời gian giao hàng là bao lâu?</span>
+            </div>
+            <svg class="fqq-chev" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="fq-a">
+            <div class="fqa-inner">
+              <div class="fqa-table">
+                <div class="fqat-row fqat-head"><span>Khu vực</span><span>Thời gian</span></div>
+                <div class="fqat-row"><span>Nội thành TP.HCM & Hà Nội</span><span>1–2 ngày</span></div>
+                <div class="fqat-row"><span>Các tỉnh thành khác</span><span>3–5 ngày</span></div>
+                <div class="fqat-row"><span>Vùng xa, hải đảo</span><span>5–7 ngày</span></div>
+              </div>
+              <p style="margin-top:.875rem;font-style:italic;color:var(--muted)">Sản phẩm lớn (giường, tủ, sofa) có thể cần thêm 1–2 ngày để chuẩn bị và vận chuyển an toàn.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sản phẩm -->
+        <div class="fq-item" data-category="product">
+          <button class="fq-q" onclick="toggleFAQ(this)">
+            <div class="fqq-left">
+              <div class="fqq-icon fqq-dark">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M1 5l7-4 7 4v7a1 1 0 01-1 1H2a1 1 0 01-1-1V5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+              </div>
+              <span>Sản phẩm có giống hình ảnh trên website không?</span>
+            </div>
+            <svg class="fqq-chev" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="fq-a">
+            <div class="fqa-inner">
+              <p>DQD cam kết minh bạch về hình ảnh sản phẩm:</p>
+              <ul>
+                <li><strong>100% hình ảnh thật</strong> — Chụp từ sản phẩm thực tế, không chỉnh sửa màu sắc</li>
+                <li><strong>Mô tả chi tiết</strong> — Thông số kỹ thuật, chất liệu được ghi rõ ràng</li>
+                <li><strong>Đổi trả nếu không đúng</strong> — Hoàn toàn miễn phí nếu sản phẩm khác mô tả</li>
+              </ul>
+              <p><em>Lưu ý nhỏ: Màu sắc có thể chênh nhẹ do ánh sáng chụp và màn hình hiển thị.</em></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="fq-item" data-category="product">
+          <button class="fq-q" onclick="toggleFAQ(this)">
+            <div class="fqq-left">
+              <div class="fqq-icon fqq-dark">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M1 5l7-4 7 4v7a1 1 0 01-1 1H2a1 1 0 01-1-1V5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+              </div>
+              <span>Tôi có thể xem sản phẩm trực tiếp không?</span>
+            </div>
+            <svg class="fqq-chev" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="fq-a">
+            <div class="fqa-inner">
+              <p>Có! DQD có showroom tại:</p>
+              <ul>
+                <li><strong>Hà Đông, Hà Nội</strong> — Showroom chính của DQD</li>
+              </ul>
+              <p>Giờ làm việc: 8:00 – 20:00 (cả 7 ngày trong tuần)</p>
+              <p>Vui lòng đặt lịch trước qua hotline <strong>0345 211 386</strong> để được tư vấn tốt nhất.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bảo hành -->
+        <div class="fq-item" data-category="warranty">
+          <button class="fq-q" onclick="toggleFAQ(this)">
+            <div class="fqq-left">
+              <div class="fqq-icon fqq-purple">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M8 1l5 2v4c0 4-2.5 6-5 7C5.5 13 3 11 3 7V3L8 1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+              </div>
+              <span>Chính sách bảo hành của DQD như thế nào?</span>
+            </div>
+            <svg class="fqq-chev" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="fq-a">
+            <div class="fqa-inner">
+              <div class="fqa-table">
+                <div class="fqat-row fqat-head"><span>Loại sản phẩm</span><span>Bảo hành</span></div>
+                <div class="fqat-row"><span>Nội thất gỗ</span><span>2 năm</span></div>
+                <div class="fqat-row"><span>Nội thất kim loại</span><span>3 năm</span></div>
+                <div class="fqat-row"><span>Sofa, đệm</span><span>1 năm</span></div>
+                <div class="fqat-row"><span>Phụ kiện</span><span>6 tháng – 1 năm</span></div>
+              </div>
+              <p style="margin-top:.875rem">Bảo hành bao gồm: sửa chữa miễn phí lỗi nhà sản xuất, thay thế linh kiện hỏng hóc, đổi mới nếu không sửa được.</p>
+              <a href="/warranty" class="fqa-link">Xem chính sách bảo hành đầy đủ →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="fq-item" data-category="warranty">
+          <button class="fq-q" onclick="toggleFAQ(this)">
+            <div class="fqq-left">
+              <div class="fqq-icon fqq-purple">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M8 1l5 2v4c0 4-2.5 6-5 7C5.5 13 3 11 3 7V3L8 1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+              </div>
+              <span>Những trường hợp nào không được bảo hành?</span>
+            </div>
+            <svg class="fqq-chev" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="fq-a">
+            <div class="fqa-inner">
+              <p>Bảo hành không áp dụng cho các trường hợp:</p>
+              <ul>
+                <li>Hư hỏng do sử dụng sai cách, tác động ngoại lực</li>
+                <li>Tự ý sửa chữa hoặc thay đổi cấu trúc sản phẩm</li>
+                <li>Hao mòn tự nhiên theo thời gian sử dụng</li>
+                <li>Hư hỏng do thiên tai, hỏa hoạn, ngập nước</li>
+                <li>Mất phiếu bảo hành hoặc tem bảo hành bị rách, mờ</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div class="fq-empty" id="faqEmpty" style="display:none">
+          <svg viewBox="0 0 48 48" fill="none"><circle cx="21" cy="21" r="15" stroke="currentColor" stroke-width="2"/><path d="M33 33l10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M21 14v8m0 4v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <p>Không tìm thấy câu hỏi phù hợp</p>
+          <span>Thử từ khóa khác hoặc liên hệ trực tiếp với DQD</span>
+        </div>
+
+      </div>
+
+      <!-- CTA -->
+      <div class="fq-cta">
+        <div class="fqcta-left">
+          <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="white" stroke-width="2"/><path d="M16 10v7m0 3v.5" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+          <div>
+            <strong>Không tìm thấy câu trả lời?</strong>
+            <span>Đội ngũ DQD luôn sẵn sàng hỗ trợ bạn 8:00–22:00 hàng ngày</span>
+          </div>
+        </div>
+        <div class="fqcta-right">
+          <a href="tel:0345211386" class="fqcta-phone">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M5 2h-1A1.5 1.5 0 002.5 3.5v1C2.5 10.4 6.6 14.5 13.5 14.5h1A1.5 1.5 0 0016 13v-1.5a.5.5 0 00-.3-.46l-2.5-1a.5.5 0 00-.56.12l-1 1.25a8 8 0 01-3.5-3.5l1.25-1a.5.5 0 00.12-.57l-1-2.5A.5.5 0 005 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+            0345 211 386
+          </a>
+          <a href="/contact" class="fqcta-btn">Gửi câu hỏi</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
 <style>
-    .faq-hero {
-        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
-        color: white;
-        padding: clamp(3rem, 6vh, 5rem) 0;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .faq-hero::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
-        opacity: 0.3;
-        pointer-events: none;
-    }
-    
-    .faq-hero .container {
-        position: relative;
-        z-index: 1;
-    }
-    
-    .faq-hero h1 {
-        font-size: clamp(2rem, 5vw, 3rem);
-        font-weight: 800;
-        margin-bottom: clamp(0.75rem, 1.5vh, 1rem);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-    
-    .faq-hero p {
-        font-size: clamp(1rem, 2vw, 1.25rem);
-        opacity: 0.95;
-        color: white;
-    }
-    
-    .faq-content {
-        padding: clamp(3rem, 6vh, 4rem) 0;
-        background: var(--bg-cream);
-    }
-    
-    .faq-wrapper {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 clamp(1rem, 3vw, 2rem);
-    }
-    
-    .faq-search-box {
-        margin-bottom: clamp(2rem, 4vh, 3rem);
-        position: relative;
-    }
-    
-    .faq-search-box input {
-        width: 100%;
-        padding: clamp(14px, 2vw, 18px) clamp(20px, 3vw, 24px) clamp(14px, 2vw, 18px) clamp(56px, 6vw, 64px);
-        border: 2px solid var(--border-color);
-        border-radius: 50px;
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        background: white;
-        color: var(--text-dark);
-    }
-    
-    .faq-search-box input:focus {
-        outline: none;
-        border-color: var(--sage-medium);
-        box-shadow: 0 0 0 4px var(--sage-light);
-        transform: translateY(-2px);
-    }
-    
-    .faq-search-box i {
-        position: absolute;
-        left: clamp(20px, 3vw, 24px);
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--text-light);
-        font-size: clamp(1rem, 2vw, 1.25rem);
-        transition: color 0.3s ease;
-    }
-    
-    .faq-search-box input:focus + i {
-        color: var(--sage-medium);
-    }
-    
-    .faq-filters {
-        display: flex;
-        gap: clamp(0.75rem, 1.5vw, 1rem);
-        margin-bottom: clamp(2rem, 4vh, 3rem);
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .faq-filter {
-        padding: clamp(10px, 1.5vw, 14px) clamp(18px, 3vw, 24px);
-        border: 2px solid var(--border-color);
-        background: white;
-        border-radius: var(--radius-full);
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        font-size: clamp(0.875rem, 1.6vw, 1rem);
-        font-weight: 500;
-        color: var(--text-medium);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .faq-filter:hover {
-        border-color: var(--sage-medium);
-        color: var(--sage-dark);
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-sm);
-    }
-    
-    .faq-filter.active {
-        background: var(--gradient-sage);
-        color: white;
-        border-color: transparent;
-        box-shadow: var(--shadow-md);
-    }
-    
-    .faq-item {
-        background: white;
-        border-radius: var(--radius-xl);
-        margin-bottom: clamp(1rem, 2vh, 1.5rem);
-        box-shadow: var(--shadow-sm);
-        overflow: hidden;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 2px solid transparent;
-    }
-    
-    .faq-item:hover {
-        box-shadow: var(--shadow-md);
-        border-color: var(--sage-light);
-        transform: translateY(-2px);
-    }
-    
-    .faq-question {
-        padding: clamp(1.25rem, 2.5vw, 1.75rem);
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: all 0.3s ease;
-        background: white;
-    }
-    
-    .faq-question:hover {
-        background: var(--bg-cream);
-    }
-    
-    .faq-question.active {
-        background: var(--bg-sage);
-    }
-    
-    .faq-question > div {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        flex: 1;
-    }
-    
-    .faq-question i:first-child {
-        color: var(--sage-medium);
-        font-size: clamp(1.125rem, 2vw, 1.375rem);
-    }
-    
-    .faq-question strong {
-        color: var(--text-dark);
-        font-size: clamp(1rem, 2vw, 1.125rem);
-        font-weight: 600;
-    }
-    
-    .faq-question i.fa-chevron-down {
-        transition: transform 0.3s ease;
-        color: var(--sage-medium);
-        font-size: 1rem;
-        flex-shrink: 0;
-    }
-    
-    .faq-question.active i.fa-chevron-down {
-        transform: rotate(180deg);
-    }
-    
-    .faq-answer {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        padding: 0 clamp(1.25rem, 2.5vw, 1.75rem);
-        background: white;
-    }
-    
-    .faq-answer.show {
-        max-height: 2000px;
-        padding: 0 clamp(1.25rem, 2.5vw, 1.75rem) clamp(1.25rem, 2.5vh, 1.75rem) clamp(1.25rem, 2.5vw, 1.75rem);
-    }
-    
-    .faq-answer p {
-        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
-        line-height: 1.8;
-        color: var(--text-medium);
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-    }
-    
-    .faq-answer ul, .faq-answer ol {
-        margin-left: clamp(1.5rem, 3vw, 2rem);
-        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
-    }
-    
-    .faq-answer li {
-        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
-        line-height: 1.8;
-        color: var(--text-medium);
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-    }
-    
-    .faq-answer strong {
-        color: var(--sage-dark);
-        font-weight: 600;
-    }
-    
-    .faq-answer em {
-        color: var(--text-light);
-        font-style: italic;
-    }
-    
-    .faq-cta {
-        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
-        color: white;
-        padding: clamp(2.5rem, 5vw, 3.5rem);
-        border-radius: var(--radius-xl);
-        text-align: center;
-        margin-top: clamp(3rem, 6vh, 4rem);
-        box-shadow: var(--shadow-lg);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .faq-cta::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: pulse 3s ease-in-out infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 0.5; }
-        50% { transform: scale(1.1); opacity: 0.8; }
-    }
-    
-    .faq-cta .container {
-        position: relative;
-        z-index: 1;
-    }
-    
-    .faq-cta h3 {
-        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
-        font-size: clamp(1.5rem, 3vw, 2rem);
-        font-weight: 700;
-        color: white;
-    }
-    
-    .faq-cta p {
-        margin-bottom: clamp(1.5rem, 3vh, 2rem);
-        opacity: 0.95;
-        font-size: clamp(1rem, 2vw, 1.125rem);
-        color: white;
-    }
-    
-    .faq-cta-buttons {
-        display: flex;
-        gap: clamp(0.875rem, 2vw, 1.25rem);
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    
-    .faq-cta-btn {
-        padding: clamp(12px, 2vw, 16px) clamp(24px, 4vw, 32px);
-        border-radius: var(--radius-full);
-        text-decoration: none;
-        font-weight: 600;
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-    
-    .faq-cta-btn.primary {
-        background: white;
-        color: var(--sage-dark);
-        box-shadow: var(--shadow-md);
-    }
-    
-    .faq-cta-btn.primary:hover {
-        transform: translateY(-3px);
-        box-shadow: var(--shadow-lg);
-    }
-    
-    .faq-cta-btn.secondary {
-        background: rgba(255,255,255,0.2);
-        color: white;
-        border: 2px solid white;
-    }
-    
-    .faq-cta-btn.secondary:hover {
-        background: white;
-        color: var(--sage-dark);
-    }
-    
-    @media (max-width: 768px) {
-        .faq-content {
-            padding: 2rem 0;
-        }
-        
-        .faq-filters {
-            gap: 0.75rem;
-        }
-        
-        .faq-filter {
-            padding: 10px 16px;
-            font-size: 0.875rem;
-        }
-        
-        .faq-cta {
-            padding: 2rem 1.5rem;
-        }
-        
-        .faq-cta-buttons {
-            flex-direction: column;
-            width: 100%;
-        }
-        
-        .faq-cta-btn {
-            width: 100%;
-            justify-content: center;
-        }
-    }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--font:'Be Vietnam Pro',sans-serif;--dark:#1a1a18;--gold:#b8922a;--border:#e8e3db;--text:#2a2520;--muted:#7a7060;--light:#f5f4f1}
+body{font-family:var(--font);color:var(--text)}
+a{text-decoration:none;color:inherit}
+
+/* Header */
+.fq-header{background:var(--dark);padding:3rem 2rem;text-align:center;position:relative;overflow:hidden}
+.fq-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 100%,rgba(196,160,100,.12) 0%,transparent 60%)}
+.fqh-inner{position:relative;z-index:1;max-width:1280px;margin:0 auto}
+.fqh-bc{display:flex;align-items:center;justify-content:center;gap:.375rem;margin-bottom:.875rem}
+.fqh-bc a,.fqh-bc span{font-size:.75rem;color:rgba(255,255,255,.45)}
+.fqh-bc a:hover{color:rgba(255,255,255,.8)}
+.fqh-bc svg{width:11px;height:11px;color:rgba(255,255,255,.25)}
+.fq-header h1{font-size:clamp(1.875rem,4vw,2.75rem);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:.5rem}
+.fq-header h1 .gold{color:#c4a064;font-weight:300}
+.fq-header p{font-size:.9rem;color:rgba(255,255,255,.5);font-weight:300}
+
+/* Toolbar */
+.fq-toolbar{background:#fff;border-bottom:1.5px solid var(--border);padding:1.125rem 2rem}
+.fqt-inner{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:1rem;align-items:center}
+.fqt-search-wrap{display:flex;align-items:center;gap:.625rem;background:var(--light);border:1.5px solid var(--border);border-radius:99px;padding:.5rem .5rem .5rem 1.125rem;width:100%;max-width:520px;transition:border-color .2s,box-shadow .2s}
+.fqt-search-wrap:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,146,42,.1);background:#fff}
+.fqt-search-wrap svg{width:17px;height:17px;color:var(--muted);flex-shrink:0}
+.fqt-search-wrap input{flex:1;border:none;background:transparent;font-family:var(--font);font-size:.875rem;color:var(--text);outline:none}
+.fqt-search-wrap input::placeholder{color:#c0b9ae}
+.fqt-filters{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+.fqt-filter{display:inline-flex;align-items:center;gap:.375rem;padding:.45rem 1rem;border:1.5px solid var(--border);background:#fff;border-radius:99px;font-family:var(--font);font-size:.78rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .18s}
+.fqt-filter svg{width:13px;height:13px}
+.fqt-filter:hover{border-color:#d0c8bc;color:var(--dark)}
+.fqt-active{background:var(--dark);border-color:var(--dark);color:#fff}
+
+/* Body */
+.fq-body{background:var(--light);padding:2rem}
+.fqb-inner{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:1.25rem}
+
+/* FAQ list */
+.fq-list{display:flex;flex-direction:column;gap:.625rem}
+
+/* FAQ item */
+.fq-item{background:#fff;border-radius:10px;border:1.5px solid var(--border);overflow:hidden;transition:border-color .18s,box-shadow .18s}
+.fq-item.open{border-color:#d0c8bc;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+
+/* Question button */
+.fq-q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.125rem 1.375rem;background:none;border:none;cursor:pointer;text-align:left;font-family:var(--font);transition:background .18s}
+.fq-q:hover{background:var(--light)}
+.fqq-left{display:flex;align-items:center;gap:.875rem;flex:1;min-width:0}
+.fqq-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fqq-icon svg{width:16px;height:16px}
+.fqq-amber{background:#fffbeb;color:#d97706}
+.fqq-blue{background:#eff6ff;color:#2563eb}
+.fqq-green{background:#f0faf4;color:#16a34a}
+.fqq-dark{background:var(--light);color:var(--dark)}
+.fqq-purple{background:#faf5ff;color:#7c3aed}
+.fqq-left span{font-size:.9rem;font-weight:600;color:var(--dark);line-height:1.4}
+.fqq-chev{width:16px;height:16px;color:var(--muted);flex-shrink:0;transition:transform .25s}
+.fq-item.open .fqq-chev{transform:rotate(180deg)}
+
+/* Answer */
+.fq-a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.fq-item.open .fq-a{grid-template-rows:1fr}
+.fqa-inner{overflow:hidden;padding:0 1.375rem}
+.fq-item.open .fqa-inner{padding:0 1.375rem 1.375rem}
+.fqa-inner p{font-size:.875rem;color:var(--muted);line-height:1.8;margin-bottom:.625rem}
+.fqa-inner p:last-child{margin-bottom:0}
+.fqa-inner ul,.fqa-inner ol{list-style:none;display:flex;flex-direction:column;gap:.375rem;margin-bottom:.625rem}
+.fqa-inner li{font-size:.875rem;color:var(--text);line-height:1.6;display:flex;align-items:flex-start;gap:.5rem}
+.fqa-inner ul li::before{content:'·';color:var(--gold);font-weight:700;flex-shrink:0;margin-top:1px}
+.fqa-inner ol{counter-reset:ol}
+.fqa-inner ol li{counter-increment:ol}
+.fqa-inner ol li::before{content:counter(ol)'.';color:var(--gold);font-weight:700;flex-shrink:0;min-width:18px}
+.fqa-inner strong{color:var(--dark);font-weight:600}
+.fqa-inner em{color:var(--muted);font-style:italic}
+.fqa-link{display:inline-flex;margin-top:.625rem;font-size:.8125rem;font-weight:600;color:var(--gold);border-bottom:1px solid var(--gold);padding-bottom:1px;transition:color .18s}
+.fqa-link:hover{color:var(--dark);border-color:var(--dark)}
+
+/* Table in answer */
+.fqa-table{border:1.5px solid var(--border);border-radius:8px;overflow:hidden;font-size:.8125rem}
+.fqat-row{display:grid;grid-template-columns:1fr auto;border-bottom:1px solid var(--border)}
+.fqat-row:last-child{border-bottom:none}
+.fqat-row span{padding:.625rem .875rem;color:var(--text)}
+.fqat-row span:first-child{border-right:1px solid var(--border);background:var(--light);font-weight:500;color:var(--dark)}
+.fqat-head span{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--light)!important}
+.fqat-free{color:#16a34a!important;font-weight:700!important}
+
+/* Empty state */
+.fq-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.625rem;padding:3rem;text-align:center;background:#fff;border-radius:10px;border:1.5px solid var(--border)}
+.fq-empty svg{width:48px;height:48px;color:#d0c8bc}
+.fq-empty p{font-size:.9rem;font-weight:600;color:var(--dark)}
+.fq-empty span{font-size:.8125rem;color:var(--muted)}
+
+/* CTA */
+.fq-cta{background:var(--dark);border-radius:10px;padding:1.75rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;position:relative;overflow:hidden}
+.fq-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(196,160,100,.1) 0%,transparent 60%);pointer-events:none}
+.fqcta-left{display:flex;align-items:flex-start;gap:1rem;position:relative;z-index:1;flex:1}
+.fqcta-left svg{width:32px;height:32px;flex-shrink:0;margin-top:2px}
+.fqcta-left strong{display:block;font-size:.9375rem;font-weight:700;color:#fff;margin-bottom:.2rem}
+.fqcta-left span{font-size:.78rem;color:rgba(255,255,255,.5)}
+.fqcta-right{display:flex;align-items:center;gap:.875rem;flex-wrap:wrap;position:relative;z-index:1}
+.fqcta-phone{display:inline-flex;align-items:center;gap:.375rem;font-size:.9rem;font-weight:700;color:#c4a064;font-variant-numeric:tabular-nums;transition:color .18s}
+.fqcta-phone svg{width:14px;height:14px}
+.fqcta-phone:hover{color:#fff}
+.fqcta-btn{display:inline-flex;padding:.7rem 1.5rem;background:#fff;color:var(--dark);border-radius:8px;font-family:var(--font);font-size:.875rem;font-weight:600;transition:all .18s}
+.fqcta-btn:hover{background:var(--gold);color:#fff}
+
+@media(max-width:700px){
+  .fq-body{padding:1rem}
+  .fqt-inner{align-items:stretch}
+  .fqt-search-wrap{max-width:100%}
+  .fq-cta{flex-direction:column;align-items:flex-start}
+  .fqcta-left svg{display:none}
+}
 </style>
 
-<!-- Page Header -->
-<section class="faq-hero">
-    <div class="container">
-        <h1>
-            <i class="fas fa-question-circle"></i> Câu Hỏi Thường Gặp
-        </h1>
-        <p>Tìm câu trả lời cho những câu hỏi phổ biến nhất</p>
-    </div>
-</section>
-
-<!-- FAQ Content -->
-<section class="faq-content">
-    <div class="faq-wrapper">
-        
-        <!-- Search Box -->
-        <div class="faq-search-box">
-            <input type="text" 
-                   id="faqSearch" 
-                   placeholder="Tìm kiếm câu hỏi..."
-                   onkeyup="searchFAQ()">
-            <i class="fas fa-search"></i>
-        </div>
-
-        <!-- Categories -->
-        <div class="faq-filters">
-            <button onclick="filterFAQ('all')" class="faq-filter active" data-filter="all">
-                <i class="fas fa-th"></i> Tất Cả
-            </button>
-            <button onclick="filterFAQ('order')" class="faq-filter" data-filter="order">
-                <i class="fas fa-shopping-cart"></i> Đặt Hàng
-            </button>
-            <button onclick="filterFAQ('payment')" class="faq-filter" data-filter="payment">
-                <i class="fas fa-credit-card"></i> Thanh Toán
-            </button>
-            <button onclick="filterFAQ('shipping')" class="faq-filter" data-filter="shipping">
-                <i class="fas fa-truck"></i> Vận Chuyển
-            </button>
-            <button onclick="filterFAQ('product')" class="faq-filter" data-filter="product">
-                <i class="fas fa-box"></i> Sản Phẩm
-            </button>
-            <button onclick="filterFAQ('warranty')" class="faq-filter" data-filter="warranty">
-                <i class="fas fa-shield-alt"></i> Bảo Hành
-            </button>
-        </div>
-
-        <!-- FAQ List -->
-        <div id="faqList">
-            
-            <!-- Đặt Hàng -->
-            <div class="faq-item" data-category="order">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    <div>
-                        <i class="fas fa-shopping-cart"></i>
-                        <strong>Làm thế nào để đặt hàng trên website?</strong>
-                    </div>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Để đặt hàng trên website, bạn làm theo các bước sau:</p>
-                    <ol>
-                        <li>Chọn sản phẩm bạn muốn mua và click "Thêm Vào Giỏ"</li>
-                        <li>Vào giỏ hàng kiểm tra lại sản phẩm</li>
-                        <li>Click "Tiến Hành Thanh Toán"</li>
-                        <li>Điền thông tin giao hàng</li>
-                        <li>Chọn phương thức thanh toán</li>
-                        <li>Xác nhận đơn hàng</li>
-                    </ol>
-                    <p>Sau khi đặt hàng thành công, bạn sẽ nhận được email xác nhận.</p>
-                </div>
-            </div>
-
-            <div class="faq-item" data-category="order">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    <div>
-                        <i class="fas fa-shopping-cart"></i>
-                        <strong>Tôi có thể hủy đơn hàng không?</strong>
-                    </div>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Bạn có thể hủy đơn hàng trong các trường hợp sau:</p>
-                    <ul>
-                        <li>Đơn hàng chưa được xác nhận (trong vòng 2 giờ sau khi đặt)</li>
-                        <li>Đơn hàng chưa được giao cho đơn vị vận chuyển</li>
-                    </ul>
-                    <p>Để hủy đơn hàng, vui lòng liên hệ hotline <strong>0345211386</strong> hoặc email <strong>quocdat30075@gmail.com</strong> kèm theo mã đơn hàng.</p>
-                </div>
-            </div>
-
-            <!-- Thanh Toán -->
-            <div class="faq-item" data-category="payment">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    <div>
-                        <i class="fas fa-credit-card"></i>
-                        <strong>Website hỗ trợ những phương thức thanh toán nào?</strong>
-                    </div>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Chúng tôi hỗ trợ 3 phương thức thanh toán:</p>
-                    <ol>
-                        <li><strong>COD (Thanh toán khi nhận hàng):</strong> Thanh toán bằng tiền mặt khi nhận hàng</li>
-                        <li><strong>Chuyển khoản ngân hàng:</strong> Chuyển khoản qua QR code hoặc số tài khoản</li>
-                        <li><strong>Thẻ tín dụng/ghi nợ:</strong> Thanh toán online qua thẻ Visa, Mastercard, JCB, Amex</li>
-                    </ol>
-                </div>
-            </div>
-
-            <div class="faq-item" data-category="payment">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    <div>
-                        <i class="fas fa-credit-card"></i>
-                        <strong>Thanh toán online có an toàn không?</strong>
-                    </div>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Hoàn toàn an toàn! Chúng tôi sử dụng:</p>
-                    <ul>
-                        <li><strong>SSL Certificate:</strong> Mã hóa toàn bộ dữ liệu</li>
-                        <li><strong>Payment Gateway uy tín:</strong> Đối tác với các cổng thanh toán hàng đầu</li>
-                        <li><strong>Không lưu trữ:</strong> Thông tin thẻ không được lưu trên hệ thống</li>
-                        <li><strong>PCI DSS Compliant:</strong> Tuân thủ chuẩn bảo mật quốc tế</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Vận Chuyển -->
-            <div class="faq-item" data-category="shipping">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    <div>
-                        <i class="fas fa-truck"></i>
-                        <strong>Phí vận chuyển là bao nhiêu?</strong>
-                    </div>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Phí vận chuyển được tính như sau:</p>
-                    <ul>
-                        <li><strong>MIỄN PHÍ</strong> cho đơn hàng từ 5 triệu trở lên</li>
-                        <li><strong>200,000đ</strong> cho đơn hàng dưới 5 triệu</li>
-                    </ul>
-                    <p>Phí vận chuyển có thể thay đổi tùy theo:</p>
-                    <ul>
-                        <li>Khu vực giao hàng (nội thành/ngoại thành)</li>
-                        <li>Kích thước và trọng lượng sản phẩm</li>
-                        <li>Dịch vụ giao hàng đặc biệt (giao tận tầng, lắp đặt...)</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="faq-item" data-category="shipping">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    <div>
-                        <i class="fas fa-truck"></i>
-                        <strong>Thời gian giao hàng là bao lâu?</strong>
-                    </div>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Thời gian giao hàng phụ thuộc vào khu vực:</p>
-                    <ul>
-                        <li><strong>Nội thành TP.HCM & Hà Nội:</strong> 1-2 ngày</li>
-                        <li><strong>Các tỉnh thành khác:</strong> 3-5 ngày</li>
-                        <li><strong>Vùng xa, hải đảo:</strong> 5-7 ngày</li>
-                    </ul>
-                    <p><em>Lưu ý: Sản phẩm nội thất lớn (giường, tủ, sofa...) có thể cần thêm 1-2 ngày để chuẩn bị và vận chuyển.</em></p>
-                </div>
-            </div>
-
-            <!-- Sản Phẩm -->
-            <div class="faq-item" data-category="product">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    <div>
-                        <i class="fas fa-box"></i>
-                        <strong>Sản phẩm có giống hình ảnh trên website không?</strong>
-                    </div>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Chúng tôi cam kết:</p>
-                    <ul>
-                        <li><strong>100% hình ảnh thật:</strong> Tất cả ảnh đều được chụp từ sản phẩm thực tế</li>
-                        <li><strong>Mô tả chi tiết:</strong> Thông số kỹ thuật, chất liệu được ghi rõ</li>
-                        <li><strong>Đổi trả nếu không đúng:</strong> Nếu sản phẩm khác biệt đáng kể so với mô tả</li>
-                    </ul>
-                    <p><em>Lưu ý: Màu sắc có thể chênh lệch nhẹ do ánh sáng và màn hình hiển thị.</em></p>
-                </div>
-            </div>
-
-            <div class="faq-item" data-category="product">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    <div>
-                        <i class="fas fa-box"></i>
-                        <strong>Tôi có thể xem sản phẩm trực tiếp không?</strong>
-                    </div>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Có! Chúng tôi có showroom tại:</p>
-                    <ul>
-                        <li><strong>TP.HCM:</strong> 123 Đường ABC, Quận XYZ</li>
-                        <li><strong>Hà Nội:</strong> 456 Đường DEF, Quận GHI</li>
-                    </ul>
-                    <p>Giờ làm việc: 8:00 - 20:00 (cả tuần)</p>
-                    <p>Vui lòng đặt lịch trước qua hotline <strong>0345211386</strong> để được tư vấn tốt nhất.</p>
-                </div>
-            </div>
-
-            <!-- Bảo Hành -->
-            <div class="faq-item" data-category="warranty">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    <div>
-                        <i class="fas fa-shield-alt"></i>
-                        <strong>Chính sách bảo hành như thế nào?</strong>
-                    </div>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Tất cả sản phẩm đều được bảo hành chính hãng:</p>
-                    <ul>
-                        <li><strong>Nội thất gỗ:</strong> Bảo hành 2 năm</li>
-                        <li><strong>Nội thất kim loại:</strong> Bảo hành 3 năm</li>
-                        <li><strong>Ghế sofa, đệm:</strong> Bảo hành 1 năm</li>
-                        <li><strong>Phụ kiện:</strong> Bảo hành 6 tháng - 1 năm</li>
-                    </ul>
-                    <p>Bảo hành bao gồm:</p>
-                    <ul>
-                        <li>Sửa chữa miễn phí các lỗi do nhà sản xuất</li>
-                        <li>Thay thế linh kiện hỏng hóc</li>
-                        <li>Đổi sản phẩm mới nếu không sửa được</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="faq-item" data-category="warranty">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    <div>
-                        <i class="fas fa-shield-alt"></i>
-                        <strong>Những trường hợp nào không được bảo hành?</strong>
-                    </div>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>Bảo hành không áp dụng cho:</p>
-                    <ul>
-                        <li>Hư hỏng do sử dụng sai cách, bạo lực</li>
-                        <li>Tự ý sửa chữa hoặc thay đổi sản phẩm</li>
-                        <li>Hao mòn tự nhiên sau thời gian sử dụng</li>
-                        <li>Hư hỏng do thiên tai, hỏa hoạn, ngập nước</li>
-                        <li>Mất phiếu bảo hành hoặc tem bảo hành bị rách, mờ</li>
-                    </ul>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Contact CTA -->
-        <div class="faq-cta">
-            <div class="container">
-                <h3>Không tìm thấy câu trả lời?</h3>
-                <p>Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giúp bạn!</p>
-                <div class="faq-cta-buttons">
-                    <a href="tel:0345211386" class="faq-cta-btn primary">
-                        <i class="fas fa-phone"></i> 0345211386
-                    </a>
-                    <a href="/contact" class="faq-cta-btn secondary">
-                        <i class="fas fa-envelope"></i> Gửi Email
-                    </a>
-                </div>
-            </div>
-        </div>
-
-    </div>
-</section>
-
 <script>
-// Toggle FAQ
-function toggleFAQ(element) {
-    const answer = element.nextElementSibling;
-    const isActive = element.classList.contains('active');
-    
-    // Close all other FAQs
-    document.querySelectorAll('.faq-question').forEach(q => {
-        q.classList.remove('active');
-        q.nextElementSibling.classList.remove('show');
-    });
-    
-    // Toggle current FAQ
-    if (!isActive) {
-        element.classList.add('active');
-        answer.classList.add('show');
-    }
+/* Toggle */
+function toggleFAQ(btn) {
+  const item = btn.closest('.fq-item');
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.fq-item').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
 }
 
-// Filter FAQ by category
-function filterFAQ(category) {
-    const items = document.querySelectorAll('.faq-item');
-    const filters = document.querySelectorAll('.faq-filter');
-    
-    // Update active filter
-    filters.forEach(f => f.classList.remove('active'));
-    document.querySelector(`[data-filter="${category}"]`).classList.add('active');
-    
-    // Show/hide items
-    items.forEach(item => {
-        if (category === 'all' || item.dataset.category === category) {
-            item.style.display = 'block';
-        } else {
-            item.style.display = 'none';
-        }
-    });
+/* Filter */
+function filterFAQ(cat, btn) {
+  document.querySelectorAll('.fqt-filter').forEach(b => b.classList.remove('fqt-active'));
+  btn.classList.add('fqt-active');
+  let vis = 0;
+  document.querySelectorAll('.fq-item').forEach(item => {
+    const show = cat === 'all' || item.dataset.category === cat;
+    item.style.display = show ? '' : 'none';
+    if (show) vis++;
+  });
+  document.getElementById('faqEmpty').style.display = vis === 0 ? '' : 'none';
 }
 
-// Search FAQ
+/* Search */
 function searchFAQ() {
-    const input = document.getElementById('faqSearch').value.toLowerCase();
-    const items = document.querySelectorAll('.faq-item');
-    
-    items.forEach(item => {
-        const question = item.querySelector('.faq-question').textContent.toLowerCase();
-        const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
-        
-        if (question.includes(input) || answer.includes(input)) {
-            item.style.display = 'block';
-        } else {
-            item.style.display = 'none';
-        }
-    });
+  const q = document.getElementById('faqSearch').value.toLowerCase().trim();
+  let vis = 0;
+  document.querySelectorAll('.fq-item').forEach(item => {
+    const text = item.textContent.toLowerCase();
+    const show = !q || text.includes(q);
+    item.style.display = show ? '' : 'none';
+    if (show) vis++;
+  });
+  document.getElementById('faqEmpty').style.display = vis === 0 ? '' : 'none';
 }
 </script>
 

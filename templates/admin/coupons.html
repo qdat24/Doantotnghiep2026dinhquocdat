@@ -1,132 +1,227 @@
 {% extends "admin/base.html" %}
-
 {% block title %}Quản Lý Mã Giảm Giá{% endblock %}
 
+{% block extra_css %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+:root{--f:'Be Vietnam Pro',ui-sans-serif,sans-serif;--dk:#1a1a18;--gd:#b8922a;--bd:#e8e3db;--tx:#2a2520;--mu:#7a7060;--lt:#f5f4f1;--wh:#fff;--gr:#16a34a;--rd:#dc2626;--am:#d97706;--bl:#2563eb;--pu:#7c3aed}
+.cp{font-family:var(--f);color:var(--tx)}.cp *{box-sizing:border-box}
+.cp-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1.5px solid var(--bd);flex-wrap:wrap}
+.cp-hd h1{font-size:1.375rem;font-weight:700;color:var(--dk);margin:0 0 .2rem;letter-spacing:-.02em}
+.cp-hd p{font-size:.8125rem;color:var(--mu);margin:0}
+/* Stats */
+.cp-sg{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+.cp-st{background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.875rem}
+.cp-ic{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}.cp-ic svg{width:20px;height:20px}
+.ig{background:#f0faf4;color:#16a34a}.ir{background:#fff5f5;color:#dc2626}.ip{background:#faf5ff;color:#7c3aed}
+.cp-n{font-size:1.625rem;font-weight:700;color:var(--dk);line-height:1;letter-spacing:-.02em}
+.cp-l{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--mu);margin-top:.25rem}
+/* Card */
+.cp-card{background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;overflow:hidden}
+.cp-ch{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.875rem 1.25rem;border-bottom:1.5px solid var(--bd);background:var(--lt);flex-wrap:wrap}
+.cp-ch-l{display:flex;align-items:center;gap:.75rem}
+.cp-ch h3{font-size:.9rem;font-weight:700;color:var(--dk);margin:0}
+.cp-cnt{font-size:.72rem;color:var(--mu);font-weight:500;background:var(--wh);border:1.5px solid var(--bd);padding:.2rem .625rem;border-radius:99px}
+.cp-ch-r{display:flex;gap:.5rem;flex-wrap:wrap}
+/* Buttons */
+.cp-btn{display:inline-flex;align-items:center;gap:.375rem;padding:.45rem .875rem;border:1.5px solid var(--bd);border-radius:8px;font-family:var(--f);font-size:.72rem;font-weight:600;color:var(--mu);text-decoration:none;transition:all .15s;white-space:nowrap;background:var(--wh);cursor:pointer}
+.cp-btn svg{width:12px;height:12px}
+.cp-btn:hover{border-color:var(--dk);color:var(--dk)}
+.cp-btn.active{background:var(--dk);border-color:var(--dk);color:var(--wh)}
+.cp-btn.primary{background:var(--dk);border-color:var(--dk);color:var(--wh)}.cp-btn.primary:hover{background:#2e2e2a}
+.cp-btn.add{background:var(--gr);border-color:var(--gr);color:var(--wh)}.cp-btn.add:hover{background:#15803d}
+/* Table */
+.cp-tw{overflow-x:auto}
+.cp-t{width:100%;border-collapse:collapse;font-size:.8125rem}
+.cp-t th{padding:.75rem .875rem;text-align:left;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);border-bottom:1.5px solid var(--bd);background:var(--lt);white-space:nowrap}
+.cp-t td{padding:.75rem .875rem;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:middle}
+.cp-t tbody tr:last-child td{border-bottom:none}.cp-t tbody tr:hover td{background:#fdfcfb}
+/* Code cell */
+.cp-code{display:inline-flex;align-items:center;padding:.35rem .75rem;background:var(--lt);border:1.5px dashed var(--gd);border-radius:7px;font-family:'Courier New',monospace;font-size:.8125rem;font-weight:700;color:var(--gd);letter-spacing:.04em;cursor:pointer;transition:all .18s}
+.cp-code:hover{background:rgba(184,146,42,.08)}
+.cp-name{font-weight:600;color:var(--dk)}
+/* Discount type & value */
+.cp-type{display:inline-flex;align-items:center;gap:.25rem;padding:.2rem .5rem;border-radius:5px;font-size:.68rem;font-weight:700}
+.cp-pct{background:#f0faf4;color:#166534}.cp-fix{background:#eff6ff;color:#1e40af}
+.cp-val{font-weight:700;color:var(--dk)}
+.cp-usage{font-size:.78rem;color:var(--mu)}.cp-usage b{color:var(--dk);font-weight:700}
+.cp-date{font-size:.75rem;color:var(--mu);white-space:nowrap}
+/* Status badge */
+.sb{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .625rem;border-radius:99px;font-size:.68rem;font-weight:700;white-space:nowrap}
+.dot{width:6px;height:6px;border-radius:50%}
+.s-on{background:#f0faf4;color:#166534}.s-on .dot{background:#16a34a}
+.s-off{background:#fff5f5;color:#991b1b}.s-off .dot{background:#dc2626}
+/* Actions */
+.cp-acts{display:flex;gap:.375rem}
+.cp-act{display:inline-flex;align-items:center;gap:.25rem;padding:.35rem .625rem;border:1.5px solid var(--bd);border-radius:7px;font-family:var(--f);font-size:.72rem;font-weight:600;color:var(--mu);text-decoration:none;transition:all .15s;background:var(--wh);cursor:pointer}
+.cp-act svg{width:11px;height:11px}
+.cp-act:hover{border-color:var(--dk);color:var(--dk)}
+.cp-act.del{border-color:#fecaca;color:var(--rd)}.cp-act.del:hover{background:var(--rd);border-color:var(--rd);color:var(--wh)}
+/* Pagination */
+.cp-pg{display:flex;align-items:center;justify-content:center;gap:.375rem;padding:1.125rem;border-top:1.5px solid var(--bd)}
+.cp-pb{display:inline-flex;align-items:center;gap:.25rem;padding:.5rem .75rem;border:1.5px solid var(--bd);border-radius:7px;font-family:var(--f);font-size:.78rem;font-weight:600;color:var(--mu);text-decoration:none;transition:all .15s;background:var(--wh)}
+.cp-pb svg{width:12px;height:12px}.cp-pb:hover{border-color:var(--dk);color:var(--dk)}
+.cp-pb.dis{opacity:.35;pointer-events:none}
+.cp-pi{font-size:.8125rem;color:var(--mu);padding:0 .25rem}.cp-pi strong{color:var(--dk)}
+/* Empty */
+.cp-em{display:flex;flex-direction:column;align-items:center;gap:.625rem;padding:3.5rem;color:var(--mu);text-align:center}
+.cp-em svg{width:44px;height:44px;color:#d0c8bc}.cp-em p{font-size:.875rem}
+.cp-em a{color:var(--gd);font-weight:600}
+
+@media(max-width:900px){.cp-sg{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.cp-sg{grid-template-columns:1fr};.cp-hd{flex-direction:column}}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="page-header">
-    <h1>🎫 Quản Lý Mã Giảm Giá</h1>
-    <p>Quản lý các mã giảm giá và khuyến mãi</p>
-</div>
+<div class="cp">
 
-<div class="card" style="margin-bottom: 20px;">
-    <div class="card-header">
-        <h3>Thống Kê</h3>
-    </div>
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
-        <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 5px;">
-            <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">{{ stats.total }}</div>
-            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Tổng số</div>
-        </div>
-        <div style="text-align: center; padding: 15px; background: #d4edda; border-radius: 5px;">
-            <div style="font-size: 24px; font-weight: bold; color: #27ae60;">{{ stats.active }}</div>
-            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Đang hoạt động</div>
-        </div>
-        <div style="text-align: center; padding: 15px; background: #f8d7da; border-radius: 5px;">
-            <div style="font-size: 24px; font-weight: bold; color: #e74c3c;">{{ stats.inactive }}</div>
-            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Đã tắt</div>
-        </div>
-    </div>
-</div>
+  <div class="cp-hd">
+    <div><h1>Quản lý mã giảm giá</h1><p>Tạo và quản lý các mã khuyến mãi cho DQD</p></div>
+    <a href="{{ url_for('admin_add_coupon') }}" class="cp-btn add">
+      <svg viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Thêm mã mới
+    </a>
+  </div>
 
-<div class="card">
-    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <h3>Danh Sách Mã Giảm Giá ({{ total_coupons }})</h3>
-        <div>
-            <a href="{{ url_for('admin_add_coupon') }}" class="btn btn-success">+ Thêm Mã Mới</a>
-            <a href="{{ url_for('admin_coupons') }}" class="btn {% if not active_filter %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px; margin-left: 10px;">Tất Cả</a>
-            <a href="{{ url_for('admin_coupons', active='true') }}" class="btn {% if active_filter == 'true' %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px;">Đang Hoạt Động</a>
-            <a href="{{ url_for('admin_coupons', active='false') }}" class="btn {% if active_filter == 'false' %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px;">Đã Tắt</a>
-        </div>
+  <!-- Stats -->
+  <div class="cp-sg">
+    <div class="cp-st">
+      <div class="cp-ic ip"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2h5a1 1 0 011 1v5l-8 8a2 2 0 01-2.828 0l-4-4A2 2 0 011.17 9L9 2h1zm3.5 4a1 1 0 100-2 1 1 0 000 2z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div><div class="cp-n">{{ stats.total }}</div><div class="cp-l">Tổng mã giảm giá</div></div>
+    </div>
+    <div class="cp-st">
+      <div class="cp-ic ig"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div><div class="cp-n" style="color:var(--gr)">{{ stats.active }}</div><div class="cp-l">Đang hoạt động</div></div>
+    </div>
+    <div class="cp-st">
+      <div class="cp-ic ir"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M13 7L7 13M7 7l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div><div class="cp-n" style="color:var(--rd)">{{ stats.inactive }}</div><div class="cp-l">Đã tắt</div></div>
+    </div>
+  </div>
+
+  <!-- Table card -->
+  <div class="cp-card">
+    <div class="cp-ch">
+      <div class="cp-ch-l">
+        <h3>Danh sách mã giảm giá</h3>
+        <span class="cp-cnt">{{ total_coupons }}</span>
+      </div>
+      <div class="cp-ch-r">
+        <a href="{{ url_for('admin_coupons') }}" class="cp-btn {% if not active_filter %}active{% endif %}">Tất cả</a>
+        <a href="{{ url_for('admin_coupons', active='true') }}" class="cp-btn {% if active_filter=='true' %}active{% endif %}">
+          <svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M4 6l2 2 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Hoạt động
+        </a>
+        <a href="{{ url_for('admin_coupons', active='false') }}" class="cp-btn {% if active_filter=='false' %}active{% endif %}">
+          <svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M4 4l4 4M8 4L4 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Đã tắt
+        </a>
+      </div>
     </div>
 
     {% if coupons %}
-    <table class="table">
+    <div class="cp-tw">
+      <table class="cp-t">
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Mã</th>
-                <th>Tên</th>
-                <th>Loại Giảm</th>
-                <th>Giá Trị</th>
-                <th>Đơn Tối Thiểu</th>
-                <th>Giảm Tối Đa</th>
-                <th>Sử Dụng</th>
-                <th>Ngày Bắt Đầu</th>
-                <th>Ngày Kết Thúc</th>
-                <th>Trạng Thái</th>
-                <th>Thao Tác</th>
-            </tr>
+          <tr>
+            <th>Mã</th>
+            <th>Tên</th>
+            <th>Loại</th>
+            <th>Giá trị</th>
+            <th>Đơn tối thiểu</th>
+            <th>Giảm tối đa</th>
+            <th>Sử dụng</th>
+            <th>Hiệu lực</th>
+            <th>Trạng thái</th>
+            <th></th>
+          </tr>
         </thead>
         <tbody>
-            {% for coupon in coupons %}
-            <tr>
-                <td>{{ coupon.id }}</td>
-                <td><strong style="color: #3498db; font-size: 16px;">{{ coupon.code }}</strong></td>
-                <td><strong>{{ coupon.name }}</strong></td>
-                <td>
-                    {% if coupon.discount_type == 'percentage' %}
-                        <span style="color: #27ae60;">%</span>
-                    {% else %}
-                        <span style="color: #3498db;">₫</span>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if coupon.discount_type == 'percentage' %}
-                        {{ coupon.discount_value }}%
-                    {% else %}
-                        {{ "{:,.0f}".format(coupon.discount_value) }} ₫
-                    {% endif %}
-                </td>
-                <td>{{ "{:,.0f}".format(coupon.min_order_amount) }} ₫</td>
-                <td>
-                    {% if coupon.max_discount_amount %}
-                        {{ "{:,.0f}".format(coupon.max_discount_amount) }} ₫
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td>
-                    {% if coupon.usage_limit %}
-                        {{ coupon.usage_count }} / {{ coupon.usage_limit }}
-                    {% else %}
-                        {{ coupon.usage_count }} / ∞
-                    {% endif %}
-                </td>
-                <td>{{ coupon.start_date.strftime('%d/%m/%Y') if coupon.start_date else '-' }}</td>
-                <td>{{ coupon.end_date.strftime('%d/%m/%Y') if coupon.end_date else '-' }}</td>
-                <td>
-                    {% if coupon.is_active %}
-                        <span style="color: #27ae60; font-weight: 600;">✓ Hoạt động</span>
-                    {% else %}
-                        <span style="color: #e74c3c; font-weight: 600;">✗ Tắt</span>
-                    {% endif %}
-                </td>
-                <td>
-                    <a href="{{ url_for('admin_edit_coupon', coupon_id=coupon.id) }}" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px; margin-right: 5px;">Sửa</a>
-                    <form method="POST" action="{{ url_for('admin_delete_coupon', coupon_id=coupon.id) }}" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn xóa mã giảm giá này?');">
-                        <button type="submit" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Xóa</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
+          {% for c in coupons %}
+          <tr>
+            <td>
+              <span class="cp-code" onclick="navigator.clipboard.writeText('{{ c.code }}').then(()=>{this.textContent='✓ Đã copy';setTimeout(()=>this.textContent='{{ c.code }}',1500)})">
+                {{ c.code }}
+              </span>
+            </td>
+            <td class="cp-name">{{ c.name }}</td>
+            <td>
+              {% if c.discount_type == 'percentage' %}
+              <span class="cp-type cp-pct">% Phần trăm</span>
+              {% else %}
+              <span class="cp-type cp-fix">₫ Cố định</span>
+              {% endif %}
+            </td>
+            <td class="cp-val">
+              {% if c.discount_type == 'percentage' %}{{ c.discount_value }}%
+              {% else %}{{ "{:,.0f}".format(c.discount_value) }} ₫{% endif %}
+            </td>
+            <td class="cp-date">{{ "{:,.0f}".format(c.min_order_amount) }} ₫</td>
+            <td class="cp-date">{{ "{:,.0f}".format(c.max_discount_amount)+" ₫" if c.max_discount_amount else "—" }}</td>
+            <td>
+              <div class="cp-usage">
+                <b>{{ c.usage_count }}</b>
+                /
+                {% if c.usage_limit %}<b>{{ c.usage_limit }}</b>{% else %}<span>∞</span>{% endif %}
+              </div>
+            </td>
+            <td>
+              <div class="cp-date">{{ c.start_date.strftime('%d/%m/%Y') if c.start_date else '—' }}</div>
+              <div class="cp-date" style="margin-top:.15rem">→ {{ c.end_date.strftime('%d/%m/%Y') if c.end_date else '∞' }}</div>
+            </td>
+            <td>
+              {% if c.is_active %}<span class="sb s-on"><span class="dot"></span>Hoạt động</span>
+              {% else %}<span class="sb s-off"><span class="dot"></span>Đã tắt</span>{% endif %}
+            </td>
+            <td>
+              <div class="cp-acts">
+                <a href="{{ url_for('admin_edit_coupon', coupon_id=c.id) }}" class="cp-act">
+                  <svg viewBox="0 0 12 12" fill="none"><path d="M9 2l1 1-6 6H3V8L9 2z" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Sửa
+                </a>
+                <form method="POST" action="{{ url_for('admin_delete_coupon', coupon_id=c.id) }}"
+                      style="display:inline"
+                      onsubmit="return confirm('Xóa mã giảm giá {{ c.code }}?')">
+                  <button type="submit" class="cp-act del">
+                    <svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M5 5v4M7 5v4M3 3l.5 7h5L9 3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Xóa
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
         </tbody>
-    </table>
+      </table>
+    </div>
 
     {% if total_pages > 1 %}
-    <div style="margin-top: 20px; text-align: center;">
-        {% if page > 1 %}
-        <a href="{{ url_for('admin_coupons', page=page-1, active=active_filter) }}" class="btn" style="margin-right: 10px;">← Trước</a>
-        {% endif %}
-        
-        <span style="margin: 0 15px;">Trang {{ page }} / {{ total_pages }}</span>
-        
-        {% if page < total_pages %}
-        <a href="{{ url_for('admin_coupons', page=page+1, active=active_filter) }}" class="btn">Sau →</a>
-        {% endif %}
+    <div class="cp-pg">
+      <a href="{{ url_for('admin_coupons', page=page-1, active=active_filter) }}" class="cp-pb {% if page<=1 %}dis{% endif %}">
+        <svg viewBox="0 0 12 12" fill="none"><path d="M8 3L4 6l4 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Trước
+      </a>
+      <span class="cp-pi">Trang <strong>{{ page }}</strong> / <strong>{{ total_pages }}</strong></span>
+      <a href="{{ url_for('admin_coupons', page=page+1, active=active_filter) }}" class="cp-pb {% if page>=total_pages %}dis{% endif %}">
+        Sau
+        <svg viewBox="0 0 12 12" fill="none"><path d="M4 3l4 3-4 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
     </div>
     {% endif %}
+
     {% else %}
-    <p style="text-align: center; color: #7f8c8d; padding: 40px;">Chưa có mã giảm giá nào. <a href="{{ url_for('admin_add_coupon') }}">Thêm mã đầu tiên</a></p>
+    <div class="cp-em">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M10 2h4a1 1 0 011 1v5l-7 7a2 2 0 000 2.828l3 3A2 2 0 0013.828 20L21 12.828V8a1 1 0 00-1-1h-5M10 2L3 9m11-5a1 1 0 110 2 1 1 0 010-2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <p>Chưa có mã giảm giá nào{% if active_filter %} phù hợp{% endif %}</p>
+      <a href="{{ url_for('admin_add_coupon') }}">+ Thêm mã giảm giá đầu tiên</a>
+    </div>
     {% endif %}
+
+  </div>
 </div>
+
+<script>
+/* Toast copy feedback */
+</script>
 {% endblock %}

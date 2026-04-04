@@ -1,177 +1,236 @@
 {% extends "admin/base.html" %}
-
-{% block title %}Chỉnh sửa khách hàng - {{ customer.full_name }}{% endblock %}
+{% block title %}Chỉnh sửa - {{ customer.full_name }}{% endblock %}
 
 {% block extra_css %}
 <style>
-    .form-container {
-        max-width: 800px;
-        margin: 0 auto;
-    }
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+:root{--f:'Be Vietnam Pro',ui-sans-serif,sans-serif;--dk:#1a1a18;--gd:#b8922a;--bd:#e8e3db;--tx:#2a2520;--mu:#7a7060;--lt:#f5f4f1;--wh:#fff;--gr:#16a34a;--rd:#dc2626;--am:#d97706}
+.ec{font-family:var(--f);color:var(--tx)}.ec *{box-sizing:border-box}
+/* Head */
+.ec-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1.5px solid var(--bd);flex-wrap:wrap}
+.ec-hd h1{font-size:1.375rem;font-weight:700;color:var(--dk);margin:0 0 .2rem;letter-spacing:-.02em}
+.ec-hd p{font-size:.8125rem;color:var(--mu);margin:0}
+.ec-badge{display:inline-flex;align-items:center;gap:.375rem;padding:.35rem .875rem;border-radius:99px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
+.badge-edit{background:#fffbeb;color:#854d0e;border:1px solid #fde68a}
+.ec-back{display:inline-flex;align-items:center;gap:.375rem;padding:.6rem 1.125rem;border:1.5px solid var(--bd);border-radius:8px;font-family:var(--f);font-size:.78rem;font-weight:600;color:var(--mu);text-decoration:none;transition:all .18s;flex-shrink:0}
+.ec-back svg{width:13px;height:13px}.ec-back:hover{border-color:var(--dk);color:var(--dk)}
+/* Layout */
+.ec-grid{display:grid;grid-template-columns:1fr 300px;gap:1.25rem;align-items:start}
+/* Cards */
+.ec-card{background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:1.25rem}
+.ec-card:last-child{margin-bottom:0}
+.ec-ch{display:flex;align-items:center;gap:.75rem;padding:.875rem 1.25rem;border-bottom:1.5px solid var(--bd);background:var(--lt)}
+.ec-ch-ic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ec-ch-ic svg{width:16px;height:16px}
+.ci-blue{background:#eff6ff;color:#2563eb}.ci-amber{background:#fffbeb;color:#d97706}.ci-red{background:#fff5f5;color:#dc2626}.ci-dk{background:var(--lt);color:var(--dk)}
+.ec-ch h3{font-size:.9rem;font-weight:700;color:var(--dk);margin:0}
+.ec-cb{padding:1.25rem;display:flex;flex-direction:column;gap:.875rem}
+/* Fields */
+.ec-f{display:flex;flex-direction:column;gap:.375rem}
+.ec-f label{font-size:.78rem;font-weight:600;color:var(--dk)}
+.req{color:var(--rd)}
+.ec-inp,.ec-ta{padding:.65rem .875rem;border:1.5px solid var(--bd);border-radius:8px;font-family:var(--f);font-size:.875rem;color:var(--tx);background:var(--wh);outline:none;transition:border-color .18s,box-shadow .18s;width:100%}
+.ec-inp:focus,.ec-ta:focus{border-color:var(--gd);box-shadow:0 0 0 3px rgba(184,146,42,.1)}
+.ec-inp::placeholder,.ec-ta::placeholder{color:#c0b9ae}
+.ec-ta{resize:vertical;min-height:90px}
+.ec-hint{font-size:.72rem;color:var(--mu)}
+/* Radio status */
+.ec-radio-group{display:flex;gap:.625rem;flex-wrap:wrap}
+.ec-radio{display:flex;align-items:center;gap:.625rem;padding:.75rem 1rem;border:1.5px solid var(--bd);border-radius:8px;cursor:pointer;user-select:none;transition:all .18s;flex:1}
+.ec-radio:hover{border-color:#d0c8bc}
+.ec-radio input[type=radio]{width:16px;height:16px;accent-color:var(--gd);flex-shrink:0;margin:0;cursor:pointer}
+.ec-radio span{font-size:.8125rem;font-weight:500;color:var(--dk)}
+.ec-radio.active-opt{border-color:#bbf7d0;background:#f0faf4}
+.ec-radio.inactive-opt{border-color:#fecaca;background:#fff5f5}
+/* Customer meta card */
+.ec-meta{display:flex;flex-direction:column}
+.ec-meta-row{padding:.625rem 1.25rem;border-bottom:1px solid var(--bd);font-size:.8125rem;display:flex;flex-direction:column;gap:.15rem}
+.ec-meta-row:last-child{border-bottom:none}
+.ec-meta-lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--mu)}
+.ec-meta-val{color:var(--dk);font-weight:600}
+.ec-av{width:52px;height:52px;border-radius:50%;background:var(--dk);color:var(--wh);font-size:1.25rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:1.25rem auto .5rem;letter-spacing:-.02em}
+/* Warning */
+.ec-warn{background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:1.125rem 1.25rem}
+.ec-warn-h{display:flex;align-items:center;gap:.625rem;margin-bottom:.75rem;color:#854d0e;font-size:.875rem;font-weight:700}
+.ec-warn-h svg{width:16px;height:16px;flex-shrink:0;color:#d97706}
+.ec-warn ul{padding-left:1.125rem;display:flex;flex-direction:column;gap:.375rem}
+.ec-warn li{font-size:.8125rem;color:#92400e}
+/* Submit bar */
+.ec-bar{background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;position:sticky;bottom:1rem;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.ec-bar-info{font-size:.78rem;color:var(--mu)}
+.ec-bar-info strong{color:var(--dk)}
+.ec-bar-btns{display:flex;gap:.625rem}
+.ec-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.25rem;border-radius:8px;font-family:var(--f);font-size:.875rem;font-weight:600;cursor:pointer;transition:all .18s;text-decoration:none;border:1.5px solid transparent}
+.ec-btn svg{width:15px;height:15px}
+.btn-save{background:var(--dk);color:var(--wh);border-color:var(--dk)}.btn-save:hover{background:#2e2e2a}
+.btn-save:disabled{opacity:.65;cursor:not-allowed}
+.btn-cancel{background:var(--wh);color:var(--mu);border-color:var(--bd)}.btn-cancel:hover{border-color:var(--rd);color:var(--rd)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin .7s linear infinite}
 
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: #2c3e50;
-        font-size: 14px;
-    }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        font-size: 14px;
-        font-family: inherit;
-    }
-
-    .form-group textarea {
-        min-height: 100px;
-        resize: vertical;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-        outline: none;
-        border-color: #3498db;
-        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-    }
-
-    .form-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 30px;
-    }
-
-    .required {
-        color: #e74c3c;
-    }
-
-    .form-note {
-        font-size: 12px;
-        color: #7f8c8d;
-        margin-top: 5px;
-    }
-
-    .customer-info-box {
-        background: #f8f9fa;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-    }
-
-    .customer-info-box h4 {
-        margin: 0 0 10px 0;
-        color: #2c3e50;
-        font-size: 16px;
-    }
-
-    .customer-info-box p {
-        margin: 5px 0;
-        font-size: 14px;
-        color: #495057;
-    }
-
-    .radio-group {
-        display: flex;
-        gap: 20px;
-    }
-
-    .radio-option {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .radio-option input[type="radio"] {
-        width: auto;
-        margin: 0;
-    }
-
-    .radio-option label {
-        margin: 0 !important;
-        font-weight: normal !important;
-    }
+@media(max-width:900px){.ec-grid{grid-template-columns:1fr};.ec-side{order:-1}}
+@media(max-width:600px){.ec-hd{flex-direction:column};.ec-bar{flex-direction:column;align-items:stretch;position:static};.ec-bar-btns{justify-content:flex-end}}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>✏️ Chỉnh sửa thông tin khách hàng</h1>
-    <p>Cập nhật thông tin khách hàng</p>
-</div>
+<div class="ec">
 
-<div class="card form-container">
-    <!-- Customer Info -->
-    <div class="customer-info-box">
-        <h4>👤 {{ customer.full_name }}</h4>
-        <p><strong>Email:</strong> {{ customer.email }}</p>
-        <p><strong>ID:</strong> #{{ customer.id }}</p>
-        <p><strong>Ngày tạo:</strong> {{ customer.created_at.strftime('%d/%m/%Y %H:%M') if customer.created_at else '-' }}</p>
+  <div class="ec-hd">
+    <div>
+      <div class="ec-badge badge-edit">
+        <svg viewBox="0 0 12 12" fill="none" style="width:10px;height:10px"><path d="M9 2l1 1-6 6H3V8L9 2z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Chỉnh sửa
+      </div>
+      <h1>Chỉnh sửa thông tin khách hàng</h1>
+      <p>Cập nhật hồ sơ của <strong>{{ customer.full_name }}</strong></p>
     </div>
+    <a href="{{ url_for('admin_customers') }}" class="ec-back">
+      <svg viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Danh sách khách hàng
+    </a>
+  </div>
 
-    <!-- Edit Form -->
-    <form method="POST" action="{{ url_for('admin_edit_customer', customer_id=customer.id) }}">
-        <div class="form-group">
-            <label>Họ và tên <span class="required">*</span></label>
-            <input type="text" name="full_name" value="{{ customer.full_name }}" required>
-        </div>
+  <form method="POST" action="{{ url_for('admin_edit_customer', customer_id=customer.id) }}" id="editForm">
+    <div class="ec-grid">
 
-        <div class="form-group">
-            <label>Số điện thoại</label>
-            <input type="tel" name="phone" value="{{ customer.phone or '' }}" placeholder="VD: 0901234567">
-            <div class="form-note">Số điện thoại liên hệ của khách hàng</div>
-        </div>
+      <!-- LEFT: Form -->
+      <div class="ec-col-left">
 
-        <div class="form-group">
-            <label>Địa chỉ</label>
-            <textarea name="address" placeholder="Địa chỉ chi tiết...">{{ customer.address or '' }}</textarea>
-            <div class="form-note">Địa chỉ giao hàng mặc định</div>
-        </div>
-
-        <div class="form-group">
-            <label>Trạng thái tài khoản <span class="required">*</span></label>
-            <div class="radio-group">
-                <div class="radio-option">
-                    <input type="radio" name="is_active" id="active" value="true" 
-                           {% if customer.is_active %}checked{% endif %}>
-                    <label for="active">✓ Đang hoạt động</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" name="is_active" id="inactive" value="false" 
-                           {% if not customer.is_active %}checked{% endif %}>
-                    <label for="inactive">✗ Bị khóa</label>
-                </div>
+        <div class="ec-card">
+          <div class="ec-ch">
+            <div class="ec-ch-ic ci-blue"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <h3>Thông tin cá nhân</h3>
+          </div>
+          <div class="ec-cb">
+            <div class="ec-f">
+              <label>Họ và tên <span class="req">*</span></label>
+              <input class="ec-inp" type="text" name="full_name" value="{{ customer.full_name }}" required placeholder="Nhập họ và tên đầy đủ">
             </div>
-            <div class="form-note">Khách hàng bị khóa sẽ không thể đăng nhập vào hệ thống</div>
+            <div class="ec-f">
+              <label>Email <span style="font-size:.72rem;font-weight:400;color:var(--mu)">(không thể thay đổi)</span></label>
+              <input class="ec-inp" type="email" value="{{ customer.email }}" disabled style="background:var(--lt);color:var(--mu);cursor:not-allowed">
+            </div>
+            <div class="ec-f">
+              <label>Số điện thoại</label>
+              <input class="ec-inp" type="tel" name="phone" value="{{ customer.phone or '' }}" placeholder="0901 234 567">
+              <span class="ec-hint">Số điện thoại liên hệ và giao hàng</span>
+            </div>
+            <div class="ec-f">
+              <label>Địa chỉ</label>
+              <textarea class="ec-ta" name="address" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành...">{{ customer.address or '' }}</textarea>
+              <span class="ec-hint">Địa chỉ giao hàng mặc định của khách hàng</span>
+            </div>
+          </div>
         </div>
 
-        <div class="form-actions">
-            <button type="submit" class="btn btn-success">💾 Lưu thay đổi</button>
-            <a href="{{ url_for('admin_customer_detail', customer_id=customer.id) }}" 
-               class="btn btn-warning">❌ Hủy</a>
-            <a href="{{ url_for('admin_customers') }}" 
-               class="btn btn-primary">← Quay lại danh sách</a>
+        <div class="ec-card">
+          <div class="ec-ch">
+            <div class="ec-ch-ic ci-amber"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M10 7v4m0 2v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            <h3>Trạng thái tài khoản</h3>
+          </div>
+          <div class="ec-cb">
+            <div class="ec-f">
+              <label>Trạng thái <span class="req">*</span></label>
+              <div class="ec-radio-group">
+                <label class="ec-radio active-opt">
+                  <input type="radio" name="is_active" value="true" {% if customer.is_active %}checked{% endif %}>
+                  <span>✓ Đang hoạt động</span>
+                </label>
+                <label class="ec-radio inactive-opt">
+                  <input type="radio" name="is_active" value="false" {% if not customer.is_active %}checked{% endif %}>
+                  <span>✗ Bị khóa</span>
+                </label>
+              </div>
+              <span class="ec-hint">Khóa tài khoản sẽ ngăn khách hàng đăng nhập và đặt hàng</span>
+            </div>
+          </div>
         </div>
-    </form>
+
+        <!-- Warning -->
+        <div class="ec-warn">
+          <div class="ec-warn-h">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M10 2l8 14H2L10 2zm0 6v4m0 2v.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Lưu ý quan trọng
+          </div>
+          <ul>
+            <li>Email không thể thay đổi — đây là thông tin đăng nhập duy nhất</li>
+            <li>Khóa tài khoản sẽ ngăn khách hàng đăng nhập và đặt thêm đơn hàng</li>
+            <li>Thông tin cá nhân cần được bảo mật và xử lý theo chính sách bảo mật</li>
+            <li>Chỉ xóa tài khoản khi thực sự cần thiết, thao tác không thể hoàn tác</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: Customer info sidebar -->
+      <div class="ec-col-right ec-side">
+        <div class="ec-card">
+          <div class="ec-ch">
+            <div class="ec-ch-ic ci-dk"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <h3>Thông tin tài khoản</h3>
+          </div>
+          <div class="ec-av">{{ customer.full_name[0].upper() }}</div>
+          <div class="ec-meta">
+            <div class="ec-meta-row">
+              <span class="ec-meta-lbl">Họ và tên</span>
+              <span class="ec-meta-val">{{ customer.full_name }}</span>
+            </div>
+            <div class="ec-meta-row">
+              <span class="ec-meta-lbl">Email</span>
+              <span class="ec-meta-val" style="font-family:'Courier New',monospace;font-size:.78rem">{{ customer.email }}</span>
+            </div>
+            <div class="ec-meta-row">
+              <span class="ec-meta-lbl">Mã khách hàng</span>
+              <span class="ec-meta-val" style="font-family:'Courier New',monospace">#{{ customer.id }}</span>
+            </div>
+            <div class="ec-meta-row">
+              <span class="ec-meta-lbl">Ngày tạo tài khoản</span>
+              <span class="ec-meta-val">{{ customer.created_at.strftime('%d/%m/%Y %H:%M') if customer.created_at else '—' }}</span>
+            </div>
+            <div class="ec-meta-row">
+              <span class="ec-meta-lbl">Trạng thái hiện tại</span>
+              {% if customer.is_active %}
+              <span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:700;color:#166534"><span style="width:7px;height:7px;border-radius:50%;background:#16a34a;flex-shrink:0;display:inline-block"></span>Đang hoạt động</span>
+              {% else %}
+              <span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.78rem;font-weight:700;color:#991b1b"><span style="width:7px;height:7px;border-radius:50%;background:#dc2626;flex-shrink:0;display:inline-block"></span>Bị khóa</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <a href="{{ url_for('admin_customer_detail', customer_id=customer.id) }}"
+           style="display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.8rem;background:var(--lt);border:1.5px solid var(--bd);border-radius:9px;font-family:var(--f);font-size:.875rem;font-weight:600;color:var(--mu);text-decoration:none;transition:all .18s;margin-top:-.625rem">
+          <svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><circle cx="8" cy="6" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Xem trang chi tiết
+        </a>
+      </div>
+
+      <!-- Submit bar spans full -->
+      <div class="ec-bar" style="grid-column:1/-1">
+        <div class="ec-bar-info">Đang sửa: <strong>{{ customer.full_name }}</strong></div>
+        <div class="ec-bar-btns">
+          <a href="{{ url_for('admin_customer_detail', customer_id=customer.id) }}" class="ec-btn btn-cancel">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Hủy
+          </a>
+          <button type="submit" class="ec-btn btn-save" id="saveBtn">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Lưu thay đổi
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </form>
 </div>
 
-<!-- Warning Box -->
-<div class="card form-container" style="margin-top: 20px; border-left: 4px solid #e74c3c;">
-    <h3 style="color: #e74c3c; margin-bottom: 10px;">⚠️ Lưu ý quan trọng</h3>
-    <ul style="margin: 0; padding-left: 20px; color: #495057;">
-        <li>Email không thể thay đổi vì đây là thông tin đăng nhập</li>
-        <li>Khi khóa tài khoản, khách hàng sẽ không thể đăng nhập và đặt hàng</li>
-        <li>Thông tin cá nhân của khách hàng cần được bảo mật</li>
-        <li>Chỉ sử dụng chức năng xóa khách hàng khi thực sự cần thiết</li>
-    </ul>
-</div>
+<script>
+document.getElementById('editForm').addEventListener('submit',function(){
+  var b=document.getElementById('saveBtn');
+  b.disabled=true;
+  b.innerHTML='<svg viewBox="0 0 24 24" fill="none" style="width:15px;height:15px;animation:spin .7s linear infinite"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,.3)" stroke-width="3"/><path d="M12 2a10 10 0 0110 10" stroke="white" stroke-width="3" stroke-linecap="round"/></svg> Đang lưu...';
+  setTimeout(function(){b.disabled=false;b.innerHTML='<svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Lưu thay đổi';},5000);
+});
+</script>
 {% endblock %}

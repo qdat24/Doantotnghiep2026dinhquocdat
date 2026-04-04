@@ -1,107 +1,246 @@
 {% extends "admin/base.html" %}
-
 {% block title %}Quản Lý Thông Báo{% endblock %}
 
+{% block extra_css %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+:root{
+  --font:'Be Vietnam Pro',ui-sans-serif,system-ui,sans-serif;
+  --dark:#1a1a18;--gold:#b8922a;--border:#e8e3db;
+  --text:#2a2520;--muted:#7a7060;--light:#f5f4f1;--white:#ffffff;
+  --green:#16a34a;--amber:#d97706;--blue:#2563eb;--red:#dc2626;
+}
+.nt-page{font-family:var(--font);color:var(--text)}
+.nt-page *{box-sizing:border-box}
+
+/* Head */
+.nt-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1.5px solid var(--border);flex-wrap:wrap}
+.nt-head h1{font-size:1.375rem;font-weight:700;color:var(--dark);margin:0 0 .25rem;letter-spacing:-.02em}
+.nt-head p{font-size:.8125rem;color:var(--muted);margin:0}
+
+/* Stats */
+.nt-stats{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.nt-stat{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:1.125rem 1.25rem;display:flex;align-items:center;gap:1rem}
+.nt-stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nt-stat-icon svg{width:22px;height:22px}
+.si-total {background:#f5f4f1;color:var(--dark)}
+.si-unread{background:#fffbeb;color:#d97706}
+.nt-stat-num{font-size:1.75rem;font-weight:700;color:var(--dark);line-height:1;letter-spacing:-.02em}
+.nt-stat-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:.25rem;font-weight:600}
+.si-unread .nt-stat-num{color:#d97706}
+
+/* Card */
+.nt-card{background:var(--white);border:1.5px solid var(--border);border-radius:10px;overflow:hidden}
+.nt-card-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.875rem 1.25rem;border-bottom:1.5px solid var(--border);background:var(--light);flex-wrap:wrap}
+.nt-card-head-left{display:flex;align-items:center;gap:.75rem}
+.nt-card-head h3{font-size:.9rem;font-weight:700;color:var(--dark);margin:0}
+.nt-count-badge{font-size:.72rem;color:var(--muted);font-weight:500;background:var(--white);border:1.5px solid var(--border);padding:.2rem .625rem;border-radius:99px}
+
+/* Filter pills */
+.nt-filters{display:flex;gap:.375rem}
+.nt-filter{display:inline-flex;align-items:center;gap:.375rem;padding:.4rem .875rem;border:1.5px solid var(--border);border-radius:99px;font-family:var(--font);font-size:.72rem;font-weight:600;color:var(--muted);text-decoration:none;transition:all .15s;white-space:nowrap}
+.nt-filter:hover{border-color:var(--dark);color:var(--dark)}
+.nt-filter.active{background:var(--dark);border-color:var(--dark);color:var(--white)}
+.nt-filter svg{width:11px;height:11px}
+
+/* Notification list */
+.nt-list{display:flex;flex-direction:column}
+.nt-item{display:flex;align-items:flex-start;gap:1rem;padding:1rem 1.25rem;border-bottom:1px solid var(--border);transition:background .15s;position:relative}
+.nt-item:last-child{border-bottom:none}
+.nt-item:hover{background:#fdfcfb}
+.nt-item.unread{background:#fffef5}
+.nt-item.unread:hover{background:#fffbeb}
+
+/* Unread indicator line */
+.nt-item.unread::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--amber)}
+
+/* Type icon */
+.nt-type-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.nt-type-icon svg{width:18px;height:18px}
+.nti-order  {background:#eff6ff;color:#2563eb}
+.nti-payment{background:#f0faf4;color:#16a34a}
+.nti-promo  {background:#fffbeb;color:#d97706}
+.nti-system {background:#f5f4f1;color:#7a7060}
+
+/* Content */
+.nt-body{flex:1;min-width:0}
+.nt-title{font-size:.875rem;font-weight:700;color:var(--dark);margin-bottom:.2rem;display:flex;align-items:center;gap:.5rem}
+.nt-unread-dot{width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0}
+.nt-msg{font-size:.8125rem;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nt-meta{display:flex;align-items:center;gap:.75rem;margin-top:.5rem;flex-wrap:wrap}
+.nt-type-badge{display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:5px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.ntb-order  {background:#eff6ff;color:#1e40af}
+.ntb-payment{background:#f0faf4;color:#166534}
+.ntb-promo  {background:#fffbeb;color:#854d0e}
+.ntb-system {background:#f5f4f1;color:#7a7060}
+.nt-date{font-size:.72rem;color:var(--muted)}
+
+/* Right: link + read status */
+.nt-right{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;flex-shrink:0}
+.nt-link{display:inline-flex;align-items:center;gap:.25rem;font-size:.72rem;font-weight:600;color:var(--blue);text-decoration:none;white-space:nowrap;transition:color .15s}
+.nt-link svg{width:11px;height:11px}
+.nt-link:hover{color:var(--dark)}
+.nt-read-badge{font-size:.68rem;font-weight:600;padding:.2rem .5rem;border-radius:5px}
+.nt-read-badge.unread{background:#fffbeb;color:#854d0e}
+.nt-read-badge.read{background:#f5f4f1;color:#7a7060}
+
+/* Empty */
+.nt-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.625rem;padding:3.5rem;color:var(--muted);text-align:center}
+.nt-empty svg{width:44px;height:44px;color:#d0c8bc}
+.nt-empty p{font-size:.875rem}
+
+/* Pagination */
+.nt-pagination{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:1.125rem;border-top:1.5px solid var(--border)}
+.nt-page-btn{display:inline-flex;align-items:center;gap:.375rem;padding:.5rem .875rem;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font);font-size:.78rem;font-weight:600;color:var(--muted);text-decoration:none;transition:all .18s;background:var(--white)}
+.nt-page-btn:hover{border-color:var(--dark);color:var(--dark)}
+.nt-page-btn svg{width:13px;height:13px}
+.nt-page-info{font-size:.8125rem;color:var(--muted);padding:0 .25rem}
+.nt-page-info strong{color:var(--dark)}
+.nt-page-disabled{opacity:.35;pointer-events:none}
+
+@media(max-width:600px){
+  .nt-head{flex-direction:column}
+  .nt-item{flex-direction:column;gap:.75rem}
+  .nt-right{flex-direction:row;align-items:center}
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="page-header">
-    <h1>🔔 Quản Lý Thông Báo</h1>
-    <p>Xem và quản lý thông báo hệ thống</p>
-</div>
+<div class="nt-page">
 
-<div class="card" style="margin-bottom: 20px;">
-    <div class="card-header">
-        <h3>Thống Kê</h3>
+  <!-- Head -->
+  <div class="nt-head">
+    <div>
+      <h1>Quản lý thông báo</h1>
+      <p>Xem và theo dõi thông báo hệ thống DQD</p>
     </div>
-    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
-        <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 5px;">
-            <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">{{ stats.total }}</div>
-            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Tổng số</div>
-        </div>
-        <div style="text-align: center; padding: 15px; background: #fff3cd; border-radius: 5px;">
-            <div style="font-size: 24px; font-weight: bold; color: #f39c12;">{{ stats.unread }}</div>
-            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Chưa đọc</div>
-        </div>
-    </div>
-</div>
+  </div>
 
-<div class="card">
-    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <h3>Danh Sách Thông Báo ({{ total_notifications }})</h3>
-        <div>
-            <a href="{{ url_for('admin_notifications') }}" class="btn {% if not unread_only %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px; margin-right: 5px;">Tất Cả</a>
-            <a href="{{ url_for('admin_notifications', unread='true') }}" class="btn {% if unread_only %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px;">Chưa Đọc</a>
-        </div>
+  <!-- Stats -->
+  <div class="nt-stats">
+    <div class="nt-stat">
+      <div class="nt-stat-icon si-total">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <div class="nt-stat-num">{{ stats.total }}</div>
+        <div class="nt-stat-label">Tổng thông báo</div>
+      </div>
+    </div>
+    <div class="nt-stat">
+      <div class="nt-stat-icon si-unread">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18" cy="5" r="4" fill="#d97706" stroke="white" stroke-width="1.5"/></svg>
+      </div>
+      <div>
+        <div class="nt-stat-num">{{ stats.unread }}</div>
+        <div class="nt-stat-label">Chưa đọc</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main card -->
+  <div class="nt-card">
+    <div class="nt-card-head">
+      <div class="nt-card-head-left">
+        <h3>Danh sách thông báo</h3>
+        <span class="nt-count-badge">{{ total_notifications }}</span>
+      </div>
+      <div class="nt-filters">
+        <a href="{{ url_for('admin_notifications') }}"
+           class="nt-filter {% if not unread_only %}active{% endif %}">
+          Tất cả
+        </a>
+        <a href="{{ url_for('admin_notifications', unread='true') }}"
+           class="nt-filter {% if unread_only %}active{% endif %}">
+          <svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="2" fill="currentColor"/></svg>
+          Chưa đọc{% if stats.unread %} ({{ stats.unread }}){% endif %}
+        </a>
+      </div>
     </div>
 
     {% if notifications %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Loại</th>
-                <th>Tiêu Đề</th>
-                <th>Nội Dung</th>
-                <th>Link</th>
-                <th>Trạng Thái</th>
-                <th>Ngày Tạo</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for notification in notifications %}
-            <tr style="{% if not notification.is_read %}background: #fff3cd;{% endif %}">
-                <td>{{ notification.id }}</td>
-                <td>
-                    {% if notification.type == 'order' %}
-                        <span style="color: #3498db;">🛒 Đơn hàng</span>
-                    {% elif notification.type == 'payment' %}
-                        <span style="color: #27ae60;">💳 Thanh toán</span>
-                    {% elif notification.type == 'promotion' %}
-                        <span style="color: #f39c12;">🎁 Khuyến mãi</span>
-                    {% else %}
-                        <span style="color: #7f8c8d;">📢 Hệ thống</span>
-                    {% endif %}
-                </td>
-                <td><strong>{{ notification.title }}</strong></td>
-                <td>
-                    <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ notification.message }}">
-                        {{ notification.message[:80] }}{% if notification.message|length > 80 %}...{% endif %}
-                    </div>
-                </td>
-                <td>
-                    {% if notification.link %}
-                        <a href="{{ notification.link }}" target="_blank" style="color: #3498db;">Xem →</a>
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td>
-                    {% if notification.is_read %}
-                        <span style="color: #7f8c8d;">✓ Đã đọc</span>
-                    {% else %}
-                        <span style="color: #f39c12; font-weight: 600;">📬 Chưa đọc</span>
-                    {% endif %}
-                </td>
-                <td>{{ notification.created_at.strftime('%d/%m/%Y %H:%M') if notification.created_at else 'N/A' }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="nt-list">
+      {% for n in notifications %}
+      <div class="nt-item {% if not n.is_read %}unread{% endif %}">
+
+        <!-- Type icon -->
+        <div class="nt-type-icon
+          {% if n.type == 'order' %}nti-order
+          {% elif n.type == 'payment' %}nti-payment
+          {% elif n.type == 'promotion' %}nti-promo
+          {% else %}nti-system{% endif %}">
+          {% if n.type == 'order' %}
+          <svg viewBox="0 0 20 20" fill="none"><path d="M6 16a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2zM2 2h1.5l1.5 9h9l1.5-6H5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          {% elif n.type == 'payment' %}
+          <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 9h16M6 13h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          {% elif n.type == 'promotion' %}
+          <svg viewBox="0 0 20 20" fill="none"><path d="M10 2l2.09 4.26L17 7.27l-3.5 3.41.83 4.82L10 13.18l-4.33 2.27.83-4.82L3 7.27l4.91-.71L10 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          {% else %}
+          <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 4v4m0 3v.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          {% endif %}
+        </div>
+
+        <!-- Body -->
+        <div class="nt-body">
+          <div class="nt-title">
+            {% if not n.is_read %}<span class="nt-unread-dot"></span>{% endif %}
+            {{ n.title }}
+          </div>
+          <div class="nt-msg" title="{{ n.message }}">{{ n.message }}</div>
+          <div class="nt-meta">
+            <span class="nt-type-badge
+              {% if n.type == 'order' %}ntb-order
+              {% elif n.type == 'payment' %}ntb-payment
+              {% elif n.type == 'promotion' %}ntb-promo
+              {% else %}ntb-system{% endif %}">
+              {{ 'Đơn hàng' if n.type == 'order' else ('Thanh toán' if n.type == 'payment' else ('Khuyến mãi' if n.type == 'promotion' else 'Hệ thống')) }}
+            </span>
+            <span class="nt-date">{{ n.created_at.strftime('%d/%m/%Y %H:%M') if n.created_at else 'N/A' }}</span>
+          </div>
+        </div>
+
+        <!-- Right: link + read status -->
+        <div class="nt-right">
+          {% if n.link %}
+          <a href="{{ n.link }}" class="nt-link">
+            Xem
+            <svg viewBox="0 0 12 12" fill="none"><path d="M7 1h4v4M4 8l7-7M1 11l4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          {% endif %}
+          <span class="nt-read-badge {% if n.is_read %}read{% else %}unread{% endif %}">
+            {% if n.is_read %}Đã đọc{% else %}Chưa đọc{% endif %}
+          </span>
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
 
     {% if total_pages > 1 %}
-    <div style="margin-top: 20px; text-align: center;">
-        {% if page > 1 %}
-        <a href="{{ url_for('admin_notifications', page=page-1, unread='true' if unread_only else '') }}" class="btn" style="margin-right: 10px;">← Trước</a>
-        {% endif %}
-        
-        <span style="margin: 0 15px;">Trang {{ page }} / {{ total_pages }}</span>
-        
-        {% if page < total_pages %}
-        <a href="{{ url_for('admin_notifications', page=page+1, unread='true' if unread_only else '') }}" class="btn">Sau →</a>
-        {% endif %}
+    <div class="nt-pagination">
+      <a href="{{ url_for('admin_notifications', page=page-1, unread='true' if unread_only else '') }}"
+         class="nt-page-btn {% if page <= 1 %}nt-page-disabled{% endif %}">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Trước
+      </a>
+      <span class="nt-page-info">Trang <strong>{{ page }}</strong> / <strong>{{ total_pages }}</strong></span>
+      <a href="{{ url_for('admin_notifications', page=page+1, unread='true' if unread_only else '') }}"
+         class="nt-page-btn {% if page >= total_pages %}nt-page-disabled{% endif %}">
+        Sau
+        <svg viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
     </div>
     {% endif %}
+
     {% else %}
-    <p style="text-align: center; color: #7f8c8d; padding: 40px;">Chưa có thông báo nào</p>
+    <div class="nt-empty">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <p>Chưa có thông báo nào{% if unread_only %} chưa đọc{% endif %}</p>
+    </div>
     {% endif %}
+
+  </div><!-- end card -->
+
 </div>
 {% endblock %}

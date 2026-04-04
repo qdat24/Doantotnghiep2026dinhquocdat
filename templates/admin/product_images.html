@@ -1,95 +1,528 @@
 {% extends "admin/base.html" %}
+{% block title %}Quản Lý Hình Ảnh — {{ product.name }}{% endblock %}
 
-{% block title %}Quản Lý Hình Ảnh - {{ product.name }}{% endblock %}
-
-{% block content %}
-<div class="page-header">
-    <h1>🖼️ Quản Lý Hình Ảnh Sản Phẩm</h1>
-    <p><a href="{{ url_for('admin_products') }}">← Quay lại danh sách sản phẩm</a> | <strong>{{ product.name }}</strong></p>
-</div>
-
-<div class="card" style="margin-bottom: 20px;">
-    <h2 style="margin-bottom: 15px;">➕ Thêm Hình Ảnh Mới</h2>
-    <form method="POST" action="{{ url_for('admin_add_product_image', product_id=product.id) }}">
-        <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 15px; align-items: end;">
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">URL Hình Ảnh *</label>
-                <input type="url" name="image_url" required placeholder="https://example.com/image.jpg" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-            </div>
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Mô Tả (Alt Text)</label>
-                <input type="text" name="alt_text" placeholder="Mô tả hình ảnh" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                    <input type="checkbox" name="is_primary">
-                    <span>Ảnh chính</span>
-                </label>
-                <button type="submit" style="padding: 10px 20px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600;">Thêm</button>
-            </div>
-        </div>
-    </form>
-</div>
-
-<div class="card">
-    <h2 style="margin-bottom: 15px;">📸 Danh Sách Hình Ảnh ({{ images|length }})</h2>
-    
-    {% if images %}
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
-        {% for image in images %}
-        <div style="border: 2px solid {% if image.is_primary %}#27ae60{% else %}#ddd{% endif %}; border-radius: 8px; padding: 10px; background: #f9f9f9;">
-            <div style="position: relative; margin-bottom: 10px;">
-                <img src="{{ image.image_url }}" alt="{{ image.alt_text or product.name }}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 5px;">
-                {% if image.is_primary %}
-                <span style="position: absolute; top: 5px; right: 5px; background: #27ae60; color: white; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">CHÍNH</span>
-                {% endif %}
-            </div>
-            <div style="font-size: 12px; color: #666; margin-bottom: 8px;">
-                {% if image.alt_text %}{{ image.alt_text }}{% else %}<em>Không có mô tả</em>{% endif %}
-            </div>
-            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
-                {% if not image.is_primary %}
-                <form method="POST" action="{{ url_for('admin_set_primary_image', product_id=product.id, image_id=image.id) }}" style="flex: 1;">
-                    <button type="submit" style="width: 100%; padding: 6px; background: #3498db; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px;">Đặt làm chính</button>
-                </form>
-                {% endif %}
-                <form method="POST" action="{{ url_for('admin_delete_product_image', product_id=product.id, image_id=image.id) }}" style="flex: 1;" onsubmit="return confirm('Bạn có chắc muốn xóa hình ảnh này?');">
-                    <button type="submit" style="width: 100%; padding: 6px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px;">Xóa</button>
-                </form>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <p style="text-align: center; padding: 40px; color: #999;">Chưa có hình ảnh nào. Hãy thêm hình ảnh đầu tiên!</p>
-    {% endif %}
-</div>
-
+{% block extra_css %}
 <style>
-.card {
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+:root {
+  --font: 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif;
+  --dark: #1a1a18;
+  --gold: #b8922a;
+  --gold-bg: rgba(184,146,42,.08);
+  --border: #e8e3db;
+  --text: #2a2520;
+  --muted: #7a7060;
+  --light: #f5f4f1;
+  --white: #ffffff;
+  --green: #16a34a;
+  --red: #dc2626;
+  --blue: #2563eb;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+}
+.im-page { font-family: var(--font); color: var(--text); }
+.im-page * { box-sizing: border-box; }
+
+/* ── Page head ── */
+.im-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1.5px solid var(--border);
+  flex-wrap: wrap;
+}
+.im-head-left h1 { font-size: 1.375rem; font-weight: 700; color: var(--dark); margin: 0 0 .375rem; letter-spacing: -.02em; }
+.im-breadcrumb { display: flex; align-items: center; gap: .375rem; font-size: .78rem; }
+.im-breadcrumb a { color: var(--muted); transition: color .18s; text-decoration: none; }
+.im-breadcrumb a:hover { color: var(--dark); }
+.im-breadcrumb svg { width: 11px; height: 11px; color: var(--border); }
+.im-breadcrumb span { color: var(--dark); font-weight: 600; }
+.im-back {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  padding: .6rem 1.125rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all .18s;
+  flex-shrink: 0;
+}
+.im-back svg { width: 13px; height: 13px; }
+.im-back:hover { border-color: var(--dark); color: var(--dark); }
+
+/* ── Add image card ── */
+.im-card {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.25rem;
+}
+.im-card-head {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .875rem 1.25rem;
+  border-bottom: 1.5px solid var(--border);
+  background: var(--light);
+}
+.im-card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.im-card-icon svg { width: 16px; height: 16px; }
+.ici-green  { background: #f0faf4; color: #16a34a; }
+.ici-amber  { background: #fffbeb; color: #d97706; }
+.im-card-head h3 { font-size: .9rem; font-weight: 700; color: var(--dark); margin: 0; }
+.im-card-body { padding: 1.25rem; }
+
+/* ── Add form ── */
+.im-add-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: .875rem;
+  align-items: end;
+}
+.im-field { display: flex; flex-direction: column; gap: .375rem; }
+.im-field label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.im-input {
+  padding: .65rem .875rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: .875rem;
+  color: var(--text);
+  background: var(--white);
+  outline: none;
+  transition: border-color .18s, box-shadow .18s;
+  width: 100%;
+}
+.im-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,146,42,.1); }
+.im-input::placeholder { color: #c0b9ae; }
+
+.im-add-actions {
+  display: flex;
+  flex-direction: column;
+  gap: .625rem;
+  align-items: flex-start;
+}
+.im-check-label {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .8125rem;
+  font-weight: 500;
+  color: var(--dark);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.im-check-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--gold);
+  margin: 0;
+  cursor: pointer;
+}
+.im-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .65rem 1.25rem;
+  background: var(--dark);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: .8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .18s;
+  white-space: nowrap;
+}
+.im-add-btn svg { width: 14px; height: 14px; }
+.im-add-btn:hover { background: #2e2e2a; }
+
+/* ── URL preview helper ── */
+.im-url-preview {
+  margin-top: .5rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  width: 100%;
+  height: 80px;
+  object-fit: contain;
+  background: var(--light);
+  display: none;
+  padding: .375rem;
+}
+
+/* ── Image count badge ── */
+.im-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  background: var(--dark);
+  color: var(--white);
+  border-radius: 99px;
+  font-size: .68rem;
+  font-weight: 700;
+  margin-left: .5rem;
+}
+
+/* ── Image grid ── */
+.im-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.125rem;
+}
+
+/* ── Image card ── */
+.im-img-card {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--white);
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+  display: flex;
+  flex-direction: column;
+}
+.im-img-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+.im-img-card.primary { border-color: var(--green); box-shadow: 0 0 0 1px rgba(22,163,74,.15); }
+
+.im-img-wrap {
+  position: relative;
+  aspect-ratio: 4/3;
+  background: var(--light);
+  overflow: hidden;
+}
+.im-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .3s;
+}
+.im-img-card:hover .im-img-wrap img { transform: scale(1.04); }
+.im-primary-badge {
+  position: absolute;
+  top: .5rem;
+  left: .5rem;
+  background: var(--green);
+  color: var(--white);
+  font-size: .65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+  letter-spacing: .04em;
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+.im-primary-badge svg { width: 10px; height: 10px; }
+
+/* Image card body */
+.im-img-body {
+  padding: .875rem;
+  display: flex;
+  flex-direction: column;
+  gap: .625rem;
+  flex: 1;
+}
+.im-img-alt {
+  font-size: .78rem;
+  color: var(--muted);
+  line-height: 1.4;
+  min-height: 1.2em;
+}
+.im-img-alt em { font-style: italic; color: #c0b9ae; }
+.im-img-actions { display: flex; gap: .5rem; }
+
+.im-btn-set-primary {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .375rem;
+  padding: .55rem .625rem;
+  background: #eff6ff;
+  color: var(--blue);
+  border: 1.5px solid #bfdbfe;
+  border-radius: 7px;
+  font-family: var(--font);
+  font-size: .72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .18s;
+  width: 100%;
+}
+.im-btn-set-primary svg { width: 13px; height: 13px; }
+.im-btn-set-primary:hover { background: var(--blue); color: var(--white); border-color: var(--blue); }
+
+.im-btn-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .55rem .75rem;
+  background: #fff5f5;
+  color: var(--red);
+  border: 1.5px solid #fecaca;
+  border-radius: 7px;
+  font-family: var(--font);
+  font-size: .72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .18s;
+}
+.im-btn-delete svg { width: 13px; height: 13px; }
+.im-btn-delete:hover { background: var(--red); color: var(--white); border-color: var(--red); }
+
+/* ── Empty state ── */
+.im-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .875rem;
+  padding: 3.5rem 1.5rem;
+  color: var(--muted);
+  text-align: center;
+}
+.im-empty-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.im-empty-icon svg { width: 28px; height: 28px; color: #d0c8bc; }
+.im-empty h3 { font-size: .9375rem; font-weight: 700; color: var(--dark); margin: 0; }
+.im-empty p { font-size: .8125rem; color: var(--muted); margin: 0; max-width: 260px; }
+
+/* ── Toast ── */
+.im-toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: var(--dark);
+  color: var(--white);
+  padding: .875rem 1.25rem;
+  border-radius: 9px;
+  font-family: var(--font);
+  font-size: .875rem;
+  font-weight: 500;
+  box-shadow: 0 8px 24px rgba(0,0,0,.2);
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all .25s;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+}
+.im-toast.show { opacity: 1; transform: translateY(0); }
+.im-toast svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .im-add-grid { grid-template-columns: 1fr; }
+  .im-add-actions { flex-direction: row; align-items: center; justify-content: space-between; }
+  .im-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+}
+@media (max-width: 480px) {
+  .im-grid { grid-template-columns: 1fr 1fr; gap: .75rem; }
+  .im-head { flex-direction: column; align-items: flex-start; }
 }
 </style>
 {% endblock %}
 
+{% block content %}
+<div class="im-page">
 
+  <!-- Page head -->
+  <div class="im-head">
+    <div class="im-head-left">
+      <h1>Quản lý hình ảnh</h1>
+      <div class="im-breadcrumb">
+        <a href="{{ url_for('admin_products') }}">Sản phẩm</a>
+        <svg viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span>{{ product.name }}</span>
+      </div>
+    </div>
+    <a href="{{ url_for('admin_products') }}" class="im-back">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M10 4L6 8l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Quay lại
+    </a>
+  </div>
 
+  <!-- Add image form -->
+  <div class="im-card">
+    <div class="im-card-head">
+      <div class="im-card-icon ici-green">
+        <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M10 7v6M7 10h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <h3>Thêm hình ảnh mới</h3>
+    </div>
+    <div class="im-card-body">
+      <form method="POST" action="{{ url_for('admin_add_product_image', product_id=product.id) }}">
+        <div class="im-add-grid">
+          <div class="im-field">
+            <label>URL hình ảnh <span style="color:#dc2626">*</span></label>
+            <input type="url" name="image_url" id="imageUrlInput" required
+                   placeholder="https://example.com/image.jpg" class="im-input">
+            <img id="urlPreview" class="im-url-preview" alt="Preview">
+          </div>
+          <div class="im-field">
+            <label>Mô tả (Alt text)</label>
+            <input type="text" name="alt_text" placeholder="Mô tả hình ảnh cho SEO" class="im-input">
+          </div>
+          <div class="im-add-actions">
+            <label class="im-check-label">
+              <input type="checkbox" name="is_primary">
+              <span>Ảnh chính</span>
+            </label>
+            <button type="submit" class="im-add-btn">
+              <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v6M5 8h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              Thêm ảnh
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 
+  <!-- Images gallery -->
+  <div class="im-card">
+    <div class="im-card-head">
+      <div class="im-card-icon ici-amber">
+        <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><circle cx="7" cy="9.5" r="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 14l4-3 3 2.5 3-3 4 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h3>
+        Danh sách hình ảnh
+        <span class="im-count">{{ images|length }}</span>
+      </h3>
+    </div>
+    <div class="im-card-body">
+      {% if images %}
+      <div class="im-grid">
+        {% for image in images %}
+        <div class="im-img-card {% if image.is_primary %}primary{% endif %}">
+          <!-- Image -->
+          <div class="im-img-wrap">
+            <img src="{{ image.image_url }}" alt="{{ image.alt_text or product.name }}"
+                 onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 75%22><rect width=%22100%22 height=%2275%22 fill=%22%23f5f4f1%22/><text x=%2250%22 y=%2240%22 text-anchor=%22middle%22 fill=%22%23c0b9ae%22 font-size=%2212%22>Lỗi ảnh</text></svg>'">
+            {% if image.is_primary %}
+            <div class="im-primary-badge">
+              <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5 5.5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Ảnh chính
+            </div>
+            {% endif %}
+          </div>
 
+          <!-- Body -->
+          <div class="im-img-body">
+            <div class="im-img-alt">
+              {% if image.alt_text %}{{ image.alt_text }}{% else %}<em>Chưa có mô tả</em>{% endif %}
+            </div>
+            <div class="im-img-actions">
+              {% if not image.is_primary %}
+              <form method="POST" action="{{ url_for('admin_set_primary_image', product_id=product.id, image_id=image.id) }}" style="flex:1">
+                <button type="submit" class="im-btn-set-primary">
+                  <svg viewBox="0 0 14 14" fill="none"><path d="M2 7l3 3 7-6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Đặt làm chính
+                </button>
+              </form>
+              {% else %}
+              <div style="flex:1"></div>
+              {% endif %}
+              <form method="POST" action="{{ url_for('admin_delete_product_image', product_id=product.id, image_id=image.id) }}"
+                    onsubmit="return confirmDelete(event, '{{ image.alt_text or "ảnh này" }}')">
+                <button type="submit" class="im-btn-delete" title="Xóa ảnh">
+                  <svg viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M5.5 3.5V2.5a.5.5 0 01.5-.5h2a.5.5 0 01.5.5v1M5.5 6v5M8.5 6v5M3 3.5l.5 8a1 1 0 001 1h5a1 1 0 001-1l.5-8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
 
+      {% else %}
+      <div class="im-empty">
+        <div class="im-empty-icon">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="10" r="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M3 16l4.5-4 3.5 3 3.5-3.5 4 4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Chưa có hình ảnh</h3>
+        <p>Thêm hình ảnh đầu tiên cho sản phẩm <strong>{{ product.name }}</strong> bằng form bên trên</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
 
+</div>
 
+<!-- Toast -->
+<div class="im-toast" id="imToast"></div>
 
+<script>
+/* ── URL live preview ── */
+const urlInput = document.getElementById('imageUrlInput');
+const preview  = document.getElementById('urlPreview');
+let previewTimer;
+urlInput?.addEventListener('input', function() {
+  clearTimeout(previewTimer);
+  const val = this.value.trim();
+  if (!val) { preview.style.display = 'none'; return; }
+  previewTimer = setTimeout(() => {
+    preview.src = val;
+    preview.style.display = 'block';
+    preview.onerror = () => { preview.style.display = 'none'; };
+  }, 600);
+});
 
+/* ── Delete confirm ── */
+function confirmDelete(e, label) {
+  e.preventDefault();
+  const form = e.target;
+  showToast('Đang xác nhận xóa...', 'warn');
+  const ok = confirm('Bạn có chắc muốn xóa "' + label + '"?\nHành động này không thể hoàn tác.');
+  if (ok) { form.submit(); }
+  return false;
+}
 
+/* ── Toast ── */
+function showToast(msg, type) {
+  const t = document.getElementById('imToast');
+  const colors = { success: '#16a34a', error: '#dc2626', warn: '#b8922a' };
+  t.style.background = colors[type] || '#1a1a18';
+  t.innerHTML = `<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="white" stroke-width="1.2"/><path d="M8 5v4m0 2v.5" stroke="white" stroke-width="1.2" stroke-linecap="round"/></svg>${msg}`;
+  t.classList.add('show');
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => t.classList.remove('show'), 3000);
+}
 
-
-
-
-
-
-
+/* ── Image load errors fallback ── */
+document.querySelectorAll('.im-img-wrap img').forEach(img => {
+  if (img.complete && img.naturalHeight === 0) {
+    img.src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 150"><rect width="200" height="150" fill="#f5f4f1"/><text x="100" y="80" text-anchor="middle" fill="#c0b9ae" font-size="13" font-family="sans-serif">Không tải được ảnh</text></svg>');
+  }
+});
+</script>
+{% endblock %}

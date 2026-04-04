@@ -1,138 +1,206 @@
 {% extends "admin/base.html" %}
+{% block title %}Quản Lý Tin Nhắn Liên Hệ{% endblock %}
 
-{% block title %}Quản Lý Liên Hệ{% endblock %}
-
-{% block content %}
-<div class="page-header">
-    <h1>📧 Quản Lý Tin Nhắn Liên Hệ</h1>
-    <p>Danh sách tin nhắn từ khách hàng</p>
-</div>
-
-<div class="card" style="margin-bottom: 20px;">
-    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <h3>Thống Kê</h3>
-    </div>
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
-        <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 5px;">
-            <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">{{ stats.total }}</div>
-            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Tổng số</div>
-        </div>
-        <div style="text-align: center; padding: 15px; background: #fff3cd; border-radius: 5px;">
-            <div style="font-size: 24px; font-weight: bold; color: #f39c12;">{{ stats.new }}</div>
-            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Tin mới</div>
-        </div>
-        <div style="text-align: center; padding: 15px; background: #d4edda; border-radius: 5px;">
-            <div style="font-size: 24px; font-weight: bold; color: #27ae60;">{{ stats.replied }}</div>
-            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Đã trả lời</div>
-        </div>
-    </div>
-</div>
-
-<div class="card">
-    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <h3>Danh Sách Tin Nhắn ({{ total_contacts }})</h3>
-        <div>
-            <a href="{{ url_for('admin_contacts') }}" class="btn {% if not status_filter %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px; margin-right: 5px;">Tất Cả</a>
-            <a href="{{ url_for('admin_contacts', status='new') }}" class="btn {% if status_filter == 'new' %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px; margin-right: 5px;">Mới</a>
-            <a href="{{ url_for('admin_contacts', status='replied') }}" class="btn {% if status_filter == 'replied' %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px;">Đã Trả Lời</a>
-        </div>
-    </div>
-
-    {% if contacts %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Người Gửi</th>
-                <th>Email</th>
-                <th>Điện Thoại</th>
-                <th>Chủ Đề</th>
-                <th>Tin Nhắn</th>
-                <th>Trạng Thái</th>
-                <th>Ngày Gửi</th>
-                <th>Thao Tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for contact in contacts %}
-            <tr style="{% if contact.status == 'new' %}background: #fff3cd;{% elif contact.replied %}background: #d4edda;{% endif %}">
-                <td>{{ contact.id }}</td>
-                <td><strong>{{ contact.name }}</strong></td>
-                <td>{{ contact.email }}</td>
-                <td>{{ contact.phone or '-' }}</td>
-                <td><strong>{{ contact.subject }}</strong></td>
-                <td>
-                    <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ contact.message }}">
-                        {{ contact.message[:100] }}{% if contact.message|length > 100 %}...{% endif %}
-                    </div>
-                </td>
-                <td>
-                    {% if contact.status == 'new' %}
-                        <span style="color: #f39c12; font-weight: 600;">🆕 Mới</span>
-                    {% elif contact.replied %}
-                        <span style="color: #27ae60; font-weight: 600;">✓ Đã trả lời</span>
-                    {% else %}
-                        <span style="color: #7f8c8d;">{{ contact.status }}</span>
-                    {% endif %}
-                </td>
-                <td>{{ contact.created_at.strftime('%d/%m/%Y %H:%M') if contact.created_at else 'N/A' }}</td>
-                <td>
-                    {% if not contact.replied %}
-                    <form method="POST" action="{{ url_for('admin_mark_contact_replied', contact_id=contact.id) }}" style="display: inline; margin-right: 5px;">
-                        <button type="submit" class="btn btn-success" style="padding: 5px 10px; font-size: 12px;">Đánh dấu đã trả lời</button>
-                    </form>
-                    {% endif %}
-                    <form method="POST" action="{{ url_for('admin_delete_contact', contact_id=contact.id) }}" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn xóa tin nhắn này?');">
-                        <button type="submit" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Xóa</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    {% if total_pages > 1 %}
-    <div style="margin-top: 20px; text-align: center;">
-        {% if page > 1 %}
-        <a href="{{ url_for('admin_contacts', page=page-1, status=status_filter) }}" class="btn" style="margin-right: 10px;">← Trước</a>
-        {% endif %}
-        
-        <span style="margin: 0 15px;">Trang {{ page }} / {{ total_pages }}</span>
-        
-        {% if page < total_pages %}
-        <a href="{{ url_for('admin_contacts', page=page+1, status=status_filter) }}" class="btn">Sau →</a>
-        {% endif %}
-    </div>
-    {% endif %}
-    {% else %}
-    <p style="text-align: center; color: #7f8c8d; padding: 40px;">Chưa có tin nhắn nào</p>
-    {% endif %}
-</div>
-
+{% block extra_css %}
 <style>
-.stat-card {
-    transition: transform 0.2s;
-}
-.stat-card:hover {
-    transform: translateY(-2px);
-}
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+:root{--f:'Be Vietnam Pro',ui-sans-serif,sans-serif;--dk:#1a1a18;--gd:#b8922a;--bd:#e8e3db;--tx:#2a2520;--mu:#7a7060;--lt:#f5f4f1;--wh:#fff;--gr:#16a34a;--rd:#dc2626;--am:#d97706;--bl:#2563eb}
+.ct{font-family:var(--f);color:var(--tx)}.ct *{box-sizing:border-box}
+.ct-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1.5px solid var(--bd);flex-wrap:wrap}
+.ct-hd h1{font-size:1.375rem;font-weight:700;color:var(--dk);margin:0 0 .2rem;letter-spacing:-.02em}
+.ct-hd p{font-size:.8125rem;color:var(--mu);margin:0}
+/* Stats */
+.ct-sg{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+.ct-st{background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.875rem}
+.ct-ic{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}.ct-ic svg{width:20px;height:20px}
+.ic-bl{background:#eff6ff;color:#2563eb}.ic-am{background:#fffbeb;color:#d97706}.ic-gr{background:#f0faf4;color:#16a34a}
+.ct-n{font-size:1.625rem;font-weight:700;color:var(--dk);line-height:1;letter-spacing:-.02em}
+.ct-l{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--mu);margin-top:.25rem}
+/* Card */
+.ct-card{background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;overflow:hidden}
+.ct-ch{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.875rem 1.25rem;border-bottom:1.5px solid var(--bd);background:var(--lt);flex-wrap:wrap}
+.ct-ch-l{display:flex;align-items:center;gap:.75rem}
+.ct-ch h3{font-size:.9rem;font-weight:700;color:var(--dk);margin:0}
+.ct-cnt{font-size:.72rem;color:var(--mu);font-weight:500;background:var(--wh);border:1.5px solid var(--bd);padding:.2rem .625rem;border-radius:99px}
+.ct-filters{display:flex;gap:.375rem;flex-wrap:wrap}
+.ct-f{display:inline-flex;align-items:center;gap:.375rem;padding:.4rem .875rem;border:1.5px solid var(--bd);border-radius:99px;font-family:var(--f);font-size:.72rem;font-weight:600;color:var(--mu);text-decoration:none;transition:all .15s;white-space:nowrap}
+.ct-f svg{width:11px;height:11px}
+.ct-f:hover{border-color:var(--dk);color:var(--dk)}
+.ct-f.active{background:var(--dk);border-color:var(--dk);color:var(--wh)}
+/* Table */
+.ct-tw{overflow-x:auto}
+.ct-t{width:100%;border-collapse:collapse;font-size:.8125rem}
+.ct-t th{padding:.75rem 1rem;text-align:left;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);border-bottom:1.5px solid var(--bd);background:var(--lt);white-space:nowrap}
+.ct-t td{padding:.875rem 1rem;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:top}
+.ct-t tbody tr:last-child td{border-bottom:none}
+/* Row highlight */
+.ct-t tbody tr.is-new td{background:#fffef5}
+.ct-t tbody tr.is-new:hover td{background:#fffbeb}
+.ct-t tbody tr.is-new td:first-child{border-left:3px solid var(--am)}
+.ct-t tbody tr:not(.is-new):hover td{background:#fdfcfb}
+/* Cells */
+.ct-sender strong{font-size:.875rem;font-weight:600;color:var(--dk);display:block}
+.ct-sender span{font-size:.72rem;color:var(--mu);font-family:'Courier New',monospace}
+.ct-phone{font-size:.78rem;color:var(--mu)}
+.ct-subject{font-weight:600;color:var(--dk);font-size:.875rem}
+.ct-msg{font-size:.78rem;color:var(--mu);max-width:260px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.5;cursor:default}
+.ct-date{font-size:.75rem;color:var(--mu);white-space:nowrap}
+/* Status */
+.sb{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .625rem;border-radius:99px;font-size:.68rem;font-weight:700;white-space:nowrap}
+.dot{width:6px;height:6px;border-radius:50%}
+.s-new{background:#fffbeb;color:#854d0e}.s-new .dot{background:var(--am)}
+.s-rep{background:#f0faf4;color:#166534}.s-rep .dot{background:var(--gr)}
+.s-oth{background:var(--lt);color:var(--mu)}.s-oth .dot{background:#c0b9ae}
+/* Actions */
+.ct-acts{display:flex;flex-direction:column;gap:.375rem}
+.ct-act{display:inline-flex;align-items:center;gap:.25rem;padding:.35rem .625rem;border:1.5px solid var(--bd);border-radius:7px;font-family:var(--f);font-size:.72rem;font-weight:600;color:var(--mu);transition:all .15s;background:var(--wh);cursor:pointer;white-space:nowrap;width:100%;justify-content:center}
+.ct-act svg{width:11px;height:11px;flex-shrink:0}
+.ct-act:hover{border-color:var(--dk);color:var(--dk)}
+.ct-act.mark{border-color:#bbf7d0;color:var(--gr)}.ct-act.mark:hover{background:var(--gr);border-color:var(--gr);color:var(--wh)}
+.ct-act.del{border-color:#fecaca;color:var(--rd)}.ct-act.del:hover{background:var(--rd);border-color:var(--rd);color:var(--wh)}
+/* Pagination */
+.ct-pg{display:flex;align-items:center;justify-content:center;gap:.375rem;padding:1.125rem;border-top:1.5px solid var(--bd)}
+.ct-pb{display:inline-flex;align-items:center;gap:.25rem;padding:.5rem .75rem;border:1.5px solid var(--bd);border-radius:7px;font-family:var(--f);font-size:.78rem;font-weight:600;color:var(--mu);text-decoration:none;transition:all .15s;background:var(--wh)}
+.ct-pb svg{width:12px;height:12px}.ct-pb:hover{border-color:var(--dk);color:var(--dk)}
+.ct-pb.dis{opacity:.35;pointer-events:none}
+.ct-pi{font-size:.8125rem;color:var(--mu);padding:0 .25rem}.ct-pi strong{color:var(--dk)}
+/* Empty */
+.ct-em{display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:3.5rem;color:var(--mu);text-align:center}
+.ct-em svg{width:44px;height:44px;color:#d0c8bc}.ct-em p{font-size:.875rem}
+
+@media(max-width:900px){.ct-sg{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.ct-sg{grid-template-columns:1fr 1fr};.ct-hd{flex-direction:column}}
 </style>
 {% endblock %}
 
+{% block content %}
+<div class="ct">
 
+  <div class="ct-hd">
+    <div><h1>Tin nhắn liên hệ</h1><p>Danh sách tin nhắn từ khách hàng gửi về DQD</p></div>
+  </div>
 
+  <!-- Stats -->
+  <div class="ct-sg">
+    <div class="ct-st">
+      <div class="ct-ic ic-bl"><svg viewBox="0 0 20 20" fill="none"><path d="M3 6h14a1 1 0 011 1v8a1 1 0 01-1 1H3a1 1 0 01-1-1V7a1 1 0 011-1zm7 5L3 7m14 0l-7 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+      <div><div class="ct-n">{{ stats.total }}</div><div class="ct-l">Tổng tin nhắn</div></div>
+    </div>
+    <div class="ct-st">
+      <div class="ct-ic ic-am"><svg viewBox="0 0 20 20" fill="none"><path d="M3 6h14a1 1 0 011 1v8a1 1 0 01-1 1H3a1 1 0 01-1-1V7a1 1 0 011-1zm7 5L3 7m14 0l-7 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="15" cy="5" r="3" fill="#d97706" stroke="white" stroke-width="1.5"/></svg></div>
+      <div><div class="ct-n" style="color:var(--am)">{{ stats.new }}</div><div class="ct-l">Tin mới</div></div>
+    </div>
+    <div class="ct-st">
+      <div class="ct-ic ic-gr"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div><div class="ct-n" style="color:var(--gr)">{{ stats.replied }}</div><div class="ct-l">Đã trả lời</div></div>
+    </div>
+  </div>
 
+  <!-- Table card -->
+  <div class="ct-card">
+    <div class="ct-ch">
+      <div class="ct-ch-l">
+        <h3>Danh sách tin nhắn</h3>
+        <span class="ct-cnt">{{ total_contacts }}</span>
+      </div>
+      <div class="ct-filters">
+        <a href="{{ url_for('admin_contacts') }}" class="ct-f {% if not status_filter %}active{% endif %}">Tất cả</a>
+        <a href="{{ url_for('admin_contacts', status='new') }}" class="ct-f {% if status_filter=='new' %}active{% endif %}">
+          <svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="2" fill="currentColor"/></svg>
+          Tin mới{% if stats.new %} ({{ stats.new }}){% endif %}
+        </a>
+        <a href="{{ url_for('admin_contacts', status='replied') }}" class="ct-f {% if status_filter=='replied' %}active{% endif %}">
+          <svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M4 6l2 2 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Đã trả lời
+        </a>
+      </div>
+    </div>
 
+    {% if contacts %}
+    <div class="ct-tw">
+      <table class="ct-t">
+        <thead>
+          <tr>
+            <th>Người gửi</th>
+            <th>Điện thoại</th>
+            <th>Chủ đề</th>
+            <th>Nội dung</th>
+            <th>Trạng thái</th>
+            <th>Ngày gửi</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in contacts %}
+          <tr class="{% if c.status == 'new' %}is-new{% endif %}">
+            <td>
+              <div class="ct-sender">
+                <strong>{{ c.name }}</strong>
+                <span>{{ c.email }}</span>
+              </div>
+            </td>
+            <td class="ct-phone">{{ c.phone or '—' }}</td>
+            <td class="ct-subject">{{ c.subject }}</td>
+            <td>
+              <div class="ct-msg" title="{{ c.message }}">{{ c.message }}</div>
+            </td>
+            <td>
+              {% if c.status == 'new' %}
+              <span class="sb s-new"><span class="dot"></span>Tin mới</span>
+              {% elif c.replied %}
+              <span class="sb s-rep"><span class="dot"></span>Đã trả lời</span>
+              {% else %}
+              <span class="sb s-oth"><span class="dot"></span>{{ c.status }}</span>
+              {% endif %}
+            </td>
+            <td class="ct-date">{{ c.created_at.strftime('%d/%m/%Y %H:%M') if c.created_at else '—' }}</td>
+            <td>
+              <div class="ct-acts">
+                {% if not c.replied %}
+                <form method="POST" action="{{ url_for('admin_mark_contact_replied', contact_id=c.id) }}" style="width:100%">
+                  <button type="submit" class="ct-act mark">
+                    <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Đã trả lời
+                  </button>
+                </form>
+                {% endif %}
+                <form method="POST" action="{{ url_for('admin_delete_contact', contact_id=c.id) }}"
+                      style="width:100%"
+                      onsubmit="return confirm('Xóa tin nhắn từ {{ c.name }}?')">
+                  <button type="submit" class="ct-act del">
+                    <svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M5 5v4M7 5v4M3 3l.5 7h5L9 3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Xóa
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 
+    {% if total_pages > 1 %}
+    <div class="ct-pg">
+      <a href="{{ url_for('admin_contacts', page=page-1, status=status_filter) }}" class="ct-pb {% if page<=1 %}dis{% endif %}">
+        <svg viewBox="0 0 12 12" fill="none"><path d="M8 3L4 6l4 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Trước
+      </a>
+      <span class="ct-pi">Trang <strong>{{ page }}</strong> / <strong>{{ total_pages }}</strong></span>
+      <a href="{{ url_for('admin_contacts', page=page+1, status=status_filter) }}" class="ct-pb {% if page>=total_pages %}dis{% endif %}">
+        Sau
+        <svg viewBox="0 0 12 12" fill="none"><path d="M4 3l4 3-4 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+    {% endif %}
 
+    {% else %}
+    <div class="ct-em">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 8l9 6 9-6M3 6h18a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V7a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <p>Chưa có tin nhắn nào{% if status_filter %} với trạng thái "{{ status_filter }}"{% endif %}</p>
+    </div>
+    {% endif %}
 
-
-
-
-
-
-
-
-
-
-
+  </div>
+</div>
+{% endblock %}

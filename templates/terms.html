@@ -1,496 +1,397 @@
 {% extends "base.html" %}
+{% block title %}Điều Khoản Dịch Vụ - DQD{% endblock %}
 
-{% block title %}Điều Khoản Dịch Vụ - HOMESTEAD{% endblock %}
-
-{% block content %}
-<style>
-    .terms-page {
-        background: var(--bg-cream);
-        min-height: 100vh;
-        padding: clamp(2rem, 4vh, 3rem) 0;
-    }
-    
-    .terms-header {
-        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
-        color: white;
-        padding: clamp(3rem, 6vh, 5rem) 0;
-        text-align: center;
-        margin-bottom: clamp(2rem, 4vh, 3rem);
-        box-shadow: var(--shadow-md);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .terms-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
-        opacity: 0.3;
-        pointer-events: none;
-    }
-    
-    .terms-header .container {
-        position: relative;
-        z-index: 1;
-    }
-    
-    .terms-header h1 {
-        font-size: clamp(2rem, 5vw, 3rem);
-        font-weight: 800;
-        margin-bottom: clamp(0.75rem, 1.5vh, 1rem);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-    
-    .terms-header p {
-        font-size: clamp(1rem, 2vw, 1.25rem);
-        opacity: 0.95;
-        color: white;
-        margin-bottom: 0.5rem;
-    }
-    
-    .terms-header p:last-of-type {
-        font-size: clamp(0.875rem, 1.6vw, 0.9375rem);
-        opacity: 0.8;
-        margin-top: 0.5rem;
-    }
-    
-    .terms-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 0 clamp(1rem, 3vw, 2rem);
-    }
-    
-    .terms-section {
-        background: white;
-        padding: clamp(2rem, 4vw, 2.5rem);
-        border-radius: var(--radius-xl);
-        box-shadow: var(--shadow-md);
-        margin-bottom: clamp(1.5rem, 3vh, 2rem);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 2px solid transparent;
-    }
-    
-    .terms-section:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-xl);
-        border-color: var(--sage-light);
-    }
-    
-    .terms-section h2 {
-        color: var(--text-dark);
-        font-size: clamp(1.5rem, 3vw, 1.875rem);
-        font-weight: 700;
-        margin-bottom: clamp(1.25rem, 2.5vh, 1.5rem);
-        display: flex;
-        align-items: center;
-        gap: clamp(0.75rem, 1.5vw, 1rem);
-        padding-bottom: 1rem;
-        border-bottom: 2px solid var(--border-color);
-        position: relative;
-    }
-    
-    .terms-section h2::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 60px;
-        height: 2px;
-        background: var(--gradient-sage);
-        border-radius: var(--radius-full);
-    }
-    
-    .terms-section h2 i {
-        color: var(--sage-medium);
-        font-size: clamp(1.375rem, 2.5vw, 1.625rem);
-    }
-    
-    .terms-section h3 {
-        color: var(--text-medium);
-        font-size: clamp(1.125rem, 2.2vw, 1.375rem);
-        font-weight: 600;
-        margin-top: clamp(1.25rem, 2.5vh, 1.5rem);
-        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
-    }
-    
-    .terms-section p {
-        color: var(--text-medium);
-        line-height: 1.8;
-        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-    }
-    
-    .terms-section ul {
-        color: var(--text-medium);
-        line-height: 1.8;
-        margin-left: clamp(1.5rem, 3vw, 2rem);
-        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
-        padding-left: 0;
-    }
-    
-    .terms-section li {
-        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-    }
-    
-    .terms-section li strong {
-        color: var(--sage-dark);
-        font-weight: 600;
-    }
-    
-    .highlight {
-        background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
-        padding: clamp(1.25rem, 2.5vw, 1.5rem);
-        border-left: 4px solid var(--terracotta);
-        border-radius: var(--radius-md);
-        margin: clamp(1.25rem, 2.5vh, 1.5rem) 0;
-        box-shadow: var(--shadow-sm);
-    }
-    
-    .highlight p {
-        margin: 0;
-        color: var(--rust);
-        font-weight: 600;
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-    
-    .highlight p i {
-        color: var(--terracotta);
-        font-size: 1.25rem;
-    }
-    
-    .contact-info {
-        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
-        color: white;
-        padding: clamp(2rem, 4vw, 2.5rem);
-        border-radius: var(--radius-xl);
-        text-align: center;
-        margin-top: clamp(2rem, 4vh, 3rem);
-        box-shadow: var(--shadow-lg);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .contact-info::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: pulse 3s ease-in-out infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 0.5; }
-        50% { transform: scale(1.1); opacity: 0.8; }
-    }
-    
-    .contact-info .container {
-        position: relative;
-        z-index: 1;
-    }
-    
-    .contact-info h3 {
-        color: white;
-        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
-        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-    }
-    
-    .contact-info p {
-        color: white;
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-        line-height: 1.8;
-        margin-bottom: 0.75rem;
-    }
-    
-    .contact-info a {
-        color: white;
-        text-decoration: underline;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-    
-    .contact-info a:hover {
-        color: var(--sage-light);
-        text-decoration: none;
-    }
-    
-    @media (max-width: 768px) {
-        .terms-page {
-            padding: 1.5rem 0;
-        }
-        
-        .terms-header {
-            padding: clamp(2rem, 4vh, 3rem) 0;
-            margin-bottom: 1.5rem;
-        }
-        
-        .terms-section {
-            padding: clamp(1.5rem, 3vw, 2rem);
-            margin-bottom: 1.5rem;
-        }
-        
-        .terms-section h2 {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.5rem;
-        }
-        
-        .terms-section ul {
-            margin-left: 1.25rem;
-        }
-    }
-</style>
-
-<div class="terms-page">
-    <div class="terms-header">
-        <div class="container">
-            <h1>
-                <i class="fas fa-file-contract"></i> Điều Khoản Dịch Vụ
-            </h1>
-            <p>Các quy định và điều khoản khi sử dụng dịch vụ của chúng tôi</p>
-            <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem;">
-                Cập nhật lần cuối: 21/12/2025
-            </p>
-        </div>
-    </div>
-
-    <div class="terms-container">
-        <!-- Section 1 -->
-        <div class="terms-section">
-            <h2>
-                <i class="fas fa-info-circle"></i> 1. Giới Thiệu
-            </h2>
-            <p>
-                Chào mừng bạn đến với HOMESTEAD. Bằng việc truy cập và sử dụng website của chúng tôi, 
-                bạn đồng ý tuân thủ và bị ràng buộc bởi các điều khoản và điều kiện sau đây. 
-                Nếu bạn không đồng ý với bất kỳ phần nào của các điều khoản này, vui lòng không sử dụng dịch vụ của chúng tôi.
-            </p>
-        </div>
-
-        <!-- Section 2 -->
-        <div class="terms-section">
-            <h2>
-                <i class="fas fa-user-check"></i> 2. Đăng Ký Tài Khoản
-            </h2>
-            <h3>2.1. Yêu Cầu Đăng Ký</h3>
-            <p>
-                Để sử dụng một số tính năng của website, bạn cần đăng ký tài khoản. Khi đăng ký, bạn cam kết:
-            </p>
-            <ul>
-                <li>Cung cấp thông tin chính xác, đầy đủ và cập nhật</li>
-                <li>Duy trì và cập nhật thông tin tài khoản của bạn</li>
-                <li>Bảo mật mật khẩu và tài khoản của bạn</li>
-                <li>Chịu trách nhiệm cho tất cả các hoạt động xảy ra dưới tài khoản của bạn</li>
-            </ul>
-            
-            <h3>2.2. Tuổi Tác</h3>
-            <p>
-                Bạn phải từ 18 tuổi trở lên hoặc có sự đồng ý của người giám hộ hợp pháp để sử dụng dịch vụ của chúng tôi.
-            </p>
-        </div>
-
-        <!-- Section 3 -->
-        <div class="terms-section">
-            <h2>
-                <i class="fas fa-shopping-cart"></i> 3. Đặt Hàng và Thanh Toán
-            </h2>
-            <h3>3.1. Đặt Hàng</h3>
-            <p>
-                Khi bạn đặt hàng trên website, bạn đồng ý mua sản phẩm theo giá và điều kiện được hiển thị tại thời điểm đặt hàng.
-            </p>
-            
-            <h3>3.2. Xác Nhận Đơn Hàng</h3>
-            <p>
-                Sau khi nhận được đơn hàng, chúng tôi sẽ gửi email xác nhận. Đơn hàng chỉ được coi là hợp lệ sau khi 
-                chúng tôi xác nhận và gửi email xác nhận cho bạn.
-            </p>
-            
-            <h3>3.3. Thanh Toán</h3>
-            <p>
-                Chúng tôi chấp nhận các phương thức thanh toán sau:
-            </p>
-            <ul>
-                <li>Thanh toán khi nhận hàng (COD)</li>
-                <li>Chuyển khoản ngân hàng</li>
-                <li>Thẻ tín dụng/ghi nợ</li>
-                <li>Thanh toán bằng USDT (cryptocurrency)</li>
-            </ul>
-            
-            <div class="highlight">
-                <p>
-                    <i class="fas fa-exclamation-triangle"></i> 
-                    Lưu ý: Tất cả các giao dịch thanh toán đều được xử lý an toàn và bảo mật.
-                </p>
-            </div>
-        </div>
-
-        <!-- Section 4 -->
-        <div class="terms-section">
-            <h2>
-                <i class="fas fa-truck"></i> 4. Giao Hàng
-            </h2>
-            <h3>4.1. Phí Vận Chuyển</h3>
-            <p>
-                Phí vận chuyển sẽ được tính dựa trên địa chỉ giao hàng và trọng lượng sản phẩm. 
-                Miễn phí vận chuyển cho đơn hàng từ 5.000.000 VNĐ trở lên.
-            </p>
-            
-            <h3>4.2. Thời Gian Giao Hàng</h3>
-            <p>
-                Thời gian giao hàng dự kiến sẽ được thông báo khi bạn đặt hàng. 
-                Chúng tôi sẽ cố gắng giao hàng trong thời gian đã cam kết, tuy nhiên thời gian có thể thay đổi 
-                do các yếu tố bất khả kháng.
-            </p>
-            
-            <h3>4.3. Kiểm Tra Hàng</h3>
-            <p>
-                Bạn có quyền kiểm tra hàng hóa trước khi thanh toán. Nếu sản phẩm bị hư hỏng hoặc không đúng với đơn hàng, 
-                bạn có quyền từ chối nhận hàng.
-            </p>
-        </div>
-
-        <!-- Section 5 -->
-        <div class="terms-section">
-            <h2>
-                <i class="fas fa-undo"></i> 5. Đổi Trả và Hoàn Tiền
-            </h2>
-            <h3>5.1. Điều Kiện Đổi Trả</h3>
-            <p>
-                Bạn có thể đổi trả sản phẩm trong vòng 7 ngày kể từ ngày nhận hàng với các điều kiện sau:
-            </p>
-            <ul>
-                <li>Sản phẩm còn nguyên vẹn, chưa sử dụng</li>
-                <li>Còn đầy đủ bao bì, phụ kiện kèm theo</li>
-                <li>Có hóa đơn mua hàng</li>
-                <li>Sản phẩm không nằm trong danh sách không được đổi trả</li>
-            </ul>
-            
-            <h3>5.2. Hoàn Tiền</h3>
-            <p>
-                Sau khi kiểm tra và chấp nhận đổi trả, chúng tôi sẽ hoàn tiền trong vòng 7-14 ngày làm việc 
-                theo phương thức thanh toán ban đầu của bạn.
-            </p>
-        </div>
-
-        <!-- Section 6 -->
-        <div class="terms-section">
-            <h2>
-                <i class="fas fa-shield-alt"></i> 6. Bảo Hành
-            </h2>
-            <p>
-                Tất cả sản phẩm của chúng tôi đều được bảo hành theo chính sách bảo hành của nhà sản xuất. 
-                Thời gian bảo hành sẽ được ghi rõ trên hóa đơn và phiếu bảo hành.
-            </p>
-            <p>
-                Để được bảo hành, bạn cần cung cấp hóa đơn mua hàng và phiếu bảo hành hợp lệ.
-            </p>
-        </div>
-
-        <!-- Section 7 -->
-        <div class="terms-section">
-            <h2>
-                <i class="fas fa-ban"></i> 7. Hành Vi Bị Cấm
-            </h2>
-            <p>Bạn không được phép:</p>
-            <ul>
-                <li>Sử dụng website cho mục đích bất hợp pháp</li>
-                <li>Đăng tải nội dung vi phạm pháp luật, đạo đức</li>
-                <li>Xâm phạm quyền sở hữu trí tuệ của chúng tôi hoặc bên thứ ba</li>
-                <li>Can thiệp vào hoạt động bình thường của website</li>
-                <li>Truy cập trái phép vào hệ thống của chúng tôi</li>
-                <li>Sử dụng robot, spider hoặc công cụ tự động khác để thu thập dữ liệu</li>
-            </ul>
-        </div>
-
-        <!-- Section 8 -->
-        <div class="terms-section">
-            <h2>
-                <i class="fas fa-copyright"></i> 8. Sở Hữu Trí Tuệ
-            </h2>
-            <p>
-                Tất cả nội dung trên website bao gồm nhưng không giới hạn: văn bản, hình ảnh, logo, 
-                thiết kế, phần mềm đều thuộc quyền sở hữu của HOMESTEAD hoặc được cấp phép sử dụng.
-            </p>
-            <p>
-                Bạn không được phép sao chép, phân phối, sửa đổi hoặc sử dụng bất kỳ nội dung nào 
-                trên website mà không có sự cho phép bằng văn bản của chúng tôi.
-            </p>
-        </div>
-
-        <!-- Section 9 -->
-        <div class="terms-section">
-            <h2>
-                <i class="fas fa-gavel"></i> 9. Giới Hạn Trách Nhiệm
-            </h2>
-            <p>
-                Chúng tôi không chịu trách nhiệm cho bất kỳ thiệt hại trực tiếp, gián tiếp, ngẫu nhiên, 
-                đặc biệt hoặc hậu quả nào phát sinh từ việc sử dụng hoặc không thể sử dụng website của chúng tôi.
-            </p>
-            <p>
-                Chúng tôi không đảm bảo rằng website sẽ hoạt động liên tục, không bị gián đoạn hoặc không có lỗi.
-            </p>
-        </div>
-
-        <!-- Section 10 -->
-        <div class="terms-section">
-            <h2>
-                <i class="fas fa-edit"></i> 10. Thay Đổi Điều Khoản
-            </h2>
-            <p>
-                Chúng tôi có quyền thay đổi các điều khoản này bất cứ lúc nào. 
-                Các thay đổi sẽ có hiệu lực ngay sau khi được đăng tải trên website.
-            </p>
-            <p>
-                Việc bạn tiếp tục sử dụng website sau khi có thay đổi được coi là bạn đã chấp nhận các điều khoản mới.
-            </p>
-        </div>
-
-        <!-- Section 11 -->
-        <div class="terms-section">
-            <h2>
-                <i class="fas fa-balance-scale"></i> 11. Luật Áp Dụng
-            </h2>
-            <p>
-                Các điều khoản này được điều chỉnh bởi pháp luật Việt Nam. 
-                Mọi tranh chấp phát sinh sẽ được giải quyết tại Tòa án có thẩm quyền tại Việt Nam.
-            </p>
-        </div>
-
-        <!-- Contact Info -->
-        <div class="contact-info">
-            <h3>
-                <i class="fas fa-question-circle"></i> Có Câu Hỏi?
-            </h3>
-            <p>
-                Nếu bạn có bất kỳ câu hỏi nào về Điều Khoản Dịch Vụ, vui lòng liên hệ với chúng tôi:
-            </p>
-            <p>
-                Email: <a href="mailto:quocdat30075@gmail.com">quocdat30075@gmail.com</a><br>
-                Hotline: <a href="tel:0345211386">0345211386</a>
-            </p>
-        </div>
-    </div>
-</div>
-
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 {% endblock %}
 
+{% block content %}
+<div class="tc-root">
+
+  <!-- Header -->
+  <div class="tc-header">
+    <div class="tch-inner">
+      <div class="tch-bc">
+        <a href="/">Trang chủ</a>
+        <svg viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span>Điều khoản dịch vụ</span>
+      </div>
+      <h1>Điều khoản <span class="gold">dịch vụ</span></h1>
+      <p>Các quy định và điều khoản khi sử dụng dịch vụ của DQD</p>
+      <div class="tch-date">Cập nhật lần cuối: 21/12/2025</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="tc-body">
+    <div class="tcb-inner">
+
+      <!-- Sidebar -->
+      <nav class="tc-nav">
+        <div class="tcn-title">Mục lục</div>
+        <a href="#s1"  class="tcn-item tcn-active">1. Giới thiệu</a>
+        <a href="#s2"  class="tcn-item">2. Đăng ký tài khoản</a>
+        <a href="#s3"  class="tcn-item">3. Đặt hàng & thanh toán</a>
+        <a href="#s4"  class="tcn-item">4. Giao hàng</a>
+        <a href="#s5"  class="tcn-item">5. Đổi trả & hoàn tiền</a>
+        <a href="#s6"  class="tcn-item">6. Bảo hành</a>
+        <a href="#s7"  class="tcn-item">7. Hành vi bị cấm</a>
+        <a href="#s8"  class="tcn-item">8. Sở hữu trí tuệ</a>
+        <a href="#s9"  class="tcn-item">9. Giới hạn trách nhiệm</a>
+        <a href="#s10" class="tcn-item">10. Thay đổi điều khoản</a>
+        <a href="#s11" class="tcn-item">11. Luật áp dụng</a>
+        <div class="tcn-divider"></div>
+        <a href="/contact" class="tcn-cta">Liên hệ hỗ trợ</a>
+      </nav>
+
+      <!-- Content -->
+      <main class="tc-content">
+
+        <section class="tc-sec" id="s1">
+          <div class="tcs-head">
+            <div class="tcs-icon tcs-blue">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M10 7v4m0 2v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h2>1. Giới thiệu</h2>
+          </div>
+          <p>Chào mừng bạn đến với <strong>DQD</strong>. Bằng việc truy cập và sử dụng website của chúng tôi, bạn đồng ý tuân thủ và bị ràng buộc bởi các điều khoản và điều kiện sau đây.</p>
+          <p>Nếu bạn không đồng ý với bất kỳ phần nào của các điều khoản này, vui lòng không sử dụng dịch vụ của chúng tôi.</p>
+          <div class="tcs-note tcs-note-blue">
+            <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            Việc tiếp tục sử dụng website sau khi có thay đổi điều khoản đồng nghĩa bạn đã chấp nhận các điều khoản mới.
+          </div>
+        </section>
+
+        <section class="tc-sec" id="s2">
+          <div class="tcs-head">
+            <div class="tcs-icon tcs-green">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M14 10l2 2 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>2. Đăng ký tài khoản</h2>
+          </div>
+
+          <h3>2.1. Yêu cầu đăng ký</h3>
+          <p>Để sử dụng một số tính năng của website, bạn cần đăng ký tài khoản và cam kết:</p>
+          <ul class="tcs-list">
+            <li>Cung cấp thông tin chính xác, đầy đủ và cập nhật</li>
+            <li>Duy trì và cập nhật thông tin tài khoản</li>
+            <li>Bảo mật mật khẩu và không chia sẻ tài khoản</li>
+            <li>Chịu trách nhiệm cho mọi hoạt động dưới tài khoản của bạn</li>
+          </ul>
+
+          <h3>2.2. Yêu cầu về tuổi tác</h3>
+          <p>Bạn phải từ <strong>18 tuổi trở lên</strong> hoặc có sự đồng ý của người giám hộ hợp pháp để sử dụng dịch vụ của chúng tôi.</p>
+        </section>
+
+        <section class="tc-sec" id="s3">
+          <div class="tcs-head">
+            <div class="tcs-icon tcs-amber">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M6 16a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2zM2 2h1.5l1.5 9h9l1.5-6H5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>3. Đặt hàng & thanh toán</h2>
+          </div>
+
+          <h3>3.1. Đặt hàng</h3>
+          <p>Khi đặt hàng trên website, bạn đồng ý mua sản phẩm theo giá và điều kiện được hiển thị tại thời điểm đặt hàng.</p>
+
+          <h3>3.2. Xác nhận đơn hàng</h3>
+          <p>Sau khi nhận đơn, chúng tôi sẽ gửi email xác nhận. Đơn hàng chỉ hợp lệ sau khi chúng tôi xác nhận và thông báo qua email.</p>
+
+          <h3>3.3. Phương thức thanh toán</h3>
+          <div class="tcs-pay-grid">
+            <div class="tcp-card">
+              <div class="tcp-icon tcp-green">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M8 2a6 6 0 100 12A6 6 0 008 2zm0 3v3l2 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </div>
+              <span>Thanh toán khi nhận hàng (COD)</span>
+            </div>
+            <div class="tcp-card">
+              <div class="tcp-icon tcp-blue">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M2 3.5h12a1 1 0 011 1v8a1 1 0 01-1 1H2a1 1 0 01-1-1v-8a1 1 0 011-1zm0 3h12M4 10h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </div>
+              <span>Chuyển khoản ngân hàng</span>
+            </div>
+            <div class="tcp-card">
+              <div class="tcp-icon tcp-amber">
+                <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 7h14M4 10h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </div>
+              <span>Thẻ tín dụng / ghi nợ</span>
+            </div>
+            <div class="tcp-card">
+              <div class="tcp-icon tcp-purple">
+                <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v6M6 7h4M6 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </div>
+              <span>Thanh toán USDT (Blockchain)</span>
+            </div>
+          </div>
+          <div class="tcs-note tcs-note-amber">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M8 1l7 13H1L8 1zm0 5v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Tất cả giao dịch thanh toán đều được xử lý an toàn và bảo mật bằng công nghệ mã hóa SSL.
+          </div>
+        </section>
+
+        <section class="tc-sec" id="s4">
+          <div class="tcs-head">
+            <div class="tcs-icon tcs-blue">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3m-1 11h6m-3-3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>4. Giao hàng</h2>
+          </div>
+
+          <h3>4.1. Phí vận chuyển</h3>
+          <p>Phí vận chuyển được tính theo địa chỉ và trọng lượng sản phẩm. <strong>Miễn phí vận chuyển</strong> cho đơn hàng từ 5.000.000 VNĐ trở lên trên toàn quốc.</p>
+
+          <h3>4.2. Thời gian giao hàng</h3>
+          <p>Thời gian giao hàng dự kiến được thông báo khi đặt hàng. Chúng tôi nỗ lực giao đúng hẹn, tuy nhiên thời gian có thể thay đổi do yếu tố bất khả kháng.</p>
+
+          <h3>4.3. Kiểm tra hàng</h3>
+          <p>Bạn có quyền kiểm tra hàng hóa trước khi thanh toán. Nếu sản phẩm bị hư hỏng hoặc không đúng đơn, bạn có quyền từ chối nhận hàng mà không mất phí.</p>
+        </section>
+
+        <section class="tc-sec" id="s5">
+          <div class="tcs-head">
+            <div class="tcs-icon tcs-amber">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M4 10a6 6 0 100 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M4 6v4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>5. Đổi trả & hoàn tiền</h2>
+          </div>
+
+          <h3>5.1. Điều kiện đổi trả</h3>
+          <p>Bạn có thể đổi trả trong vòng <strong>7 ngày</strong> kể từ ngày nhận hàng với điều kiện:</p>
+          <ul class="tcs-list">
+            <li>Sản phẩm còn nguyên vẹn, chưa qua sử dụng</li>
+            <li>Còn đầy đủ bao bì, phụ kiện kèm theo</li>
+            <li>Có hóa đơn mua hàng hợp lệ</li>
+            <li>Sản phẩm không nằm trong danh sách không được đổi trả</li>
+          </ul>
+
+          <h3>5.2. Hoàn tiền</h3>
+          <p>Sau khi kiểm tra và chấp nhận đổi trả, chúng tôi sẽ hoàn tiền trong vòng <strong>7–14 ngày làm việc</strong> theo phương thức thanh toán ban đầu.</p>
+        </section>
+
+        <section class="tc-sec" id="s6">
+          <div class="tcs-head">
+            <div class="tcs-icon tcs-green">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 2l6 2.5v5c0 4-2.5 7-6 8.5C4.5 16.5 2 13.5 2 9.5v-5L10 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>6. Bảo hành</h2>
+          </div>
+          <p>Tất cả sản phẩm của DQD được bảo hành theo chính sách bảo hành chính hãng. Thời gian bảo hành được ghi rõ trên hóa đơn và phiếu bảo hành đi kèm.</p>
+          <p>Để được bảo hành, bạn cần xuất trình hóa đơn mua hàng và phiếu bảo hành hợp lệ. Xem chi tiết tại <a href="/warranty" style="color:var(--gold);font-weight:600">Chính sách bảo hành</a>.</p>
+        </section>
+
+        <section class="tc-sec" id="s7">
+          <div class="tcs-head">
+            <div class="tcs-icon tcs-red">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M7 7l6 6M13 7l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h2>7. Hành vi bị cấm</h2>
+          </div>
+          <p class="tcs-subdesc">Khi sử dụng website DQD, bạn không được phép:</p>
+          <ul class="tcs-cross">
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Sử dụng website cho mục đích bất hợp pháp</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Đăng tải nội dung vi phạm pháp luật, đạo đức xã hội</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Xâm phạm quyền sở hữu trí tuệ của DQD hoặc bên thứ ba</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Can thiệp vào hoạt động bình thường của website</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Truy cập trái phép vào hệ thống hoặc cơ sở dữ liệu</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Sử dụng bot, spider hoặc công cụ tự động để thu thập dữ liệu</li>
+          </ul>
+        </section>
+
+        <section class="tc-sec" id="s8">
+          <div class="tcs-head">
+            <div class="tcs-icon tcs-dark">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>8. Sở hữu trí tuệ</h2>
+          </div>
+          <p>Tất cả nội dung trên website DQD bao gồm văn bản, hình ảnh, logo, thiết kế và phần mềm đều thuộc quyền sở hữu của DQD hoặc được cấp phép sử dụng hợp lệ.</p>
+          <p>Bạn không được phép sao chép, phân phối, sửa đổi hoặc sử dụng bất kỳ nội dung nào trên website mà không có sự cho phép bằng văn bản của chúng tôi.</p>
+        </section>
+
+        <section class="tc-sec" id="s9">
+          <div class="tcs-head">
+            <div class="tcs-icon tcs-amber">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 4v4m0 2v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h2>9. Giới hạn trách nhiệm</h2>
+          </div>
+          <p>DQD không chịu trách nhiệm cho bất kỳ thiệt hại trực tiếp, gián tiếp, ngẫu nhiên, đặc biệt hoặc hậu quả nào phát sinh từ việc sử dụng hoặc không thể sử dụng website.</p>
+          <p>Chúng tôi không đảm bảo rằng website sẽ hoạt động liên tục, không bị gián đoạn hoặc không có lỗi trong mọi thời điểm.</p>
+          <div class="tcs-note tcs-note-amber">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M8 1l7 13H1L8 1zm0 5v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            DQD nỗ lực duy trì dịch vụ ổn định nhưng không thể đảm bảo hoạt động liên tục 100% do các yếu tố kỹ thuật và bất khả kháng.
+          </div>
+        </section>
+
+        <section class="tc-sec" id="s10">
+          <div class="tcs-head">
+            <div class="tcs-icon tcs-dark">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zm-2.207 2.207L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>10. Thay đổi điều khoản</h2>
+          </div>
+          <p>DQD có quyền thay đổi các điều khoản này bất cứ lúc nào. Các thay đổi sẽ có hiệu lực ngay sau khi được đăng tải trên website và thông báo qua email.</p>
+          <p>Việc bạn tiếp tục sử dụng website sau khi có thay đổi được coi là bạn đã đọc và chấp nhận các điều khoản mới.</p>
+        </section>
+
+        <section class="tc-sec" id="s11">
+          <div class="tcs-head">
+            <div class="tcs-icon tcs-blue">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zM7 9h6M7 12h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h2>11. Luật áp dụng</h2>
+          </div>
+          <p>Các điều khoản này được điều chỉnh bởi <strong>pháp luật Việt Nam</strong>. Mọi tranh chấp phát sinh sẽ được giải quyết tại Tòa án có thẩm quyền tại Việt Nam theo trình tự thương lượng, hòa giải trước khi khởi kiện.</p>
+        </section>
+
+        <!-- Contact card -->
+        <div class="tc-cta">
+          <div class="tcc-left">
+            <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="white" stroke-width="2"/><path d="M16 10v8M12 14h8" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+            <div>
+              <strong>Có câu hỏi về điều khoản?</strong>
+              <span>Đội ngũ DQD sẵn sàng giải đáp trong vòng 24 giờ làm việc</span>
+            </div>
+          </div>
+          <div class="tcc-right">
+            <a href="mailto:quocdat30075@gmail.com" class="tcc-link">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M1 4h14a1 1 0 011 1v7a1 1 0 01-1 1H1a1 1 0 01-1-1V5a1 1 0 011-1zm7 5L1 5M15 5l-7 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              quocdat30075@gmail.com
+            </a>
+            <a href="tel:0345211386" class="tcc-link">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M5 2h-1A1.5 1.5 0 002.5 3.5v1C2.5 10.4 6.6 14.5 13.5 14.5h1A1.5 1.5 0 0016 13v-1.5a.5.5 0 00-.3-.46l-2.5-1a.5.5 0 00-.56.12l-1 1.25a8 8 0 01-3.5-3.5l1.25-1a.5.5 0 00.12-.57l-1-2.5A.5.5 0 005 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+              0345 211 386
+            </a>
+            <a href="/contact" class="tcc-btn">Liên hệ ngay</a>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+</div>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--font:'Be Vietnam Pro',sans-serif;--dark:#1a1a18;--gold:#b8922a;--border:#e8e3db;--text:#2a2520;--muted:#7a7060;--light:#f5f4f1}
+body{font-family:var(--font);color:var(--text)}
+a{text-decoration:none;color:inherit}
+
+.tc-header{background:var(--dark);padding:3rem 2rem;text-align:center;position:relative;overflow:hidden}
+.tc-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 100%,rgba(196,160,100,.12) 0%,transparent 60%)}
+.tch-inner{position:relative;z-index:1;max-width:1280px;margin:0 auto}
+.tch-bc{display:flex;align-items:center;justify-content:center;gap:.375rem;margin-bottom:.875rem}
+.tch-bc a,.tch-bc span{font-size:.75rem;color:rgba(255,255,255,.45)}
+.tch-bc a:hover{color:rgba(255,255,255,.8)}
+.tch-bc svg{width:11px;height:11px;color:rgba(255,255,255,.25)}
+.tc-header h1{font-size:clamp(1.875rem,4vw,2.75rem);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:.5rem}
+.tc-header h1 .gold{color:#c4a064;font-weight:300}
+.tc-header p{font-size:.9rem;color:rgba(255,255,255,.55);font-weight:300}
+.tch-date{font-size:.75rem;color:rgba(255,255,255,.3);margin-top:.5rem}
+
+.tc-body{background:var(--light);padding:2rem}
+.tcb-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:210px 1fr;gap:2rem;align-items:start}
+
+.tc-nav{background:#fff;border-radius:10px;border:1.5px solid var(--border);padding:1.125rem;position:sticky;top:1.5rem;display:flex;flex-direction:column;gap:.125rem}
+.tcn-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:.25rem .5rem;margin-bottom:.25rem}
+.tcn-item{display:block;padding:.45rem .625rem;border-radius:7px;font-size:.78rem;font-weight:500;color:var(--muted);transition:all .18s}
+.tcn-item:hover{background:var(--light);color:var(--dark)}
+.tcn-active{background:var(--light);color:var(--dark);font-weight:600}
+.tcn-divider{height:1px;background:var(--border);margin:.625rem 0}
+.tcn-cta{display:flex;align-items:center;justify-content:center;padding:.55rem;background:var(--dark);color:#fff;border-radius:7px;font-size:.78rem;font-weight:600;transition:background .18s;margin-top:.25rem}
+.tcn-cta:hover{background:#2e2e2a}
+
+.tc-content{display:flex;flex-direction:column;gap:1.125rem}
+.tc-sec{background:#fff;border-radius:10px;border:1.5px solid var(--border);padding:1.75rem;scroll-margin-top:1.5rem}
+
+.tcs-head{display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1.5px solid var(--border)}
+.tcs-head h2{font-size:1rem;font-weight:700;color:var(--dark);letter-spacing:-.01em}
+.tcs-icon{width:42px;height:42px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tcs-icon svg{width:20px;height:20px}
+.tcs-blue{background:#eff6ff;color:#2563eb}
+.tcs-green{background:#f0faf4;color:#16a34a}
+.tcs-amber{background:#fffbeb;color:#d97706}
+.tcs-dark{background:var(--light);color:var(--dark)}
+.tcs-red{background:#fff5f5;color:#dc2626}
+
+.tc-sec p{font-size:.875rem;color:var(--muted);line-height:1.8;margin-bottom:.75rem}
+.tc-sec p strong{color:var(--dark);font-weight:600}
+.tc-sec p:last-child{margin-bottom:0}
+.tc-sec h3{font-size:.8125rem;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:.06em;margin:1.125rem 0 .625rem}
+.tcs-subdesc{font-size:.875rem;color:var(--muted);margin-bottom:.875rem}
+
+.tcs-list{list-style:none;display:flex;flex-direction:column;gap:.5rem;margin-bottom:.875rem}
+.tcs-list li{font-size:.875rem;color:var(--text);display:flex;align-items:flex-start;gap:.5rem;line-height:1.5}
+.tcs-list li::before{content:'·';color:var(--gold);font-weight:700;flex-shrink:0;margin-top:1px}
+
+.tcs-cross{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.tcs-cross li{display:flex;align-items:flex-start;gap:.5rem;font-size:.875rem;color:var(--text);line-height:1.5}
+.tcs-cross svg{width:14px;height:14px;color:#dc2626;flex-shrink:0;margin-top:2px}
+
+.tcs-note{display:flex;align-items:flex-start;gap:.625rem;border-radius:8px;padding:.875rem 1rem;font-size:.8125rem;font-weight:500;margin-top:1rem;line-height:1.5}
+.tcs-note svg{width:15px;height:15px;flex-shrink:0;margin-top:1px}
+.tcs-note-blue{background:#eff6ff;border:1.5px solid #bfdbfe;color:#1e40af}
+.tcs-note-blue svg{color:#2563eb}
+.tcs-note-amber{background:#fffbeb;border:1.5px solid #fde68a;color:#854d0e}
+.tcs-note-amber svg{color:#d97706}
+
+.tcs-pay-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin:.875rem 0}
+.tcp-card{display:flex;align-items:center;gap:.75rem;background:var(--light);border:1.5px solid var(--border);border-radius:8px;padding:.875rem}
+.tcp-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tcp-icon svg{width:16px;height:16px}
+.tcp-green{background:#f0faf4;color:#16a34a}
+.tcp-blue{background:#eff6ff;color:#2563eb}
+.tcp-amber{background:#fffbeb;color:#d97706}
+.tcp-purple{background:#faf5ff;color:#7c3aed}
+.tcp-card span{font-size:.8125rem;color:var(--dark);font-weight:500}
+
+/* CTA */
+.tc-cta{background:var(--dark);border-radius:10px;padding:1.75rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;position:relative;overflow:hidden}
+.tc-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(196,160,100,.1) 0%,transparent 60%);pointer-events:none}
+.tcc-left{display:flex;align-items:center;gap:1rem;position:relative;z-index:1;flex:1}
+.tcc-left svg{width:34px;height:34px;flex-shrink:0}
+.tcc-left strong{display:block;font-size:.9375rem;font-weight:700;color:#fff;margin-bottom:.2rem}
+.tcc-left span{font-size:.78rem;color:rgba(255,255,255,.5)}
+.tcc-right{display:flex;align-items:center;gap:.875rem;flex-wrap:wrap;position:relative;z-index:1}
+.tcc-link{display:inline-flex;align-items:center;gap:.375rem;font-size:.8125rem;color:rgba(255,255,255,.65);transition:color .18s}
+.tcc-link svg{width:14px;height:14px;flex-shrink:0}
+.tcc-link:hover{color:#fff}
+.tcc-btn{display:inline-flex;padding:.65rem 1.25rem;background:#fff;color:var(--dark);border-radius:8px;font-family:var(--font);font-size:.8125rem;font-weight:600;transition:all .18s;flex-shrink:0}
+.tcc-btn:hover{background:var(--gold);color:#fff}
+
+@media(max-width:900px){
+  .tcb-inner{grid-template-columns:1fr}
+  .tc-nav{position:static;flex-direction:row;flex-wrap:wrap;gap:.375rem;padding:.875rem}
+  .tcn-title,.tcn-divider{display:none}
+  .tcn-item{font-size:.75rem;padding:.4rem .625rem}
+  .tcs-pay-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .tc-body{padding:1rem}
+  .tc-cta{flex-direction:column;align-items:flex-start}
+}
+</style>
+
+<script>
+const secs  = document.querySelectorAll('.tc-sec');
+const links = document.querySelectorAll('.tcn-item');
+const obs = new IntersectionObserver(e => {
+  e.forEach(en => {
+    if (en.isIntersecting) {
+      links.forEach(l => l.classList.remove('tcn-active'));
+      document.querySelector(`.tcn-item[href="#${en.target.id}"]`)?.classList.add('tcn-active');
+    }
+  });
+}, {rootMargin:'-20% 0px -60% 0px'});
+secs.forEach(s => obs.observe(s));
+links.forEach(l => l.addEventListener('click', e => {
+  const h = l.getAttribute('href');
+  if (h?.startsWith('#')) { e.preventDefault(); document.querySelector(h)?.scrollIntoView({behavior:'smooth',block:'start'}); }
+}));
+</script>
+
+{% endblock %}

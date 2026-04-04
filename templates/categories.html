@@ -1,71 +1,233 @@
 {% extends "base.html" %}
+{% block title %}Danh Mục Sản Phẩm - DQD{% endblock %}
 
-{% block title %}Danh Mục Sản Phẩm - HOMESTEAD{% endblock %}
-
-{% block content %}
-<!-- Categories Hero -->
-<section class="hero-modern" style="padding: 4rem 0;">
-    <div class="container">
-        <h1>Danh Mục Sản Phẩm</h1>
-        <p>Khám phá các danh mục nội thất đa dạng</p>
-    </div>
-</section>
-
-<!-- Categories Grid -->
-<section class="categories-section" style="padding: 4rem 0; background: #faf8f4;">
-    <div class="container">
-        <div class="categories-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
-            {% for category in categories %}
-            <a href="/products?category={{ category.name|replace(' ', '%20') }}" class="category-card" style="display: block; background: white; border-radius: 16px; padding: 2.5rem; text-align: center; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                <div class="category-icon" style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: linear-gradient(135deg, #9db892, #7a9c6f); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                    {% if category.name == 'Phòng Khách' %}
-                    <i class="fas fa-couch" style="font-size: 2.5rem; color: white;"></i>
-                    {% elif category.name == 'Phòng Ngủ' %}
-                    <i class="fas fa-bed" style="font-size: 2.5rem; color: white;"></i>
-                    {% elif category.name == 'Nhà Bếp' %}
-                    <i class="fas fa-utensils" style="font-size: 2.5rem; color: white;"></i>
-                    {% elif category.name == 'Văn Phòng' %}
-                    <i class="fas fa-briefcase" style="font-size: 2.5rem; color: white;"></i>
-                    {% elif category.name == 'Phòng Ăn' %}
-                    <i class="fas fa-chair" style="font-size: 2.5rem; color: white;"></i>
-                    {% else %}
-                    <i class="fas fa-th" style="font-size: 2.5rem; color: white;"></i>
-                    {% endif %}
-                </div>
-                <h3 style="font-size: 1.5rem; font-weight: 700; color: #2d271f; margin-bottom: 0.5rem;">{{ category.name }}</h3>
-                <p style="color: #6b7280; margin-bottom: 1rem;">{{ category.count }} sản phẩm</p>
-                <span class="btn btn-sm" style="display: inline-flex; align-items: center; gap: 0.5rem;">
-                    Xem Ngay <i class="fas fa-arrow-right"></i>
-                </span>
-            </a>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-
-<!-- All Products CTA -->
-<section class="cta-section" style="padding: 3rem 0; background: white; text-align: center;">
-    <div class="container">
-        <h2 style="font-size: 2rem; font-weight: 700; color: #2d271f; margin-bottom: 1rem;">Xem Tất Cả Sản Phẩm</h2>
-        <p style="font-size: 1.125rem; color: #6b7280; margin-bottom: 2rem;">Khám phá toàn bộ bộ sưu tập nội thất của chúng tôi</p>
-        <a href="/products" class="btn btn-lg">
-            <i class="fas fa-shopping-bag"></i>
-            Xem Tất Cả
-        </a>
-    </div>
-</section>
-
-<style>
-    .category-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 24px rgba(157, 184, 146, 0.2);
-    }
-
-    @media (max-width: 768px) {
-        .categories-grid {
-            grid-template-columns: 1fr !important;
-        }
-    }
-</style>
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 {% endblock %}
 
+{% block content %}
+
+{# ── Icon map ── #}
+{% set cat_icons = {
+  'Phòng Khách': '<svg viewBox="0 0 24 24" fill="none"><path d="M3 10V7a2 2 0 012-2h14a2 2 0 012 2v3M3 10a2 2 0 00-2 2v5h22v-5a2 2 0 00-2-2M3 10h18M1 17v3M23 17v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  'Phòng Ngủ':  '<svg viewBox="0 0 24 24" fill="none"><path d="M2 20V10l10-7 10 7v10M2 20h20M9 20v-6h6v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12h8M12 12v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
+  'Nhà Bếp':   '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M2 9h20M8 4v5M12 4v5M16 4v5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
+  'Văn Phòng': '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="10" width="18" height="11" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M7 10V7a5 5 0 0110 0v3M12 14v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  'Phòng Ăn':  '<svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M5 6l2 6H3L5 6zM19 6l2 6h-4l2-6z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 18h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  'Trang Trí':  '<svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+  'default':    '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.6"/></svg>',
+} %}
+
+{% set cat_colors = {
+  'Phòng Khách': ('fffbeb','d97706'),
+  'Phòng Ngủ':  ('faf5ff','7c3aed'),
+  'Nhà Bếp':   ('fff5f5','dc2626'),
+  'Văn Phòng': ('eff6ff','2563eb'),
+  'Phòng Ăn':  ('f0faf4','16a34a'),
+  'Trang Trí':  ('fdf2f8','c026d3'),
+  'default':    ('f5f4f1','7a7060'),
+} %}
+
+<div class="ct-root">
+
+  <!-- Header -->
+  <div class="ct-header">
+    <div class="cth-inner">
+      <div class="cth-bc">
+        <a href="/">Trang chủ</a>
+        <svg viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span>Danh mục</span>
+      </div>
+      <h1>Danh mục <span class="gold">sản phẩm</span></h1>
+      <p>Khám phá các danh mục nội thất đa dạng từ DQD</p>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="ct-stats">
+    <div class="cts-inner">
+      <div class="cts-item">
+        <strong>{{ categories|length }}</strong>
+        <span>Danh mục</span>
+      </div>
+      <div class="cts-sep"></div>
+      <div class="cts-item">
+        <strong>{{ categories|sum(attribute='count') }}+</strong>
+        <span>Sản phẩm</span>
+      </div>
+      <div class="cts-sep"></div>
+      <div class="cts-item">
+        <strong>100%</strong>
+        <span>Chính hãng</span>
+      </div>
+      <div class="cts-sep"></div>
+      <div class="cts-item">
+        <strong>2 năm</strong>
+        <span>Bảo hành</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories grid -->
+  <div class="ct-body">
+    <div class="ctb-inner">
+
+      <div class="ct-grid">
+        {% for category in categories %}
+        {% set icon = cat_icons.get(category.name, cat_icons['default']) %}
+        {% set bg, color = cat_colors.get(category.name, cat_colors['default']) %}
+        <a href="/products?category={{ category.name|replace(' ', '%20') }}" class="ct-card">
+          <div class="ctc-icon" style="background:#{{ bg }};color:#{{ color }}">
+            {{ icon|safe }}
+          </div>
+          <div class="ctc-body">
+            <h3>{{ category.name }}</h3>
+            <p>{{ category.count }} sản phẩm</p>
+            <div class="ctc-meta">
+              {% if category.description %}
+              <span class="ctc-desc">{{ category.description }}</span>
+              {% else %}
+              <span class="ctc-desc">Nội thất cao cấp, thiết kế đa dạng</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="ctc-arrow">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M4 8h8M8 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+
+      <!-- All products CTA -->
+      <div class="ct-cta">
+        <div class="ctcta-left">
+          <h2>Không tìm thấy danh mục phù hợp?</h2>
+          <p>Xem toàn bộ hơn {{ categories|sum(attribute='count') }}+ sản phẩm trong bộ sưu tập DQD</p>
+        </div>
+        <div class="ctcta-right">
+          <a href="/products" class="ctcta-btn">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M6 16a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2zM2 2h1.5l1.5 9h9l1.5-6H5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Xem tất cả sản phẩm
+          </a>
+          <a href="/contact" class="ctcta-link">Cần tư vấn? →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Trust strip -->
+  <div class="ct-trust">
+    <div class="ctt-inner">
+      <div class="ctt-item">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3m-1 11h6m-3-3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><strong>Miễn phí vận chuyển</strong><span>Đơn từ 5 triệu đồng</span></div>
+      </div>
+      <div class="ctt-sep"></div>
+      <div class="ctt-item">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M10 2l6 2.5v5c0 4-2.5 7-6 8.5C4.5 16.5 2 13.5 2 9.5v-5L10 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><strong>Bảo hành chính hãng</strong><span>1 đến 3 năm</span></div>
+      </div>
+      <div class="ctt-sep"></div>
+      <div class="ctt-item">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M4 10a6 6 0 100 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 6v4h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><strong>Đổi trả 30 ngày</strong><span>Nếu lỗi nhà sản xuất</span></div>
+      </div>
+      <div class="ctt-sep"></div>
+      <div class="ctt-item">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><strong>Tư vấn miễn phí</strong><span>8:00 – 22:00 hàng ngày</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--font:'Be Vietnam Pro',sans-serif;--dark:#1a1a18;--gold:#b8922a;--border:#e8e3db;--text:#2a2520;--muted:#7a7060;--light:#f5f4f1;--cream:#faf9f7}
+body{font-family:var(--font);color:var(--text)}
+a{text-decoration:none;color:inherit}
+
+/* Header */
+.ct-header{background:var(--dark);padding:3rem 2rem;text-align:center;position:relative;overflow:hidden}
+.ct-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 100%,rgba(196,160,100,.12) 0%,transparent 60%)}
+.cth-inner{position:relative;z-index:1;max-width:1280px;margin:0 auto}
+.cth-bc{display:flex;align-items:center;justify-content:center;gap:.375rem;margin-bottom:.875rem}
+.cth-bc a,.cth-bc span{font-size:.75rem;color:rgba(255,255,255,.45)}
+.cth-bc a:hover{color:rgba(255,255,255,.8)}
+.cth-bc svg{width:11px;height:11px;color:rgba(255,255,255,.25)}
+.ct-header h1{font-size:clamp(1.875rem,4vw,2.75rem);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:.5rem}
+.ct-header h1 .gold{color:#c4a064;font-weight:300}
+.ct-header p{font-size:.9rem;color:rgba(255,255,255,.5);font-weight:300}
+
+/* Stats */
+.ct-stats{background:#fff;border-bottom:1.5px solid var(--border);padding:1.25rem 2rem}
+.cts-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:2.5rem;flex-wrap:wrap}
+.cts-item{text-align:center}
+.cts-item strong{display:block;font-size:1.5rem;font-weight:700;color:var(--dark);line-height:1;letter-spacing:-.01em}
+.cts-item span{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:.25rem;display:block}
+.cts-sep{width:1px;height:2rem;background:var(--border)}
+
+/* Body */
+.ct-body{background:var(--light);padding:2.5rem 2rem}
+.ctb-inner{max-width:1280px;margin:0 auto}
+
+/* Grid */
+.ct-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:2rem}
+
+/* Category card */
+.ct-card{display:flex;align-items:center;gap:1.25rem;background:#fff;border-radius:12px;border:1.5px solid var(--border);padding:1.375rem 1.5rem;transition:transform .22s,box-shadow .22s,border-color .22s;position:relative}
+.ct-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.08);border-color:#d0c8bc}
+.ct-card:hover .ctc-arrow{opacity:1;transform:translateX(0)}
+
+.ctc-icon{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ctc-icon svg{width:26px;height:26px}
+
+.ctc-body{flex:1;min-width:0}
+.ctc-body h3{font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:.2rem;letter-spacing:-.01em}
+.ctc-body p{font-size:.78rem;font-weight:600;color:var(--gold);margin-bottom:.25rem}
+.ctc-desc{font-size:.75rem;color:var(--muted);line-height:1.4;display:block}
+
+.ctc-arrow{width:28px;height:28px;border-radius:50%;background:var(--light);display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:0;transform:translateX(-4px);transition:opacity .2s,transform .2s}
+.ctc-arrow svg{width:14px;height:14px;color:var(--dark)}
+
+/* CTA */
+.ct-cta{background:var(--dark);border-radius:12px;padding:2rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;position:relative;overflow:hidden}
+.ct-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(196,160,100,.1) 0%,transparent 60%);pointer-events:none}
+.ctcta-left{position:relative;z-index:1;flex:1}
+.ctcta-left h2{font-size:1.0625rem;font-weight:700;color:#fff;margin-bottom:.375rem;letter-spacing:-.01em}
+.ctcta-left p{font-size:.8125rem;color:rgba(255,255,255,.5)}
+.ctcta-right{display:flex;align-items:center;gap:1rem;position:relative;z-index:1;flex-wrap:wrap}
+.ctcta-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.5rem;background:#fff;color:var(--dark);border-radius:9px;font-family:var(--font);font-size:.875rem;font-weight:600;transition:all .18s}
+.ctcta-btn svg{width:16px;height:16px}
+.ctcta-btn:hover{background:var(--gold);color:#fff}
+.ctcta-link{font-size:.8125rem;font-weight:500;color:rgba(255,255,255,.5);transition:color .18s}
+.ctcta-link:hover{color:#fff}
+
+/* Trust */
+.ct-trust{background:#fff;border-top:1.5px solid var(--border);padding:1.75rem 2rem}
+.ctt-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:2.5rem;flex-wrap:wrap}
+.ctt-item{display:flex;align-items:center;gap:.875rem}
+.ctt-item svg{width:22px;height:22px;color:var(--gold);flex-shrink:0}
+.ctt-item strong{display:block;font-size:.8125rem;font-weight:700;color:var(--dark)}
+.ctt-item span{font-size:.72rem;color:var(--muted)}
+.ctt-sep{width:1px;height:2rem;background:var(--border)}
+
+/* Responsive */
+@media(max-width:1024px){.ct-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){
+  .ct-grid{grid-template-columns:1fr}
+  .ct-body,.ct-stats{padding:1.5rem 1rem}
+  .cts-inner{gap:1.25rem}.cts-sep{display:none}
+  .ct-cta{flex-direction:column;align-items:flex-start}
+  .ctt-inner{gap:1.25rem;justify-content:flex-start}
+  .ctt-sep{display:none}
+  .ctcta-right{flex-direction:column;align-items:flex-start;gap:.625rem}
+  .ctcta-btn{width:100%;justify-content:center}
+}
+</style>
+
+{% endblock %}

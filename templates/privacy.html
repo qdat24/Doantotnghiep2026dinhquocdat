@@ -1,550 +1,501 @@
 {% extends "base.html" %}
-
 {% block title %}Chính Sách Bảo Mật - HOMESTEAD{% endblock %}
 
-{% block content %}
-<style>
-    .privacy-page {
-        background: var(--bg-cream);
-        min-height: 100vh;
-        padding: clamp(2rem, 4vh, 3rem) 0;
-    }
-    
-    .privacy-header {
-        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
-        color: white;
-        padding: clamp(3rem, 6vh, 5rem) 0;
-        text-align: center;
-        margin-bottom: clamp(2rem, 4vh, 3rem);
-        box-shadow: var(--shadow-md);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .privacy-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
-        opacity: 0.3;
-        pointer-events: none;
-    }
-    
-    .privacy-header .container {
-        position: relative;
-        z-index: 1;
-    }
-    
-    .privacy-header h1 {
-        font-size: clamp(2rem, 5vw, 3rem);
-        font-weight: 800;
-        margin-bottom: clamp(0.75rem, 1.5vh, 1rem);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-    
-    .privacy-header p {
-        font-size: clamp(1rem, 2vw, 1.25rem);
-        opacity: 0.95;
-        color: white;
-        margin-bottom: 0.5rem;
-    }
-    
-    .privacy-header p:last-of-type {
-        font-size: clamp(0.875rem, 1.6vw, 0.9375rem);
-        opacity: 0.8;
-        margin-top: 0.5rem;
-    }
-    
-    .privacy-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 0 clamp(1rem, 3vw, 2rem);
-    }
-    
-    .privacy-section {
-        background: white;
-        padding: clamp(2rem, 4vw, 2.5rem);
-        border-radius: var(--radius-xl);
-        box-shadow: var(--shadow-md);
-        margin-bottom: clamp(1.5rem, 3vh, 2rem);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 2px solid transparent;
-    }
-    
-    .privacy-section:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-xl);
-        border-color: var(--sage-light);
-    }
-    
-    .privacy-section h2 {
-        color: var(--text-dark);
-        font-size: clamp(1.5rem, 3vw, 1.875rem);
-        font-weight: 700;
-        margin-bottom: clamp(1.25rem, 2.5vh, 1.5rem);
-        display: flex;
-        align-items: center;
-        gap: clamp(0.75rem, 1.5vw, 1rem);
-        padding-bottom: 1rem;
-        border-bottom: 2px solid var(--border-color);
-        position: relative;
-    }
-    
-    .privacy-section h2::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 60px;
-        height: 2px;
-        background: var(--gradient-sage);
-        border-radius: var(--radius-full);
-    }
-    
-    .privacy-section h2 i {
-        color: var(--sage-medium);
-        font-size: clamp(1.375rem, 2.5vw, 1.625rem);
-    }
-    
-    .privacy-section h3 {
-        color: var(--text-medium);
-        font-size: clamp(1.125rem, 2.2vw, 1.375rem);
-        font-weight: 600;
-        margin-top: clamp(1.25rem, 2.5vh, 1.5rem);
-        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
-    }
-    
-    .privacy-section p {
-        color: var(--text-medium);
-        line-height: 1.8;
-        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-    }
-    
-    .privacy-section ul {
-        color: var(--text-medium);
-        line-height: 1.8;
-        margin-left: clamp(1.5rem, 3vw, 2rem);
-        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
-        padding-left: 0;
-    }
-    
-    .privacy-section li {
-        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-    }
-    
-    .privacy-section li strong {
-        color: var(--sage-dark);
-        font-weight: 600;
-    }
-    
-    .highlight {
-        background: var(--bg-sage);
-        padding: clamp(1.25rem, 2.5vw, 1.5rem);
-        border-left: 4px solid var(--sage-medium);
-        border-radius: var(--radius-md);
-        margin: clamp(1.25rem, 2.5vh, 1.5rem) 0;
-        box-shadow: var(--shadow-sm);
-    }
-    
-    .highlight p {
-        margin: 0;
-        color: var(--sage-dark);
-        font-weight: 600;
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-    
-    .highlight p i {
-        color: var(--sage-medium);
-        font-size: 1.25rem;
-    }
-    
-    .warning {
-        background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
-        padding: clamp(1.25rem, 2.5vw, 1.5rem);
-        border-left: 4px solid var(--terracotta);
-        border-radius: var(--radius-md);
-        margin: clamp(1.25rem, 2.5vh, 1.5rem) 0;
-        box-shadow: var(--shadow-sm);
-    }
-    
-    .warning p {
-        margin: 0;
-        color: var(--rust);
-        font-weight: 600;
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-    
-    .warning p i {
-        color: var(--terracotta);
-        font-size: 1.25rem;
-    }
-    
-    .contact-info {
-        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
-        color: white;
-        padding: clamp(2rem, 4vw, 2.5rem);
-        border-radius: var(--radius-xl);
-        text-align: center;
-        margin-top: clamp(2rem, 4vh, 3rem);
-        box-shadow: var(--shadow-lg);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .contact-info::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: pulse 3s ease-in-out infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 0.5; }
-        50% { transform: scale(1.1); opacity: 0.8; }
-    }
-    
-    .contact-info .container {
-        position: relative;
-        z-index: 1;
-    }
-    
-    .contact-info h3 {
-        color: white;
-        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
-        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-    }
-    
-    .contact-info p {
-        color: white;
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-        line-height: 1.8;
-        margin-bottom: 0.75rem;
-    }
-    
-    .contact-info a {
-        color: white;
-        text-decoration: underline;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-    
-    .contact-info a:hover {
-        color: var(--sage-light);
-        text-decoration: none;
-    }
-    
-    @media (max-width: 768px) {
-        .privacy-page {
-            padding: 1.5rem 0;
-        }
-        
-        .privacy-header {
-            padding: clamp(2rem, 4vh, 3rem) 0;
-            margin-bottom: 1.5rem;
-        }
-        
-        .privacy-section {
-            padding: clamp(1.5rem, 3vw, 2rem);
-            margin-bottom: 1.5rem;
-        }
-        
-        .privacy-section h2 {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.5rem;
-        }
-        
-        .privacy-section ul {
-            margin-left: 1.25rem;
-        }
-    }
-</style>
-
-<div class="privacy-page">
-    <div class="privacy-header">
-        <div class="container">
-            <h1>
-                <i class="fas fa-shield-alt"></i> Chính Sách Bảo Mật
-            </h1>
-            <p>Cam kết bảo vệ thông tin cá nhân của bạn</p>
-            <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem;">
-                Cập nhật lần cuối: 21/12/2025
-            </p>
-        </div>
-    </div>
-
-    <div class="privacy-container">
-        <!-- Section 1 -->
-        <div class="privacy-section">
-            <h2>
-                <i class="fas fa-info-circle"></i> 1. Giới Thiệu
-            </h2>
-            <p>
-                HOMESTEAD cam kết bảo vệ quyền riêng tư và thông tin cá nhân của bạn. 
-                Chính sách bảo mật này giải thích cách chúng tôi thu thập, sử dụng, lưu trữ và bảo vệ 
-                thông tin cá nhân của bạn khi sử dụng website và dịch vụ của chúng tôi.
-            </p>
-            <p>
-                Bằng việc sử dụng website của chúng tôi, bạn đồng ý với các thực hành được mô tả trong chính sách này.
-            </p>
-        </div>
-
-        <!-- Section 2 -->
-        <div class="privacy-section">
-            <h2>
-                <i class="fas fa-database"></i> 2. Thông Tin Chúng Tôi Thu Thập
-            </h2>
-            <h3>2.1. Thông Tin Bạn Cung Cấp</h3>
-            <p>Chúng tôi thu thập thông tin bạn cung cấp trực tiếp khi:</p>
-            <ul>
-                <li><strong>Đăng ký tài khoản:</strong> Tên, email, số điện thoại, địa chỉ</li>
-                <li><strong>Đặt hàng:</strong> Thông tin giao hàng, thanh toán</li>
-                <li><strong>Liên hệ:</strong> Tên, email, nội dung tin nhắn</li>
-                <li><strong>Đăng ký nhận tin:</strong> Email, sở thích</li>
-            </ul>
-            
-            <h3>2.2. Thông Tin Tự Động Thu Thập</h3>
-            <p>Khi bạn truy cập website, chúng tôi tự động thu thập:</p>
-            <ul>
-                <li>Địa chỉ IP</li>
-                <li>Loại trình duyệt và phiên bản</li>
-                <li>Hệ điều hành</li>
-                <li>Trang bạn truy cập và thời gian truy cập</li>
-                <li>Trang web bạn đến từ (referrer)</li>
-                <li>Cookies và công nghệ theo dõi tương tự</li>
-            </ul>
-        </div>
-
-        <!-- Section 3 -->
-        <div class="privacy-section">
-            <h2>
-                <i class="fas fa-cookie"></i> 3. Cookies và Công Nghệ Theo Dõi
-            </h2>
-            <p>
-                Chúng tôi sử dụng cookies và các công nghệ tương tự để cải thiện trải nghiệm của bạn, 
-                phân tích cách bạn sử dụng website và hỗ trợ các tính năng tiếp thị.
-            </p>
-            
-            <h3>3.1. Loại Cookies Chúng Tôi Sử Dụng</h3>
-            <ul>
-                <li><strong>Cookies Cần Thiết:</strong> Để website hoạt động cơ bản</li>
-                <li><strong>Cookies Hiệu Suất:</strong> Để phân tích cách sử dụng website</li>
-                <li><strong>Cookies Chức Năng:</strong> Để ghi nhớ tùy chọn của bạn</li>
-                <li><strong>Cookies Quảng Cáo:</strong> Để hiển thị quảng cáo phù hợp</li>
-            </ul>
-            
-            <div class="highlight">
-                <p>
-                    <i class="fas fa-info-circle"></i> 
-                    Bạn có thể quản lý hoặc xóa cookies thông qua cài đặt trình duyệt của mình.
-                </p>
-            </div>
-        </div>
-
-        <!-- Section 4 -->
-        <div class="privacy-section">
-            <h2>
-                <i class="fas fa-user-shield"></i> 4. Cách Chúng Tôi Sử Dụng Thông Tin
-            </h2>
-            <p>Chúng tôi sử dụng thông tin thu thập được để:</p>
-            <ul>
-                <li>Xử lý và hoàn thành đơn hàng của bạn</li>
-                <li>Giao tiếp với bạn về đơn hàng, sản phẩm và dịch vụ</li>
-                <li>Cải thiện website và trải nghiệm người dùng</li>
-                <li>Gửi thông tin khuyến mãi và cập nhật (nếu bạn đồng ý)</li>
-                <li>Phân tích xu hướng và hành vi người dùng</li>
-                <li>Ngăn chặn gian lận và bảo vệ an ninh</li>
-                <li>Tuân thủ các nghĩa vụ pháp lý</li>
-            </ul>
-        </div>
-
-        <!-- Section 5 -->
-        <div class="privacy-section">
-            <h2>
-                <i class="fas fa-share-alt"></i> 5. Chia Sẻ Thông Tin
-            </h2>
-            <p>Chúng tôi không bán thông tin cá nhân của bạn. Chúng tôi có thể chia sẻ thông tin với:</p>
-            
-            <h3>5.1. Nhà Cung Cấp Dịch Vụ</h3>
-            <ul>
-                <li>Đơn vị vận chuyển để giao hàng</li>
-                <li>Nhà cung cấp thanh toán để xử lý giao dịch</li>
-                <li>Dịch vụ email marketing</li>
-                <li>Nhà cung cấp công nghệ và hosting</li>
-            </ul>
-            
-            <h3>5.2. Yêu Cầu Pháp Lý</h3>
-            <p>
-                Chúng tôi có thể tiết lộ thông tin nếu được yêu cầu bởi pháp luật hoặc 
-                để bảo vệ quyền và an toàn của chúng tôi và người dùng khác.
-            </p>
-            
-            <div class="warning">
-                <p>
-                    <i class="fas fa-exclamation-triangle"></i> 
-                    Tất cả các bên thứ ba đều được yêu cầu bảo mật thông tin của bạn 
-                    và chỉ sử dụng cho mục đích được chỉ định.
-                </p>
-            </div>
-        </div>
-
-        <!-- Section 6 -->
-        <div class="privacy-section">
-            <h2>
-                <i class="fas fa-lock"></i> 6. Bảo Mật Thông Tin
-            </h2>
-            <p>
-                Chúng tôi áp dụng các biện pháp bảo mật kỹ thuật và tổ chức phù hợp để bảo vệ 
-                thông tin cá nhân của bạn khỏi truy cập trái phép, mất mát, sử dụng hoặc tiết lộ.
-            </p>
-            
-            <h3>6.1. Biện Pháp Bảo Mật</h3>
-            <ul>
-                <li>Mã hóa SSL/TLS cho tất cả các giao dịch</li>
-                <li>Bảo mật cơ sở dữ liệu với quyền truy cập hạn chế</li>
-                <li>Kiểm tra bảo mật định kỳ</li>
-                <li>Đào tạo nhân viên về bảo mật dữ liệu</li>
-                <li>Hệ thống phát hiện và ngăn chặn xâm nhập</li>
-            </ul>
-            
-            <div class="warning">
-                <p>
-                    <i class="fas fa-exclamation-triangle"></i> 
-                    Mặc dù chúng tôi nỗ lực bảo vệ thông tin của bạn, không có phương pháp truyền tải 
-                    hoặc lưu trữ nào là 100% an toàn. Bạn cũng có trách nhiệm bảo vệ mật khẩu của mình.
-                </p>
-            </div>
-        </div>
-
-        <!-- Section 7 -->
-        <div class="privacy-section">
-            <h2>
-                <i class="fas fa-user-cog"></i> 7. Quyền Của Bạn
-            </h2>
-            <p>Bạn có các quyền sau đối với thông tin cá nhân của mình:</p>
-            <ul>
-                <li><strong>Quyền Truy Cập:</strong> Yêu cầu xem thông tin chúng tôi lưu trữ về bạn</li>
-                <li><strong>Quyền Chỉnh Sửa:</strong> Cập nhật hoặc sửa đổi thông tin không chính xác</li>
-                <li><strong>Quyền Xóa:</strong> Yêu cầu xóa thông tin của bạn (trừ khi pháp luật yêu cầu giữ lại)</li>
-                <li><strong>Quyền Từ Chối:</strong> Từ chối nhận email marketing</li>
-                <li><strong>Quyền Rút Lại Đồng Ý:</strong> Rút lại sự đồng ý xử lý dữ liệu</li>
-                <li><strong>Quyền Khiếu Nại:</strong> Khiếu nại với cơ quan bảo vệ dữ liệu</li>
-            </ul>
-            
-            <p>
-                Để thực hiện các quyền này, vui lòng liên hệ với chúng tôi qua email hoặc hotline.
-            </p>
-        </div>
-
-        <!-- Section 8 -->
-        <div class="privacy-section">
-            <h2>
-                <i class="fas fa-clock"></i> 8. Lưu Trữ Thông Tin
-            </h2>
-            <p>
-                Chúng tôi lưu trữ thông tin cá nhân của bạn trong thời gian cần thiết để thực hiện 
-                các mục đích được nêu trong chính sách này, trừ khi pháp luật yêu cầu hoặc cho phép 
-                lưu trữ lâu hơn.
-            </p>
-            <p>
-                Sau khi không còn cần thiết, chúng tôi sẽ xóa hoặc ẩn danh hóa thông tin của bạn 
-                một cách an toàn.
-            </p>
-        </div>
-
-        <!-- Section 9 -->
-        <div class="privacy-section">
-            <h2>
-                <i class="fas fa-globe"></i> 9. Chuyển Giao Quốc Tế
-            </h2>
-            <p>
-                Thông tin của bạn có thể được chuyển và lưu trữ tại các quốc gia khác ngoài quốc gia 
-                của bạn. Chúng tôi đảm bảo rằng việc chuyển giao này tuân thủ các quy định về bảo vệ 
-                dữ liệu và thông tin của bạn được bảo vệ phù hợp.
-            </p>
-        </div>
-
-        <!-- Section 10 -->
-        <div class="privacy-section">
-            <h2>
-                <i class="fas fa-child"></i> 10. Bảo Vệ Trẻ Em
-            </h2>
-            <p>
-                Website của chúng tôi không dành cho trẻ em dưới 18 tuổi. Chúng tôi không cố ý thu thập 
-                thông tin cá nhân từ trẻ em. Nếu chúng tôi phát hiện đã thu thập thông tin từ trẻ em, 
-                chúng tôi sẽ xóa thông tin đó ngay lập tức.
-            </p>
-        </div>
-
-        <!-- Section 11 -->
-        <div class="privacy-section">
-            <h2>
-                <i class="fas fa-edit"></i> 11. Thay Đổi Chính Sách
-            </h2>
-            <p>
-                Chúng tôi có thể cập nhật chính sách bảo mật này theo thời gian. 
-                Chúng tôi sẽ thông báo cho bạn về bất kỳ thay đổi quan trọng nào bằng cách 
-                đăng thông báo trên website hoặc gửi email cho bạn.
-            </p>
-            <p>
-                Chúng tôi khuyến khích bạn xem lại chính sách này định kỳ để cập nhật về cách 
-                chúng tôi bảo vệ thông tin của bạn.
-            </p>
-        </div>
-
-        <!-- Section 12 -->
-        <div class="privacy-section">
-            <h2>
-                <i class="fas fa-link"></i> 12. Liên Kết Bên Thứ Ba
-            </h2>
-            <p>
-                Website của chúng tôi có thể chứa liên kết đến các website khác. 
-                Chúng tôi không chịu trách nhiệm về các thực hành bảo mật của các website bên thứ ba. 
-                Chúng tôi khuyến khích bạn đọc chính sách bảo mật của các website đó.
-            </p>
-        </div>
-
-        <!-- Contact Info -->
-        <div class="contact-info">
-            <h3>
-                <i class="fas fa-envelope"></i> Liên Hệ Về Bảo Mật
-            </h3>
-            <p>
-                Nếu bạn có câu hỏi hoặc lo ngại về Chính Sách Bảo Mật này, vui lòng liên hệ với chúng tôi:
-            </p>
-            <p>
-                Email: <a href="mailto:quocdat30075@gmail.com">quocdat30075@gmail.com</a><br>
-                Hotline: <a href="tel:0345211386">0345211386</a><br>
-                Địa chỉ: 123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh
-            </p>
-        </div>
-    </div>
-</div>
-
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 {% endblock %}
 
+{% block content %}
+<div class="pv-root">
+
+  <!-- Header -->
+  <div class="pv-header">
+    <div class="pvh-inner">
+      <div class="pvh-bc">
+        <a href="/">Trang chủ</a>
+        <svg viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span>Chính sách bảo mật</span>
+      </div>
+      <h1>Chính sách  <span class="gold">bảo mật</span></h1>
+      <p>Cam kết bảo vệ thông tin cá nhân của bạn</p>
+      <div class="pvh-date">Cập nhật lần cuối: 21/12/2025</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="pv-body">
+    <div class="pvb-inner">
+
+      <!-- Sidebar TOC -->
+      <nav class="pv-nav">
+        <div class="pvn-title">Mục lục</div>
+        <a href="#s1"  class="pvn-item pvn-active">1. Giới thiệu</a>
+        <a href="#s2"  class="pvn-item">2. Thông tin thu thập</a>
+        <a href="#s3"  class="pvn-item">3. Cookies</a>
+        <a href="#s4"  class="pvn-item">4. Cách sử dụng</a>
+        <a href="#s5"  class="pvn-item">5. Chia sẻ thông tin</a>
+        <a href="#s6"  class="pvn-item">6. Bảo mật</a>
+        <a href="#s7"  class="pvn-item">7. Quyền của bạn</a>
+        <a href="#s8"  class="pvn-item">8. Lưu trữ</a>
+        <a href="#s9"  class="pvn-item">9. Chuyển giao</a>
+        <a href="#s10" class="pvn-item">10. Trẻ em</a>
+        <a href="#s11" class="pvn-item">11. Thay đổi</a>
+        <a href="#s12" class="pvn-item">12. Liên kết ngoài</a>
+        <div class="pvn-divider"></div>
+        <a href="/contact" class="pvn-cta">Liên hệ hỗ trợ</a>
+      </nav>
+
+      <!-- Content -->
+      <main class="pv-content">
+
+        <section class="pv-sec" id="s1">
+          <div class="pvs-head">
+            <div class="pvs-icon pvs-purple">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M10 7v4m0 2v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h2>1. Giới thiệu</h2>
+          </div>
+          <p>HOMESTEAD cam kết bảo vệ quyền riêng tư và thông tin cá nhân của bạn. Chính sách này giải thích cách chúng tôi thu thập, sử dụng, lưu trữ và bảo vệ thông tin khi bạn sử dụng website và dịch vụ của chúng tôi.</p>
+          <p>Bằng việc sử dụng website, bạn đồng ý với các thực hành được mô tả trong chính sách này.</p>
+          <div class="pvs-note pvs-note-green">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M10 2l6 2v5c0 4-2.5 5.8-6 7-3.5-1.2-6-3-6-7V4L10 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M7 8l2 2 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Chúng tôi không bán thông tin cá nhân của bạn cho bất kỳ bên thứ ba nào.
+          </div>
+        </section>
+
+        <section class="pv-sec" id="s2">
+          <div class="pvs-head">
+            <div class="pvs-icon pvs-blue">
+              <svg viewBox="0 0 20 20" fill="none"><ellipse cx="10" cy="5" rx="7" ry="3" stroke="currentColor" stroke-width="1.5"/><path d="M3 5v5c0 1.66 3.13 3 7 3s7-1.34 7-3V5M3 10v5c0 1.66 3.13 3 7 3s7-1.34 7-3v-5" stroke="currentColor" stroke-width="1.5"/></svg>
+            </div>
+            <h2>2. Thông tin chúng tôi thu thập</h2>
+          </div>
+
+          <h3>2.1. Thông tin bạn cung cấp</h3>
+          <div class="pvs-table">
+            <div class="pvt-row pvt-head">
+              <span>Trường hợp</span><span>Dữ liệu thu thập</span>
+            </div>
+            <div class="pvt-row">
+              <span>Đăng ký tài khoản</span><span>Tên, email, số điện thoại, địa chỉ</span>
+            </div>
+            <div class="pvt-row">
+              <span>Đặt hàng</span><span>Thông tin giao hàng, phương thức thanh toán</span>
+            </div>
+            <div class="pvt-row">
+              <span>Liên hệ</span><span>Tên, email, nội dung tin nhắn</span>
+            </div>
+            <div class="pvt-row">
+              <span>Đăng ký nhận tin</span><span>Email, sở thích sản phẩm</span>
+            </div>
+          </div>
+
+          <h3>2.2. Thông tin tự động thu thập</h3>
+          <ul class="pvs-list">
+            <li>Địa chỉ IP và vị trí địa lý gần đúng</li>
+            <li>Loại trình duyệt, phiên bản và hệ điều hành</li>
+            <li>Trang bạn truy cập và thời gian lưu lại</li>
+            <li>Trang web bạn đến từ (referrer URL)</li>
+            <li>Cookies và công nghệ theo dõi tương tự</li>
+          </ul>
+        </section>
+
+        <section class="pv-sec" id="s3">
+          <div class="pvs-head">
+            <div class="pvs-icon pvs-amber">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 3v5l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h2>3. Cookies và công nghệ theo dõi</h2>
+          </div>
+          <p>Chúng tôi sử dụng cookies để cải thiện trải nghiệm, phân tích cách sử dụng website và hỗ trợ các tính năng tiếp thị.</p>
+
+          <div class="pvs-grid-2">
+            <div class="pvs-cookie-card">
+              <div class="cc-dot cc-green"></div>
+              <div>
+                <strong>Cookies cần thiết</strong>
+                <span>Để website hoạt động cơ bản, đăng nhập, giỏ hàng</span>
+              </div>
+            </div>
+            <div class="pvs-cookie-card">
+              <div class="cc-dot cc-blue"></div>
+              <div>
+                <strong>Cookies hiệu suất</strong>
+                <span>Phân tích cách bạn sử dụng website (Google Analytics)</span>
+              </div>
+            </div>
+            <div class="pvs-cookie-card">
+              <div class="cc-dot cc-amber"></div>
+              <div>
+                <strong>Cookies chức năng</strong>
+                <span>Ghi nhớ ngôn ngữ, tùy chọn và cài đặt của bạn</span>
+              </div>
+            </div>
+            <div class="pvs-cookie-card">
+              <div class="cc-dot cc-purple"></div>
+              <div>
+                <strong>Cookies quảng cáo</strong>
+                <span>Hiển thị quảng cáo phù hợp với sở thích của bạn</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pvs-note pvs-note-blue">
+            <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            Bạn có thể quản lý hoặc xóa cookies bất cứ lúc nào qua cài đặt trình duyệt.
+          </div>
+        </section>
+
+        <section class="pv-sec" id="s4">
+          <div class="pvs-head">
+            <div class="pvs-icon pvs-green">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h2>4. Cách chúng tôi sử dụng thông tin</h2>
+          </div>
+          <ul class="pvs-check-list">
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Xử lý và hoàn thành đơn hàng</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Giao tiếp về đơn hàng, sản phẩm và dịch vụ</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Cải thiện website và trải nghiệm người dùng</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Gửi thông tin khuyến mãi (chỉ khi bạn đồng ý)</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Phân tích xu hướng và hành vi người dùng</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Ngăn chặn gian lận và bảo vệ an ninh</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Tuân thủ các nghĩa vụ pháp lý</li>
+          </ul>
+        </section>
+
+        <section class="pv-sec" id="s5">
+          <div class="pvs-head">
+            <div class="pvs-icon pvs-amber">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 3v14M3 10h14M5.5 5.5l9 9M14.5 5.5l-9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h2>5. Chia sẻ thông tin</h2>
+          </div>
+          <p>Chúng tôi <strong>không bán</strong> thông tin cá nhân của bạn. Thông tin chỉ được chia sẻ trong các trường hợp sau:</p>
+
+          <h3>5.1. Nhà cung cấp dịch vụ</h3>
+          <ul class="pvs-list">
+            <li>Đơn vị vận chuyển để thực hiện giao hàng</li>
+            <li>Nhà cung cấp thanh toán để xử lý giao dịch</li>
+            <li>Dịch vụ email marketing</li>
+            <li>Nhà cung cấp công nghệ và hosting</li>
+          </ul>
+
+          <h3>5.2. Yêu cầu pháp lý</h3>
+          <p>Chúng tôi có thể tiết lộ thông tin khi được yêu cầu bởi pháp luật hoặc để bảo vệ quyền và an toàn của người dùng.</p>
+
+          <div class="pvs-note pvs-note-amber">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M8 1l7 13H1L8 1zm0 5v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Tất cả bên thứ ba đều bị ràng buộc bảo mật thông tin và chỉ sử dụng đúng mục đích được chỉ định.
+          </div>
+        </section>
+
+        <section class="pv-sec" id="s6">
+          <div class="pvs-head">
+            <div class="pvs-icon pvs-dark">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a5 5 0 00-5 5v1H4a1 1 0 00-1 1v8a1 1 0 001 1h12a1 1 0 001-1v-8a1 1 0 00-1-1h-1V7a5 5 0 00-5-5zm0 2a3 3 0 013 3v1H7V7a3 3 0 013-3z" stroke="currentColor" stroke-width="1.4"/></svg>
+            </div>
+            <h2>6. Bảo mật thông tin</h2>
+          </div>
+          <p>Chúng tôi áp dụng các biện pháp bảo mật kỹ thuật và tổ chức phù hợp để bảo vệ thông tin khỏi truy cập trái phép, mất mát hoặc tiết lộ.</p>
+
+          <div class="pvs-security-grid">
+            <div class="pvs-sec-item">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 2l6 2.5v5c0 4-2.5 7-6 8.5C4.5 16.5 2 13.5 2 9.5v-5L10 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+              <span>Mã hóa SSL/TLS cho mọi giao dịch</span>
+            </div>
+            <div class="pvs-sec-item">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm2 1h12M6 10h2m3 0h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              <span>Cơ sở dữ liệu với quyền truy cập hạn chế</span>
+            </div>
+            <div class="pvs-sec-item">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M4 4h12v10H4V4zm4 4h4M10 4v10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              <span>Kiểm tra bảo mật định kỳ</span>
+            </div>
+            <div class="pvs-sec-item">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Hệ thống phát hiện xâm nhập</span>
+            </div>
+          </div>
+
+          <div class="pvs-note pvs-note-amber">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M8 1l7 13H1L8 1zm0 5v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Không có phương pháp nào là 100% an toàn. Bạn cũng có trách nhiệm bảo vệ mật khẩu tài khoản của mình.
+          </div>
+        </section>
+
+        <section class="pv-sec" id="s7">
+          <div class="pvs-head">
+            <div class="pvs-icon pvs-green">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.5"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M14 12l2 2 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>7. Quyền của bạn</h2>
+          </div>
+
+          <div class="pvs-rights-grid">
+            <div class="pvs-right-card">
+              <strong>Quyền truy cập</strong>
+              <span>Xem thông tin chúng tôi lưu về bạn</span>
+            </div>
+            <div class="pvs-right-card">
+              <strong>Quyền chỉnh sửa</strong>
+              <span>Cập nhật thông tin không chính xác</span>
+            </div>
+            <div class="pvs-right-card">
+              <strong>Quyền xóa</strong>
+              <span>Yêu cầu xóa dữ liệu cá nhân</span>
+            </div>
+            <div class="pvs-right-card">
+              <strong>Quyền từ chối</strong>
+              <span>Từ chối nhận email marketing</span>
+            </div>
+            <div class="pvs-right-card">
+              <strong>Rút lại đồng ý</strong>
+              <span>Hủy sự đồng ý xử lý dữ liệu</span>
+            </div>
+            <div class="pvs-right-card">
+              <strong>Quyền khiếu nại</strong>
+              <span>Khiếu nại với cơ quan bảo vệ dữ liệu</span>
+            </div>
+          </div>
+          <p style="margin-top:1.25rem">Để thực hiện các quyền này, vui lòng liên hệ chúng tôi qua email hoặc hotline bên dưới.</p>
+        </section>
+
+        <section class="pv-sec" id="s8">
+          <div class="pvs-head">
+            <div class="pvs-icon pvs-blue">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h2>8. Lưu trữ thông tin</h2>
+          </div>
+          <p>Chúng tôi lưu trữ thông tin cá nhân trong thời gian cần thiết để thực hiện các mục đích nêu trong chính sách này, trừ khi pháp luật yêu cầu lưu lâu hơn.</p>
+          <p>Sau khi không còn cần thiết, chúng tôi sẽ xóa hoặc ẩn danh hóa thông tin của bạn một cách an toàn.</p>
+        </section>
+
+        <section class="pv-sec" id="s9">
+          <div class="pvs-head">
+            <div class="pvs-icon pvs-purple">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M3 10h14M10 3c-2 2-3 4.5-3 7s1 5 3 7M10 3c2 2 3 4.5 3 7s-1 5-3 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <h2>9. Chuyển giao quốc tế</h2>
+          </div>
+          <p>Thông tin của bạn có thể được chuyển và lưu trữ tại các quốc gia khác. Chúng tôi đảm bảo việc chuyển giao này tuân thủ các quy định bảo vệ dữ liệu hiện hành và thông tin của bạn được bảo vệ phù hợp.</p>
+        </section>
+
+        <section class="pv-sec" id="s10">
+          <div class="pvs-head">
+            <div class="pvs-icon pvs-amber">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 4v4m0 2v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <h2>10. Bảo vệ trẻ em</h2>
+          </div>
+          <p>Website của chúng tôi không dành cho trẻ em dưới 18 tuổi. Chúng tôi không cố ý thu thập thông tin cá nhân từ trẻ em. Nếu phát hiện đã thu thập thông tin từ trẻ em, chúng tôi sẽ xóa ngay lập tức.</p>
+        </section>
+
+        <section class="pv-sec" id="s11">
+          <div class="pvs-head">
+            <div class="pvs-icon pvs-dark">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zm-2.207 2.207L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>11. Thay đổi chính sách</h2>
+          </div>
+          <p>Chúng tôi có thể cập nhật chính sách bảo mật này theo thời gian. Bất kỳ thay đổi quan trọng nào đều được thông báo qua email hoặc thông báo nổi bật trên website.</p>
+          <p>Chúng tôi khuyến khích bạn xem lại chính sách này định kỳ. Ngày cập nhật lần cuối được ghi tại đầu trang.</p>
+        </section>
+
+        <section class="pv-sec" id="s12">
+          <div class="pvs-head">
+            <div class="pvs-icon pvs-blue">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M11 3h6v6M17 3l-9 9M8 5H4a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>12. Liên kết bên ngoài</h2>
+          </div>
+          <p>Website có thể chứa liên kết đến các website khác. Chúng tôi không chịu trách nhiệm về các thực hành bảo mật của các website đó và khuyến khích bạn đọc chính sách bảo mật của họ trước khi cung cấp bất kỳ thông tin nào.</p>
+        </section>
+
+        <!-- Contact card -->
+        <div class="pv-contact">
+          <div class="pvc-left">
+            <svg viewBox="0 0 32 32" fill="none"><path d="M16 3l13 5v9c0 8-5.4 13.4-13 15C8.4 30.4 3 25 3 17V8L16 3z" stroke="white" stroke-width="2" stroke-linejoin="round"/><path d="M11 16l3.5 3.5 7-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div>
+              <strong>Liên hệ về bảo mật</strong>
+              <span>Chúng tôi phản hồi trong vòng 24 giờ làm việc</span>
+            </div>
+          </div>
+          <div class="pvc-right">
+            <a href="mailto:quocdat30075@gmail.com" class="pvc-link">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M1 4h14a1 1 0 011 1v7a1 1 0 01-1 1H1a1 1 0 01-1-1V5a1 1 0 011-1zm7 5L1 5M15 5l-7 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              quocdat30075@gmail.com
+            </a>
+            <a href="tel:0345211386" class="pvc-link">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M5 2h-1A1.5 1.5 0 002.5 3.5v1C2.5 10.4 6.6 14.5 13.5 14.5h1A1.5 1.5 0 0016 13v-1.5a.5.5 0 00-.3-.46l-2.5-1a.5.5 0 00-.56.12l-1 1.25a8 8 0 01-3.5-3.5l1.25-1a.5.5 0 00.12-.57l-1-2.5A.5.5 0 005 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+              0345 211 386
+            </a>
+            <a href="/contact" class="pvc-btn">Liên hệ ngay</a>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+</div>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--font:'Be Vietnam Pro',sans-serif;--dark:#1a1a18;--gold:#b8922a;--border:#e8e3db;--text:#2a2520;--muted:#7a7060;--light:#f5f4f1}
+body{font-family:var(--font);color:var(--text)}
+a{text-decoration:none;color:inherit}
+
+.pv-header{background:var(--dark);padding:3rem 2rem;text-align:center;position:relative;overflow:hidden}
+.pv-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 100%,rgba(196,160,100,.12) 0%,transparent 60%)}
+.pvh-inner{position:relative;z-index:1;max-width:1280px;margin:0 auto}
+.pvh-bc{display:flex;align-items:center;justify-content:center;gap:.375rem;margin-bottom:.875rem}
+.pvh-bc a,.pvh-bc span{font-size:.75rem;color:rgba(255,255,255,.45)}
+.pvh-bc a:hover{color:rgba(255,255,255,.8)}
+.pvh-bc svg{width:11px;height:11px;color:rgba(255,255,255,.25)}
+.pv-header h1{font-size:clamp(1.875rem,4vw,2.75rem);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:.5rem}
+.pv-header h1 .gold{color:#c4a064;font-weight:300}
+.pv-header p{font-size:.9rem;color:rgba(255,255,255,.55);font-weight:300}
+.pvh-date{font-size:.75rem;color:rgba(255,255,255,.35);margin-top:.5rem}
+
+.pv-body{background:var(--light);padding:2rem}
+.pvb-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:200px 1fr;gap:2rem;align-items:start}
+
+/* Nav */
+.pv-nav{background:#fff;border-radius:10px;border:1.5px solid var(--border);padding:1.125rem;position:sticky;top:1.5rem;display:flex;flex-direction:column;gap:.125rem}
+.pvn-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:.25rem .5rem;margin-bottom:.25rem}
+.pvn-item{display:block;padding:.45rem .625rem;border-radius:7px;font-size:.78rem;font-weight:500;color:var(--muted);transition:all .18s}
+.pvn-item:hover{background:var(--light);color:var(--dark)}
+.pvn-active{background:var(--light);color:var(--dark);font-weight:600}
+.pvn-divider{height:1px;background:var(--border);margin:.625rem 0}
+.pvn-cta{display:flex;align-items:center;justify-content:center;padding:.55rem;background:var(--dark);color:#fff;border-radius:7px;font-size:.78rem;font-weight:600;transition:background .18s}
+.pvn-cta:hover{background:#2e2e2a}
+
+/* Content */
+.pv-content{display:flex;flex-direction:column;gap:1.125rem}
+
+.pv-sec{background:#fff;border-radius:10px;border:1.5px solid var(--border);padding:1.75rem;scroll-margin-top:1.5rem}
+
+.pvs-head{display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1.5px solid var(--border)}
+.pvs-icon{width:42px;height:42px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pvs-icon svg{width:20px;height:20px}
+.pvs-head h2{font-size:1rem;font-weight:700;color:var(--dark);letter-spacing:-.01em}
+.pvs-purple{background:#faf5ff;color:#7c3aed}
+.pvs-blue{background:#eff6ff;color:#2563eb}
+.pvs-green{background:#f0faf4;color:#16a34a}
+.pvs-amber{background:#fffbeb;color:#d97706}
+.pvs-dark{background:var(--light);color:var(--dark)}
+
+.pv-sec p{font-size:.875rem;color:var(--muted);line-height:1.8;margin-bottom:.75rem}
+.pv-sec p:last-child{margin-bottom:0}
+.pv-sec h3{font-size:.8125rem;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:.06em;margin:1.125rem 0 .75rem}
+
+.pvs-list{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.pvs-list li{display:flex;align-items:flex-start;gap:.625rem;font-size:.875rem;color:var(--muted);line-height:1.5}
+.pvs-list li::before{content:'·';color:var(--gold);font-weight:700;flex-shrink:0;margin-top:1px}
+
+.pvs-check-list{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.pvs-check-list li{display:flex;align-items:flex-start;gap:.5rem;font-size:.875rem;color:var(--text);line-height:1.5}
+.pvs-check-list svg{width:14px;height:14px;color:#16a34a;flex-shrink:0;margin-top:2px}
+
+/* Note boxes */
+.pvs-note{display:flex;align-items:flex-start;gap:.625rem;border-radius:8px;padding:.875rem 1rem;font-size:.8125rem;font-weight:500;margin-top:1rem;line-height:1.5}
+.pvs-note svg{width:15px;height:15px;flex-shrink:0;margin-top:1px}
+.pvs-note-green{background:#f0faf4;border:1.5px solid #bbf7d0;color:#166534}
+.pvs-note-green svg{color:#16a34a}
+.pvs-note-blue{background:#eff6ff;border:1.5px solid #bfdbfe;color:#1e40af}
+.pvs-note-blue svg{color:#2563eb}
+.pvs-note-amber{background:#fffbeb;border:1.5px solid #fde68a;color:#854d0e}
+.pvs-note-amber svg{color:#d97706}
+
+/* Table */
+.pvs-table{border:1.5px solid var(--border);border-radius:8px;overflow:hidden;margin:.875rem 0;font-size:.8125rem}
+.pvt-row{display:grid;grid-template-columns:1fr 1.5fr;gap:0;border-bottom:1px solid var(--border)}
+.pvt-row:last-child{border-bottom:none}
+.pvt-row span{padding:.625rem .875rem;color:var(--text)}
+.pvt-row span:first-child{font-weight:500;color:var(--dark);border-right:1px solid var(--border);background:var(--light)}
+.pvt-head span{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--light)!important}
+
+/* Grid 2 */
+.pvs-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:.875rem 0}
+.pvs-cookie-card{display:flex;align-items:flex-start;gap:.75rem;background:var(--light);border:1.5px solid var(--border);border-radius:8px;padding:.875rem}
+.pvs-cookie-card>div{display:flex;flex-direction:column;gap:.2rem}
+.pvs-cookie-card strong{font-size:.8125rem;font-weight:600;color:var(--dark)}
+.pvs-cookie-card span{font-size:.75rem;color:var(--muted)}
+.cc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.cc-green{background:#16a34a}.cc-blue{background:#2563eb}.cc-amber{background:#d97706}.cc-purple{background:#7c3aed}
+
+/* Security grid */
+.pvs-security-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:.875rem 0}
+.pvs-sec-item{display:flex;align-items:center;gap:.625rem;background:var(--light);border:1.5px solid var(--border);border-radius:8px;padding:.875rem}
+.pvs-sec-item svg{width:18px;height:18px;color:var(--gold);flex-shrink:0}
+.pvs-sec-item span{font-size:.8125rem;color:var(--text)}
+
+/* Rights grid */
+.pvs-rights-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:.875rem 0}
+.pvs-right-card{background:var(--light);border:1.5px solid var(--border);border-radius:8px;padding:.875rem;display:flex;flex-direction:column;gap:.25rem}
+.pvs-right-card strong{font-size:.8125rem;font-weight:600;color:var(--dark)}
+.pvs-right-card span{font-size:.75rem;color:var(--muted)}
+
+/* Contact card */
+.pv-contact{background:var(--dark);border-radius:10px;padding:1.75rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;position:relative;overflow:hidden}
+.pv-contact::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(196,160,100,.1) 0%,transparent 60%);pointer-events:none}
+.pvc-left{display:flex;align-items:center;gap:1rem;position:relative;z-index:1}
+.pvc-left svg{width:36px;height:36px;flex-shrink:0}
+.pvc-left strong{display:block;font-size:.9375rem;font-weight:700;color:#fff;margin-bottom:.2rem}
+.pvc-left span{font-size:.78rem;color:rgba(255,255,255,.5)}
+.pvc-right{display:flex;align-items:center;gap:.875rem;flex-wrap:wrap;position:relative;z-index:1}
+.pvc-link{display:inline-flex;align-items:center;gap:.375rem;font-size:.8125rem;color:rgba(255,255,255,.7);transition:color .18s}
+.pvc-link svg{width:14px;height:14px;flex-shrink:0}
+.pvc-link:hover{color:#fff}
+.pvc-btn{display:inline-flex;padding:.625rem 1.25rem;background:#fff;color:var(--dark);border-radius:8px;font-family:var(--font);font-size:.8125rem;font-weight:600;transition:all .18s}
+.pvc-btn:hover{background:var(--gold);color:#fff}
+
+@media(max-width:900px){
+  .pvb-inner{grid-template-columns:1fr}
+  .pv-nav{position:static;flex-direction:row;flex-wrap:wrap;gap:.375rem;padding:.875rem}
+  .pvn-title,.pvn-divider{display:none}
+  .pvn-item{font-size:.75rem;padding:.4rem .625rem}
+  .pvs-rights-grid{grid-template-columns:repeat(2,1fr)}
+  .pvs-security-grid,.pvs-grid-2{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .pv-body{padding:1rem}
+  .pvs-rights-grid{grid-template-columns:1fr}
+  .pvt-row{grid-template-columns:1fr}
+  .pvt-row span:first-child{border-right:none;border-bottom:1px solid var(--border)}
+  .pv-contact{flex-direction:column;align-items:flex-start}
+}
+</style>
+
+<script>
+const sections = document.querySelectorAll('.pv-sec');
+const navLinks = document.querySelectorAll('.pvn-item');
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(n => n.classList.remove('pvn-active'));
+      const active = document.querySelector(`.pvn-item[href="#${entry.target.id}"]`);
+      if (active) active.classList.add('pvn-active');
+    }
+  });
+}, {rootMargin:'-20% 0px -60% 0px'});
+
+sections.forEach(s => obs.observe(s));
+
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    const href = link.getAttribute('href');
+    if (href?.startsWith('#')) {
+      e.preventDefault();
+      document.querySelector(href)?.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  });
+});
+</script>
+
+{% endblock %}

@@ -1,1121 +1,628 @@
 // ============================================
-// JAVASCRIPT CHO CÁC CHỨC NĂNG MỚI
+// DQD — Features: Wishlist / Reviews / Coupon
+//              / Notifications / Cart / Orders
 // ============================================
-
-// ==================== Wishlist Functions ====================
-async function toggleWishlist(productId) {
-    if (!isLoggedIn()) {
-        alert('Vui lòng đăng nhập để thêm vào yêu thích');
-        return;
+(function () {
+    'use strict';
+  
+    // ── Constants ───────────────────────────────
+    const NOTIF_REFRESH_MS  = 30_000;
+    const TOAST_DURATION_MS = 3_000;
+    const MAX_TOASTS        = 3;
+    const MAX_BADGE         = 99;
+  
+    // ── State ────────────────────────────────────
+    let _notifTimer   = null;
+    let _appliedCoupon = null;
+    let _toastCount   = 0;
+  
+    // ── FIX 1: File bị duplicate hoàn toàn — xóa bản thứ hai ──
+  
+    // ══════════════════════════════════════════════
+    // AUTH HELPER
+    // ══════════════════════════════════════════════
+  
+    // FIX 2: isLoggedIn() đáng tin cậy hơn — ưu tiên meta tag từ server
+    function isLoggedIn() {
+      const meta = document.querySelector('meta[name="user-logged-in"]');
+      if (meta) return meta.getAttribute('content') === 'true';
+      return (
+        document.body.classList.contains('logged-in') ||
+        !!sessionStorage.getItem('customer_email') ||
+        document.cookie.includes('customer_logged_in=1')
+      );
     }
-    
-    try {
-        // Kiểm tra trạng thái hiện tại
-        const checkResponse = await fetch(`/api/wishlist/check/${productId}`);
-        const checkData = await checkResponse.json();
-        const isInWishlist = checkData.in_wishlist;
-        
-        // Toggle
-        const endpoint = isInWishlist ? `/api/wishlist/remove/${productId}` : `/api/wishlist/add/${productId}`;
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            updateWishlistButton(productId, !isInWishlist);
-            showNotification(data.message, 'success');
+  
+    // ══════════════════════════════════════════════
+    // SAFE DOM HELPERS
+    // ══════════════════════════════════════════════
+  
+    // FIX 3: Không dùng innerHTML với data từ server (XSS).
+    //         Tất cả text → textContent; build DOM programmatically.
+    function _el(tag, className, text) {
+      const e = document.createElement(tag);
+      if (className) e.className = className;
+      if (text !== undefined) e.textContent = text;
+      return e;
+    }
+  
+    function _safeUrl(url) {
+      if (!url || url === '#') return null;
+      try {
+        const u = new URL(url, window.location.origin);
+        return u.protocol === 'javascript:' ? null : u.href;
+      } catch {
+        return /^[/#?]/.test(url) ? url : null;
+      }
+    }
+  
+    // FIX 4: generateStars — SVG inline, không phụ thuộc FontAwesome
+    function _generateStars(rating) {
+      const full = Math.floor(rating);
+      const half = rating - full >= 0.5;
+      const frag = document.createDocumentFragment();
+      const SVG_NS = 'http://www.w3.org/2000/svg';
+  
+      for (let i = 1; i <= 5; i++) {
+        const svg = document.createElementNS(SVG_NS, 'svg');
+        svg.setAttribute('viewBox', '0 0 16 16');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('width', '14');
+        svg.setAttribute('height', '14');
+        svg.style.display = 'inline-block';
+  
+        const path = document.createElementNS(SVG_NS, 'path');
+        const starPath = 'M8 1l1.797 3.641L13.5 5.25l-2.75 2.682.65 3.787L8 9.87l-3.4 1.849.65-3.787L2.5 5.25l3.703-.609z';
+        path.setAttribute('d', starPath);
+        path.setAttribute('stroke', '#d97706');
+        path.setAttribute('stroke-width', '1');
+  
+        if (i <= full) {
+          path.setAttribute('fill', '#d97706');
+          path.setAttribute('stroke', 'none');
+        } else if (i === full + 1 && half) {
+          path.setAttribute('fill', 'url(#half-star)');
+          // Simple half: just fill partway via clip
+          path.setAttribute('fill', '#d97706');
+          path.style.clipPath = 'inset(0 50% 0 0)'; // visual approximation
+          const bg = path.cloneNode();
+          bg.setAttribute('fill', 'none');
+          bg.style.clipPath = '';
+          svg.appendChild(bg);
         } else {
-            showNotification(data.message || 'Có lỗi xảy ra', 'error');
+          path.setAttribute('fill', 'none');
         }
-    } catch (error) {
-        console.error('Error toggling wishlist:', error);
+  
+        svg.appendChild(path);
+        frag.appendChild(svg);
+      }
+      return frag;
+    }
+  
+    function _formatTime(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return '';
+      const diffMs    = Date.now() - date.getTime();
+      const diffMins  = Math.floor(diffMs / 60_000);
+      const diffHours = Math.floor(diffMs / 3_600_000);
+      const diffDays  = Math.floor(diffMs / 86_400_000);
+      if (diffMins  <  1) return 'Vừa xong';
+      if (diffMins  < 60) return `${diffMins} phút trước`;
+      if (diffHours < 24) return `${diffHours} giờ trước`;
+      if (diffDays  <  7) return `${diffDays} ngày trước`;
+      return date.toLocaleDateString('vi-VN');
+    }
+  
+    // ══════════════════════════════════════════════
+    // TOAST NOTIFICATIONS
+    // ══════════════════════════════════════════════
+  
+    // FIX 5: Giới hạn MAX_TOASTS — tránh spam hàng chục toast chồng nhau
+    function showNotification(message, type = 'info') {
+      if (_toastCount >= MAX_TOASTS) return;
+      _toastCount++;
+  
+      const toast = _el('div', `notification-toast ${type}`);
+      toast.textContent = message;
+      toast.setAttribute('role', 'alert');
+      toast.setAttribute('aria-live', 'polite');
+      document.body.appendChild(toast);
+  
+      requestAnimationFrame(() => toast.classList.add('show'));
+  
+      setTimeout(() => {
+        toast.classList.remove('show');
+        toast.addEventListener('transitionend', () => {
+          toast.remove();
+          _toastCount--;
+        }, { once: true });
+      }, TOAST_DURATION_MS);
+    }
+  
+    // ══════════════════════════════════════════════
+    // WISHLIST
+    // ══════════════════════════════════════════════
+  
+    // FIX 6: toggleWishlist — loại bỏ 2 request riêng (check + toggle).
+    //         Dùng 1 endpoint POST /api/wishlist/toggle/:id trả về trạng thái mới.
+    //         Nếu server chưa hỗ trợ → dùng optimistic update.
+    async function toggleWishlist(productId) {
+      if (!isLoggedIn()) {
+        showNotification('Vui lòng đăng nhập để thêm vào yêu thích', 'warning');
+        return;
+      }
+  
+      const btn = document.querySelector(`[data-wishlist-product="${productId}"]`);
+      const wasActive = btn?.classList.contains('active');
+  
+      // Optimistic update
+      _setWishlistBtn(btn, !wasActive);
+  
+      try {
+        const res = await fetch(`/api/wishlist/toggle/${productId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+  
+        if (data.success) {
+          _setWishlistBtn(btn, data.in_wishlist);
+          showNotification(data.message || (data.in_wishlist ? 'Đã thêm vào yêu thích' : 'Đã xóa khỏi yêu thích'), 'success');
+        } else {
+          _setWishlistBtn(btn, wasActive); // revert
+          showNotification(data.message || 'Có lỗi xảy ra', 'error');
+        }
+      } catch (err) {
+        _setWishlistBtn(btn, wasActive); // revert
+        console.error('[Wishlist] Toggle failed:', err);
         showNotification('Có lỗi xảy ra', 'error');
+      }
     }
-}
-
-function updateWishlistButton(productId, isInWishlist) {
-    const button = document.querySelector(`[data-wishlist-product="${productId}"]`);
-    if (button) {
-        if (isInWishlist) {
-            button.classList.add('active');
-            button.innerHTML = '<i class="fas fa-heart"></i> Đã yêu thích';
-        } else {
-            button.classList.remove('active');
-            button.innerHTML = '<i class="far fa-heart"></i> Yêu thích';
-        }
+  
+    function _setWishlistBtn(btn, active) {
+      if (!btn) return;
+      btn.classList.toggle('active', active);
+      // FIX 4: SVG thay FontAwesome
+      const heartSVG = active
+        ? `<svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 14s-6-4.35-6-8a4 4 0 018 0 4 4 0 018 0c0 3.65-6 8-6 8z" fill="#dc2626" stroke="#dc2626" stroke-width="1"/></svg>`
+        : `<svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 14s-6-4.35-6-8a4 4 0 018 0 4 4 0 018 0c0 3.65-6 8-6 8z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>`;
+      btn.innerHTML = heartSVG + (active ? ' Đã yêu thích' : ' Yêu thích');
     }
-}
-
-async function loadWishlistStatus(productId) {
-    if (!isLoggedIn()) return;
-    
-    try {
-        const response = await fetch(`/api/wishlist/check/${productId}`);
-        const data = await response.json();
+  
+    async function loadWishlistStatus(productId) {
+      if (!isLoggedIn()) return;
+      try {
+        const res  = await fetch(`/api/wishlist/check/${productId}`);
+        if (!res.ok) return;
+        const data = await res.json();
         if (data.success) {
-            updateWishlistButton(productId, data.in_wishlist);
+          _setWishlistBtn(document.querySelector(`[data-wishlist-product="${productId}"]`), data.in_wishlist);
         }
-    } catch (error) {
-        console.error('Error loading wishlist status:', error);
+      } catch { /* silent */ }
     }
-}
-
-// ==================== Product Reviews Functions ====================
-async function loadProductReviews(productId) {
-    try {
-        const response = await fetch(`/api/product/${productId}/reviews`);
-        const data = await response.json();
-        
-        if (data.success && data.reviews) {
-            displayReviews(data.reviews);
-        }
-    } catch (error) {
-        console.error('Error loading reviews:', error);
-    }
-}
-
-function displayReviews(reviews) {
-    const container = document.getElementById('reviews-container');
-    if (!container) return;
-    
-    if (reviews.length === 0) {
-        container.innerHTML = '<p class="no-reviews">Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá!</p>';
-        return;
-    }
-    
-    let html = '';
-    reviews.forEach(review => {
-        const stars = generateStars(review.rating);
-        const verifiedBadge = review.is_verified_purchase ? '<span class="verified-badge">✓ Đã mua</span>' : '';
-        const date = new Date(review.created_at).toLocaleDateString('vi-VN');
-        
-        html += `
-            <div class="review-item">
-                <div class="review-header">
-                    <div class="reviewer-info">
-                        <strong>${review.customer_name}</strong>
-                        ${verifiedBadge}
-                    </div>
-                    <div class="review-rating">${stars}</div>
-                </div>
-                ${review.title ? `<h4 class="review-title">${review.title}</h4>` : ''}
-                <p class="review-comment">${review.comment}</p>
-                ${review.images && review.images.length > 0 ? `
-                    <div class="review-images">
-                        ${review.images.map(img => `<img src="${img}" alt="Review image" onclick="openImageModal('${img}')">`).join('')}
-                    </div>
-                ` : ''}
-                <div class="review-footer">
-                    <span class="review-date">${date}</span>
-                    <button class="helpful-btn" onclick="markHelpful(${review.id})">
-                        <i class="fas fa-thumbs-up"></i> Hữu ích (${review.helpful_count || 0})
-                    </button>
-                </div>
-            </div>
-        `;
-    });
-    
-    container.innerHTML = html;
-}
-
-function generateStars(rating) {
-    let html = '';
-    for (let i = 1; i <= 5; i++) {
-        if (i <= rating) {
-            html += '<i class="fas fa-star"></i>';
-        } else if (i - 0.5 <= rating) {
-            html += '<i class="fas fa-star-half-alt"></i>';
-        } else {
-            html += '<i class="far fa-star"></i>';
-        }
-    }
-    return html;
-}
-
-async function submitReview(productId) {
-    if (!isLoggedIn()) {
-        alert('Vui lòng đăng nhập để đánh giá');
-        return;
-    }
-    
-    const rating = document.getElementById('review-rating')?.value;
-    const title = document.getElementById('review-title')?.value;
-    const comment = document.getElementById('review-comment')?.value;
-    
-    if (!rating || !comment) {
-        alert('Vui lòng điền đầy đủ thông tin');
-        return;
-    }
-    
-    try {
-        const response = await fetch(`/api/product/${productId}/review`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                rating: parseInt(rating),
-                title: title || '',
-                comment: comment,
-                images: [] // Có thể thêm upload ảnh sau
-            })
+  
+    // FIX 7: Batch load wishlist statuses — 1 request thay vì N request song song
+    async function loadAllWishlistStatuses() {
+      if (!isLoggedIn()) return;
+      const btns = [...document.querySelectorAll('[data-wishlist-product]')];
+      if (!btns.length) return;
+  
+      const ids = btns.map(b => b.getAttribute('data-wishlist-product'));
+  
+      try {
+        const res = await fetch('/api/wishlist/check-batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product_ids: ids })
         });
-        
-        const data = await response.json();
-        if (data.success) {
-            showNotification('Đánh giá đã được gửi. Cảm ơn bạn!', 'success');
-            document.getElementById('review-form')?.reset();
-            loadProductReviews(productId);
-        } else {
-            showNotification(data.message || 'Có lỗi xảy ra', 'error');
+  
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.statuses) {
+            ids.forEach((id, i) => _setWishlistBtn(btns[i], !!data.statuses[id]));
+            return;
+          }
         }
-    } catch (error) {
-        console.error('Error submitting review:', error);
+      } catch { /* fallback below */ }
+  
+      // Fallback: load individually if batch endpoint not available
+      await Promise.allSettled(ids.map(id => loadWishlistStatus(id)));
+    }
+  
+    // ══════════════════════════════════════════════
+    // REVIEWS
+    // ══════════════════════════════════════════════
+  
+    async function loadProductReviews(productId) {
+      try {
+        const res = await fetch(`/api/product/${productId}/reviews`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data.success && data.reviews) _displayReviews(data.reviews);
+      } catch (err) {
+        console.error('[Reviews] Load failed:', err);
+      }
+    }
+  
+    // FIX 3: Build DOM — không innerHTML với server data
+    function _displayReviews(reviews) {
+      const container = document.getElementById('reviews-container');
+      if (!container) return;
+  
+      if (!reviews.length) {
+        container.textContent = '';
+        container.appendChild(_el('p', 'no-reviews', 'Chưa có đánh giá nào. Hãy là người đầu tiên!'));
+        return;
+      }
+  
+      const frag = document.createDocumentFragment();
+      reviews.forEach(r => {
+        const item = _el('div', 'review-item');
+  
+        const header = _el('div', 'review-header');
+        const info   = _el('div', 'reviewer-info');
+        const name   = _el('strong', null, r.customer_name || 'Ẩn danh');
+        info.appendChild(name);
+  
+        if (r.is_verified_purchase) {
+          info.appendChild(_el('span', 'verified-badge', '✓ Đã mua'));
+        }
+  
+        const stars = _el('div', 'review-rating');
+        stars.appendChild(_generateStars(r.rating || 0));
+        header.append(info, stars);
+        item.appendChild(header);
+  
+        if (r.title) item.appendChild(_el('h4', 'review-title', r.title));
+        item.appendChild(_el('p', 'review-comment', r.comment || ''));
+  
+        if (Array.isArray(r.images) && r.images.length) {
+          const imgs = _el('div', 'review-images');
+          r.images.forEach(src => {
+            const safeSrc = _safeUrl(src);
+            if (!safeSrc) return;
+            const img = document.createElement('img');
+            img.src = safeSrc;
+            img.alt = 'Ảnh đánh giá';
+            img.addEventListener('click', () => openImageModal(safeSrc));
+            imgs.appendChild(img);
+          });
+          item.appendChild(imgs);
+        }
+  
+        const footer = _el('div', 'review-footer');
+        footer.appendChild(_el('span', 'review-date', new Date(r.created_at).toLocaleDateString('vi-VN')));
+  
+        const helpBtn = _el('button', 'helpful-btn', `Hữu ích (${r.helpful_count || 0})`);
+        helpBtn.type = 'button';
+        helpBtn.addEventListener('click', () => markHelpful(r.id));
+        footer.appendChild(helpBtn);
+  
+        item.appendChild(footer);
+        frag.appendChild(item);
+      });
+  
+      container.innerHTML = '';
+      container.appendChild(frag);
+    }
+  
+    async function submitReview(productId) {
+      if (!isLoggedIn()) {
+        showNotification('Vui lòng đăng nhập để đánh giá', 'warning');
+        return;
+      }
+      const rating  = document.getElementById('review-rating')?.value;
+      const title   = document.getElementById('review-title')?.value?.trim();
+      const comment = document.getElementById('review-comment')?.value?.trim();
+  
+      if (!rating || !comment) {
+        showNotification('Vui lòng điền đủ đánh giá và nhận xét', 'warning');
+        return;
+      }
+  
+      try {
+        const res = await fetch(`/api/product/${productId}/review`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rating: parseInt(rating, 10), title: title || '', comment, images: [] })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data.success) {
+          showNotification('Đánh giá đã được gửi. Cảm ơn bạn!', 'success');
+          document.getElementById('review-form')?.reset();
+          loadProductReviews(productId);
+        } else {
+          showNotification(data.message || 'Có lỗi xảy ra', 'error');
+        }
+      } catch (err) {
+        console.error('[Reviews] Submit failed:', err);
         showNotification('Có lỗi xảy ra', 'error');
+      }
     }
-}
-
-// ==================== Coupon Functions ====================
-let appliedCoupon = null;
-
-async function applyCouponCode() {
-    const codeInput = document.getElementById('coupon-code');
-    if (!codeInput) {
-        console.error('Không tìm thấy coupon-code input');
-        alert('Không tìm thấy ô nhập mã giảm giá');
-        return;
+  
+    async function markHelpful(reviewId) {
+      try {
+        await fetch(`/api/review/${reviewId}/helpful`, { method: 'POST' });
+      } catch { /* silent */ }
     }
-    
-    const code = codeInput.value.trim().toUpperCase();
-    
-    if (!code) {
-        alert('Vui lòng nhập mã giảm giá');
-        return;
+  
+    // ══════════════════════════════════════════════
+    // COUPON
+    // ══════════════════════════════════════════════
+  
+    function getOrderSubtotal() {
+      const el = document.getElementById('order-subtotal');
+      if (!el) { console.warn('[Coupon] #order-subtotal not found'); return 0; }
+      const amount = parseInt((el.textContent || '').replace(/[^\d]/g, ''), 10) || 0;
+      return amount;
     }
-    
-    // Lấy tổng tiền đơn hàng
-    const subtotal = getOrderSubtotal();
-    
-    if (subtotal <= 0) {
-        alert('Không thể áp dụng mã giảm giá. Tổng tiền đơn hàng không hợp lệ.');
-        return;
+  
+    function updateOrderSummary(discount, finalAmount) {
+      const row      = document.getElementById('coupon-discount-row');
+      const discEl   = document.getElementById('coupon-discount');
+      const totalEl  = document.getElementById('order-total');
+  
+      if (row) {
+        const show = discount > 0;
+        row.style.display = show ? 'flex' : 'none';
+        if (show && discEl) discEl.textContent = `-${discount.toLocaleString('vi-VN')}₫`;
+      }
+      if (totalEl) totalEl.textContent = `${finalAmount.toLocaleString('vi-VN')}₫`;
     }
-    
-    console.log('Applying coupon:', code, 'for amount:', subtotal);
-    
-    try {
-        const response = await fetch('/api/coupon/validate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                code: code,
-                order_amount: subtotal
-            })
+  
+    async function applyCouponCode() {
+      const input = document.getElementById('coupon-code');
+      const code  = input?.value.trim().toUpperCase();
+  
+      if (!code) { showNotification('Vui lòng nhập mã giảm giá', 'warning'); return; }
+  
+      const subtotal = getOrderSubtotal();
+      if (subtotal <= 0) { showNotification('Tổng tiền đơn hàng không hợp lệ', 'warning'); return; }
+  
+      try {
+        const res = await fetch('/api/coupon/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, order_amount: subtotal })
         });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Coupon response:', data);
-        
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+  
         if (data.valid) {
-            appliedCoupon = data.coupon;
-            
-            // Hiển thị section applied coupon
-            const inputSection = document.getElementById('coupon-input-section');
-            const appliedSection = document.getElementById('applied-coupon-section');
-            const couponName = document.getElementById('applied-coupon-name');
-            
-            if (inputSection) inputSection.style.display = 'none';
-            if (appliedSection) {
-                appliedSection.style.display = 'block';
-                if (couponName) couponName.textContent = `${data.coupon.name} - Giảm ${data.discount.toLocaleString('vi-VN')}₫`;
-            }
-            
-            // Cập nhật tổng tiền
-            updateOrderSummary(data.discount, data.final_amount);
-            showNotification(`Đã áp dụng mã giảm giá: ${code}`, 'success');
-            codeInput.value = '';
+          _appliedCoupon = data.coupon;
+          const nameEl = document.getElementById('applied-coupon-name');
+          if (nameEl) nameEl.textContent = `${data.coupon.name} — Giảm ${data.discount.toLocaleString('vi-VN')}₫`;
+  
+          document.getElementById('coupon-input-section')?.setAttribute('hidden', '');
+          document.getElementById('applied-coupon-section')?.removeAttribute('hidden');
+  
+          updateOrderSummary(data.discount, data.final_amount);
+          showNotification(`Đã áp dụng mã: ${code}`, 'success');
+          if (input) input.value = '';
         } else {
-            showNotification(data.message || 'Mã giảm giá không hợp lệ', 'error');
+          showNotification(data.message || 'Mã giảm giá không hợp lệ', 'error');
         }
-    } catch (error) {
-        console.error('Error applying coupon:', error);
-        showNotification('Có lỗi xảy ra khi áp dụng mã giảm giá: ' + error.message, 'error');
+      } catch (err) {
+        console.error('[Coupon] Apply failed:', err);
+        showNotification('Có lỗi xảy ra khi áp dụng mã', 'error');
+      }
     }
-}
-
-function removeCoupon() {
-    appliedCoupon = null;
-    const subtotal = getOrderSubtotal();
-    
-    // Hiển thị lại input section
-    const inputSection = document.getElementById('coupon-input-section');
-    const appliedSection = document.getElementById('applied-coupon-section');
-    
-    if (inputSection) inputSection.style.display = 'block';
-    if (appliedSection) appliedSection.style.display = 'none';
-    
-    // Reset tổng tiền
-    updateOrderSummary(0, subtotal);
-    showNotification('Đã xóa mã giảm giá', 'info');
-}
-
-function updateOrderSummary(discount, finalAmount) {
-    const discountRow = document.getElementById('coupon-discount-row');
-    const discountElement = document.getElementById('coupon-discount');
-    const totalElement = document.getElementById('order-total');
-    
-    // Hiển thị/ẩn dòng giảm giá
-    if (discountRow) {
-        if (discount > 0) {
-            discountRow.style.display = 'flex';
-            if (discountElement) {
-                discountElement.textContent = `-${discount.toLocaleString('vi-VN')}₫`;
-            }
-        } else {
-            discountRow.style.display = 'none';
-        }
+  
+    function removeCoupon() {
+      _appliedCoupon = null;
+      document.getElementById('coupon-input-section')?.removeAttribute('hidden');
+      document.getElementById('applied-coupon-section')?.setAttribute('hidden', '');
+      updateOrderSummary(0, getOrderSubtotal());
+      showNotification('Đã xóa mã giảm giá', 'info');
     }
-    
-    // Cập nhật tổng tiền
-    if (totalElement) {
-        totalElement.textContent = `${finalAmount.toLocaleString('vi-VN')}₫`;
-    }
-    
-    console.log('Updated order summary - Discount:', discount, 'Final:', finalAmount);
-}
-
-function getOrderSubtotal() {
-    // Lấy tổng tiền từ giỏ hàng hoặc form
-    const subtotalElement = document.getElementById('order-subtotal');
-    if (subtotalElement) {
-        // Lấy text và loại bỏ tất cả ký tự không phải số
-        let text = subtotalElement.textContent || subtotalElement.innerText || '';
-        // Loại bỏ dấu phẩy, dấu chấm, khoảng trắng và các ký tự khác
-        text = text.replace(/[^\d]/g, '');
-        const amount = parseInt(text) || 0;
-        console.log('Order subtotal:', amount);
-        return amount;
-    }
-    console.warn('Không tìm thấy order-subtotal element');
-    return 0;
-}
-
-// ==================== Notifications Functions ====================
-let notificationCheckInterval = null;
-
-async function loadNotifications() {
-    if (!isLoggedIn()) return;
-    
-    try {
-        const response = await fetch('/api/notifications?limit=10');
-        const data = await response.json();
-        
+  
+    // ══════════════════════════════════════════════
+    // NOTIFICATIONS
+    // ══════════════════════════════════════════════
+  
+    async function loadNotifications() {
+      if (!isLoggedIn()) return;
+      try {
+        const res = await fetch('/api/notifications?limit=10');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
         if (data.success) {
-            displayNotifications(data.notifications);
-            updateNotificationBadge(data.unread_count);
+          _displayNotifications(data.notifications || []);
+          _updateNotifBadge(data.unread_count ?? 0);
         }
-    } catch (error) {
-        console.error('Error loading notifications:', error);
+      } catch (err) {
+        console.error('[Notifications] Load failed:', err);
+      }
     }
-}
-
-function displayNotifications(notifications) {
-    const container = document.getElementById('notifications-list');
-    if (!container) return;
-    
-    if (notifications.length === 0) {
-        container.innerHTML = '<p class="no-notifications">Không có thông báo nào</p>';
+  
+    // FIX 3: DOM builder thay innerHTML
+    function _displayNotifications(notifications) {
+      const container = document.getElementById('notifications-list');
+      if (!container) return;
+  
+      if (!notifications.length) {
+        container.textContent = '';
+        container.appendChild(_el('p', 'no-notifications', 'Không có thông báo nào'));
         return;
-    }
-    
-    let html = '';
-    notifications.forEach(notif => {
-        const unreadClass = notif.is_read ? '' : 'unread';
-        html += `
-            <div class="notification-item ${unreadClass}" onclick="openNotification('${notif.link || '#'}')">
-                <div class="notification-content">
-                    <h4>${notif.title}</h4>
-                    <p>${notif.message}</p>
-                    <span class="notification-time">${formatTime(notif.created_at)}</span>
-                </div>
-                ${!notif.is_read ? '<span class="unread-dot"></span>' : ''}
-            </div>
-        `;
-    });
-    
-    container.innerHTML = html;
-}
-
-function updateNotificationBadge(count) {
-    const badge = document.getElementById('notification-badge');
-    if (badge) {
-        if (count > 0) {
-            badge.textContent = count > 99 ? '99+' : count;
-            badge.style.display = 'block';
-        } else {
-            badge.style.display = 'none';
+      }
+  
+      const frag = document.createDocumentFragment();
+      notifications.forEach(n => {
+        const item = _el('div', 'notification-item' + (n.is_read ? '' : ' unread'));
+        item.setAttribute('role', 'button');
+        item.setAttribute('tabindex', '0');
+  
+        const content = _el('div', 'notification-content');
+        content.appendChild(_el('h4', null, n.title || ''));
+        content.appendChild(_el('p',  null, n.message || ''));
+        content.appendChild(_el('span', 'notification-time', _formatTime(n.created_at)));
+        item.appendChild(content);
+  
+        if (!n.is_read) item.appendChild(_el('span', 'unread-dot'));
+  
+        const href = _safeUrl(n.link);
+        if (href) {
+          const go = () => { window.location.href = href; };
+          item.addEventListener('click', go);
+          item.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+          item.style.cursor = 'pointer';
         }
+  
+        frag.appendChild(item);
+      });
+  
+      container.innerHTML = '';
+      container.appendChild(frag);
     }
-}
-
-async function markNotificationRead(notificationId) {
-    try {
-        const response = await fetch(`/api/notifications/${notificationId}/read`, {
-            method: 'POST'
-        });
-        
-        if (response.ok) {
-            loadNotifications();
-        }
-    } catch (error) {
-        console.error('Error marking notification read:', error);
+  
+    function _updateNotifBadge(count) {
+      const badge = document.getElementById('notification-badge');
+      if (!badge) return;
+      if (count > 0) {
+        badge.textContent = count > MAX_BADGE ? `${MAX_BADGE}+` : String(count);
+        badge.removeAttribute('hidden');
+      } else {
+        badge.setAttribute('hidden', '');
+      }
     }
-}
-
-async function markAllNotificationsRead() {
-    try {
-        const response = await fetch('/api/notifications/read-all', {
-            method: 'POST'
-        });
-        
-        if (response.ok) {
-            loadNotifications();
-        }
-    } catch (error) {
-        console.error('Error marking all read:', error);
+  
+    async function markNotificationRead(id) {
+      try {
+        const res = await fetch(`/api/notifications/${id}/read`, { method: 'POST' });
+        if (res.ok) loadNotifications();
+      } catch { /* silent */ }
     }
-}
-
-function formatTime(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now - date;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    
-    if (minutes < 1) return 'Vừa xong';
-    if (minutes < 60) return `${minutes} phút trước`;
-    if (hours < 24) return `${hours} giờ trước`;
-    if (days < 7) return `${days} ngày trước`;
-    return date.toLocaleDateString('vi-VN');
-}
-
-function openNotification(link) {
-    if (link && link !== '#') {
-        window.location.href = link;
+  
+    async function markAllNotificationsRead() {
+      try {
+        const res = await fetch('/api/notifications/read-all', { method: 'POST' });
+        if (res.ok) loadNotifications();
+      } catch { /* silent */ }
     }
-}
-
-// ==================== Cart Sync Functions ====================
-async function syncCartToDatabase() {
-    if (!isLoggedIn()) return;
-    
-    try {
-        const response = await fetch('/api/cart/sync', {
-            method: 'POST'
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            console.log('Cart synced to database');
-        }
-    } catch (error) {
-        console.error('Error syncing cart:', error);
+  
+    // ══════════════════════════════════════════════
+    // CART SYNC
+    // ══════════════════════════════════════════════
+  
+    async function syncCartToDatabase() {
+      if (!isLoggedIn()) return;
+      try {
+        await fetch('/api/cart/sync', { method: 'POST' });
+      } catch { /* silent */ }
     }
-}
-
-async function loadCartFromDatabase() {
-    if (!isLoggedIn()) return;
-    
-    try {
-        const response = await fetch('/api/cart/load');
-        const data = await response.json();
-        
-        if (data.success && data.cart) {
-            // Reload cart display
-            if (typeof updateCartDisplay === 'function') {
-                updateCartDisplay();
-            }
-        }
-    } catch (error) {
-        console.error('Error loading cart:', error);
+  
+    async function loadCartFromDatabase() {
+      if (!isLoggedIn()) return;
+      try {
+        const res = await fetch('/api/cart/load');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.success && typeof updateCartDisplay === 'function') updateCartDisplay();
+      } catch { /* silent */ }
     }
-}
-
-// ==================== Order History Functions ====================
-async function loadOrderHistory(orderId) {
-    try {
-        const response = await fetch(`/api/order/${orderId}/history`);
-        const data = await response.json();
-        
-        if (data.success && data.history) {
-            displayOrderHistory(data.history);
-        }
-    } catch (error) {
-        console.error('Error loading order history:', error);
-    }
-}
-
-function displayOrderHistory(history) {
-    const container = document.getElementById('order-history');
-    if (!container) return;
-    
-    if (history.length === 0) {
-        container.innerHTML = '<p>Chưa có lịch sử thay đổi</p>';
-        return;
-    }
-    
-    const statusMap = {
-        'pending': { text: 'Chờ xác nhận', icon: 'clock', color: '#ff9800' },
-        'confirmed': { text: 'Đã xác nhận', icon: 'check-circle', color: '#2196f3' },
-        'shipping': { text: 'Đang giao hàng', icon: 'truck', color: '#9c27b0' },
-        'delivered': { text: 'Đã giao hàng', icon: 'check-double', color: '#4caf50' },
-        'cancelled': { text: 'Đã hủy', icon: 'times-circle', color: '#f44336' }
+  
+    // ══════════════════════════════════════════════
+    // ORDER HISTORY
+    // ══════════════════════════════════════════════
+  
+    const STATUS_MAP = {
+      pending:   { text: 'Chờ xác nhận',    color: '#ff9800' },
+      confirmed: { text: 'Đã xác nhận',     color: '#2196f3' },
+      shipping:  { text: 'Đang giao hàng',  color: '#9c27b0' },
+      delivered: { text: 'Đã giao hàng',    color: '#4caf50' },
+      cancelled: { text: 'Đã hủy',          color: '#f44336' }
     };
-    
-    let html = '<div class="order-history-timeline">';
-    history.forEach((item, index) => {
-        const statusInfo = statusMap[item.status] || { text: item.status, icon: 'circle', color: '#666' };
-        const isLast = index === history.length - 1;
-        
-        html += `
-            <div class="history-item ${isLast ? 'current' : ''}">
-                <div class="history-icon" style="background: ${statusInfo.color}">
-                    <i class="fas fa-${statusInfo.icon}"></i>
-                </div>
-                <div class="history-content">
-                    <h4>${statusInfo.text}</h4>
-                    ${item.note ? `<p>${item.note}</p>` : ''}
-                    <span class="history-time">${new Date(item.created_at).toLocaleString('vi-VN')}</span>
-                    ${item.changed_by ? `<span class="history-by">Bởi: ${item.changed_by}</span>` : ''}
-                </div>
-            </div>
-        `;
-    });
-    
-    container.innerHTML = html;
-}
-
-// ==================== Helper Functions ====================
-function isLoggedIn() {
-    // Kiểm tra xem user đã đăng nhập chưa
-    // Có thể check cookie, session, hoặc element trên page
-    return document.cookie.includes('customer_logged_in') || 
-           document.body.classList.contains('logged-in') ||
-           sessionStorage.getItem('customer_email');
-}
-
-function showNotification(message, type = 'info') {
-    // Tạo notification toast
-    const notification = document.createElement('div');
-    notification.className = `notification-toast ${type}`;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 100);
-    
-    setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
-}
-
-// ==================== Initialize ====================
-document.addEventListener('DOMContentLoaded', function() {
-    // Load notifications nếu đã đăng nhập
-    if (isLoggedIn()) {
+  
+    async function loadOrderHistory(orderId) {
+      try {
+        const res = await fetch(`/api/order/${orderId}/history`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data.success && data.history) _displayOrderHistory(data.history);
+      } catch (err) {
+        console.error('[OrderHistory] Load failed:', err);
+      }
+    }
+  
+    // FIX 3: DOM builder, no innerHTML
+    function _displayOrderHistory(history) {
+      const container = document.getElementById('order-history');
+      if (!container) return;
+  
+      if (!history.length) {
+        container.appendChild(_el('p', null, 'Chưa có lịch sử thay đổi'));
+        return;
+      }
+  
+      const timeline = _el('div', 'order-history-timeline');
+      history.forEach((item, idx) => {
+        const info = STATUS_MAP[item.status] || { text: item.status, color: '#666' };
+        const row  = _el('div', 'history-item' + (idx === history.length - 1 ? ' current' : ''));
+  
+        const iconBox = _el('div', 'history-icon');
+        iconBox.style.background = info.color;
+        iconBox.textContent = '●';  // FIX 4: no FA icon needed
+        row.appendChild(iconBox);
+  
+        const content = _el('div', 'history-content');
+        content.appendChild(_el('h4', null, info.text));
+        if (item.note) content.appendChild(_el('p', null, item.note));
+        content.appendChild(_el('span', 'history-time', new Date(item.created_at).toLocaleString('vi-VN')));
+        if (item.changed_by) content.appendChild(_el('span', 'history-by', `Bởi: ${item.changed_by}`));
+  
+        row.appendChild(content);
+        timeline.appendChild(row);
+      });
+  
+      container.innerHTML = '';
+      container.appendChild(timeline);
+    }
+  
+    // ══════════════════════════════════════════════
+    // INIT — FIX 8: một DOMContentLoaded duy nhất
+    // ══════════════════════════════════════════════
+  
+    function _init() {
+      if (isLoggedIn()) {
         loadNotifications();
-        // Check notifications mỗi 30 giây
-        notificationCheckInterval = setInterval(loadNotifications, 30000);
-        
-        // Sync cart khi đăng nhập
+        _notifTimer = setInterval(loadNotifications, NOTIF_REFRESH_MS);
         syncCartToDatabase();
+      }
+  
+      loadAllWishlistStatuses();
+  
+      const orderId = document.querySelector('[data-order-id]')?.getAttribute('data-order-id');
+      if (orderId) loadOrderHistory(orderId);
     }
-    
-    // Load wishlist status cho tất cả products trên page
-    document.querySelectorAll('[data-wishlist-product]').forEach(btn => {
-        const productId = btn.getAttribute('data-wishlist-product');
-        loadWishlistStatus(productId);
+  
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', _init, { once: true });
+    } else {
+      _init();
+    }
+  
+    // ══════════════════════════════════════════════
+    // PUBLIC API
+    // ══════════════════════════════════════════════
+  
+    Object.assign(window, {
+      toggleWishlist,
+      loadWishlistStatus,
+      loadProductReviews,
+      submitReview,
+      markHelpful,
+      applyCouponCode,
+      removeCoupon,
+      loadNotifications,
+      markNotificationRead,
+      markAllNotificationsRead,
+      syncCartToDatabase,
+      loadCartFromDatabase,
+      loadOrderHistory,
+      showNotification
     });
-    
-    // Load order history if on order detail page
-    const orderId = document.querySelector('[data-order-id]')?.getAttribute('data-order-id');
-    if (orderId && typeof loadOrderHistory === 'function') {
-        loadOrderHistory(orderId);
-    }
-});
-
-
-// ============================================
-
-// ==================== Wishlist Functions ====================
-async function toggleWishlist(productId) {
-    if (!isLoggedIn()) {
-        alert('Vui lòng đăng nhập để thêm vào yêu thích');
-        return;
-    }
-    
-    try {
-        // Kiểm tra trạng thái hiện tại
-        const checkResponse = await fetch(`/api/wishlist/check/${productId}`);
-        const checkData = await checkResponse.json();
-        const isInWishlist = checkData.in_wishlist;
-        
-        // Toggle
-        const endpoint = isInWishlist ? `/api/wishlist/remove/${productId}` : `/api/wishlist/add/${productId}`;
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            updateWishlistButton(productId, !isInWishlist);
-            showNotification(data.message, 'success');
-        } else {
-            showNotification(data.message || 'Có lỗi xảy ra', 'error');
-        }
-    } catch (error) {
-        console.error('Error toggling wishlist:', error);
-        showNotification('Có lỗi xảy ra', 'error');
-    }
-}
-
-function updateWishlistButton(productId, isInWishlist) {
-    const button = document.querySelector(`[data-wishlist-product="${productId}"]`);
-    if (button) {
-        if (isInWishlist) {
-            button.classList.add('active');
-            button.innerHTML = '<i class="fas fa-heart"></i> Đã yêu thích';
-        } else {
-            button.classList.remove('active');
-            button.innerHTML = '<i class="far fa-heart"></i> Yêu thích';
-        }
-    }
-}
-
-async function loadWishlistStatus(productId) {
-    if (!isLoggedIn()) return;
-    
-    try {
-        const response = await fetch(`/api/wishlist/check/${productId}`);
-        const data = await response.json();
-        if (data.success) {
-            updateWishlistButton(productId, data.in_wishlist);
-        }
-    } catch (error) {
-        console.error('Error loading wishlist status:', error);
-    }
-}
-
-// ==================== Product Reviews Functions ====================
-async function loadProductReviews(productId) {
-    try {
-        const response = await fetch(`/api/product/${productId}/reviews`);
-        const data = await response.json();
-        
-        if (data.success && data.reviews) {
-            displayReviews(data.reviews);
-        }
-    } catch (error) {
-        console.error('Error loading reviews:', error);
-    }
-}
-
-function displayReviews(reviews) {
-    const container = document.getElementById('reviews-container');
-    if (!container) return;
-    
-    if (reviews.length === 0) {
-        container.innerHTML = '<p class="no-reviews">Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá!</p>';
-        return;
-    }
-    
-    let html = '';
-    reviews.forEach(review => {
-        const stars = generateStars(review.rating);
-        const verifiedBadge = review.is_verified_purchase ? '<span class="verified-badge">✓ Đã mua</span>' : '';
-        const date = new Date(review.created_at).toLocaleDateString('vi-VN');
-        
-        html += `
-            <div class="review-item">
-                <div class="review-header">
-                    <div class="reviewer-info">
-                        <strong>${review.customer_name}</strong>
-                        ${verifiedBadge}
-                    </div>
-                    <div class="review-rating">${stars}</div>
-                </div>
-                ${review.title ? `<h4 class="review-title">${review.title}</h4>` : ''}
-                <p class="review-comment">${review.comment}</p>
-                ${review.images && review.images.length > 0 ? `
-                    <div class="review-images">
-                        ${review.images.map(img => `<img src="${img}" alt="Review image" onclick="openImageModal('${img}')">`).join('')}
-                    </div>
-                ` : ''}
-                <div class="review-footer">
-                    <span class="review-date">${date}</span>
-                    <button class="helpful-btn" onclick="markHelpful(${review.id})">
-                        <i class="fas fa-thumbs-up"></i> Hữu ích (${review.helpful_count || 0})
-                    </button>
-                </div>
-            </div>
-        `;
-    });
-    
-    container.innerHTML = html;
-}
-
-function generateStars(rating) {
-    let html = '';
-    for (let i = 1; i <= 5; i++) {
-        if (i <= rating) {
-            html += '<i class="fas fa-star"></i>';
-        } else if (i - 0.5 <= rating) {
-            html += '<i class="fas fa-star-half-alt"></i>';
-        } else {
-            html += '<i class="far fa-star"></i>';
-        }
-    }
-    return html;
-}
-
-async function submitReview(productId) {
-    if (!isLoggedIn()) {
-        alert('Vui lòng đăng nhập để đánh giá');
-        return;
-    }
-    
-    const rating = document.getElementById('review-rating')?.value;
-    const title = document.getElementById('review-title')?.value;
-    const comment = document.getElementById('review-comment')?.value;
-    
-    if (!rating || !comment) {
-        alert('Vui lòng điền đầy đủ thông tin');
-        return;
-    }
-    
-    try {
-        const response = await fetch(`/api/product/${productId}/review`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                rating: parseInt(rating),
-                title: title || '',
-                comment: comment,
-                images: [] // Có thể thêm upload ảnh sau
-            })
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            showNotification('Đánh giá đã được gửi. Cảm ơn bạn!', 'success');
-            document.getElementById('review-form')?.reset();
-            loadProductReviews(productId);
-        } else {
-            showNotification(data.message || 'Có lỗi xảy ra', 'error');
-        }
-    } catch (error) {
-        console.error('Error submitting review:', error);
-        showNotification('Có lỗi xảy ra', 'error');
-    }
-}
-
-// ==================== Coupon Functions ====================
-let appliedCoupon = null;
-
-async function applyCouponCode() {
-    const codeInput = document.getElementById('coupon-code');
-    if (!codeInput) {
-        console.error('Không tìm thấy coupon-code input');
-        alert('Không tìm thấy ô nhập mã giảm giá');
-        return;
-    }
-    
-    const code = codeInput.value.trim().toUpperCase();
-    
-    if (!code) {
-        alert('Vui lòng nhập mã giảm giá');
-        return;
-    }
-    
-    // Lấy tổng tiền đơn hàng
-    const subtotal = getOrderSubtotal();
-    
-    if (subtotal <= 0) {
-        alert('Không thể áp dụng mã giảm giá. Tổng tiền đơn hàng không hợp lệ.');
-        return;
-    }
-    
-    console.log('Applying coupon:', code, 'for amount:', subtotal);
-    
-    try {
-        const response = await fetch('/api/coupon/validate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                code: code,
-                order_amount: subtotal
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Coupon response:', data);
-        
-        if (data.valid) {
-            appliedCoupon = data.coupon;
-            
-            // Hiển thị section applied coupon
-            const inputSection = document.getElementById('coupon-input-section');
-            const appliedSection = document.getElementById('applied-coupon-section');
-            const couponName = document.getElementById('applied-coupon-name');
-            
-            if (inputSection) inputSection.style.display = 'none';
-            if (appliedSection) {
-                appliedSection.style.display = 'block';
-                if (couponName) couponName.textContent = `${data.coupon.name} - Giảm ${data.discount.toLocaleString('vi-VN')}₫`;
-            }
-            
-            // Cập nhật tổng tiền
-            updateOrderSummary(data.discount, data.final_amount);
-            showNotification(`Đã áp dụng mã giảm giá: ${code}`, 'success');
-            codeInput.value = '';
-        } else {
-            showNotification(data.message || 'Mã giảm giá không hợp lệ', 'error');
-        }
-    } catch (error) {
-        console.error('Error applying coupon:', error);
-        showNotification('Có lỗi xảy ra khi áp dụng mã giảm giá: ' + error.message, 'error');
-    }
-}
-
-function removeCoupon() {
-    appliedCoupon = null;
-    const subtotal = getOrderSubtotal();
-    
-    // Hiển thị lại input section
-    const inputSection = document.getElementById('coupon-input-section');
-    const appliedSection = document.getElementById('applied-coupon-section');
-    
-    if (inputSection) inputSection.style.display = 'block';
-    if (appliedSection) appliedSection.style.display = 'none';
-    
-    // Reset tổng tiền
-    updateOrderSummary(0, subtotal);
-    showNotification('Đã xóa mã giảm giá', 'info');
-}
-
-function updateOrderSummary(discount, finalAmount) {
-    const discountRow = document.getElementById('coupon-discount-row');
-    const discountElement = document.getElementById('coupon-discount');
-    const totalElement = document.getElementById('order-total');
-    
-    // Hiển thị/ẩn dòng giảm giá
-    if (discountRow) {
-        if (discount > 0) {
-            discountRow.style.display = 'flex';
-            if (discountElement) {
-                discountElement.textContent = `-${discount.toLocaleString('vi-VN')}₫`;
-            }
-        } else {
-            discountRow.style.display = 'none';
-        }
-    }
-    
-    // Cập nhật tổng tiền
-    if (totalElement) {
-        totalElement.textContent = `${finalAmount.toLocaleString('vi-VN')}₫`;
-    }
-    
-    console.log('Updated order summary - Discount:', discount, 'Final:', finalAmount);
-}
-
-function getOrderSubtotal() {
-    // Lấy tổng tiền từ giỏ hàng hoặc form
-    const subtotalElement = document.getElementById('order-subtotal');
-    if (subtotalElement) {
-        // Lấy text và loại bỏ tất cả ký tự không phải số
-        let text = subtotalElement.textContent || subtotalElement.innerText || '';
-        // Loại bỏ dấu phẩy, dấu chấm, khoảng trắng và các ký tự khác
-        text = text.replace(/[^\d]/g, '');
-        const amount = parseInt(text) || 0;
-        console.log('Order subtotal:', amount);
-        return amount;
-    }
-    console.warn('Không tìm thấy order-subtotal element');
-    return 0;
-}
-
-// ==================== Notifications Functions ====================
-let notificationCheckInterval = null;
-
-async function loadNotifications() {
-    if (!isLoggedIn()) return;
-    
-    try {
-        const response = await fetch('/api/notifications?limit=10');
-        const data = await response.json();
-        
-        if (data.success) {
-            displayNotifications(data.notifications);
-            updateNotificationBadge(data.unread_count);
-        }
-    } catch (error) {
-        console.error('Error loading notifications:', error);
-    }
-}
-
-function displayNotifications(notifications) {
-    const container = document.getElementById('notifications-list');
-    if (!container) return;
-    
-    if (notifications.length === 0) {
-        container.innerHTML = '<p class="no-notifications">Không có thông báo nào</p>';
-        return;
-    }
-    
-    let html = '';
-    notifications.forEach(notif => {
-        const unreadClass = notif.is_read ? '' : 'unread';
-        html += `
-            <div class="notification-item ${unreadClass}" onclick="openNotification('${notif.link || '#'}')">
-                <div class="notification-content">
-                    <h4>${notif.title}</h4>
-                    <p>${notif.message}</p>
-                    <span class="notification-time">${formatTime(notif.created_at)}</span>
-                </div>
-                ${!notif.is_read ? '<span class="unread-dot"></span>' : ''}
-            </div>
-        `;
-    });
-    
-    container.innerHTML = html;
-}
-
-function updateNotificationBadge(count) {
-    const badge = document.getElementById('notification-badge');
-    if (badge) {
-        if (count > 0) {
-            badge.textContent = count > 99 ? '99+' : count;
-            badge.style.display = 'block';
-        } else {
-            badge.style.display = 'none';
-        }
-    }
-}
-
-async function markNotificationRead(notificationId) {
-    try {
-        const response = await fetch(`/api/notifications/${notificationId}/read`, {
-            method: 'POST'
-        });
-        
-        if (response.ok) {
-            loadNotifications();
-        }
-    } catch (error) {
-        console.error('Error marking notification read:', error);
-    }
-}
-
-async function markAllNotificationsRead() {
-    try {
-        const response = await fetch('/api/notifications/read-all', {
-            method: 'POST'
-        });
-        
-        if (response.ok) {
-            loadNotifications();
-        }
-    } catch (error) {
-        console.error('Error marking all read:', error);
-    }
-}
-
-function formatTime(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now - date;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    
-    if (minutes < 1) return 'Vừa xong';
-    if (minutes < 60) return `${minutes} phút trước`;
-    if (hours < 24) return `${hours} giờ trước`;
-    if (days < 7) return `${days} ngày trước`;
-    return date.toLocaleDateString('vi-VN');
-}
-
-function openNotification(link) {
-    if (link && link !== '#') {
-        window.location.href = link;
-    }
-}
-
-// ==================== Cart Sync Functions ====================
-async function syncCartToDatabase() {
-    if (!isLoggedIn()) return;
-    
-    try {
-        const response = await fetch('/api/cart/sync', {
-            method: 'POST'
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-            console.log('Cart synced to database');
-        }
-    } catch (error) {
-        console.error('Error syncing cart:', error);
-    }
-}
-
-async function loadCartFromDatabase() {
-    if (!isLoggedIn()) return;
-    
-    try {
-        const response = await fetch('/api/cart/load');
-        const data = await response.json();
-        
-        if (data.success && data.cart) {
-            // Reload cart display
-            if (typeof updateCartDisplay === 'function') {
-                updateCartDisplay();
-            }
-        }
-    } catch (error) {
-        console.error('Error loading cart:', error);
-    }
-}
-
-// ==================== Order History Functions ====================
-async function loadOrderHistory(orderId) {
-    try {
-        const response = await fetch(`/api/order/${orderId}/history`);
-        const data = await response.json();
-        
-        if (data.success && data.history) {
-            displayOrderHistory(data.history);
-        }
-    } catch (error) {
-        console.error('Error loading order history:', error);
-    }
-}
-
-function displayOrderHistory(history) {
-    const container = document.getElementById('order-history');
-    if (!container) return;
-    
-    if (history.length === 0) {
-        container.innerHTML = '<p>Chưa có lịch sử thay đổi</p>';
-        return;
-    }
-    
-    const statusMap = {
-        'pending': { text: 'Chờ xác nhận', icon: 'clock', color: '#ff9800' },
-        'confirmed': { text: 'Đã xác nhận', icon: 'check-circle', color: '#2196f3' },
-        'shipping': { text: 'Đang giao hàng', icon: 'truck', color: '#9c27b0' },
-        'delivered': { text: 'Đã giao hàng', icon: 'check-double', color: '#4caf50' },
-        'cancelled': { text: 'Đã hủy', icon: 'times-circle', color: '#f44336' }
-    };
-    
-    let html = '<div class="order-history-timeline">';
-    history.forEach((item, index) => {
-        const statusInfo = statusMap[item.status] || { text: item.status, icon: 'circle', color: '#666' };
-        const isLast = index === history.length - 1;
-        
-        html += `
-            <div class="history-item ${isLast ? 'current' : ''}">
-                <div class="history-icon" style="background: ${statusInfo.color}">
-                    <i class="fas fa-${statusInfo.icon}"></i>
-                </div>
-                <div class="history-content">
-                    <h4>${statusInfo.text}</h4>
-                    ${item.note ? `<p>${item.note}</p>` : ''}
-                    <span class="history-time">${new Date(item.created_at).toLocaleString('vi-VN')}</span>
-                    ${item.changed_by ? `<span class="history-by">Bởi: ${item.changed_by}</span>` : ''}
-                </div>
-            </div>
-        `;
-    });
-    
-    container.innerHTML = html;
-}
-
-// ==================== Helper Functions ====================
-function isLoggedIn() {
-    // Kiểm tra xem user đã đăng nhập chưa
-    // Có thể check cookie, session, hoặc element trên page
-    return document.cookie.includes('customer_logged_in') || 
-           document.body.classList.contains('logged-in') ||
-           sessionStorage.getItem('customer_email');
-}
-
-function showNotification(message, type = 'info') {
-    // Tạo notification toast
-    const notification = document.createElement('div');
-    notification.className = `notification-toast ${type}`;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 100);
-    
-    setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
-}
-
-// ==================== Initialize ====================
-document.addEventListener('DOMContentLoaded', function() {
-    // Load notifications nếu đã đăng nhập
-    if (isLoggedIn()) {
-        loadNotifications();
-        // Check notifications mỗi 30 giây
-        notificationCheckInterval = setInterval(loadNotifications, 30000);
-        
-        // Sync cart khi đăng nhập
-        syncCartToDatabase();
-    }
-    
-    // Load wishlist status cho tất cả products trên page
-    document.querySelectorAll('[data-wishlist-product]').forEach(btn => {
-        const productId = btn.getAttribute('data-wishlist-product');
-        loadWishlistStatus(productId);
-    });
-    
-    // Load order history if on order detail page
-    const orderId = document.querySelector('[data-order-id]')?.getAttribute('data-order-id');
-    if (orderId && typeof loadOrderHistory === 'function') {
-        loadOrderHistory(orderId);
-    }
-});
-
+  
+  })();

@@ -1,146 +1,389 @@
 {% extends "admin/base.html" %}
-
 {% block title %}Quản Lý Đánh Giá{% endblock %}
 
+{% block extra_css %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+:root {
+  --font: 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif;
+  --dark: #1a1a18;
+  --gold: #b8922a;
+  --gold-l: rgba(184,146,42,.1);
+  --border: #e8e3db;
+  --text: #2a2520;
+  --muted: #7a7060;
+  --light: #f5f4f1;
+  --green: #16a34a;
+  --amber: #d97706;
+  --red: #dc2626;
+  --blue: #2563eb;
+}
+.rv-page { font-family: var(--font); color: var(--text); }
+
+/* Page head */
+.rv-head { margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1.5px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.rv-head h1 { font-size: 1.375rem; font-weight: 700; color: var(--dark); letter-spacing: -.02em; margin: 0 0 .25rem; }
+.rv-head p  { font-size: .8125rem; color: var(--muted); margin: 0; }
+
+/* Stats */
+.rv-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+.rv-stat {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.rvs-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.rvs-icon svg { width: 22px; height: 22px; }
+.rvs-total  .rvs-icon { background: var(--light); color: var(--dark); }
+.rvs-ok     .rvs-icon { background: #f0faf4; color: var(--green); }
+.rvs-wait   .rvs-icon { background: #fffbeb; color: var(--amber); }
+.rvs-num  { font-size: 1.75rem; font-weight: 700; color: var(--dark); line-height: 1; letter-spacing: -.02em; }
+.rvs-label{ font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-top: .25rem; }
+
+/* Card */
+.rv-card { background: #fff; border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; }
+.rv-card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1.5px solid var(--border);
+  background: var(--light);
+  gap: 1rem; flex-wrap: wrap;
+}
+.rv-card-head h2 { font-size: .9375rem; font-weight: 700; color: var(--dark); margin: 0; }
+
+/* Filter pills */
+.rv-filters { display: flex; gap: .375rem; flex-wrap: wrap; }
+.rv-filter-btn {
+  display: inline-flex; align-items: center; gap: .375rem;
+  padding: .45rem .875rem;
+  border: 1.5px solid var(--border);
+  border-radius: 99px;
+  font-family: var(--font); font-size: .75rem; font-weight: 600;
+  color: var(--muted); background: #fff;
+  text-decoration: none;
+  transition: all .15s;
+}
+.rv-filter-btn:hover { border-color: var(--dark); color: var(--dark); }
+.rv-filter-btn.active { background: var(--dark); border-color: var(--dark); color: #fff; }
+
+/* Table */
+.rv-table-wrap { overflow-x: auto; }
+.rv-table {
+  width: 100%; border-collapse: collapse;
+  font-size: .8125rem;
+}
+.rv-table th {
+  padding: .75rem 1rem;
+  background: var(--light);
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1.5px solid var(--border);
+}
+.rv-table td {
+  padding: .875rem 1rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  color: var(--text);
+}
+.rv-table tr:last-child td { border-bottom: none; }
+.rv-table tr:hover td { background: #fcfbf9; }
+
+/* Stars */
+.rv-stars { display: flex; gap: 2px; }
+.rv-star { font-size: .875rem; }
+.rv-star.fill { color: #d97706; }
+.rv-star.empty { color: #e0d8d0; }
+
+/* Comment truncate */
+.rv-comment {
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--muted);
+  font-size: .78rem;
+  cursor: help;
+}
+
+/* Badges */
+.rv-badge {
+  display: inline-flex; align-items: center; gap: .25rem;
+  padding: .25rem .625rem; border-radius: 99px;
+  font-size: .68rem; font-weight: 700;
+}
+.rvb-ok     { background: #f0faf4; color: #166534; }
+.rvb-wait   { background: #fffbeb; color: #854d0e; }
+.rvb-verify { background: #eff6ff; color: #1e40af; }
+
+/* Product link */
+.rv-prod-link { color: var(--blue); font-weight: 600; text-decoration: none; font-size: .8rem; }
+.rv-prod-link:hover { text-decoration: underline; }
+
+/* Action buttons */
+.rv-actions { display: flex; gap: .375rem; align-items: center; flex-wrap: nowrap; }
+.rv-btn {
+  display: inline-flex; align-items: center; gap: .25rem;
+  padding: .375rem .75rem; border-radius: 7px; border: none;
+  font-family: var(--font); font-size: .72rem; font-weight: 600;
+  cursor: pointer; text-decoration: none;
+  transition: all .15s; white-space: nowrap;
+}
+.rv-btn-approve { background: #f0faf4; color: #16a34a; border: 1.5px solid #bbf7d0; }
+.rv-btn-approve:hover { background: #16a34a; color: #fff; border-color: #16a34a; }
+.rv-btn-reject  { background: #fffbeb; color: #d97706; border: 1.5px solid #fde68a; }
+.rv-btn-reject:hover  { background: #d97706; color: #fff; border-color: #d97706; }
+.rv-btn-delete  { background: #fff5f5; color: #dc2626; border: 1.5px solid #fecaca; }
+.rv-btn-delete:hover  { background: #dc2626; color: #fff; border-color: #dc2626; }
+
+/* Empty state */
+.rv-empty { padding: 3.5rem 2rem; text-align: center; }
+.rv-empty svg { width: 48px; height: 48px; color: #d0c8bc; margin: 0 auto 1rem; }
+.rv-empty p { font-size: .9rem; font-weight: 600; color: var(--dark); margin-bottom: .25rem; }
+.rv-empty span { font-size: .8rem; color: var(--muted); }
+
+/* Pagination */
+.rv-pagination { padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: center; gap: .5rem; border-top: 1.5px solid var(--border); }
+.rv-pag-btn {
+  display: inline-flex; align-items: center; gap: .25rem;
+  padding: .5rem .875rem; border: 1.5px solid var(--border);
+  border-radius: 7px; font-family: var(--font); font-size: .78rem; font-weight: 600;
+  color: var(--muted); background: #fff; text-decoration: none;
+  transition: all .15s;
+}
+.rv-pag-btn:hover { border-color: var(--dark); color: var(--dark); }
+.rv-pag-info { font-size: .78rem; color: var(--muted); padding: 0 .5rem; }
+
+/* Image pill */
+.rv-img-pill { display: inline-flex; align-items: center; gap: .25rem; font-size: .72rem; font-weight: 600; color: var(--blue); }
+.rv-img-pill svg { width: 12px; height: 12px; }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .rv-stats { grid-template-columns: 1fr; }
+  .rv-head { flex-direction: column; }
+  .rv-card-head { flex-direction: column; align-items: flex-start; }
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="page-header">
-    <h1>⭐ Quản Lý Đánh Giá Sản Phẩm</h1>
-    <p>Duyệt và quản lý đánh giá từ khách hàng</p>
-</div>
+<div class="rv-page">
 
-<div class="card" style="margin-bottom: 20px;">
-    <div class="card-header">
-        <h3>Thống Kê</h3>
+  <!-- Page header -->
+  <div class="rv-head">
+    <div>
+      <h1>Quản lý đánh giá</h1>
+      <p>Duyệt và quản lý đánh giá sản phẩm từ khách hàng</p>
     </div>
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
-        <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 5px;">
-            <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">{{ stats.total }}</div>
-            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Tổng số</div>
-        </div>
-        <div style="text-align: center; padding: 15px; background: #d4edda; border-radius: 5px;">
-            <div style="font-size: 24px; font-weight: bold; color: #27ae60;">{{ stats.approved }}</div>
-            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Đã duyệt</div>
-        </div>
-        <div style="text-align: center; padding: 15px; background: #fff3cd; border-radius: 5px;">
-            <div style="font-size: 24px; font-weight: bold; color: #f39c12;">{{ stats.pending }}</div>
-            <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">Chờ duyệt</div>
-        </div>
-    </div>
-</div>
+  </div>
 
-<div class="card">
-    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <h3>Danh Sách Đánh Giá ({{ total_reviews }})</h3>
-        <div>
-            <a href="{{ url_for('admin_reviews') }}" class="btn {% if not approved_filter %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px; margin-right: 5px;">Tất Cả</a>
-            <a href="{{ url_for('admin_reviews', approved='true') }}" class="btn {% if approved_filter == 'true' %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px; margin-right: 5px;">Đã Duyệt</a>
-            <a href="{{ url_for('admin_reviews', approved='false') }}" class="btn {% if approved_filter == 'false' %}btn-primary{% else %}btn{% endif %}" style="padding: 8px 15px; font-size: 12px;">Chờ Duyệt</a>
-        </div>
+  <!-- Stats -->
+  <div class="rv-stats">
+    <div class="rv-stat rvs-total">
+      <div class="rvs-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <div class="rvs-num">{{ stats.total }}</div>
+        <div class="rvs-label">Tổng đánh giá</div>
+      </div>
+    </div>
+    <div class="rv-stat rvs-ok">
+      <div class="rvs-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <div class="rvs-num" style="color:var(--green)">{{ stats.approved }}</div>
+        <div class="rvs-label">Đã duyệt</div>
+      </div>
+    </div>
+    <div class="rv-stat rvs-wait">
+      <div class="rvs-icon">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <div>
+        <div class="rvs-num" style="color:var(--amber)">{{ stats.pending }}</div>
+        <div class="rvs-label">Chờ duyệt</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main card -->
+  <div class="rv-card">
+    <div class="rv-card-head">
+      <h2>Danh sách đánh giá
+        <span style="font-weight:400;color:var(--muted);font-size:.875rem">({{ total_reviews }})</span>
+      </h2>
+      <div class="rv-filters">
+        <a href="{{ url_for('admin_reviews') }}"
+           class="rv-filter-btn {% if not approved_filter %}active{% endif %}">
+          Tất cả
+        </a>
+        <a href="{{ url_for('admin_reviews', approved='true') }}"
+           class="rv-filter-btn {% if approved_filter == 'true' %}active{% endif %}">
+          <svg viewBox="0 0 12 12" fill="none" style="width:10px;height:10px"><path d="M2 6l2.5 2.5 5.5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Đã duyệt
+        </a>
+        <a href="{{ url_for('admin_reviews', approved='false') }}"
+           class="rv-filter-btn {% if approved_filter == 'false' %}active{% endif %}">
+          <svg viewBox="0 0 12 12" fill="none" style="width:10px;height:10px"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3.5v3M6 8v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Chờ duyệt
+        </a>
+      </div>
     </div>
 
     {% if reviews %}
-    <table class="table">
+    <div class="rv-table-wrap">
+      <table class="rv-table">
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Sản Phẩm</th>
-                <th>Khách Hàng</th>
-                <th>Đánh Giá</th>
-                <th>Tiêu Đề</th>
-                <th>Nội Dung</th>
-                <th>Hình Ảnh</th>
-                <th>Trạng Thái</th>
-                <th>Ngày</th>
-                <th>Thao Tác</th>
-            </tr>
+          <tr>
+            <th>#</th>
+            <th>Sản phẩm</th>
+            <th>Khách hàng</th>
+            <th>Sao</th>
+            <th>Tiêu đề</th>
+            <th>Nội dung</th>
+            <th>Hình ảnh</th>
+            <th>Trạng thái</th>
+            <th>Ngày</th>
+            <th>Thao tác</th>
+          </tr>
         </thead>
         <tbody>
-            {% for review in reviews %}
-            <tr>
-                <td>{{ review.id }}</td>
-                <td>
-                    {% if products_dict.get(review.product_id) %}
-                        <a href="{{ url_for('product_detail', product_id=review.product_id) }}" target="_blank">
-                            {{ products_dict[review.product_id].name }}
-                        </a>
-                    {% else %}
-                        <a href="{{ url_for('product_detail', product_id=review.product_id) }}" target="_blank">
-                            Sản phẩm #{{ review.product_id }}
-                        </a>
-                    {% endif %}
-                </td>
-                <td>
-                    <strong>{{ review.customer_name }}</strong>
-                    {% if review.is_verified_purchase %}
-                        <span style="color: #27ae60; font-size: 11px;">✓ Đã mua</span>
-                    {% endif %}
-                </td>
-                <td>
-                    <div style="color: #f39c12;">
-                        {% for i in range(5) %}
-                            {% if i < review.rating %}
-                                ★
-                            {% else %}
-                                ☆
-                            {% endif %}
-                        {% endfor %}
-                        <span style="color: #2c3e50; margin-left: 5px;">{{ review.rating }}</span>
-                    </div>
-                </td>
-                <td><strong>{{ review.title or '-' }}</strong></td>
-                <td>
-                    <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ review.comment }}">
-                        {{ review.comment[:50] }}{% if review.comment|length > 50 %}...{% endif %}
-                    </div>
-                </td>
-                <td>
-                    {% if review.images and review.images|length > 0 %}
-                        <span style="color: #3498db;">📷 {{ review.images|length }} ảnh</span>
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-                <td>
-                    {% if review.is_approved %}
-                        <span style="color: #27ae60; font-weight: 600;">✓ Đã duyệt</span>
-                    {% else %}
-                        <span style="color: #f39c12; font-weight: 600;">⏳ Chờ duyệt</span>
-                    {% endif %}
-                </td>
-                <td>{{ review.created_at.strftime('%d/%m/%Y') if review.created_at else 'N/A' }}</td>
-                <td>
-                    {% if not review.is_approved %}
-                    <form method="POST" action="{{ url_for('admin_approve_review', review_id=review.id) }}" style="display: inline; margin-right: 5px;">
-                        <button type="submit" class="btn btn-success" style="padding: 5px 10px; font-size: 12px;">Duyệt</button>
-                    </form>
-                    <form method="POST" action="{{ url_for('admin_reject_review', review_id=review.id) }}" style="display: inline; margin-right: 5px;">
-                        <button type="submit" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">Từ chối</button>
-                    </form>
-                    {% endif %}
-                    <form method="POST" action="{{ url_for('admin_delete_review', review_id=review.id) }}" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn xóa đánh giá này?');">
-                        <button type="submit" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">Xóa</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
+          {% for review in reviews %}
+          <tr>
+            <td style="color:var(--muted);font-size:.72rem;font-variant-numeric:tabular-nums">{{ review.id }}</td>
+
+            <td>
+              <a href="{{ url_for('product_detail', product_id=review.product_id) }}" target="_blank" class="rv-prod-link">
+                {{ products_dict[review.product_id].name if products_dict.get(review.product_id) else 'SP #' ~ review.product_id }}
+              </a>
+            </td>
+
+            <td>
+              <div style="font-weight:600;color:var(--dark);font-size:.8125rem">{{ review.customer_name }}</div>
+              {% if review.is_verified_purchase %}
+              <span class="rv-badge rvb-verify" style="margin-top:.25rem">
+                <svg viewBox="0 0 10 10" fill="none" style="width:8px;height:8px"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Đã mua
+              </span>
+              {% endif %}
+            </td>
+
+            <td>
+              <div class="rv-stars">
+                {% for i in range(5) %}
+                <span class="rv-star {% if i < review.rating %}fill{% else %}empty{% endif %}">★</span>
+                {% endfor %}
+              </div>
+              <span style="font-size:.72rem;color:var(--muted);margin-top:.125rem;display:block">{{ review.rating }}/5</span>
+            </td>
+
+            <td style="font-weight:600;font-size:.8rem;max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+              {{ review.title or '—' }}
+            </td>
+
+            <td>
+              <div class="rv-comment" title="{{ review.comment }}">
+                {{ review.comment[:60] }}{% if review.comment|length > 60 %}…{% endif %}
+              </div>
+            </td>
+
+            <td>
+              {% if review.images and review.images|length > 0 %}
+              <span class="rv-img-pill">
+                <svg viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><circle cx="4" cy="5" r="1" stroke="currentColor" stroke-width="1"/><path d="M1 9l2.5-2.5 2 1.5 1.5-2L11 9" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                {{ review.images|length }} ảnh
+              </span>
+              {% else %}
+              <span style="color:#d0c8bc;font-size:.75rem">—</span>
+              {% endif %}
+            </td>
+
+            <td>
+              {% if review.is_approved %}
+              <span class="rv-badge rvb-ok">✓ Đã duyệt</span>
+              {% else %}
+              <span class="rv-badge rvb-wait">⏳ Chờ duyệt</span>
+              {% endif %}
+            </td>
+
+            <td style="color:var(--muted);font-size:.78rem;white-space:nowrap;font-variant-numeric:tabular-nums">
+              {{ review.created_at.strftime('%d/%m/%Y') if review.created_at else 'N/A' }}
+            </td>
+
+            <td>
+              <div class="rv-actions">
+                {% if not review.is_approved %}
+                <form method="POST" action="{{ url_for('admin_approve_review', review_id=review.id) }}">
+                  <button type="submit" class="rv-btn rv-btn-approve" title="Duyệt đánh giá này">
+                    <svg viewBox="0 0 12 12" fill="none" style="width:11px;height:11px"><path d="M2 6l2.5 2.5 5.5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Duyệt
+                  </button>
+                </form>
+                <form method="POST" action="{{ url_for('admin_reject_review', review_id=review.id) }}">
+                  <button type="submit" class="rv-btn rv-btn-reject" title="Từ chối đánh giá này">
+                    <svg viewBox="0 0 12 12" fill="none" style="width:11px;height:11px"><path d="M3 3l6 6M9 3L3 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    Từ chối
+                  </button>
+                </form>
+                {% endif %}
+                <form method="POST" action="{{ url_for('admin_delete_review', review_id=review.id) }}"
+                      onsubmit="return confirm('Xóa đánh giá này? Hành động không thể hoàn tác.')">
+                  <button type="submit" class="rv-btn rv-btn-delete" title="Xóa vĩnh viễn">
+                    <svg viewBox="0 0 12 12" fill="none" style="width:11px;height:11px"><path d="M2 3h8M5 3V2h2v1M4 3l.5 7m3-.5L8 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Xóa
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
         </tbody>
-    </table>
+      </table>
+    </div>
 
     {% if total_pages > 1 %}
-    <div style="margin-top: 20px; text-align: center;">
-        {% if page > 1 %}
-        <a href="{{ url_for('admin_reviews', page=page-1, approved=approved_filter) }}" class="btn" style="margin-right: 10px;">← Trước</a>
-        {% endif %}
-        
-        <span style="margin: 0 15px;">Trang {{ page }} / {{ total_pages }}</span>
-        
-        {% if page < total_pages %}
-        <a href="{{ url_for('admin_reviews', page=page+1, approved=approved_filter) }}" class="btn">Sau →</a>
-        {% endif %}
+    <div class="rv-pagination">
+      {% if page > 1 %}
+      <a href="{{ url_for('admin_reviews', page=page-1, approved=approved_filter) }}" class="rv-pag-btn">
+        <svg viewBox="0 0 12 12" fill="none" style="width:13px;height:13px"><path d="M8 3L5 6l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Trước
+      </a>
+      {% endif %}
+
+      <span class="rv-pag-info">Trang {{ page }} / {{ total_pages }}</span>
+
+      {% if page < total_pages %}
+      <a href="{{ url_for('admin_reviews', page=page+1, approved=approved_filter) }}" class="rv-pag-btn">
+        Sau
+        <svg viewBox="0 0 12 12" fill="none" style="width:13px;height:13px"><path d="M4 3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      {% endif %}
     </div>
     {% endif %}
+
     {% else %}
-    <p style="text-align: center; color: #7f8c8d; padding: 40px;">Chưa có đánh giá nào</p>
+    <div class="rv-empty">
+      <svg viewBox="0 0 48 48" fill="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" transform="translate(12, 12)"/></svg>
+      <p>Chưa có đánh giá nào</p>
+      <span>
+        {% if approved_filter == 'true' %}Không có đánh giá đã được duyệt
+        {% elif approved_filter == 'false' %}Không có đánh giá đang chờ duyệt
+        {% else %}Khách hàng chưa gửi đánh giá nào{% endif %}
+      </span>
+    </div>
     {% endif %}
+  </div>
+
 </div>
 {% endblock %}

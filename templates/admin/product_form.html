@@ -1,99 +1,1018 @@
 {% extends "admin/base.html" %}
+{% block title %}{% if action == 'add' %}Thêm sản phẩm mới{% else %}Sửa sản phẩm{% endif %}{% endblock %}
 
-{% block title %}{% if action == 'add' %}Thêm Sản Phẩm{% else %}Sửa Sản Phẩm{% endif %}{% endblock %}
+{% block extra_css %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+:root {
+  --font: 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif;
+  --dark: #1a1a18;
+  --gold: #b8922a;
+  --gold-bg: rgba(184,146,42,.08);
+  --border: #e8e3db;
+  --text: #2a2520;
+  --muted: #7a7060;
+  --light: #f5f4f1;
+  --white: #ffffff;
+  --green: #16a34a;
+  --red: #dc2626;
+}
+.ap-page { font-family: var(--font); color: var(--text); }
+.ap-page * { box-sizing: border-box; }
+
+/* ── Page head ── */
+.ap-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1.5px solid var(--border);
+  flex-wrap: wrap;
+}
+.ap-head-left h1 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--dark);
+  margin: 0 0 .25rem;
+  letter-spacing: -.02em;
+}
+.ap-head-left p { font-size: .8125rem; color: var(--muted); margin: 0; }
+.ap-head-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  padding: .35rem .875rem;
+  border-radius: 99px;
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: .5rem;
+}
+.badge-add  { background: #f0faf4; color: #166534; border: 1px solid #bbf7d0; }
+.badge-edit { background: #fffbeb; color: #854d0e; border: 1px solid #fde68a; }
+.ap-back {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  padding: .6rem 1.125rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  transition: all .18s;
+  flex-shrink: 0;
+}
+.ap-back svg { width: 13px; height: 13px; }
+.ap-back:hover { border-color: var(--dark); color: var(--dark); }
+
+/* ── Layout ── */
+.ap-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+/* ── Cards ── */
+.ap-card {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+.ap-card:last-child { margin-bottom: 0; }
+.ap-card-head {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .875rem 1.25rem;
+  border-bottom: 1.5px solid var(--border);
+  background: var(--light);
+}
+.ap-card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ap-card-icon svg { width: 16px; height: 16px; }
+.ci-amber  { background: #fffbeb; color: #d97706; }
+.ci-blue   { background: #eff6ff; color: #2563eb; }
+.ci-green  { background: #f0faf4; color: #16a34a; }
+.ci-purple { background: #faf5ff; color: #7c3aed; }
+.ci-dark   { background: var(--light); color: var(--dark); }
+.ap-card-head h3 { font-size: .9rem; font-weight: 700; color: var(--dark); margin: 0; }
+.ap-card-body { padding: 1.25rem; display: flex; flex-direction: column; gap: .875rem; }
+
+/* ── Fields ── */
+.ap-row { display: grid; grid-template-columns: 1fr 1fr; gap: .875rem; }
+.ap-field { display: flex; flex-direction: column; gap: .375rem; }
+.ap-field label {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+.req { color: var(--red); font-size: .875rem; }
+.ap-field small { font-size: .72rem; color: var(--muted); line-height: 1.4; }
+
+.ap-input, .ap-select, .ap-textarea {
+  padding: .65rem .875rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: .875rem;
+  color: var(--text);
+  background: var(--white);
+  outline: none;
+  transition: border-color .18s, box-shadow .18s;
+  width: 100%;
+  -webkit-appearance: none;
+}
+.ap-input:focus, .ap-select:focus, .ap-textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184,146,42,.1);
+}
+.ap-input::placeholder, .ap-textarea::placeholder { color: #c0b9ae; }
+.ap-textarea { resize: vertical; }
+
+/* Price input with suffix */
+.ap-input-suffix {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.ap-input-suffix .ap-input { padding-right: 2.5rem; }
+.ap-suffix {
+  position: absolute;
+  right: .875rem;
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+/* Select wrapper */
+.ap-select-wrap { position: relative; }
+.ap-select { padding-right: 2.25rem; cursor: pointer; }
+.ap-sel-arr {
+  position: absolute;
+  right: .625rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 13px;
+  height: 13px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+/* Checkbox */
+.ap-check-label {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .875rem 1rem;
+  background: var(--light);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color .18s;
+}
+.ap-check-label:hover { border-color: var(--gold); }
+.ap-check-label input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--gold);
+  flex-shrink: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.ap-check-label span { font-size: .8125rem; font-weight: 500; color: var(--dark); }
+
+/* Rating stars visual */
+.ap-star-row {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+  margin-top: .25rem;
+}
+.ap-star {
+  width: 16px;
+  height: 16px;
+  color: #d97706;
+}
+
+/* Image preview card */
+/* ── Gallery inline ── */
+.ap-gallery-section {
+  margin-top: 1rem;
+  border-top: 1.5px solid var(--border);
+  padding-top: 1rem;
+}
+.ap-gallery-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .875rem;
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--dark);
+}
+.ap-gallery-hint { font-size: .72rem; color: var(--muted); font-weight: 400; }
+
+.ap-img-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: .75rem;
+  margin-bottom: 1rem;
+  min-height: 80px;
+}
+.ap-img-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  background: var(--light);
+  transition: border-color .18s;
+}
+.ap-img-item:hover { border-color: var(--gold); }
+.ap-img-primary { border-color: var(--dark) !important; }
+.ap-img-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ap-img-primary-badge {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: var(--dark);
+  color: #fff;
+  font-size: .6rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 3px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.ap-img-actions {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .375rem;
+  opacity: 0;
+  transition: opacity .18s;
+}
+.ap-img-item:hover .ap-img-actions { opacity: 1; }
+.ap-img-btn {
+  width: 30px; height: 30px;
+  border-radius: 6px;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.ap-img-btn svg { width: 14px; height: 14px; }
+.ap-img-btn-primary { background: #fff; color: var(--dark); }
+.ap-img-btn-primary:hover { background: var(--gold); color: #fff; }
+.ap-img-btn-del { background: #fff; color: #dc2626; }
+.ap-img-btn-del:hover { background: #dc2626; color: #fff; }
+
+.ap-img-empty {
+  grid-column: 1 / -1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: .5rem; padding: 1.5rem;
+  color: #c0b9ae; font-size: .78rem;
+  border: 1.5px dashed var(--border);
+  border-radius: 8px;
+}
+.ap-img-empty svg { width: 32px; height: 32px; }
+
+.ap-add-img-form {
+  background: var(--light);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: .875rem;
+}
+.ap-add-img-inputs {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.ap-add-img-inputs .ap-input {
+  flex: 1;
+  min-width: 180px;
+  padding: .5rem .75rem;
+  font-size: .8125rem;
+}
+.ap-check-primary {
+  display: flex; align-items: center; gap: .375rem;
+  font-size: .78rem; color: var(--dark);
+  cursor: pointer; white-space: nowrap; flex-shrink: 0;
+}
+.ap-check-primary input { accent-color: var(--gold); cursor: pointer; }
+.ap-btn-add-img {
+  display: inline-flex; align-items: center; gap: .375rem;
+  padding: .5rem 1rem;
+  background: var(--dark); color: #fff;
+  border: none; border-radius: 7px;
+  font-family: var(--font); font-size: .78rem; font-weight: 600;
+  cursor: pointer; white-space: nowrap;
+  transition: background .18s; flex-shrink: 0;
+}
+.ap-btn-add-img svg { width: 13px; height: 13px; }
+.ap-btn-add-img:hover { background: #2e2e2a; }
+.ap-btn-add-img:disabled { opacity: .6; cursor: not-allowed; }
+
+.ap-img-item.removing {
+  opacity: 0; transform: scale(.85);
+  transition: opacity .2s, transform .2s;
+}
+
+/* ── Gallery inline end ── */
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--light);
+  border: 1.5px dashed var(--border);
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ap-img-preview {
+  width: 100%;
+  max-height: 260px;
+  object-fit: contain;
+  padding: .75rem;
+}
+.ap-img-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .625rem;
+  color: var(--muted);
+  padding: 2rem;
+  text-align: center;
+  width: 100%;
+}
+.ap-img-placeholder svg { width: 40px; height: 40px; color: #d0c8bc; }
+.ap-img-placeholder p { font-size: .78rem; line-height: 1.5; }
+
+/* Discount badge preview */
+.ap-discount-preview {
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  padding: .75rem 1rem;
+  background: var(--light);
+  border-radius: 8px;
+  font-size: .8125rem;
+  margin-top: .25rem;
+}
+.ap-disc-badge {
+  background: var(--dark);
+  color: var(--white);
+  font-size: .7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+.ap-disc-orig { color: var(--muted); text-decoration: line-through; }
+.ap-disc-save { color: var(--green); font-weight: 700; }
+
+/* ── Submit bar ── */
+.ap-submit-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.125rem 1.25rem;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  position: sticky;
+  bottom: 1rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,.08);
+  grid-column: 1 / -1;
+}
+.ap-submit-info { font-size: .78rem; color: var(--muted); }
+.ap-submit-btns { display: flex; gap: .625rem; }
+.ap-btn-save {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .75rem 1.5rem;
+  background: var(--dark);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: .875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .18s;
+}
+.ap-btn-save:hover { background: #2e2e2a; }
+.ap-btn-save:disabled { opacity: .65; cursor: not-allowed; }
+.ap-btn-save svg { width: 16px; height: 16px; }
+.ap-btn-cancel {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .75rem 1.25rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: .875rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  background: var(--white);
+  transition: all .18s;
+}
+.ap-btn-cancel svg { width: 14px; height: 14px; }
+.ap-btn-cancel:hover { border-color: var(--red); color: var(--red); }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .ap-layout { grid-template-columns: 1fr; }
+  .ap-side { order: -1; }
+}
+@media (max-width: 640px) {
+  .ap-row { grid-template-columns: 1fr; }
+  .ap-head { flex-direction: column; }
+  .ap-submit-bar { flex-direction: column; align-items: stretch; position: static; }
+  .ap-submit-btns { justify-content: flex-end; }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h1>{% if action == 'add' %}➕ Thêm Sản Phẩm Mới{% else %}✏️ Sửa Sản Phẩm{% endif %}</h1>
-    <p>Điền thông tin sản phẩm</p>
-</div>
+<div class="ap-page">
 
-<div class="card">
-    <form method="POST" action="{% if action == 'add' %}{{ url_for('admin_add_product') }}{% else %}{{ url_for('admin_edit_product', product_id=product.id) }}{% endif %}">
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
-            <div style="grid-column: 1 / -1;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Tên Sản Phẩm *</label>
-                <input type="text" name="name" value="{{ product.name if product else '' }}" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+  <!-- Head -->
+  <div class="ap-head">
+    <div class="ap-head-left">
+      <div class="ap-head-badge {% if action == 'add' %}badge-add{% else %}badge-edit{% endif %}">
+        {% if action == 'add' %}
+        <svg viewBox="0 0 12 12" fill="none" style="width:10px;height:10px"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Thêm mới
+        {% else %}
+        <svg viewBox="0 0 12 12" fill="none" style="width:10px;height:10px"><path d="M9 2l1 1-6 6H3V8L9 2z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Chỉnh sửa
+        {% endif %}
+      </div>
+      <h1>{% if action == 'add' %}Thêm sản phẩm mới{% else %}Sửa sản phẩm{% endif %}</h1>
+      <p>{% if action == 'add' %}Điền đầy đủ thông tin để thêm sản phẩm vào danh mục{% else %}Cập nhật thông tin cho sản phẩm: <strong>{{ product.name }}</strong>{% endif %}</p>
+    </div>
+    <a href="{{ url_for('admin_products') }}" class="ap-back">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M10 4L6 8l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Quay lại
+    </a>
+  </div>
+
+  <form method="POST" action="{% if action == 'add' %}{{ url_for('admin_add_product') }}{% else %}{{ url_for('admin_edit_product', product_id=product.id) }}{% endif %}" id="productForm">
+    <div class="ap-layout">
+
+      <!-- LEFT: Main fields -->
+      <div class="ap-col-left">
+
+        <!-- Basic info -->
+        <div class="ap-card">
+          <div class="ap-card-head">
+            <div class="ap-card-icon ci-amber"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2l2.09 4.26L17 7.27l-3.5 3.41.83 4.82L10 13.18l-4.33 2.27.83-4.82L3 7.27l4.91-.71L10 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></div>
+            <h3>Thông tin cơ bản</h3>
+          </div>
+          <div class="ap-card-body">
+            <div class="ap-field">
+              <label>Tên sản phẩm <span class="req">*</span></label>
+              <input class="ap-input" type="text" name="name" value="{{ product.name if product else '' }}" required placeholder="Ví dụ: Sofa Góc L Nordic Premium">
             </div>
-
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Danh Mục *</label>
-                <select name="category" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-                    <option value="">-- Chọn danh mục --</option>
-                    {% for cat in categories %}
-                    <option value="{{ cat }}" {% if product and product.category == cat %}selected{% endif %}>{{ cat }}</option>
-                    {% endfor %}
+            <div class="ap-field">
+              <label>Danh mục <span class="req">*</span></label>
+              <div class="ap-select-wrap">
+                <select class="ap-select" name="category" required>
+                  <option value="">-- Chọn danh mục --</option>
+                  {% for cat in categories %}
+                  <option value="{{ cat }}" {% if product and product.category == cat %}selected{% endif %}>{{ cat }}</option>
+                  {% endfor %}
                 </select>
+                <svg class="ap-sel-arr" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pricing -->
+        <div class="ap-card">
+          <div class="ap-card-head">
+            <div class="ap-card-icon ci-blue"><svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 9h16M6 13h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <h3>Giá & Khuyến mãi</h3>
+          </div>
+          <div class="ap-card-body">
+            <div class="ap-row">
+              <div class="ap-field">
+                <label>Giá bán <span class="req">*</span></label>
+                <div class="ap-input-suffix">
+                  <input class="ap-input" type="number" name="price" id="priceInput" value="{{ product.price if product else '' }}" required min="0" step="1000" placeholder="0">
+                  <span class="ap-suffix">₫</span>
+                </div>
+              </div>
+              <div class="ap-field">
+                <label>Giá gốc <span class="req">*</span></label>
+                <div class="ap-input-suffix">
+                  <input class="ap-input" type="number" name="original_price" id="origPriceInput" value="{{ product.original_price if product else '' }}" required min="0" step="1000" placeholder="0">
+                  <span class="ap-suffix">₫</span>
+                </div>
+              </div>
+            </div>
+            <!-- Discount preview -->
+            <div class="ap-discount-preview" id="discPreview" style="display:none">
+              <span class="ap-disc-badge" id="discPct">-0%</span>
+              <span class="ap-disc-orig" id="discOrig"></span>
+              <span>→</span>
+              <strong id="discFinal" style="color:var(--dark)"></strong>
+              <span class="ap-disc-save" id="discSave"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="ap-card">
+          <div class="ap-card-head">
+            <div class="ap-card-icon ci-dark"><svg viewBox="0 0 20 20" fill="none"><path d="M4 5h12M4 9h12M4 13h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <h3>Mô tả sản phẩm</h3>
+          </div>
+          <div class="ap-card-body">
+            <div class="ap-field">
+              <label>Mô tả</label>
+              <textarea class="ap-textarea" name="description" rows="4" placeholder="Mô tả ngắn về sản phẩm, chất liệu, phong cách thiết kế...">{{ product.description if product else '' }}</textarea>
+            </div>
+            <div class="ap-field">
+              <label>Tính năng nổi bật</label>
+              <textarea class="ap-textarea" name="features" rows="5" placeholder="Chất liệu gỗ sồi tự nhiên&#10;Thiết kế hiện đại Bắc Âu&#10;Bảo hành 2 năm&#10;Dễ vệ sinh">{% if product and product.features %}{{ product.features|join('\n') }}{% endif %}</textarea>
+              <small>Mỗi tính năng trên một dòng — hiển thị dạng checklist trên trang sản phẩm</small>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end left -->
+
+      <!-- RIGHT: Sidebar -->
+      <div class="ap-col-right ap-side">
+
+        <!-- Status (edit only) -->
+        {% if action == 'edit' %}
+        <div class="ap-card">
+          <div class="ap-card-head">
+            <div class="ap-card-icon ci-green"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3>Trạng thái</h3>
+          </div>
+          <div class="ap-card-body">
+            <label class="ap-check-label">
+              <input type="checkbox" name="is_active" {% if product and product.is_active %}checked{% endif %}>
+              <span>Hiển thị trên website (đang hoạt động)</span>
+            </label>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Image -->
+        <div class="ap-card">
+          <div class="ap-card-head">
+            <div class="ap-card-icon ci-purple"><svg viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="13" rx="1.5" stroke="currentColor" stroke-width="1.4"/><circle cx="7.5" cy="9" r="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 14l4-4 3 3 3-3 4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3>Hình ảnh sản phẩm</h3>
+          </div>
+          <div class="ap-card-body">
+
+            <!-- Ảnh chính -->
+            <div class="ap-img-preview-wrap" id="imgPreviewWrap">
+              {% if product and product.image %}
+              <img src="{{ product.image }}" alt="{{ product.name }}" class="ap-img-preview" id="imgPreview" onerror="showImgPlaceholder()">
+              {% else %}
+              <div class="ap-img-placeholder" id="imgPlaceholder">
+                <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 14l5-5 4 4 3-3 5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <p>Nhập URL hình ảnh bên dưới để xem trước</p>
+              </div>
+              {% endif %}
+            </div>
+            <div class="ap-field">
+              <label>URL ảnh chính <small style="font-weight:400;color:var(--muted)">(hiển thị trên trang chủ & danh sách)</small></label>
+              <input class="ap-input" type="url" name="image" id="imageUrlInput"
+                     value="{{ product.image if product else '' }}"
+                     placeholder="https://example.com/image.jpg">
+              <small>Dán link từ Unsplash, Google Drive hoặc hosting ảnh</small>
             </div>
 
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Giá Bán (VNĐ) *</label>
-                <input type="number" name="price" value="{{ product.price if product else '' }}" required min="0" step="1000" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-            </div>
+            <!-- Gallery ảnh phụ — chỉ hiện khi edit -->
+            {% if action == 'edit' and product %}
+            <div class="ap-gallery-section">
+              <div class="ap-gallery-head">
+                <span>Ảnh gallery phụ</span>
+                <span class="ap-gallery-hint">Hover vào ảnh để đặt làm ảnh chính hoặc xóa</span>
+              </div>
 
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Giá Gốc (VNĐ) *</label>
-                <input type="number" name="original_price" value="{{ product.original_price if product else '' }}" required min="0" step="1000" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-            </div>
+              <!-- Grid ảnh hiện có -->
+              <div class="ap-img-grid" id="imgGrid">
+                {% set imgs = product_images if product_images is defined else [] %}
+                {% if imgs %}
+                  {% for img in imgs %}
+                  <div class="ap-img-item {% if img.is_primary %}ap-img-primary{% endif %}"
+                       id="img-item-{{ img.id }}" data-id="{{ img.id }}">
+                    <img src="{{ img.image_url }}" alt="{{ img.alt_text or '' }}"
+                         onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23f5f4f1%22 width=%22100%22 height=%22100%22/><text y=%2250%22 font-size=%2240%22 text-anchor=%22middle%22 x=%2250%22 dominant-baseline=%22middle%22>📷</text></svg>'">
+                    {% if img.is_primary %}
+                    <span class="ap-img-primary-badge">Ảnh chính</span>
+                    {% endif %}
+                    <div class="ap-img-actions">
+                      {% if not img.is_primary %}
+                      <button type="button" class="ap-img-btn ap-img-btn-primary"
+                              onclick="setPrimaryImage({{ img.id }}, {{ product.id }})"
+                              title="Đặt làm ảnh chính">
+                        <svg viewBox="0 0 16 16" fill="none"><path d="M8 1l1.8 3.6 4 .6-2.9 2.8.7 4L8 10l-3.6 2 .7-4-2.9-2.8 4-.6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+                      </button>
+                      {% endif %}
+                      <button type="button" class="ap-img-btn ap-img-btn-del"
+                              onclick="deleteImage({{ img.id }}, {{ product.id }})"
+                              title="Xóa ảnh">
+                        <svg viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V3h6v1M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  {% endfor %}
+                {% else %}
+                <div class="ap-img-empty" id="imgEmpty">
+                  <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.4"/><circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 15l5-5 4 4 3-3 5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  <p>Chưa có ảnh phụ</p>
+                </div>
+                {% endif %}
+              </div>
 
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Đánh Giá (1-5)</label>
-                <input type="number" name="rating" value="{{ product.rating if product else '5.0' }}" min="1" max="5" step="0.1" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-            </div>
-
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Số Lượt Đánh Giá</label>
-                <input type="number" name="reviews" value="{{ product.reviews if product else '0' }}" min="0" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-            </div>
-
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Số Lượng Tồn Kho</label>
-                <input type="number" name="stock" value="{{ product.stock if product else '100' }}" min="0" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-            </div>
-
-            {% if action == 'edit' %}
-            <div>
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Trạng Thái</label>
-                <label style="display: flex; align-items: center; gap: 10px; padding: 10px;">
-                    <input type="checkbox" name="is_active" {% if product and product.is_active %}checked{% endif %} style="width: 20px; height: 20px;">
-                    <span>Hoạt động (hiển thị trên website)</span>
-                </label>
+              <!-- Form thêm ảnh mới -->
+              <div class="ap-add-img-form">
+                <div class="ap-add-img-inputs">
+                  <input type="url" id="newImgUrl" class="ap-input"
+                         placeholder="https://example.com/anh-phu.jpg"
+                         onkeypress="if(event.key==='Enter'){event.preventDefault();addImage({{ product.id }})}">
+                  <input type="text" id="newImgAlt" class="ap-input" placeholder="Mô tả ảnh (tuỳ chọn)" style="max-width:200px">
+                  <label class="ap-check-primary">
+                    <input type="checkbox" id="newImgPrimary"> Ảnh chính
+                  </label>
+                  <button type="button" class="ap-btn-add-img" onclick="addImage({{ product.id }})">
+                    <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    Thêm ảnh
+                  </button>
+                </div>
+                <div id="addImgMsg" style="display:none;margin-top:.5rem;font-size:.78rem"></div>
+              </div>
             </div>
             {% endif %}
 
-            <div style="grid-column: 1 / -1;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">URL Hình Ảnh</label>
-                <input type="url" name="image" value="{{ product.image if product else '' }}" placeholder="https://example.com/image.jpg" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-                <small style="color: #666; font-size: 12px;">Dán link hình ảnh từ Unsplash hoặc nguồn khác</small>
-            </div>
-
-            <div style="grid-column: 1 / -1;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Mô Tả Sản Phẩm</label>
-                <textarea name="description" rows="4" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">{{ product.description if product else '' }}</textarea>
-            </div>
-
-            <div style="grid-column: 1 / -1;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Tính Năng (mỗi dòng 1 tính năng)</label>
-                <textarea name="features" rows="5" placeholder="Chất liệu gỗ sồi tự nhiên&#10;Thiết kế hiện đại&#10;Bảo hành 2 năm" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">{% if product and product.features %}{{ product.features|join('\n') }}{% endif %}</textarea>
-                <small style="color: #666; font-size: 12px;">Mỗi tính năng trên một dòng riêng</small>
-            </div>
+          </div>
         </div>
 
-        <div style="margin-top: 30px; display: flex; gap: 10px; padding-top: 20px; border-top: 1px solid #eee;">
-            <button type="submit" class="btn btn-success" style="padding: 12px 24px; font-size: 16px; font-weight: 600;">💾 Lưu Sản Phẩm</button>
-            <a href="{{ url_for('admin_products') }}" class="btn btn-danger" style="padding: 12px 24px; font-size: 16px; font-weight: 600; text-decoration: none; display: inline-block;">❌ Hủy</a>
+        <!-- Stats -->
+        <div class="ap-card">
+          <div class="ap-card-head">
+            <div class="ap-card-icon ci-blue"><svg viewBox="0 0 20 20" fill="none"><path d="M2 14l4-5 3 2 4-6 4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3>Thống kê & tồn kho</h3>
+          </div>
+          <div class="ap-card-body">
+            <div class="ap-row">
+              <div class="ap-field">
+                <label>Đánh giá (1-5)</label>
+                <input class="ap-input" type="number" name="rating" id="ratingInput" value="{{ product.rating if product else '5.0' }}" min="1" max="5" step="0.1">
+                <div class="ap-star-row" id="starRow">
+                  {% for i in range(5) %}
+                  <svg class="ap-star" viewBox="0 0 16 16" fill="none" id="star-{{ i }}"><path d="M8 1l2.09 4.26L15 6.27l-3.5 3.41.83 4.82L8 12.18l-4.33 2.27.83-4.82L1 6.27l4.91-.71L8 1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="ap-field">
+                <label>Số lượt đánh giá</label>
+                <input class="ap-input" type="number" name="reviews" value="{{ product.reviews if product else '0' }}" min="0">
+              </div>
+            </div>
+            <div class="ap-field">
+              <label>Số lượng tồn kho</label>
+              <input class="ap-input" type="number" name="stock" value="{{ product.stock if product else '100' }}" min="0">
+            </div>
+          </div>
         </div>
-    </form>
-</div>
 
-{% if product and product.image %}
-<div class="card" style="margin-top: 20px;">
-    <div class="card-header">
-        <h3>Xem Trước Hình Ảnh</h3>
+      </div><!-- end right -->
+
+      <!-- Submit bar (spans full width) -->
+      <div class="ap-submit-bar">
+        <div class="ap-submit-info">
+          {% if action == 'edit' %}Đang sửa: <strong>{{ product.name }}</strong>{% else %}Tất cả trường có <span style="color:var(--red)">*</span> là bắt buộc{% endif %}
+        </div>
+        <div class="ap-submit-btns">
+          <a href="{{ url_for('admin_products') }}" class="ap-btn-cancel">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Hủy
+          </a>
+          <button type="submit" class="ap-btn-save" id="saveBtn">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            {% if action == 'add' %}Thêm sản phẩm{% else %}Lưu thay đổi{% endif %}
+          </button>
+        </div>
+      </div>
+
+    </div><!-- end layout -->
+  </form>
+
+</div><!-- end ap-page -->
+
+<script>
+/* ── Image preview ── */
+const imgInput = document.getElementById('imageUrlInput');
+const imgPreview = document.getElementById('imgPreview');
+const imgPlaceholder = document.getElementById('imgPlaceholder');
+
+function showImgPlaceholder() {
+  if (imgPreview) imgPreview.style.display = 'none';
+  if (imgPlaceholder) imgPlaceholder.style.display = 'flex';
+}
+
+function updateImgPreview(url) {
+  if (!url) { showImgPlaceholder(); return; }
+  if (!imgPreview) {
+    const img = document.createElement('img');
+    img.className = 'ap-img-preview';
+    img.id = 'imgPreview';
+    img.onerror = showImgPlaceholder;
+    document.getElementById('imgPreviewWrap').prepend(img);
+  }
+  const el = document.getElementById('imgPreview');
+  if (el) {
+    el.src = url;
+    el.style.display = 'block';
+    el.onerror = showImgPlaceholder;
+  }
+  if (imgPlaceholder) imgPlaceholder.style.display = 'none';
+}
+
+imgInput?.addEventListener('input', function() { updateImgPreview(this.value.trim()); });
+
+/* ── Discount preview ── */
+const priceInput = document.getElementById('priceInput');
+const origInput  = document.getElementById('origPriceInput');
+const discPreview = document.getElementById('discPreview');
+
+function fmtVND(n) { return new Intl.NumberFormat('vi-VN').format(n) + ' ₫'; }
+
+function updateDiscount() {
+  const price = parseFloat(priceInput?.value) || 0;
+  const orig  = parseFloat(origInput?.value) || 0;
+  if (orig > price && price > 0 && orig > 0) {
+    const pct = Math.round((orig - price) / orig * 100);
+    const save = orig - price;
+    document.getElementById('discPct').textContent  = '-' + pct + '%';
+    document.getElementById('discOrig').textContent = fmtVND(orig);
+    document.getElementById('discFinal').textContent = fmtVND(price);
+    document.getElementById('discSave').textContent = 'Tiết kiệm ' + fmtVND(save);
+    discPreview.style.display = 'flex';
+  } else {
+    discPreview.style.display = 'none';
+  }
+}
+priceInput?.addEventListener('input', updateDiscount);
+origInput?.addEventListener('input', updateDiscount);
+updateDiscount();
+
+/* ── Star rating preview ── */
+const ratingInput = document.getElementById('ratingInput');
+function updateStars(val) {
+  const r = parseFloat(val) || 0;
+  for (let i = 0; i < 5; i++) {
+    const s = document.getElementById('star-' + i);
+    if (!s) continue;
+    if (i < Math.floor(r)) {
+      s.querySelector('path').setAttribute('fill', '#d97706');
+      s.querySelector('path').setAttribute('stroke', 'none');
+    } else {
+      s.querySelector('path').setAttribute('fill', 'none');
+      s.querySelector('path').setAttribute('stroke', '#d0c8bc');
+      s.querySelector('path').setAttribute('stroke-width', '1.2');
+    }
+  }
+}
+ratingInput?.addEventListener('input', function() { updateStars(this.value); });
+updateStars(ratingInput?.value || 0);
+
+/* ── Form submit ── */
+document.getElementById('productForm').addEventListener('submit', function() {
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" style="width:15px;height:15px;animation:spin .7s linear infinite"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,.3)" stroke-width="3"/><path d="M12 2a10 10 0 0110 10" stroke="white" stroke-width="3" stroke-linecap="round"/></svg> Đang lưu...';
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> {% if action == "add" %}Thêm sản phẩm{% else %}Lưu thay đổi{% endif %}';
+  }, 5000);
+});
+
+/* ── Spin keyframe ── */
+const style = document.createElement('style');
+style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+document.head.appendChild(style);
+
+/* ══════════════════════════════════════
+   GALLERY FUNCTIONS — AJAX, no page reload
+   ══════════════════════════════════════ */
+
+function showImgMsg(msg, ok) {
+  const el = document.getElementById('addImgMsg');
+  if (!el) return;
+  el.style.display = 'block';
+  el.style.color   = ok ? 'var(--green)' : 'var(--red)';
+  el.textContent   = msg;
+  setTimeout(() => { el.style.display = 'none'; }, 3000);
+}
+
+async function addImage(productId) {
+  const urlEl   = document.getElementById('newImgUrl');
+  const altEl   = document.getElementById('newImgAlt');
+  const primEl  = document.getElementById('newImgPrimary');
+  const btn     = document.querySelector('.ap-btn-add-img');
+  const url     = urlEl?.value.trim();
+  const alt     = altEl?.value.trim();
+  const primary = primEl?.checked;
+
+  if (!url) { showImgMsg('Vui lòng nhập URL ảnh', false); urlEl?.focus(); return; }
+
+  btn.disabled = true; btn.textContent = '...';
+
+  try {
+    const res  = await fetch(`/admin/products/${productId}/images/add`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ image_url: url, alt_text: alt, is_primary: primary ? 'on' : '' }),
+    });
+
+    if (res.ok) {
+      showImgMsg('✓ Đã thêm ảnh!', true);
+      addImageToGrid({ url, alt, primary, productId });
+      // Nếu là ảnh chính → cập nhật preview ảnh chính luôn
+      if (primary) {
+        const mainInput   = document.getElementById('imageUrlInput');
+        const mainPreview = document.getElementById('imgPreview');
+        if (mainInput)   mainInput.value = url;
+        if (mainPreview) { mainPreview.src = url; mainPreview.style.display = 'block'; }
+        document.getElementById('imgPlaceholder')?.style.setProperty('display','none');
+        // Bỏ badge "Ảnh chính" ở các item khác
+        document.querySelectorAll('.ap-img-primary').forEach(el => {
+          el.classList.remove('ap-img-primary');
+          el.querySelector('.ap-img-primary-badge')?.remove();
+        });
+      }
+      // Reset form
+      if (urlEl)  urlEl.value  = '';
+      if (altEl)  altEl.value  = '';
+      if (primEl) primEl.checked = false;
+      document.getElementById('imgEmpty')?.remove();
+    } else {
+      showImgMsg('Lỗi thêm ảnh, thử lại', false);
+    }
+  } catch {
+    showImgMsg('Lỗi kết nối', false);
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Thêm ảnh';
+}
+
+function addImageToGrid({ url, alt, primary, productId }) {
+  const grid  = document.getElementById('imgGrid');
+  if (!grid) return;
+
+  // Tạo ID tạm (sẽ reload nếu cần)
+  const tmpId = 'tmp-' + Date.now();
+
+  const item = document.createElement('div');
+  item.className = 'ap-img-item' + (primary ? ' ap-img-primary' : '');
+  item.id        = 'img-item-' + tmpId;
+  item.dataset.id = tmpId;
+
+  item.innerHTML = `
+    <img src="${url}" alt="${alt}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23f5f4f1%22 width=%22100%22 height=%22100%22/></svg>'">
+    ${primary ? '<span class="ap-img-primary-badge">Ảnh chính</span>' : ''}
+    <div class="ap-img-actions">
+      ${!primary ? `<button type="button" class="ap-img-btn ap-img-btn-primary" title="Đặt làm ảnh chính" onclick="reloadPage()">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 1l1.8 3.6 4 .6-2.9 2.8.7 4L8 10l-3.6 2 .7-4-2.9-2.8 4-.6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+      </button>` : ''}
+      <button type="button" class="ap-img-btn ap-img-btn-del" title="Xóa ảnh" onclick="reloadPage()">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V3h6v1M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
     </div>
-    <div style="text-align: center;">
-        <img src="{{ product.image }}" alt="{{ product.name }}" style="max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 10px;">
-    </div>
-</div>
-{% endif %}
+  `;
+  grid.appendChild(item);
+}
+
+async function deleteImage(imageId, productId) {
+  if (!confirm('Xóa ảnh này?')) return;
+
+  const item = document.getElementById('img-item-' + imageId);
+  item?.classList.add('removing');
+
+  try {
+    const res = await fetch(`/admin/products/${productId}/images/${imageId}/delete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
+    if (res.ok) {
+      setTimeout(() => { item?.remove(); checkEmptyGrid(); }, 220);
+    } else {
+      item?.classList.remove('removing');
+      alert('Lỗi xóa ảnh, thử lại');
+    }
+  } catch {
+    item?.classList.remove('removing');
+    alert('Lỗi kết nối');
+  }
+}
+
+async function setPrimaryImage(imageId, productId) {
+  try {
+    const res = await fetch(`/admin/products/${productId}/images/${imageId}/set-primary`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
+    if (res.ok) {
+      // Cập nhật UI: bỏ badge cũ, thêm badge mới
+      document.querySelectorAll('.ap-img-primary').forEach(el => {
+        el.classList.remove('ap-img-primary');
+        el.querySelector('.ap-img-primary-badge')?.remove();
+        // Thêm lại nút "Đặt làm chính" cho item cũ
+        const actions = el.querySelector('.ap-img-actions');
+        if (actions && !actions.querySelector('.ap-img-btn-primary')) {
+          const oldId = el.dataset.id;
+          const btn   = document.createElement('button');
+          btn.type    = 'button';
+          btn.className = 'ap-img-btn ap-img-btn-primary';
+          btn.title   = 'Đặt làm ảnh chính';
+          btn.onclick = () => setPrimaryImage(oldId, productId);
+          btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 1l1.8 3.6 4 .6-2.9 2.8.7 4L8 10l-3.6 2 .7-4-2.9-2.8 4-.6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+          actions.prepend(btn);
+        }
+      });
+
+      const newItem = document.getElementById('img-item-' + imageId);
+      if (newItem) {
+        newItem.classList.add('ap-img-primary');
+        if (!newItem.querySelector('.ap-img-primary-badge')) {
+          const badge = document.createElement('span');
+          badge.className = 'ap-img-primary-badge';
+          badge.textContent = 'Ảnh chính';
+          newItem.appendChild(badge);
+        }
+        // Xóa nút "Đặt làm chính" khỏi item mới
+        newItem.querySelector('.ap-img-btn-primary')?.remove();
+
+        // Cập nhật ô preview ảnh chính
+        const imgSrc      = newItem.querySelector('img')?.src;
+        const mainInput   = document.getElementById('imageUrlInput');
+        const mainPreview = document.getElementById('imgPreview');
+        if (imgSrc && mainInput)   mainInput.value = imgSrc;
+        if (imgSrc && mainPreview) { mainPreview.src = imgSrc; mainPreview.style.display = 'block'; }
+        document.getElementById('imgPlaceholder')?.style.setProperty('display', 'none');
+      }
+    } else {
+      alert('Lỗi đặt ảnh chính, thử lại');
+    }
+  } catch {
+    alert('Lỗi kết nối');
+  }
+}
+
+function checkEmptyGrid() {
+  const grid  = document.getElementById('imgGrid');
+  const items = grid?.querySelectorAll('.ap-img-item');
+  if (!items?.length && !grid?.querySelector('.ap-img-empty')) {
+    const empty = document.createElement('div');
+    empty.className = 'ap-img-empty'; empty.id = 'imgEmpty';
+    empty.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.4"/></svg><p>Chưa có ảnh phụ</p>';
+    grid.appendChild(empty);
+  }
+}
+
+function reloadPage() { location.reload(); }
+</script>
 {% endblock %}

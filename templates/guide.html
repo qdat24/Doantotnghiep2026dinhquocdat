@@ -1,561 +1,378 @@
 {% extends "base.html" %}
+{% block title %}Hướng Dẫn Mua Hàng - DQD{% endblock %}
 
-{% block title %}Hướng Dẫn Mua Hàng - HOMESTEAD{% endblock %}
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
 
 {% block content %}
+<div class="gd-root">
+
+  <!-- Header -->
+  <div class="gd-header">
+    <div class="gdh-inner">
+      <div class="gdh-bc">
+        <a href="/">Trang chủ</a>
+        <svg viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span>Hướng dẫn mua hàng</span>
+      </div>
+      <h1>Hướng dẫn <span class="gold">mua hàng</span></h1>
+      <p>Quy trình mua hàng đơn giản và nhanh chóng tại DQD</p>
+    </div>
+  </div>
+
+  <!-- Search bar -->
+  <div class="gd-search">
+    <div class="gds-inner">
+      <div class="gds-wrap">
+        <svg viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="M15 15l-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="text" id="guideSearch" placeholder="Tìm kiếm sản phẩm nội thất..."
+               onkeypress="if(event.key==='Enter') doSearch()">
+        <button onclick="doSearch()">Tìm kiếm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Body: 6 steps -->
+  <div class="gd-body">
+    <div class="gdb-inner">
+
+      <!-- Visual step flow -->
+      <div class="gd-flow">
+        {% set steps = [
+          ('1', 'Chọn sản phẩm', '#f0faf4', '#16a34a'),
+          ('2', 'Kiểm tra giỏ hàng', '#eff6ff', '#2563eb'),
+          ('3', 'Điền thông tin', '#fffbeb', '#d97706'),
+          ('4', 'Thanh toán', '#faf5ff', '#7c3aed'),
+          ('5', 'Xác nhận đơn', '#fff5f5', '#dc2626'),
+          ('6', 'Nhận hàng', '#f0faf4', '#16a34a'),
+        ] %}
+        {% for num, label, bg, color in steps %}
+        <div class="gdf-step">
+          <div class="gdf-num" style="background:{{ bg }};color:{{ color }}">{{ num }}</div>
+          <span>{{ label }}</span>
+        </div>
+        {% if not loop.last %}<div class="gdf-arrow">→</div>{% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Step cards -->
+      <div class="gd-steps">
+
+        <div class="gds-card gds-green" id="step1">
+          <div class="gdsc-head">
+            <div class="gdsc-num gdsc-num-green">1</div>
+            <div>
+              <h2>Chọn sản phẩm</h2>
+              <p>Khám phá danh mục và thêm vào giỏ hàng</p>
+            </div>
+          </div>
+          <ul class="gdsc-list">
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Truy cập website DQD và chọn danh mục yêu thích</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Xem danh mục: Phòng Khách, Phòng Ngủ, Nhà Bếp, Văn Phòng, Phòng Ăn</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Click sản phẩm để xem chi tiết: giá, tính năng, đánh giá khách hàng</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Chọn số lượng và nhấn <strong>"Thêm vào giỏ hàng"</strong></li>
+          </ul>
+          <a href="/products" class="gdsc-action">Xem sản phẩm →</a>
+        </div>
+
+        <div class="gds-card gds-blue" id="step2">
+          <div class="gdsc-head">
+            <div class="gdsc-num gdsc-num-blue">2</div>
+            <div>
+              <h2>Kiểm tra giỏ hàng</h2>
+              <p>Xem lại đơn hàng trước khi thanh toán</p>
+            </div>
+          </div>
+          <ul class="gdsc-list">
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Click vào biểu tượng <strong>Giỏ hàng</strong> ở góc trên trang</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Kiểm tra lại danh sách sản phẩm đã chọn</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Thay đổi số lượng hoặc xóa sản phẩm nếu cần</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Xem tổng tiền và phí vận chuyển</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Nhấn <strong>"Tiến hành thanh toán"</strong> để tiếp tục</li>
+          </ul>
+        </div>
+
+        <div class="gds-card gds-amber" id="step3">
+          <div class="gdsc-head">
+            <div class="gdsc-num gdsc-num-amber">3</div>
+            <div>
+              <h2>Điền thông tin giao hàng</h2>
+              <p>Cung cấp địa chỉ để chúng tôi giao đúng nơi</p>
+            </div>
+          </div>
+          <div class="gdsc-fields">
+            <div class="gdf-field">
+              <span class="gdf-label">Họ và tên</span>
+              <span class="gdf-desc">Tên người nhận hàng</span>
+            </div>
+            <div class="gdf-field">
+              <span class="gdf-label">Số điện thoại</span>
+              <span class="gdf-desc">Liên hệ khi giao hàng</span>
+            </div>
+            <div class="gdf-field">
+              <span class="gdf-label">Email</span>
+              <span class="gdf-desc">Nhận thông tin đơn hàng</span>
+            </div>
+            <div class="gdf-field">
+              <span class="gdf-label">Địa chỉ đầy đủ</span>
+              <span class="gdf-desc">Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành</span>
+            </div>
+            <div class="gdf-field">
+              <span class="gdf-label">Ghi chú</span>
+              <span class="gdf-desc">Yêu cầu đặc biệt (không bắt buộc)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gds-card gds-purple" id="step4">
+          <div class="gdsc-head">
+            <div class="gdsc-num gdsc-num-purple">4</div>
+            <div>
+              <h2>Chọn phương thức thanh toán</h2>
+              <p>DQD hỗ trợ đa dạng hình thức thanh toán</p>
+            </div>
+          </div>
+          <div class="gdsc-pay-grid">
+            <div class="gdsp-method">
+              <div class="gdsp-icon gdsp-green">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 4v5l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <strong>COD</strong>
+                <span>Thanh toán tiền mặt khi nhận hàng, kiểm tra trước khi trả</span>
+              </div>
+            </div>
+            <div class="gdsp-method">
+              <div class="gdsp-icon gdsp-blue">
+                <svg viewBox="0 0 20 20" fill="none"><path d="M2 7l8-5 8 5v2H2V7zm0 4h16v7H2v-7zm4 2v3m4-3v3m4-3v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div>
+                <strong>Chuyển khoản ngân hàng</strong>
+                <span>Quét mã QR hoặc chuyển khoản thủ công qua ngân hàng, MoMo, ZaloPay</span>
+              </div>
+            </div>
+            <div class="gdsp-method">
+              <div class="gdsp-icon gdsp-amber">
+                <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 9h16M6 13h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <strong>Thẻ tín dụng / ghi nợ</strong>
+                <span>Thanh toán trực tuyến an toàn — Visa, Mastercard, JCB, Amex</span>
+              </div>
+            </div>
+            <div class="gdsp-method">
+              <div class="gdsp-icon gdsp-purple">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.4"/><path d="M10 6v8M7 8h6M7 12h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <strong>USDT (Blockchain)</strong>
+                <span>Thanh toán nhanh qua Ethereum, BSC, Polygon</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gds-card gds-red" id="step5">
+          <div class="gdsc-head">
+            <div class="gdsc-num gdsc-num-red">5</div>
+            <div>
+              <h2>Xác nhận đơn hàng</h2>
+              <p>Nhận thông báo và theo dõi đơn hàng</p>
+            </div>
+          </div>
+          <ul class="gdsc-list">
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Nhận <strong>email xác nhận</strong> đơn hàng ngay sau khi đặt thành công</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Email chứa: mã đơn hàng, chi tiết sản phẩm, thông tin giao hàng</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>DQD sẽ gọi điện xác nhận trong vòng 1–2 giờ làm việc</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Theo dõi tình trạng đơn hàng qua email hoặc hotline <strong>0345 211 386</strong></li>
+          </ul>
+        </div>
+
+        <div class="gds-card gds-green" id="step6">
+          <div class="gdsc-head">
+            <div class="gdsc-num gdsc-num-green">6</div>
+            <div>
+              <h2>Nhận hàng & kiểm tra</h2>
+              <p>Giao hàng tận nơi, hỗ trợ lắp đặt</p>
+            </div>
+          </div>
+          <ul class="gdsc-list">
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><strong>Thời gian giao hàng:</strong> 2–5 ngày (nội thành), 5–7 ngày (ngoại thành)</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><strong>Miễn phí vận chuyển</strong> cho đơn hàng từ 5 triệu đồng</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Nhân viên giao hàng liên hệ trước khi đến</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Kiểm tra kỹ sản phẩm trước khi nhận hàng và ký xác nhận</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Hỗ trợ lắp đặt miễn phí tại <strong>Hà Đông, Hà Nội</strong></li>
+          </ul>
+        </div>
+
+        <!-- Important note -->
+        <div class="gds-note">
+          <div class="gdsn-head">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M8 1l7 13H1L8 1zm0 5v4m0 2v.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <h3>Lưu ý quan trọng</h3>
+          </div>
+          <ul class="gdsc-list gdsc-list-amber">
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M8 1l7 13H1L8 1zm0 4v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Kiểm tra kỹ thông tin đơn hàng trước khi xác nhận thanh toán</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M8 1l7 13H1L8 1zm0 4v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Giữ lại email xác nhận để tra cứu và theo dõi đơn hàng</li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M8 1l7 13H1L8 1zm0 4v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Có thể hủy/đổi đơn hàng trước khi giao — xem <a href="/return-policy">Chính sách đổi trả</a></li>
+            <li><svg viewBox="0 0 16 16" fill="none"><path d="M8 1l7 13H1L8 1zm0 4v4m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Liên hệ hotline <strong>0345 211 386</strong> (8:00–22:00) nếu cần hỗ trợ</li>
+          </ul>
+        </div>
+
+        <!-- CTA card -->
+        <div class="gds-cta">
+          <div class="gdscta-left">
+            <svg viewBox="0 0 32 32" fill="none"><path d="M5 2h-4A1.5 1.5 0 00-.5 3.5v1C-.5 10.4 3.6 14.5 10.5 14.5h1A1.5 1.5 0 0013 13v-1.5a.5.5 0 00-.3-.46l-2.5-1a.5.5 0 00-.56.12l-1 1.25a8 8 0 01-3.5-3.5l1.25-1a.5.5 0 00.12-.57l-1-2.5A.5.5 0 005 2z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><circle cx="22" cy="18" r="9" stroke="white" stroke-width="1.5"/><path d="M22 14v5l3 2" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div>
+              <strong>Cần hỗ trợ mua hàng?</strong>
+              <span>Đội ngũ DQD luôn sẵn sàng tư vấn miễn phí</span>
+            </div>
+          </div>
+          <div class="gdscta-right">
+            <a href="tel:0345211386" class="gdscta-phone">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M5 2h-1A1.5 1.5 0 002.5 3.5v1C2.5 10.4 6.6 14.5 13.5 14.5h1A1.5 1.5 0 0016 13v-1.5a.5.5 0 00-.3-.46l-2.5-1a.5.5 0 00-.56.12l-1 1.25a8 8 0 01-3.5-3.5l1.25-1a.5.5 0 00.12-.57l-1-2.5A.5.5 0 005 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+              0345 211 386
+            </a>
+            <a href="mailto:quocdat30075@gmail.com" class="gdscta-email">quocdat30075@gmail.com</a>
+            <a href="/products" class="gdscta-btn">Mua sắm ngay</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
 <style>
-    .guide-hero {
-        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
-        color: white;
-        padding: clamp(3rem, 6vh, 5rem) 0;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .guide-hero::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
-        opacity: 0.3;
-        pointer-events: none;
-    }
-    
-    .guide-hero .container {
-        position: relative;
-        z-index: 1;
-    }
-    
-    .guide-hero h1 {
-        font-size: clamp(2rem, 5vw, 3rem);
-        font-weight: 800;
-        margin-bottom: clamp(0.75rem, 1.5vh, 1rem);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-    
-    .guide-hero p {
-        font-size: clamp(1rem, 2vw, 1.25rem);
-        opacity: 0.95;
-        color: white;
-    }
-    
-    .guide-content {
-        padding: clamp(3rem, 6vh, 4rem) 0;
-        background: var(--bg-cream);
-    }
-    
-    .guide-wrapper {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 clamp(1rem, 3vw, 2rem);
-    }
-    
-    .guide-step {
-        background: white;
-        padding: clamp(1.75rem, 3.5vw, 2.5rem);
-        border-radius: var(--radius-xl);
-        margin-bottom: clamp(1.5rem, 3vh, 2rem);
-        box-shadow: var(--shadow-md);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 2px solid transparent;
-        border-left: 4px solid;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .guide-step::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        opacity: 0.05;
-        background: var(--gradient-sage);
-        transition: opacity 0.3s ease;
-    }
-    
-    .guide-step:hover::before {
-        opacity: 0.1;
-    }
-    
-    .guide-step:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-xl);
-        border-color: var(--sage-light);
-    }
-    
-    .guide-step.step-1 {
-        background: linear-gradient(135deg, rgba(157, 184, 146, 0.1) 0%, rgba(157, 184, 146, 0.05) 100%);
-        border-left-color: var(--sage-medium);
-    }
-    
-    .guide-step.step-2 {
-        background: linear-gradient(135deg, rgba(160, 137, 104, 0.1) 0%, rgba(160, 137, 104, 0.05) 100%);
-        border-left-color: var(--oak);
-    }
-    
-    .guide-step.step-3 {
-        background: linear-gradient(135deg, rgba(212, 130, 111, 0.1) 0%, rgba(212, 130, 111, 0.05) 100%);
-        border-left-color: var(--terracotta);
-    }
-    
-    .guide-step.step-4 {
-        background: linear-gradient(135deg, rgba(157, 184, 146, 0.1) 0%, rgba(157, 184, 146, 0.05) 100%);
-        border-left-color: var(--sage);
-    }
-    
-    .guide-step.step-5 {
-        background: linear-gradient(135deg, rgba(212, 130, 111, 0.1) 0%, rgba(212, 130, 111, 0.05) 100%);
-        border-left-color: var(--coral);
-    }
-    
-    .guide-step.step-6 {
-        background: linear-gradient(135deg, rgba(157, 184, 146, 0.1) 0%, rgba(157, 184, 146, 0.05) 100%);
-        border-left-color: var(--sage-dark);
-    }
-    
-    .guide-step h2 {
-        color: var(--text-dark);
-        margin-bottom: clamp(1rem, 2vh, 1.5rem);
-        font-size: clamp(1.375rem, 2.8vw, 1.75rem);
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: clamp(0.75rem, 1.5vw, 1rem);
-        position: relative;
-        z-index: 1;
-    }
-    
-    .step-number {
-        background: var(--gradient-sage);
-        color: white;
-        padding: clamp(6px, 1vw, 8px) clamp(14px, 2.5vw, 18px);
-        border-radius: var(--radius-full);
-        font-weight: 700;
-        font-size: clamp(1rem, 2vw, 1.25rem);
-        box-shadow: var(--shadow-sm);
-        flex-shrink: 0;
-    }
-    
-    .guide-step.step-2 .step-number {
-        background: var(--gradient-wood);
-    }
-    
-    .guide-step.step-3 .step-number {
-        background: var(--gradient-sunset);
-    }
-    
-    .guide-step.step-5 .step-number {
-        background: var(--gradient-sunset);
-    }
-    
-    .guide-step ul {
-        color: var(--text-medium);
-        line-height: 1.8;
-        margin-left: clamp(1.5rem, 3vw, 2rem);
-        margin-bottom: 0;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .guide-step li {
-        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-    }
-    
-    .guide-step strong {
-        color: var(--sage-dark);
-        font-weight: 600;
-    }
-    
-    .guide-step .payment-methods {
-        margin-left: clamp(1rem, 2vw, 1.5rem);
-        margin-top: clamp(0.875rem, 1.5vh, 1rem);
-    }
-    
-    .guide-step .payment-methods p {
-        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
-        font-weight: 600;
-        color: var(--text-dark);
-        font-size: clamp(1rem, 2vw, 1.125rem);
-    }
-    
-    .guide-step .payment-methods ul {
-        margin-bottom: clamp(0.875rem, 1.5vh, 1rem);
-    }
-    
-    .guide-note {
-        background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
-        padding: clamp(1.75rem, 3.5vw, 2.5rem);
-        border-radius: var(--radius-xl);
-        border: 2px dashed var(--terracotta);
-        margin-bottom: clamp(1.5rem, 3vh, 2rem);
-        box-shadow: var(--shadow-sm);
-    }
-    
-    .guide-note h3 {
-        color: var(--rust);
-        margin-bottom: clamp(1rem, 2vh, 1.5rem);
-        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-    
-    .guide-note ul {
-        color: var(--text-medium);
-        line-height: 1.8;
-        margin-left: clamp(1.5rem, 3vw, 2rem);
-    }
-    
-    .guide-note li {
-        margin-bottom: clamp(0.5rem, 1vh, 0.75rem);
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-    }
-    
-    .guide-note strong {
-        color: var(--rust);
-        font-weight: 600;
-    }
-    
-    .guide-cta {
-        background: linear-gradient(135deg, var(--sage-medium) 0%, var(--sage-dark) 100%);
-        color: white;
-        padding: clamp(2.5rem, 5vw, 3.5rem);
-        border-radius: var(--radius-xl);
-        text-align: center;
-        margin-top: clamp(2rem, 4vh, 3rem);
-        box-shadow: var(--shadow-lg);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .guide-cta::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: pulse 3s ease-in-out infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 0.5; }
-        50% { transform: scale(1.1); opacity: 0.8; }
-    }
-    
-    .guide-cta .container {
-        position: relative;
-        z-index: 1;
-    }
-    
-    .guide-cta h3 {
-        margin-bottom: clamp(1rem, 2vh, 1.5rem);
-        font-size: clamp(1.5rem, 3vw, 2rem);
-        font-weight: 700;
-        color: white;
-    }
-    
-    .guide-cta p {
-        font-size: clamp(1rem, 2vw, 1.25rem);
-        margin-bottom: clamp(0.75rem, 1.5vh, 1rem);
-        opacity: 0.95;
-        color: white;
-    }
-    
-    .guide-cta strong {
-        font-weight: 700;
-    }
-    
-    .guide-search-section {
-        background: white;
-        padding: clamp(1.5rem, 3vh, 2rem) 0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    
-    .guide-search-wrapper {
-        display: flex;
-        gap: 1rem;
-        max-width: 800px;
-        margin: 0 auto;
-        align-items: center;
-    }
-    
-    .guide-search-box {
-        flex: 1;
-        position: relative;
-    }
-    
-    .guide-search-box i {
-        position: absolute;
-        left: 1.25rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--text-light);
-        font-size: 1.125rem;
-    }
-    
-    .guide-search-box input {
-        width: 100%;
-        padding: clamp(0.875rem, 1.5vw, 1rem) 1.25rem clamp(0.875rem, 1.5vw, 1rem) 3.5rem;
-        border: 2px solid var(--border-color);
-        border-radius: var(--radius-full);
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-        transition: all 0.3s ease;
-        background: var(--bg-cream);
-    }
-    
-    .guide-search-box input:focus {
-        outline: none;
-        border-color: var(--sage-medium);
-        box-shadow: 0 0 0 4px var(--sage-light);
-        background: white;
-    }
-    
-    .guide-search-btn {
-        padding: clamp(0.875rem, 1.5vw, 1rem) clamp(1.5rem, 3vw, 2rem);
-        background: var(--gradient-sage);
-        color: white;
-        border: none;
-        border-radius: var(--radius-full);
-        font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        white-space: nowrap;
-    }
-    
-    .guide-search-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-    }
-    
-    .guide-search-btn:active {
-        transform: translateY(0);
-    }
-    
-    @media (max-width: 768px) {
-        .guide-content {
-            padding: 2rem 0;
-        }
-        
-        .guide-step {
-            padding: 1.5rem;
-        }
-        
-        .guide-step h2 {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.75rem;
-        }
-        
-        .guide-cta {
-            padding: 2rem 1.5rem;
-        }
-        
-        .guide-search-wrapper {
-            flex-direction: column;
-        }
-        
-        .guide-search-box {
-            width: 100%;
-        }
-        
-        .guide-search-btn {
-            width: 100%;
-            justify-content: center;
-        }
-    }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--font:'Be Vietnam Pro',sans-serif;--dark:#1a1a18;--gold:#b8922a;--border:#e8e3db;--text:#2a2520;--muted:#7a7060;--light:#f5f4f1}
+body{font-family:var(--font);color:var(--text)}
+a{text-decoration:none;color:inherit}
+
+/* Header */
+.gd-header{background:var(--dark);padding:3rem 2rem;text-align:center;position:relative;overflow:hidden}
+.gd-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 100%,rgba(196,160,100,.12) 0%,transparent 60%)}
+.gdh-inner{position:relative;z-index:1;max-width:1280px;margin:0 auto}
+.gdh-bc{display:flex;align-items:center;justify-content:center;gap:.375rem;margin-bottom:.875rem}
+.gdh-bc a,.gdh-bc span{font-size:.75rem;color:rgba(255,255,255,.45)}
+.gdh-bc a:hover{color:rgba(255,255,255,.8)}
+.gdh-bc svg{width:11px;height:11px;color:rgba(255,255,255,.25)}
+.gd-header h1{font-size:clamp(1.875rem,4vw,2.75rem);font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:.5rem}
+.gd-header h1 .gold{color:#c4a064;font-weight:300}
+.gd-header p{font-size:.9rem;color:rgba(255,255,255,.5);font-weight:300}
+
+/* Search */
+.gd-search{background:#fff;border-bottom:1.5px solid var(--border);padding:1.125rem 2rem}
+.gds-inner{max-width:1280px;margin:0 auto}
+.gds-wrap{display:flex;align-items:center;gap:.625rem;background:var(--light);border:1.5px solid var(--border);border-radius:99px;padding:.5rem .5rem .5rem 1.125rem;max-width:600px;margin:0 auto;transition:border-color .2s,box-shadow .2s}
+.gds-wrap:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,146,42,.1);background:#fff}
+.gds-wrap svg{width:18px;height:18px;color:var(--muted);flex-shrink:0}
+.gds-wrap input{flex:1;border:none;background:transparent;font-family:var(--font);font-size:.875rem;color:var(--text);outline:none}
+.gds-wrap input::placeholder{color:#c0b9ae}
+.gds-wrap button{padding:.6rem 1.25rem;background:var(--dark);color:#fff;border:none;border-radius:99px;font-family:var(--font);font-size:.8125rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .18s}
+.gds-wrap button:hover{background:#2e2e2a}
+
+/* Body */
+.gd-body{background:var(--light);padding:2rem}
+.gdb-inner{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:1.125rem}
+
+/* Flow bar */
+.gd-flow{display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap;background:#fff;border-radius:10px;border:1.5px solid var(--border);padding:1rem 1.5rem;margin-bottom:.375rem}
+.gdf-step{display:flex;align-items:center;gap:.375rem;font-size:.72rem;color:var(--muted)}
+.gdf-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0}
+.gdf-arrow{font-size:.75rem;color:#d0c8bc}
+
+/* Step cards */
+.gd-steps{display:flex;flex-direction:column;gap:1.125rem}
+.gds-card{background:#fff;border-radius:10px;border:1.5px solid var(--border);padding:1.75rem;position:relative;overflow:hidden}
+.gds-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px}
+.gds-green::before{background:#16a34a}
+.gds-blue::before{background:#2563eb}
+.gds-amber::before{background:#d97706}
+.gds-purple::before{background:#7c3aed}
+.gds-red::before{background:#dc2626}
+
+.gdsc-head{display:flex;align-items:flex-start;gap:1.125rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1.5px solid var(--border)}
+.gdsc-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9375rem;font-weight:700;flex-shrink:0}
+.gdsc-num-green{background:#f0faf4;color:#16a34a}
+.gdsc-num-blue{background:#eff6ff;color:#2563eb}
+.gdsc-num-amber{background:#fffbeb;color:#d97706}
+.gdsc-num-purple{background:#faf5ff;color:#7c3aed}
+.gdsc-num-red{background:#fff5f5;color:#dc2626}
+.gdsc-head h2{font-size:.9375rem;font-weight:700;color:var(--dark);margin-bottom:.2rem}
+.gdsc-head p{font-size:.78rem;color:var(--muted)}
+
+.gdsc-list{list-style:none;display:flex;flex-direction:column;gap:.625rem}
+.gdsc-list li{display:flex;align-items:flex-start;gap:.5rem;font-size:.875rem;color:var(--text);line-height:1.5}
+.gdsc-list li svg{width:14px;height:14px;color:#16a34a;flex-shrink:0;margin-top:2px}
+.gdsc-list-amber li svg{color:#d97706}
+.gdsc-list li strong{color:var(--dark);font-weight:600}
+
+/* Info fields (step 3) */
+.gdsc-fields{display:flex;flex-direction:column;gap:.5rem}
+.gdf-field{display:flex;align-items:baseline;gap:.75rem;padding:.625rem .875rem;background:var(--light);border-radius:7px;font-size:.8125rem}
+.gdf-label{font-weight:700;color:var(--dark);min-width:120px;flex-shrink:0}
+.gdf-desc{color:var(--muted)}
+
+/* Payment methods (step 4) */
+.gdsc-pay-grid{display:flex;flex-direction:column;gap:.75rem}
+.gdsp-method{display:flex;align-items:flex-start;gap:.875rem;padding:.875rem 1rem;background:var(--light);border-radius:9px}
+.gdsp-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gdsp-icon svg{width:18px;height:18px}
+.gdsp-green{background:#f0faf4;color:#16a34a}
+.gdsp-blue{background:#eff6ff;color:#2563eb}
+.gdsp-amber{background:#fffbeb;color:#d97706}
+.gdsp-purple{background:#faf5ff;color:#7c3aed}
+.gdsp-method strong{display:block;font-size:.875rem;font-weight:600;color:var(--dark);margin-bottom:.2rem}
+.gdsp-method span{font-size:.78rem;color:var(--muted);line-height:1.5}
+
+/* Action link (step 1) */
+.gdsc-action{display:inline-flex;margin-top:.875rem;font-size:.8125rem;font-weight:600;color:var(--gold);border-bottom:1px solid var(--gold);padding-bottom:1px;transition:color .18s}
+.gdsc-action:hover{color:var(--dark);border-color:var(--dark)}
+
+/* Note */
+.gds-note{background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:1.5rem}
+.gdsn-head{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+.gdsn-head svg{width:20px;height:20px;color:#d97706;flex-shrink:0}
+.gdsn-head h3{font-size:.9375rem;font-weight:700;color:#854d0e}
+.gdsn-head h3{margin-bottom:0}
+.gds-note .gdsc-list li{color:#92400e}
+.gds-note a{color:#d97706;font-weight:600;border-bottom:1px solid #d97706}
+
+/* CTA */
+.gds-cta{background:var(--dark);border-radius:10px;padding:1.75rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;position:relative;overflow:hidden}
+.gds-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(196,160,100,.1) 0%,transparent 60%);pointer-events:none}
+.gdscta-left{display:flex;align-items:flex-start;gap:1rem;position:relative;z-index:1;flex:1}
+.gdscta-left svg{width:32px;height:32px;flex-shrink:0;margin-top:2px}
+.gdscta-left strong{display:block;font-size:.9375rem;font-weight:700;color:#fff;margin-bottom:.2rem}
+.gdscta-left span{font-size:.78rem;color:rgba(255,255,255,.5)}
+.gdscta-right{display:flex;align-items:center;gap:.875rem;flex-wrap:wrap;position:relative;z-index:1}
+.gdscta-phone{display:inline-flex;align-items:center;gap:.375rem;font-size:.9rem;font-weight:700;color:#c4a064;font-variant-numeric:tabular-nums}
+.gdscta-phone svg{width:14px;height:14px}
+.gdscta-email{font-size:.75rem;color:rgba(255,255,255,.5);transition:color .18s}
+.gdscta-email:hover{color:rgba(255,255,255,.8)}
+.gdscta-btn{display:inline-flex;padding:.7rem 1.5rem;background:#fff;color:var(--dark);border-radius:8px;font-family:var(--font);font-size:.875rem;font-weight:600;transition:all .18s}
+.gdscta-btn:hover{background:var(--gold);color:#fff}
+
+@media(max-width:700px){
+  .gd-body{padding:1rem}
+  .gd-flow{display:none}
+  .gds-card{padding:1.25rem}
+  .gdscta-left svg{display:none}
+  .gds-cta{flex-direction:column;align-items:flex-start}
+  .gdf-field{flex-direction:column;gap:.25rem}
+}
 </style>
 
-<!-- Page Header -->
-<section class="guide-hero">
-    <div class="container">
-        <h1>
-            <i class="fas fa-book-open"></i> Hướng Dẫn Mua Hàng
-        </h1>
-        <p>Quy trình mua hàng đơn giản, nhanh chóng tại HOMESTEAD</p>
-    </div>
-</section>
-
-<!-- Search Section -->
-<section class="guide-search-section">
-    <div class="container">
-        <div class="guide-search-wrapper">
-            <div class="guide-search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" 
-                       id="guideSearchInput"
-                       placeholder="Tìm kiếm sản phẩm..." 
-                       onkeypress="if(event.key === 'Enter') performGuideSearch()">
-            </div>
-            <button class="guide-search-btn" onclick="performGuideSearch()">
-                <i class="fas fa-search"></i> Tìm Kiếm
-            </button>
-        </div>
-    </div>
-</section>
-
-<!-- Guide Content -->
-<section class="guide-content">
-    <div class="guide-wrapper">
-
-        <!-- Bước 1 -->
-        <div class="guide-step step-1">
-            <h2>
-                <span class="step-number">1</span>
-                Chọn Sản Phẩm
-            </h2>
-            <ul>
-                <li>Truy cập website HOMESTEAD</li>
-                <li>Xem danh mục sản phẩm: Phòng Khách, Phòng Ngủ, Nhà Bếp, Văn Phòng, Phòng Ăn</li>
-                <li>Click vào sản phẩm để xem chi tiết: Giá, tính năng, đánh giá</li>
-                <li>Chọn số lượng và click <strong>"Thêm Vào Giỏ"</strong></li>
-            </ul>
-        </div>
-
-        <!-- Bước 2 -->
-        <div class="guide-step step-2">
-            <h2>
-                <span class="step-number">2</span>
-                Kiểm Tra Giỏ Hàng
-            </h2>
-            <ul>
-                <li>Click vào biểu tượng <i class="fas fa-shopping-cart"></i> <strong>Giỏ Hàng</strong> ở góc trên</li>
-                <li>Kiểm tra lại danh sách sản phẩm đã chọn</li>
-                <li>Có thể thay đổi số lượng hoặc xóa sản phẩm</li>
-                <li>Xem tổng tiền và phí vận chuyển</li>
-                <li>Click <strong>"Tiến Hành Thanh Toán"</strong></li>
-            </ul>
-        </div>
-
-        <!-- Bước 3 -->
-        <div class="guide-step step-3">
-            <h2>
-                <span class="step-number">3</span>
-                Điền Thông Tin Giao Hàng
-            </h2>
-            <ul>
-                <li><strong>Họ và tên:</strong> Người nhận hàng</li>
-                <li><strong>Số điện thoại:</strong> Liên hệ khi giao hàng</li>
-                <li><strong>Email:</strong> Nhận thông tin đơn hàng</li>
-                <li><strong>Địa chỉ:</strong> Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố</li>
-                <li><strong>Ghi chú:</strong> Yêu cầu đặc biệt (nếu có)</li>
-            </ul>
-        </div>
-
-        <!-- Bước 4 -->
-        <div class="guide-step step-4">
-            <h2>
-                <span class="step-number">4</span>
-                Chọn Phương Thức Thanh Toán
-            </h2>
-            <p style="margin-bottom: clamp(1rem, 2vh, 1.25rem); color: var(--text-medium); font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);">Chúng tôi hỗ trợ 3 phương thức thanh toán:</p>
-            <div class="payment-methods">
-                <p><i class="fas fa-money-bill-wave"></i> <strong>COD (Thanh toán khi nhận hàng):</strong></p>
-                <ul>
-                    <li>Thanh toán bằng tiền mặt khi nhận hàng</li>
-                    <li>Kiểm tra hàng trước khi thanh toán</li>
-                </ul>
-
-                <p><i class="fas fa-university"></i> <strong>Chuyển khoản ngân hàng:</strong></p>
-                <ul>
-                    <li>Quét mã QR hoặc chuyển khoản thủ công</li>
-                    <li>Đơn hàng được xử lý sau khi nhận tiền</li>
-                </ul>
-
-                <p><i class="fas fa-credit-card"></i> <strong>Thẻ tín dụng/Ghi nợ:</strong></p>
-                <ul>
-                    <li>Thanh toán trực tuyến an toàn</li>
-                    <li>Hỗ trợ Visa, Mastercard, JCB, Amex</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Bước 5 -->
-        <div class="guide-step step-5">
-            <h2>
-                <span class="step-number">5</span>
-                Xác Nhận Đơn Hàng
-            </h2>
-            <ul>
-                <li>Nhận email xác nhận đơn hàng ngay lập tức</li>
-                <li>Email chứa: Mã đơn hàng, chi tiết sản phẩm, thông tin giao hàng</li>
-                <li>Chúng tôi sẽ gọi điện xác nhận trong vòng 1-2 giờ</li>
-                <li>Theo dõi tình trạng đơn hàng qua email hoặc hotline</li>
-            </ul>
-        </div>
-
-        <!-- Bước 6 -->
-        <div class="guide-step step-6">
-            <h2>
-                <span class="step-number">6</span>
-                Nhận Hàng & Kiểm Tra
-            </h2>
-            <ul>
-                <li><strong>Thời gian giao hàng:</strong> 2-5 ngày làm việc (nội thành), 5-7 ngày (ngoại thành)</li>
-                <li><strong>Miễn phí vận chuyển</strong> cho đơn hàng trên 5 triệu</li>
-                <li>Nhân viên giao hàng sẽ liên hệ trước khi đến</li>
-                <li>Kiểm tra kỹ sản phẩm trước khi nhận</li>
-                <li>Hỗ trợ lắp đặt miễn phí (một số sản phẩm)</li>
-            </ul>
-        </div>
-
-        <!-- Lưu ý -->
-        <div class="guide-note">
-            <h3>
-                <i class="fas fa-exclamation-triangle"></i> Lưu Ý Quan Trọng
-            </h3>
-            <ul>
-                <li>Kiểm tra kỹ thông tin đơn hàng trước khi xác nhận</li>
-                <li>Giữ lại email xác nhận để theo dõi đơn hàng</li>
-                <li>Liên hệ hotline <strong>0345211386</strong> nếu cần hỗ trợ</li>
-                <li>Có thể hủy/đổi đơn hàng trước khi giao (xem Chính Sách Đổi Trả)</li>
-            </ul>
-        </div>
-
-        <!-- Hotline -->
-        <div class="guide-cta">
-            <div class="container">
-                <h3>Cần Hỗ Trợ?</h3>
-                <p>
-                    <i class="fas fa-phone"></i> Hotline: <strong>0345211386</strong> (8:00 - 22:00 hàng ngày)
-                </p>
-                <p>
-                    <i class="fas fa-envelope"></i> Email: <strong>quocdat30075@gmail.com</strong>
-                </p>
-            </div>
-        </div>
-
-    </div>
-</section>
-
 <script>
-    function performGuideSearch() {
-        const searchInput = document.getElementById('guideSearchInput');
-        const searchValue = searchInput?.value?.trim() || '';
-        
-        if (searchValue) {
-            window.location.href = '/products?search=' + encodeURIComponent(searchValue);
-        } else {
-            window.location.href = '/products';
-        }
-    }
+function doSearch() {
+  const v = document.getElementById('guideSearch')?.value?.trim() || '';
+  window.location.href = v ? '/products?search=' + encodeURIComponent(v) : '/products';
+}
 </script>
+
 {% endblock %}

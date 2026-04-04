@@ -1,280 +1,231 @@
 {% extends "admin/base.html" %}
-
 {% block title %}Dashboard{% endblock %}
 
+{% block extra_css %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+:root{--f:'Be Vietnam Pro',ui-sans-serif,sans-serif;--dk:#1a1a18;--gd:#b8922a;--bd:#e8e3db;--tx:#2a2520;--mu:#7a7060;--lt:#f5f4f1;--wh:#fff;--gr:#16a34a;--am:#d97706;--bl:#2563eb;--rd:#dc2626;--pu:#7c3aed}
+.db{font-family:var(--f);color:var(--tx)}.db *{box-sizing:border-box}
+.db-hd{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1.5px solid var(--bd);flex-wrap:wrap}
+.db-hd h1{font-size:1.375rem;font-weight:700;color:var(--dk);margin:0 0 .2rem;letter-spacing:-.02em}
+.db-hd p{font-size:.8125rem;color:var(--mu);margin:0}
+.db-dt{font-size:.75rem;color:var(--mu);background:var(--lt);border:1.5px solid var(--bd);border-radius:8px;padding:.4rem .875rem;white-space:nowrap}
+
+/* Stats 3x3 */
+.db-sg{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+.sc{background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;padding:1.125rem 1.25rem;display:flex;flex-direction:column;gap:.5rem;text-decoration:none;color:inherit;transition:border-color .18s,box-shadow .18s;position:relative;overflow:hidden}
+.sc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:transparent;transition:background .18s}
+.sc:hover{border-color:#d0c8bc;box-shadow:0 4px 16px rgba(0,0,0,.07)}.sc:hover::after{background:var(--gd)}
+.sc-tp{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem}
+.sc-ic{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}.sc-ic svg{width:20px;height:20px}
+.ib{background:#eff6ff;color:#2563eb}.ig{background:#f0faf4;color:#16a34a}.ia{background:#fffbeb;color:#d97706}
+.ip{background:#faf5ff;color:#7c3aed}.ir{background:#fff5f5;color:#dc2626}.io{background:rgba(184,146,42,.1);color:#b8922a}
+.sc-n{font-size:1.625rem;font-weight:700;color:var(--dk);line-height:1;letter-spacing:-.02em}
+.sc-l{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--mu)}
+.sc-s{font-size:.72rem;color:var(--mu);display:flex;align-items:center;gap:.3rem}.sc-s svg{width:11px;height:11px;flex-shrink:0}
+.g{color:var(--gr)}.w{color:var(--am)}.r{color:var(--rd)}
+.sc-a{font-size:.72rem;font-weight:600;color:var(--gd);margin-top:auto;display:flex;align-items:center;gap:.25rem}.sc-a svg{width:11px;height:11px}
+
+/* Layout */
+.db-row{display:grid;grid-template-columns:1fr 300px;gap:1.25rem;margin-bottom:1.25rem}
+.dc{background:var(--wh);border:1.5px solid var(--bd);border-radius:10px;overflow:hidden}
+.dc-h{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.875rem 1.25rem;border-bottom:1.5px solid var(--bd);background:var(--lt);flex-wrap:wrap}
+.dc-h h3{font-size:.9rem;font-weight:700;color:var(--dk);margin:0;display:flex;align-items:center;gap:.5rem}.dc-h h3 svg{width:16px;height:16px;color:var(--gd)}
+.dc-a{display:inline-flex;align-items:center;gap:.375rem;padding:.45rem .875rem;border:1.5px solid var(--bd);border-radius:8px;font-family:var(--f);font-size:.72rem;font-weight:600;color:var(--mu);text-decoration:none;transition:all .15s;background:var(--wh)}
+.dc-a svg{width:12px;height:12px}.dc-a:hover{border-color:var(--dk);color:var(--dk)}
+.dc-a.pk{background:var(--dk);border-color:var(--dk);color:var(--wh)}.dc-a.pk:hover{background:#2e2e2a}
+.dc-ch{padding:1.25rem;height:280px;position:relative}
+
+/* Top products */
+.tp{display:flex;flex-direction:column}
+.tp-i{display:flex;align-items:center;gap:.875rem;padding:.875rem 1.25rem;border-bottom:1px solid var(--bd);transition:background .15s}
+.tp-i:last-child{border-bottom:none}.tp-i:hover{background:#fdfcfb}
+.tp-r{width:24px;height:24px;border-radius:50%;background:var(--lt);color:var(--mu);font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tp-r.gd{background:var(--gd);color:var(--wh)}
+.tp-im{width:40px;height:40px;border-radius:8px;background:var(--lt);border:1.5px solid var(--bd);object-fit:cover;flex-shrink:0}
+.tp-ph{width:40px;height:40px;border-radius:8px;background:var(--lt);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.tp-b{flex:1;min-width:0}
+.tp-nm{font-size:.8125rem;font-weight:600;color:var(--dk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp-m{font-size:.72rem;color:var(--mu);margin-top:.15rem}.tp-m b{color:var(--gr);font-weight:600}
+
+/* Orders table */
+.db-tw{overflow-x:auto}
+.db-t{width:100%;border-collapse:collapse;font-size:.8125rem}
+.db-t th{padding:.75rem 1rem;text-align:left;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mu);border-bottom:1.5px solid var(--bd);background:var(--lt);white-space:nowrap}
+.db-t td{padding:.75rem 1rem;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:middle}
+.db-t tbody tr:last-child td{border-bottom:none}.db-t tbody tr:hover td{background:#fdfcfb}
+.oid{font-weight:700;color:var(--dk);font-family:'Courier New',monospace;font-size:.75rem}
+.amt{font-weight:700;color:var(--dk)}.dte{font-size:.75rem;color:var(--mu);white-space:nowrap}
+.vw{display:inline-flex;align-items:center;gap:.25rem;padding:.35rem .75rem;border:1.5px solid var(--bd);border-radius:7px;font-family:var(--f);font-size:.72rem;font-weight:600;color:var(--mu);text-decoration:none;transition:all .15s}.vw:hover{border-color:var(--dk);color:var(--dk)}.vw svg{width:11px;height:11px}
+.sb{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .625rem;border-radius:99px;font-size:.68rem;font-weight:700;white-space:nowrap}
+.dot{width:6px;height:6px;border-radius:50%}
+.sp{background:#fffbeb;color:#854d0e}.sp .dot{background:#d97706}
+.sc2{background:#eff6ff;color:#1e40af}.sc2 .dot{background:#2563eb}
+.ss{background:#faf5ff;color:#6d28d9}.ss .dot{background:#7c3aed}
+.sd{background:#f0faf4;color:#166534}.sd .dot{background:#16a34a}
+.sx{background:#fff5f5;color:#991b1b}.sx .dot{background:#dc2626}
+.em{display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:2.5rem;color:var(--mu);text-align:center}.em svg{width:36px;height:36px;color:#d0c8bc}.em p{font-size:.875rem}
+
+@media(max-width:900px){.db-sg{grid-template-columns:repeat(2,1fr)};.db-row{grid-template-columns:1fr}}
+@media(max-width:500px){.db-sg{grid-template-columns:1fr 1fr}}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="page-header">
-    <h1>📊 Dashboard</h1>
-    <p>Tổng quan hệ thống</p>
+<div class="db">
+
+<div class="db-hd">
+  <div><h1>Dashboard</h1><p>Tổng quan hệ thống DQD</p></div>
+  <span class="db-dt" id="dbDt"></span>
 </div>
 
-<div class="stats-grid">
-    <div class="stat-card">
-        <h3>📦 Tổng Sản Phẩm</h3>
-        <div class="stat-value">{{ stats.total_products }}</div>
-        <a href="{{ url_for('admin_products') }}" style="font-size: 12px; color: #3498db; text-decoration: none;">Xem chi tiết →</a>
-    </div>
+<!-- ── Stats 3×3 ── -->
+<div class="db-sg">
 
-    <div class="stat-card">
-        <h3>🛒 Tổng Đơn Hàng</h3>
-        <div class="stat-value">{{ stats.total_orders }}</div>
-        <a href="{{ url_for('admin_orders') }}" style="font-size: 12px; color: #3498db; text-decoration: none;">Xem chi tiết →</a>
-    </div>
+  <a href="{{ url_for('admin_products') }}" class="sc">
+    <div class="sc-tp"><div><div class="sc-l">Sản phẩm</div><div class="sc-n">{{ stats.total_products }}</div></div>
+    <div class="sc-ic ib"><svg viewBox="0 0 20 20" fill="none"><path d="M2 10l8-8 8 8v8H2v-8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7 18v-5h6v5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div></div>
+    <span class="sc-a">Quản lý <svg viewBox="0 0 12 12" fill="none"><path d="M3 6h6M7 4l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  </a>
 
-    <div class="stat-card">
-        <h3>💰 Tổng Doanh Thu</h3>
-        <div class="stat-value">
-            {% if stats.revenue and stats.revenue.total_revenue %}
-                {{ "{:,.0f}".format(stats.revenue.total_revenue) }} ₫
-            {% else %}
-                0 ₫
-            {% endif %}
-        </div>
-    </div>
+  <a href="{{ url_for('admin_orders') }}" class="sc">
+    <div class="sc-tp"><div><div class="sc-l">Đơn hàng</div><div class="sc-n">{{ stats.total_orders }}</div></div>
+    <div class="sc-ic ia"><svg viewBox="0 0 20 20" fill="none"><path d="M6 16a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2zM2 2h1.5l1.5 9h9l1.5-6H5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+    <span class="sc-a">Quản lý <svg viewBox="0 0 12 12" fill="none"><path d="M3 6h6M7 4l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  </a>
 
-    <div class="stat-card">
-        <h3>👥 Tổng Khách Hàng</h3>
-        <div class="stat-value">{{ stats.total_customers }}</div>
-        <a href="{{ url_for('admin_customers') }}" style="font-size: 12px; color: #3498db; text-decoration: none;">Xem chi tiết →</a>
-    </div>
+  <a href="{{ url_for('admin_revenue_report') }}" class="sc">
+    <div class="sc-tp"><div><div class="sc-l">Doanh thu</div>
+    <div class="sc-n" style="font-size:1.2rem">{% if stats.revenue and stats.revenue.total_revenue %}{{ "{:,.0f}".format(stats.revenue.total_revenue/1000000) }}tr ₫{% else %}0 ₫{% endif %}</div></div>
+    <div class="sc-ic io"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.4"/><path d="M10 6v8M7.5 8h4a1.5 1.5 0 010 3H8m0 0h3.5a1.5 1.5 0 010 3H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div></div>
+    <span class="sc-a">Báo cáo <svg viewBox="0 0 12 12" fill="none"><path d="M3 6h6M7 4l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  </a>
 
-    <div class="stat-card">
-        <h3>⭐ Đánh Giá</h3>
-        <div class="stat-value">{{ stats.total_reviews }}</div>
-        <div style="font-size: 12px; color: #f39c12; margin-top: 5px;">
-            ⏳ Chờ duyệt: {{ stats.pending_reviews }}
-        </div>
-        <a href="{{ url_for('admin_reviews') }}" style="font-size: 12px; color: #3498db; text-decoration: none;">Xem chi tiết →</a>
-    </div>
+  <a href="{{ url_for('admin_customers') }}" class="sc">
+    <div class="sc-tp"><div><div class="sc-l">Khách hàng</div><div class="sc-n">{{ stats.total_customers }}</div></div>
+    <div class="sc-ic ig"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div></div>
+    <span class="sc-a">Quản lý <svg viewBox="0 0 12 12" fill="none"><path d="M3 6h6M7 4l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  </a>
 
-    <div class="stat-card">
-        <h3>🎫 Mã Giảm Giá</h3>
-        <div class="stat-value">{{ stats.total_coupons }}</div>
-        <div style="font-size: 12px; color: #27ae60; margin-top: 5px;">
-            ✅ Đang hoạt động: {{ stats.active_coupons }}
-        </div>
-        <a href="{{ url_for('admin_coupons') }}" style="font-size: 12px; color: #3498db; text-decoration: none;">Xem chi tiết →</a>
-    </div>
+  <a href="{{ url_for('admin_reviews') }}" class="sc">
+    <div class="sc-tp"><div><div class="sc-l">Đánh giá</div><div class="sc-n">{{ stats.total_reviews }}</div></div>
+    <div class="sc-ic ia"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2l2.09 4.26L17 7.27l-3.5 3.41.83 4.82L10 13.18l-4.33 2.27.83-4.82L3 7.27l4.91-.71L10 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></div></div>
+    {% if stats.pending_reviews %}<div class="sc-s w"><svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3v3m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>{{ stats.pending_reviews }} chờ duyệt</div>{% endif %}
+    <span class="sc-a">Xem <svg viewBox="0 0 12 12" fill="none"><path d="M3 6h6M7 4l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  </a>
 
-    <div class="stat-card">
-        <h3>📧 Tin Nhắn Liên Hệ</h3>
-        <div class="stat-value">{{ stats.total_contacts }}</div>
-        <div style="font-size: 12px; color: #e74c3c; margin-top: 5px;">
-            🆕 Mới: {{ stats.new_contacts }}
-        </div>
-        <a href="{{ url_for('admin_contacts') }}" style="font-size: 12px; color: #3498db; text-decoration: none;">Xem chi tiết →</a>
-    </div>
+  <a href="{{ url_for('admin_coupons') }}" class="sc">
+    <div class="sc-tp"><div><div class="sc-l">Mã giảm giá</div><div class="sc-n">{{ stats.total_coupons }}</div></div>
+    <div class="sc-ic ip"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2h5a1 1 0 011 1v5l-8 8a2 2 0 01-2.828 0l-4-4A2 2 0 011.17 9L9 2h1zm3.5 4a1 1 0 100-2 1 1 0 000 2z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+    {% if stats.active_coupons %}<div class="sc-s g"><svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M4 6l2 2 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>{{ stats.active_coupons }} hoạt động</div>{% endif %}
+    <span class="sc-a">Xem <svg viewBox="0 0 12 12" fill="none"><path d="M3 6h6M7 4l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  </a>
 
-    <div class="stat-card">
-        <h3>🔔 Thông Báo</h3>
-        <div class="stat-value">{{ stats.total_notifications }}</div>
-        <div style="font-size: 12px; color: #9b59b6; margin-top: 5px;">
-            📬 Chưa đọc: {{ stats.unread_notifications }}
-        </div>
-        <a href="{{ url_for('admin_notifications') }}" style="font-size: 12px; color: #3498db; text-decoration: none;">Xem chi tiết →</a>
-    </div>
+  <a href="{{ url_for('admin_contacts') }}" class="sc">
+    <div class="sc-tp"><div><div class="sc-l">Tin nhắn</div><div class="sc-n">{{ stats.total_contacts }}</div></div>
+    <div class="sc-ic ib"><svg viewBox="0 0 20 20" fill="none"><path d="M18 13a2 2 0 01-2 2H6l-4 4V5a2 2 0 012-2h12a2 2 0 012 2z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+    {% if stats.new_contacts %}<div class="sc-s r"><svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 4v3m0 2v.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>{{ stats.new_contacts }} tin mới</div>{% endif %}
+    <span class="sc-a">Xem <svg viewBox="0 0 12 12" fill="none"><path d="M3 6h6M7 4l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  </a>
 
-    <div class="stat-card">
-        <h3>💳 Giao Dịch</h3>
-        <div class="stat-value">{{ stats.total_transactions }}</div>
-        <div style="font-size: 12px; color: #f39c12; margin-top: 5px;">
-            ⏳ Đang chờ: {{ stats.pending_transactions }}
-        </div>
-        <a href="{{ url_for('admin_payment_transactions') }}" style="font-size: 12px; color: #3498db; text-decoration: none;">Xem chi tiết →</a>
-    </div>
+  <a href="{{ url_for('admin_notifications') }}" class="sc">
+    <div class="sc-tp"><div><div class="sc-l">Thông báo</div><div class="sc-n">{{ stats.total_notifications }}</div></div>
+    <div class="sc-ic ip"><svg viewBox="0 0 20 20" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+    {% if stats.unread_notifications %}<div class="sc-s w"><svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="6" r="2" fill="currentColor"/></svg>{{ stats.unread_notifications }} chưa đọc</div>{% endif %}
+    <span class="sc-a">Xem <svg viewBox="0 0 12 12" fill="none"><path d="M3 6h6M7 4l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  </a>
+
+  <a href="{{ url_for('admin_payment_transactions') }}" class="sc">
+    <div class="sc-tp"><div><div class="sc-l">Giao dịch</div><div class="sc-n">{{ stats.total_transactions }}</div></div>
+    <div class="sc-ic ig"><svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 9h16M6 13h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div></div>
+    {% if stats.pending_transactions %}<div class="sc-s w"><svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M6 3v3l2 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>{{ stats.pending_transactions }} đang chờ</div>{% endif %}
+    <span class="sc-a">Xem <svg viewBox="0 0 12 12" fill="none"><path d="M3 6h6M7 4l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  </a>
+
 </div>
 
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 20px;">
-    <div class="card">
-        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-            <h3>📈 Doanh Thu 30 Ngày Gần Đây</h3>
-            <a href="{{ url_for('admin_revenue_report') }}" class="btn btn-secondary" style="padding: 5px 15px; font-size: 12px;">
-                <i class="fas fa-chart-line"></i> Xem Báo Cáo Chi Tiết
-            </a>
-        </div>
-        <div style="padding: 20px;">
-            {% if revenue_by_day %}
-            <canvas id="revenueChart" style="max-height: 300px;"></canvas>
-            {% else %}
-            <p style="text-align: center; color: #7f8c8d; padding: 20px;">Chưa có dữ liệu doanh thu</p>
-            {% endif %}
-        </div>
+<!-- ── Chart + Top products ── -->
+<div class="db-row">
+  <div class="dc">
+    <div class="dc-h">
+      <h3><svg viewBox="0 0 20 20" fill="none"><path d="M2 14l4-5 3 2 4-6 4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Doanh thu 30 ngày gần đây</h3>
+      <a href="{{ url_for('admin_revenue_report') }}" class="dc-a">Báo cáo <svg viewBox="0 0 12 12" fill="none"><path d="M3 6h6M7 4l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
-
-    <div class="card">
-        <div class="card-header">
-            <h3>🏆 Top 5 Sản Phẩm Bán Chạy</h3>
-        </div>
-        <div style="padding: 20px;">
-            {% if top_products %}
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                {% for product in top_products %}
-                <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
-                    <div style="width: 50px; height: 50px; border-radius: 5px; overflow: hidden; background: #e0e0e0;">
-                        {% if product.image_url %}
-                        <img src="{{ product.image_url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
-                        {% else %}
-                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #999;">📦</div>
-                        {% endif %}
-                    </div>
-                    <div style="flex: 1;">
-                        <div style="font-weight: 600; color: #2c3e50; margin-bottom: 3px;">{{ product.name }}</div>
-                        <div style="font-size: 12px; color: #7f8c8d;">
-                            Đã bán: {{ product.total_sold }} | Doanh thu: {{ "{:,.0f}".format(product.revenue) }} ₫
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <p style="text-align: center; color: #7f8c8d; padding: 20px;">Chưa có dữ liệu</p>
-            {% endif %}
-        </div>
+    {% if revenue_by_day %}<div class="dc-ch"><canvas id="rChart"></canvas></div>
+    {% else %}<div class="em"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="12" width="3" height="9" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="8" width="3" height="13" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="15" y="4" width="3" height="17" rx="1" stroke="currentColor" stroke-width="1.5"/></svg><p>Chưa có dữ liệu</p></div>{% endif %}
+  </div>
+  <div class="dc">
+    <div class="dc-h"><h3><svg viewBox="0 0 20 20" fill="none"><path d="M10 2l2.09 4.26L17 7.27l-3.5 3.41.83 4.82L10 13.18l-4.33 2.27.83-4.82L3 7.27l4.91-.71L10 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Top 5 sản phẩm</h3></div>
+    {% if top_products %}
+    <div class="tp">
+      {% for p in top_products %}
+      <div class="tp-i">
+        <div class="tp-r {% if loop.index<=3 %}gd{% endif %}">{{ loop.index }}</div>
+        {% if p.image_url %}<img src="{{ p.image_url }}" class="tp-im" onerror="this.outerHTML='<div class=tp-ph>📦</div>'">{% else %}<div class="tp-ph">📦</div>{% endif %}
+        <div class="tp-b"><div class="tp-nm">{{ p.name }}</div><div class="tp-m">{{ p.total_sold }} bán · <b>{{ "{:,.0f}".format(p.revenue) }} ₫</b></div></div>
+      </div>
+      {% endfor %}
     </div>
+    {% else %}<div class="em"><svg viewBox="0 0 24 24" fill="none"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><p>Chưa có dữ liệu</p></div>{% endif %}
+  </div>
 </div>
 
-<div class="card" style="margin-top: 20px;">
-    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <h3>🛒 Đơn Hàng Gần Đây</h3>
-        <a href="{{ url_for('admin_export_orders') }}" class="btn btn-primary" style="padding: 5px 15px; font-size: 12px;">
-            <i class="fas fa-download"></i> Export CSV
-        </a>
+<!-- ── Recent orders ── -->
+<div class="dc">
+  <div class="dc-h">
+    <h3><svg viewBox="0 0 20 20" fill="none"><path d="M6 16a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2zM2 2h1.5l1.5 9h9l1.5-6H5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Đơn hàng gần đây</h3>
+    <div style="display:flex;gap:.5rem">
+      <a href="{{ url_for('admin_export_orders') }}" class="dc-a"><svg viewBox="0 0 12 12" fill="none"><path d="M6 1v7M4 6l2 2 2-2M1 9v2h10V9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Export CSV</a>
+      <a href="{{ url_for('admin_orders') }}" class="dc-a pk">Xem tất cả <svg viewBox="0 0 12 12" fill="none"><path d="M3 6h6M7 4l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
-
-    {% if recent_orders %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Mã Đơn</th>
-                <th>Khách Hàng</th>
-                <th>Tổng Tiền</th>
-                <th>Trạng Thái</th>
-                <th>Thanh Toán</th>
-                <th>Ngày Đặt</th>
-                <th>Thao Tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order in recent_orders %}
-            <tr>
-                <td><strong>{{ order.order_id }}</strong></td>
-                <td>{{ order.customer_name }}</td>
-                <td>{{ "{:,.0f}".format(order.total) }} ₫</td>
-                <td>
-                    {% if order.status == 'pending' %}
-                        <span style="color: #f39c12;">⏳ Chờ xử lý</span>
-                    {% elif order.status == 'confirmed' %}
-                        <span style="color: #3498db;">✓ Đã xác nhận</span>
-                    {% elif order.status == 'shipping' %}
-                        <span style="color: #9b59b6;">🚚 Đang giao</span>
-                    {% elif order.status == 'completed' %}
-                        <span style="color: #27ae60;">✓ Hoàn thành</span>
-                    {% else %}
-                        <span style="color: #e74c3c;">✗ {{ order.status }}</span>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if order.payment_status == 'pending' %}
-                        <span style="color: #f39c12;">Chưa thanh toán</span>
-                    {% elif order.payment_status == 'paid' %}
-                        <span style="color: #27ae60;">Đã thanh toán</span>
-                    {% else %}
-                        {{ order.payment_status }}
-                    {% endif %}
-                </td>
-                <td>{{ order.created_at.strftime('%d/%m/%Y %H:%M') if order.created_at else 'N/A' }}</td>
-                <td>
-                    <a href="{{ url_for('admin_order_detail', order_id=order.order_id) }}" class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Xem</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
+  </div>
+  {% if recent_orders %}
+  <div class="db-tw">
+    <table class="db-t">
+      <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Tổng tiền</th><th>Trạng thái</th><th>Thanh toán</th><th>Ngày đặt</th><th></th></tr></thead>
+      <tbody>
+        {% for o in recent_orders %}
+        <tr>
+          <td class="oid">{{ o.order_id }}</td>
+          <td>{{ o.customer_name }}</td>
+          <td class="amt">{{ "{:,.0f}".format(o.total) }} ₫</td>
+          <td>{% if o.status=='pending' %}<span class="sb sp"><span class="dot"></span>Chờ xử lý</span>{% elif o.status=='confirmed' %}<span class="sb sc2"><span class="dot"></span>Đã xác nhận</span>{% elif o.status=='shipping' %}<span class="sb ss"><span class="dot"></span>Đang giao</span>{% elif o.status=='completed' %}<span class="sb sd"><span class="dot"></span>Hoàn thành</span>{% else %}<span class="sb sx"><span class="dot"></span>{{ o.status }}</span>{% endif %}</td>
+          <td>{% if o.payment_status=='pending' %}<span class="sb sp"><span class="dot"></span>Chưa TT</span>{% elif o.payment_status=='paid' %}<span class="sb sd"><span class="dot"></span>Đã TT</span>{% else %}<span>{{ o.payment_status }}</span>{% endif %}</td>
+          <td class="dte">{{ o.created_at.strftime('%d/%m/%Y %H:%M') if o.created_at else '—' }}</td>
+          <td><a href="{{ url_for('admin_order_detail', order_id=o.order_id) }}" class="vw">Xem <svg viewBox="0 0 12 12" fill="none"><path d="M3 6h6M7 4l2 2-2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
-    {% else %}
-    <p style="text-align: center; color: #7f8c8d; padding: 20px;">Chưa có đơn hàng nào</p>
-    {% endif %}
+  </div>
+  {% else %}<div class="em"><svg viewBox="0 0 24 24" fill="none"><path d="M6 16a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2zM2 2h1.5l1.5 9h9l1.5-6H5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><p>Chưa có đơn hàng</p></div>{% endif %}
 </div>
 
-{% if revenue_by_day %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+</div>
+
+{% if revenue_by_day %}<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>{% endif %}
 <script>
-const ctx = document.getElementById('revenueChart').getContext('2d');
-const revenueData = {{ revenue_by_day | tojson | safe }};
-
-const labels = revenueData.map(item => {
-    const date = new Date(item.date);
-    return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
-});
-
-const revenues = revenueData.map(item => parseFloat(item.revenue || 0));
-const orders = revenueData.map(item => parseInt(item.orders || 0));
-
-new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Doanh Thu (₫)',
-            data: revenues,
-            borderColor: 'rgb(75, 192, 192)',
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            tension: 0.1,
-            yAxisID: 'y'
-        }, {
-            label: 'Số Đơn Hàng',
-            data: orders,
-            borderColor: 'rgb(255, 99, 132)',
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            tension: 0.1,
-            yAxisID: 'y1'
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-            mode: 'index',
-            intersect: false,
-        },
-        scales: {
-            y: {
-                type: 'linear',
-                display: true,
-                position: 'left',
-                ticks: {
-                    callback: function(value) {
-                        return new Intl.NumberFormat('vi-VN').format(value) + ' ₫';
-                    }
-                }
-            },
-            y1: {
-                type: 'linear',
-                display: true,
-                position: 'right',
-                grid: {
-                    drawOnChartArea: false,
-                },
-            }
-        },
-        plugins: {
-            legend: {
-                display: true,
-                position: 'top'
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        if (context.datasetIndex === 0) {
-                            return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' ₫';
-                        } else {
-                            return 'Số đơn: ' + context.parsed.y;
-                        }
-                    }
-                }
-            }
-        }
-    }
-});
-</script>
+document.getElementById('dbDt').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});
+{% if revenue_by_day %}
+(function(){
+  var c=document.getElementById('rChart');if(!c)return;
+  var raw={{ revenue_by_day|tojson|safe }};
+  var lb=raw.map(function(d){return new Date(d.date).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'});});
+  var rv=raw.map(function(d){return parseFloat(d.revenue||0);});
+  var od=raw.map(function(d){return parseInt(d.orders||0);});
+  new Chart(c,{data:{labels:lb,datasets:[
+    {type:'line',label:'Doanh thu',data:rv,borderColor:'#b8922a',backgroundColor:'rgba(184,146,42,.1)',borderWidth:2,pointBackgroundColor:'#b8922a',pointRadius:3,pointHoverRadius:5,tension:0.4,fill:true,yAxisID:'y'},
+    {type:'bar',label:'Số đơn',data:od,backgroundColor:'rgba(37,99,235,.12)',borderColor:'rgba(37,99,235,.4)',borderWidth:1.5,borderRadius:4,yAxisID:'y1'}
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:true,position:'top',align:'end',labels:{font:{family:"'Be Vietnam Pro',sans-serif",size:11,weight:'600'},color:'#7a7060',boxWidth:12,boxHeight:12,borderRadius:3,useBorderRadius:true,padding:14}},
+      tooltip:{backgroundColor:'#1a1a18',titleColor:'rgba(255,255,255,.6)',bodyColor:'#fff',borderColor:'rgba(255,255,255,.08)',borderWidth:1,padding:10,cornerRadius:8,
+        titleFont:{family:"'Be Vietnam Pro',sans-serif",size:11,weight:'600'},bodyFont:{family:"'Be Vietnam Pro',sans-serif",size:11},
+        callbacks:{label:function(x){return x.datasetIndex===0?' DT: '+new Intl.NumberFormat('vi-VN').format(x.parsed.y)+' ₫':' Đơn: '+x.parsed.y;}}}},
+    scales:{
+      x:{grid:{display:false},border:{display:false},ticks:{font:{family:"'Be Vietnam Pro',sans-serif",size:10},color:'#7a7060',maxTicksLimit:12}},
+      y:{type:'linear',position:'left',grid:{color:'#f0ede8'},border:{display:false},ticks:{font:{family:"'Be Vietnam Pro',sans-serif",size:10},color:'#7a7060',callback:function(v){return v>=1e6?(v/1e6).toFixed(1)+'tr':v>=1000?(v/1000).toFixed(0)+'k':v;}}},
+      y1:{type:'linear',position:'right',grid:{drawOnChartArea:false},border:{display:false},ticks:{font:{family:"'Be Vietnam Pro',sans-serif",size:10},color:'#2563eb',stepSize:1}}}}});
+})();
 {% endif %}
+</script>
 {% endblock %}

@@ -1,180 +1,448 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>{% block title %}Admin Panel{% endblock %} - Nội Thất DDQ</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" 
-          integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" 
-          crossorigin="anonymous" 
-          referrerpolicy="no-referrer">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-    {% block extra_css %}{% endblock %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>{% block title %}Admin{% endblock %} — DQD Nội Thất</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  <style>
+  /* ── Hard reset (overrides admin.css) ── */
+  *, *::before, *::after { box-sizing: border-box !important; }
+  html, body { margin: 0; padding: 0; }
+
+  /* ── Tokens ── */
+  :root {
+    --adm-f:  'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif;
+    --adm-dk: #1a1a18;
+    --adm-gd: #b8922a;
+    --adm-bd: #e8e3db;
+    --adm-tx: #2a2520;
+    --adm-mu: #7a7060;
+    --adm-lt: #f5f4f1;
+    --adm-wh: #ffffff;
+    --adm-sw: 240px;
+    --adm-hh: 56px;
+  }
+
+  body {
+    font-family: var(--adm-f) !important;
+    background: var(--adm-lt) !important;
+    color: var(--adm-tx) !important;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ══════════════════════════════════════
+     SIDEBAR — hardcoded critical values
+  ══════════════════════════════════════ */
+  #sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: 240px !important;
+    background: #1a1a18 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    z-index: 200 !important;
+    transition: transform .28s cubic-bezier(.4,0,.2,1);
+    will-change: transform;
+    transform: translateX(0);
+  }
+
+  /* Brand */
+  .sb-brand {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: 1.375rem 1.25rem 1.125rem;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    flex-shrink: 0;
+  }
+  .sb-logo {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: #b8922a;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .sb-logo svg { width: 18px; height: 18px; color: #fff; }
+  .sb-brand-name {
+    font-size: .9375rem; font-weight: 700;
+    color: #fff; letter-spacing: -.02em; line-height: 1.1;
+  }
+  .sb-brand-sub {
+    font-size: .68rem; color: rgba(255,255,255,.4);
+    font-weight: 500; text-transform: uppercase;
+    letter-spacing: .08em; margin-top: .15rem;
+  }
+
+  /* Nav */
+  .sb-nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: .75rem 0;
+    scrollbar-width: none;
+  }
+  .sb-nav::-webkit-scrollbar { display: none; }
+
+  .sb-section {
+    padding: .5rem .875rem .25rem;
+    font-size: .6rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .1em;
+    color: rgba(255,255,255,.25);
+    margin-top: .375rem;
+  }
+
+  .sb-item {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .625rem 1.125rem;
+    margin: .125rem .5rem;
+    border-radius: 8px;
+    font-size: .8125rem; font-weight: 500;
+    color: rgba(255,255,255,.55);
+    transition: background .15s, color .15s;
+    cursor: pointer;
+    position: relative;
+    border-left: 3px solid transparent;
+  }
+  .sb-item svg {
+    width: 17px; height: 17px;
+    flex-shrink: 0; opacity: .7;
+    transition: opacity .15s;
+  }
+  .sb-item:hover {
+    background: rgba(255,255,255,.07);
+    color: rgba(255,255,255,.9);
+  }
+  .sb-item:hover svg { opacity: 1; }
+  .sb-item.active {
+    background: rgba(184,146,42,.18);
+    color: #e8c96b;
+    font-weight: 600;
+    border-left-color: #b8922a;
+  }
+  .sb-item.active svg { opacity: 1; color: #e8c96b; }
+  .sb-item.ext { color: rgba(255,255,255,.35); }
+  .sb-item.ext:hover { color: rgba(255,255,255,.7); }
+
+  /* Footer */
+  .sb-foot {
+    padding: .875rem 1.125rem;
+    border-top: 1px solid rgba(255,255,255,.08);
+    flex-shrink: 0;
+  }
+  .sb-user {
+    display: flex; align-items: center;
+    gap: .625rem; margin-bottom: .75rem;
+  }
+  .sb-av {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(184,146,42,.25);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .sb-av svg { width: 15px; height: 15px; color: #e8c96b; }
+  .sb-uname { font-size: .8125rem; font-weight: 600; color: rgba(255,255,255,.75); }
+  .sb-logout {
+    display: flex; align-items: center; justify-content: center;
+    gap: .5rem; width: 100%; padding: .6rem;
+    border: 1px solid rgba(255,255,255,.12); border-radius: 8px;
+    font-family: var(--adm-f); font-size: .75rem; font-weight: 600;
+    color: rgba(255,255,255,.45); background: none;
+    cursor: pointer; transition: all .15s; text-decoration: none;
+  }
+  .sb-logout svg { width: 13px; height: 13px; }
+  .sb-logout:hover { border-color: #dc2626; color: #fca5a5; background: rgba(220,38,38,.1); }
+
+  /* ══════════════════════════════════════
+     OVERLAY
+  ══════════════════════════════════════ */
+  #sbOverlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 190; opacity: 0;
+    transition: opacity .25s;
+    pointer-events: none;
+  }
+  #sbOverlay.on { opacity: 1; pointer-events: auto; }
+
+  /* ══════════════════════════════════════
+     TOPBAR (mobile only)
+  ══════════════════════════════════════ */
+  #topbar {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 56px; background: #1a1a18;
+    align-items: center; justify-content: space-between;
+    padding: 0 1rem; z-index: 180;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .topbar-brand { font-size: .9375rem; font-weight: 700; color: #fff; letter-spacing: -.02em; }
+  .topbar-brand span { color: #b8922a; }
+  .tb-toggle {
+    width: 36px; height: 36px; border: none;
+    background: rgba(255,255,255,.08); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: rgba(255,255,255,.8);
+    transition: background .15s; flex-shrink: 0;
+  }
+  .tb-toggle:hover { background: rgba(255,255,255,.14); }
+  .tb-toggle svg { width: 18px; height: 18px; }
+
+  /* ══════════════════════════════════════
+     MAIN CONTENT — hardcoded margin
+  ══════════════════════════════════════ */
+  #mainContent {
+    margin-left: 240px !important;
+    min-height: 100vh;
+    padding: 1.75rem;
+    background: #f5f4f1;
+  }
+
+  /* Flash alerts */
+  .adm-alert {
+    display: flex; align-items: flex-start;
+    gap: .75rem; padding: .875rem 1.125rem;
+    border-radius: 9px; margin-bottom: 1rem;
+    font-size: .875rem; font-weight: 500;
+    border: 1.5px solid transparent;
+    font-family: var(--adm-f);
+  }
+  .adm-alert svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+  .adm-alert.success { background: #f0faf4; border-color: #bbf7d0; color: #166534; }
+  .adm-alert.error,
+  .adm-alert.danger  { background: #fff5f5; border-color: #fecaca; color: #991b1b; }
+  .adm-alert.warning { background: #fffbeb; border-color: #fde68a; color: #854d0e; }
+  .adm-alert.info    { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+
+  /* ══════════════════════════════════════
+     RESPONSIVE
+  ══════════════════════════════════════ */
+  @media (max-width: 1024px) {
+    #sidebar { transform: translateX(-240px) !important; }
+    #sidebar.open { transform: translateX(0) !important; }
+    #sbOverlay { display: block; }
+    #topbar { display: flex; }
+    #mainContent { margin-left: 0 !important; padding-top: calc(56px + 1.25rem) !important; }
+  }
+  @media (max-width: 600px) {
+    #mainContent { padding: calc(56px + 1rem) .875rem 1rem !important; }
+  }
+  </style>
+  {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Sidebar Toggle Button -->
-    <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
-        <i class="fas fa-bars"></i>
-    </button>
-    
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
-    
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2><i class="fas fa-couch"></i> Admin Panel</h2>
-            <p>Nội Thất DDQ</p>
+
+<!-- Mobile topbar -->
+<header id="topbar">
+  <span class="topbar-brand">DQD <span>Admin</span></span>
+  <button class="tb-toggle" id="tbToggle" aria-label="Mở menu">
+    <svg id="tbIcon" viewBox="0 0 20 20" fill="none">
+      <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </button>
+</header>
+
+<!-- Overlay -->
+<div id="sbOverlay"></div>
+
+<!-- Sidebar -->
+<aside id="sidebar">
+
+  <div class="sb-brand">
+    <div class="sb-logo">
+      <svg viewBox="0 0 20 20" fill="none">
+        <path d="M2 13h16M4 13V9a6 6 0 0112 0v4M1 13h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <div class="sb-brand-name">DQD Admin</div>
+      <div class="sb-brand-sub">Nội Thất</div>
+    </div>
+  </div>
+
+  <nav class="sb-nav">
+
+    <div class="sb-section">Tổng quan</div>
+
+    <a href="{{ url_for('admin_dashboard') }}"
+       class="sb-item {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="2" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><rect x="11" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/></svg>
+      Dashboard
+    </a>
+
+    <a href="{{ url_for('admin_revenue_report') }}"
+       class="sb-item {% if request.endpoint == 'admin_revenue_report' %}active{% endif %}">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M2 14l4-5 3 2 4-6 4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Báo cáo doanh thu
+    </a>
+
+    <div class="sb-section">Quản lý</div>
+
+    <a href="{{ url_for('admin_products') }}"
+       class="sb-item {% if 'product' in request.endpoint %}active{% endif %}">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M2 10l8-8 8 8v8H2v-8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7 18v-5h6v5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Sản phẩm
+    </a>
+
+    <a href="{{ url_for('admin_orders') }}"
+       class="sb-item {% if 'order' in request.endpoint %}active{% endif %}">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M6 16a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2zM2 2h1.5l1.5 9h9l1.5-6H5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Đơn hàng
+    </a>
+
+    <a href="{{ url_for('admin_customers') }}"
+       class="sb-item {% if 'customer' in request.endpoint %}active{% endif %}">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Khách hàng
+    </a>
+
+    <a href="{{ url_for('admin_reviews') }}"
+       class="sb-item {% if 'review' in request.endpoint %}active{% endif %}">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2l2.09 4.26L17 7.27l-3.5 3.41.83 4.82L10 13.18l-4.33 2.27.83-4.82L3 7.27l4.91-.71L10 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      Đánh giá
+    </a>
+
+    <div class="sb-section">Khuyến mãi & TT</div>
+
+    <a href="{{ url_for('admin_coupons') }}"
+       class="sb-item {% if 'coupon' in request.endpoint %}active{% endif %}">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2h5a1 1 0 011 1v5l-8 8a2 2 0 01-2.828 0l-4-4A2 2 0 011.17 9L9 2h1zm3.5 4a1 1 0 100-2 1 1 0 000 2z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Mã giảm giá
+    </a>
+
+    <a href="{{ url_for('admin_payment_transactions') }}"
+       class="sb-item {% if 'payment_transaction' in request.endpoint %}active{% endif %}">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 9h16M6 13h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Giao dịch
+    </a>
+
+    <div class="sb-section">Hệ thống</div>
+
+    <a href="{{ url_for('admin_notifications') }}"
+       class="sb-item {% if 'notification' in request.endpoint %}active{% endif %}">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Thông báo
+    </a>
+
+    <a href="{{ url_for('admin_contacts') }}"
+       class="sb-item {% if 'contact' in request.endpoint %}active{% endif %}">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M18 13a2 2 0 01-2 2H6l-4 4V5a2 2 0 012-2h12a2 2 0 012 2z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Tin nhắn liên hệ
+    </a>
+
+    <a href="{{ url_for('admin_settings') }}"
+       class="sb-item {% if request.endpoint == 'admin_settings' %}active{% endif %}">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 2v2m0 12v2m8-8h-2M4 10H2m11.66-5.66-1.41 1.41M7.75 12.25l-1.41 1.41m9.32 0-1.41-1.41M7.75 7.75 6.34 6.34" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Cài đặt
+    </a>
+
+    <a href="{{ url_for('index') }}" target="_blank" class="sb-item ext">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M11 3h6v6M9 11l8-8M5 7H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1v-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Xem website
+    </a>
+
+  </nav>
+
+  <div class="sb-foot">
+    <div class="sb-user">
+      <div class="sb-av">
+        <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </div>
+      <span class="sb-uname">{{ session.get('admin_name', 'Admin') }}</span>
+    </div>
+    <a href="{{ url_for('admin_logout') }}" class="sb-logout">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M6 3H3a1 1 0 00-1 1v8a1 1 0 001 1h3M10 5l3 3-3 3M13 8H6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Đăng xuất
+    </a>
+  </div>
+
+</aside>
+
+<!-- Main content -->
+<main id="mainContent">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="adm-alert {{ category }}">
+          {% if category == 'success' %}
+          <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          {% else %}
+          <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3m0 2v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          {% endif %}
+          {{ message }}
         </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
 
-        <ul class="sidebar-menu">
-            <li><a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}"><i class="fas fa-chart-line"></i> Dashboard</a></li>
-            <li><a href="{{ url_for('admin_revenue_report') }}" class="{% if request.endpoint == 'admin_revenue_report' %}active{% endif %}"><i class="fas fa-chart-bar"></i> Báo Cáo Doanh Thu</a></li>
-            <li><a href="{{ url_for('admin_products') }}" class="{% if 'product' in request.endpoint %}active{% endif %}"><i class="fas fa-box"></i> Sản Phẩm</a></li>
-            <li><a href="{{ url_for('admin_orders') }}" class="{% if 'order' in request.endpoint %}active{% endif %}"><i class="fas fa-shopping-cart"></i> Đơn Hàng</a></li>
-            <li><a href="{{ url_for('admin_customers') }}" class="{% if 'customer' in request.endpoint %}active{% endif %}"><i class="fas fa-users"></i> Khách Hàng</a></li>
-            <li><a href="{{ url_for('admin_reviews') }}" class="{% if 'review' in request.endpoint %}active{% endif %}"><i class="fas fa-star"></i> Đánh Giá</a></li>
-            <li><a href="{{ url_for('admin_coupons') }}" class="{% if 'coupon' in request.endpoint %}active{% endif %}"><i class="fas fa-ticket-alt"></i> Mã Giảm Giá</a></li>
-            <li><a href="{{ url_for('admin_notifications') }}" class="{% if 'notification' in request.endpoint %}active{% endif %}"><i class="fas fa-bell"></i> Thông Báo</a></li>
-            <li><a href="{{ url_for('admin_payment_transactions') }}" class="{% if 'payment_transaction' in request.endpoint %}active{% endif %}"><i class="fas fa-credit-card"></i> Giao Dịch</a></li>
-            <li><a href="{{ url_for('admin_contacts') }}" class="{% if 'contact' in request.endpoint %}active{% endif %}"><i class="fas fa-envelope"></i> Liên Hệ</a></li>
-            <li><a href="{{ url_for('admin_settings') }}" class="{% if request.endpoint == 'admin_settings' %}active{% endif %}"><i class="fas fa-cog"></i> Cài Đặt</a></li>
-            <li><a href="{{ url_for('index') }}" target="_blank"><i class="fas fa-external-link-alt"></i> Xem Website</a></li>
-        </ul>
+  {% block content %}{% endblock %}
+</main>
 
-        <div class="sidebar-footer">
-            <div class="user-info">
-                <i class="fas fa-user-circle"></i> {{ session.get('admin_name', 'Admin') }}
-            </div>
-            <a href="{{ url_for('admin_logout') }}" class="btn-logout">Đăng Xuất</a>
-        </div>
-    </aside>
+{% block extra_js %}{% endblock %}
 
-    <!-- Main Content -->
-    <main class="main-content">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+<script>
+(function(){
+  var sb  = document.getElementById('sidebar');
+  var ovl = document.getElementById('sbOverlay');
+  var btn = document.getElementById('tbToggle');
+  var ico = document.getElementById('tbIcon');
+  var OPEN_ICO  = '<path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>';
+  var CLOSE_ICO = '<path d="M4 4l12 12M16 4L4 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>';
+  var open = false;
 
-        {% block content %}{% endblock %}
-    </main>
+  function openSb(){
+    open = true;
+    sb.classList.add('open');
+    ovl.classList.add('on');
+    ico.innerHTML = CLOSE_ICO;
+    btn.setAttribute('aria-label','Đóng menu');
+  }
+  function closeSb(){
+    open = false;
+    sb.classList.remove('open');
+    ovl.classList.remove('on');
+    ico.innerHTML = OPEN_ICO;
+    btn.setAttribute('aria-label','Mở menu');
+  }
 
-    <!-- Anime.js Library - CSS Animation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <script src="{{ url_for('static', filename='js/anime-animations.js') }}"></script>
-    {% block extra_js %}{% endblock %}
-    
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.querySelector('.sidebar');
-            const overlay = document.querySelector('.sidebar-overlay');
-            const toggle = document.querySelector('.sidebar-toggle');
-            
-            const isActive = sidebar.classList.contains('active');
-            
-            if (!isActive) {
-                // Mở sidebar với animation
-                sidebar.classList.add('active');
-                overlay.classList.add('active');
-                
-                anime({
-                    targets: sidebar,
-                    translateX: [-300, 0],
-                    opacity: [0, 1],
-                    duration: 400,
-                    easing: 'easeOutExpo'
-                });
-                
-                anime({
-                    targets: overlay,
-                    opacity: [0, 0.5],
-                    duration: 300,
-                    easing: 'easeOutQuad'
-                });
-            } else {
-                // Đóng sidebar với animation
-                anime({
-                    targets: sidebar,
-                    translateX: [0, -300],
-                    opacity: [1, 0],
-                    duration: 300,
-                    easing: 'easeInQuad',
-                    complete: function() {
-                        sidebar.classList.remove('active');
-                        overlay.classList.remove('active');
-                    }
-                });
-                
-                anime({
-                    targets: overlay,
-                    opacity: [0.5, 0],
-                    duration: 300,
-                    easing: 'easeInQuad'
-                });
-            }
-            
-            // Đổi icon với animation
-            const icon = toggle.querySelector('i');
-            if (!isActive) {
-                anime({
-                    targets: icon,
-                    rotate: [0, 90],
-                    duration: 300,
-                    complete: function() {
-                        icon.classList.remove('fa-bars');
-                        icon.classList.add('fa-times');
-                        anime({
-                            targets: icon,
-                            rotate: [90, 0],
-                            duration: 300
-                        });
-                    }
-                });
-            } else {
-                anime({
-                    targets: icon,
-                    rotate: [0, -90],
-                    duration: 300,
-                    complete: function() {
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                        anime({
-                            targets: icon,
-                            rotate: [-90, 0],
-                            duration: 300
-                        });
-                    }
-                });
-            }
-        }
-        
-        // Đóng sidebar khi click vào overlay
-        document.querySelector('.sidebar-overlay').addEventListener('click', function() {
-            toggleSidebar();
-        });
-        
-        // Đóng sidebar khi resize về desktop
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 1024) {
-                const sidebar = document.querySelector('.sidebar');
-                const overlay = document.querySelector('.sidebar-overlay');
-                const toggle = document.querySelector('.sidebar-toggle');
-                const icon = toggle.querySelector('i');
-                
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            }
-        });
-    </script>
+  if(btn) btn.addEventListener('click', function(){ open ? closeSb() : openSb(); });
+  if(ovl) ovl.addEventListener('click', closeSb);
+  window.addEventListener('resize', function(){ if(window.innerWidth > 1024 && open) closeSb(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && open) closeSb(); });
+})();
+</script>
+<script>
+  /* ── Stack 3 nút floating bottom-right ── */
+  document.addEventListener('DOMContentLoaded', function() {
+    var lang  = document.getElementById('dqd-lang-btn');
+    var theme = document.getElementById('dqd-theme-btn');
+  
+    function stackBtns() {
+      if (lang) {
+        lang.style.cssText += ';position:fixed!important;bottom:20px!important;right:16px!important;left:auto!important;z-index:8990!important';
+      }
+      if (theme) {
+        theme.style.cssText += ';position:fixed!important;bottom:72px!important;right:16px!important;left:auto!important;z-index:8991!important';
+      }
+    }
+  
+    stackBtns();
+  
+    // Gọi lại sau 500ms đề phòng script khác override
+    setTimeout(stackBtns, 500);
+  });
+  </script>
 </body>
 </html>
