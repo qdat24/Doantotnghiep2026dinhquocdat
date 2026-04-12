@@ -178,28 +178,78 @@
 <section class="section" id="categories">
   <div class="wrap">
     <div class="section-head">
-      <div><h2>Danh mục sản phẩm</h2><p>Lựa chọn theo phòng và phong cách sống</p></div>
+      <div>
+        <h2>Danh mục sản phẩm</h2>
+        <p>Lựa chọn theo phòng và phong cách sống</p>
+      </div>
       <a href="/products" class="see-all">Xem tất cả <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
-    <div class="cat-grid">
-      <a href="/products?category=Ph%C3%B2ng%20Kh%C3%A1ch" class="cat-card cat-tall" style="--img:url('https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600')">
-        <div class="cat-overlay"></div><div class="cat-label"><h3>Phòng Khách</h3><span>Sofa · Bàn trà · Kệ TV</span></div>
+
+    <div class="cat-bento">
+
+      <!-- Hàng 1: 1 ô lớn + 2 ô nhỏ -->
+      <a href="/products?category=Ph%C3%B2ng%20Kh%C3%A1ch" class="cb-card cb-large"
+         style="--img:url('https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&q=80')">
+        <div class="cb-veil"></div>
+        <div class="cb-body">
+          <span class="cb-tag">Phổ biến</span>
+          <h3>Phòng Khách</h3>
+          <p>Sofa · Bàn trà · Kệ TV</p>
+        </div>
       </a>
-      <a href="/products?category=Ph%C3%B2ng%20Ng%E1%BB%A7" class="cat-card" style="--img:url('https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=600')">
-        <div class="cat-overlay"></div><div class="cat-label"><h3>Phòng Ngủ</h3><span>Giường · Tủ · Đầu giường</span></div>
-      </a>
-      <a href="/products?category=Nh%C3%A0%20B%E1%BA%BFp" class="cat-card" style="--img:url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600')">
-        <div class="cat-overlay"></div><div class="cat-label"><h3>Nhà Bếp</h3><span>Tủ bếp · Bàn đảo · Kệ</span></div>
-      </a>
-      <a href="/products?category=V%C4%83n%20Ph%C3%B2ng" class="cat-card cat-tall" style="--img:url('https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600')">
-        <div class="cat-overlay"></div><div class="cat-label"><h3>Văn Phòng</h3><span>Bàn · Ghế · Kệ tài liệu</span></div>
-      </a>
-      <a href="/products?category=Ph%C3%B2ng%20%C4%82n" class="cat-card" style="--img:url('https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600')">
-        <div class="cat-overlay"></div><div class="cat-label"><h3>Phòng Ăn</h3><span>Bàn ăn · Ghế ăn · Tủ rượu</span></div>
-      </a>
-      <a href="/products" class="cat-card" style="--img:url('https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=600')">
-        <div class="cat-overlay"></div><div class="cat-label"><h3>Tất cả</h3><span>Xem toàn bộ →</span></div>
-      </a>
+
+      <div class="cb-col">
+        <a href="/products?category=Ph%C3%B2ng%20Ng%E1%BB%A7" class="cb-card cb-small"
+           style="--img:url('https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=600&q=80')">
+          <div class="cb-veil"></div>
+          <div class="cb-body">
+            <h3>Phòng Ngủ</h3>
+            <p>Giường · Tủ · Đầu giường</p>
+          </div>
+        </a>
+
+        <a href="/products?category=Nh%C3%A0%20B%E1%BA%BFp" class="cb-card cb-small"
+           style="--img:url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80')">
+          <div class="cb-veil"></div>
+          <div class="cb-body">
+            <h3>Nhà Bếp</h3>
+            <p>Tủ bếp · Bàn đảo · Kệ</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- Hàng 2: 3 ô đều nhau -->
+      <div class="cb-row3">
+        <a href="/products?category=V%C4%83n%20Ph%C3%B2ng" class="cb-card cb-med"
+           style="--img:url('https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&q=80')">
+          <div class="cb-veil"></div>
+          <div class="cb-body">
+            <h3>Văn Phòng</h3>
+            <p>Bàn · Ghế · Kệ tài liệu</p>
+          </div>
+        </a>
+
+        <a href="/products?category=Ph%C3%B2ng%20%C4%82n" class="cb-card cb-med"
+           style="--img:url('https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&q=80')">
+          <div class="cb-veil"></div>
+          <div class="cb-body">
+            <h3>Phòng Ăn</h3>
+            <p>Bàn ăn · Ghế ăn · Tủ rượu</p>
+          </div>
+        </a>
+
+        <a href="/products" class="cb-card cb-med cb-all">
+          <div class="cb-all-inner">
+            <div class="cb-all-icon">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/></svg>
+            </div>
+            <h3>Tất cả sản phẩm</h3>
+            <p>Xem toàn bộ bộ sưu tập</p>
+            <span class="cb-all-btn">Khám phá ngay →</span>
+          </div>
+        </a>
+      </div>
+
     </div>
   </div>
 </section>
@@ -955,16 +1005,144 @@ a{text-decoration:none}
 .see-all:hover{color:var(--gd);border-color:var(--gd)}
 .see-all:hover svg{transform:translateX(3px)}
 
-/* categories */
-.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:200px 200px;gap:.875rem}
-.cat-card{position:relative;border-radius:10px;overflow:hidden;background-image:var(--img);background-size:cover;background-position:center;display:flex;align-items:flex-end;transition:transform .3s,box-shadow .3s}
-.cat-tall{grid-row:span 2}
-.cat-card:hover{transform:scale(1.015);box-shadow:0 12px 40px rgba(0,0,0,.2)}
-.cat-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,8,.75) 0%,rgba(10,10,8,.1) 60%);transition:background .3s}
-.cat-card:hover .cat-overlay{background:linear-gradient(to top,rgba(10,10,8,.85) 0%,rgba(10,10,8,.2) 60%)}
-.cat-label{position:relative;z-index:1;padding:1.25rem;color:#fff}
-.cat-label h3{font-size:1.0625rem;font-weight:700;margin-bottom:.25rem}
-.cat-label span{font-size:.78rem;opacity:.75}
+/* ── Categories Bento Grid ── */
+.cat-bento {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  grid-template-rows: 340px 220px;
+  grid-template-areas:
+    "large col"
+    "row3  row3";
+  gap: .875rem;
+}
+.cb-large { grid-area: large; }
+.cb-col   { grid-area: col; display: flex; flex-direction: column; gap: .875rem; }
+.cb-small { flex: 1; min-height: 0; }
+.cb-row3  { grid-area: row3; display: grid; grid-template-columns: repeat(3,1fr); gap: .875rem; }
+.cb-med   { /* height set by grid row */ }
+
+.cb-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background-image: var(--img, none);
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  text-decoration: none;
+  transition: transform .3s cubic-bezier(.4,0,.2,1), box-shadow .3s;
+}
+.cb-card:hover { transform: scale(1.02); box-shadow: 0 16px 40px rgba(0,0,0,.18); }
+
+.cb-veil {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top,
+    rgba(10,10,8,.82) 0%,
+    rgba(10,10,8,.2)  50%,
+    rgba(10,10,8,.0)  100%);
+  transition: background .3s;
+}
+.cb-card:hover .cb-veil {
+  background: linear-gradient(to top,
+    rgba(10,10,8,.9)  0%,
+    rgba(10,10,8,.28) 55%,
+    rgba(10,10,8,.0)  100%);
+}
+
+.cb-body {
+  position: relative; z-index: 1;
+  padding: 1.125rem 1.25rem;
+  color: #fff;
+  width: 100%;
+}
+.cb-tag {
+  display: inline-block;
+  background: rgba(184,146,42,.92);
+  color: #fff;
+  font-size: .65rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 99px;
+  margin-bottom: .5rem;
+}
+.cb-body h3 {
+  font-size: 1.0625rem; font-weight: 700;
+  margin: 0 0 .25rem; line-height: 1.2;
+  text-shadow: 0 1px 4px rgba(0,0,0,.4);
+}
+.cb-large .cb-body h3 { font-size: 1.5rem; }
+.cb-body p {
+  font-size: .78rem; color: rgba(255,255,255,.78);
+  margin: 0; text-shadow: 0 1px 3px rgba(0,0,0,.3);
+}
+
+/* Ô Tất cả */
+.cb-all {
+  background: linear-gradient(135deg, #1a1a18 0%, #2a2018 100%);
+  align-items: center; justify-content: center;
+}
+.cb-all::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 80% at 50% 50%,
+    rgba(184,146,42,.14) 0%, transparent 65%);
+}
+.cb-all-inner {
+  position: relative; z-index: 1;
+  text-align: center; color: #fff;
+  display: flex; flex-direction: column;
+  align-items: center; gap: .5rem;
+  padding: 1.25rem;
+}
+.cb-all-icon {
+  width: 48px; height: 48px; border-radius: 10px;
+  background: rgba(184,146,42,.18);
+  border: 1.5px solid rgba(184,146,42,.35);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: .25rem;
+}
+.cb-all-icon svg { width: 22px; height: 22px; color: #b8922a; }
+.cb-all-inner h3 { font-size: .9375rem; font-weight: 700; margin: 0; }
+.cb-all-inner p  { font-size: .72rem; color: rgba(255,255,255,.45); margin: 0; }
+.cb-all-btn {
+  display: inline-block;
+  background: #b8922a; color: #fff;
+  font-size: .75rem; font-weight: 700;
+  padding: .45rem 1.125rem; border-radius: 99px;
+  margin-top: .375rem; transition: background .18s;
+}
+.cb-card.cb-all:hover .cb-all-btn { background: #9d7b22; }
+
+/* Responsive */
+@media(max-width: 1024px) {
+  .cat-bento {
+    grid-template-rows: 280px 200px;
+  }
+}
+@media(max-width: 768px) {
+  .cat-bento {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 220px 160px 160px;
+    grid-template-areas:
+      "large large"
+      "col   col"
+      "row3  row3";
+  }
+  .cb-col { flex-direction: row; }
+  .cb-row3 { grid-template-columns: repeat(3, 1fr); }
+}
+@media(max-width: 540px) {
+  .cat-bento {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 200px auto auto;
+  }
+  .cb-col { flex-direction: row; }
+  .cb-small { height: 140px; }
+  .cb-row3  { grid-template-columns: 1fr 1fr; }
+  .cb-row3 .cb-all { grid-column: span 2; height: 120px; }
+  .cb-all-inner p { display: none; }
+}
+{# cat-overlay/label removed — using new cb-* classes #}
 
 /* trust */
 .trust-bar{background:#fff;border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border);padding:1.5rem 2rem}
@@ -1136,16 +1314,8 @@ a{text-decoration:none}
 .pc-logo img{max-width:100%;max-height:44px;object-fit:contain;filter:grayscale(15%);transition:filter .2s}
 .partner-card:hover .pc-logo img{filter:grayscale(0%)}
 .pc-text{font-size:.9375rem;font-weight:700;color:var(--dk);text-align:center}
-.pc-name{
-  font-size:.6875rem;font-weight:600;color:var(--mu);
-  text-align:center;max-width:100%;
-  word-break:break-word;
-  line-height:1.3;
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
-}.partners-footer{text-align:center;margin-top:1.5rem}
+.pc-name{font-size:.6875rem;font-weight:600;color:var(--mu);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.partners-footer{text-align:center;margin-top:1.5rem}
 
 /* cta */
 .cta-banner{background:var(--dk);position:relative;overflow:hidden;padding:5rem 2rem;text-align:center}
@@ -1197,7 +1367,7 @@ a{text-decoration:none}
   .promo-full{height:240px}
   .pb-slide{flex:0 0 100%;aspect-ratio:16/9;min-height:180px}
   .announce-bar .sep{display:none}.announce-bar{flex-direction:column;gap:.2rem}
-  .partner-card{...width:155px;min-height:92px;height:auto;...}
+  .partner-card{width:130px;height:80px}
 }
 @media(max-width:480px){
   .wrap{padding:0 1rem}

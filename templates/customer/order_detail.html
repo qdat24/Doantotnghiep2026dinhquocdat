@@ -216,8 +216,8 @@
             <div class="ods-actions">
               {% if order.status == 'pending' %}
               <form method="POST" action="{{ url_for('customer_cancel_order', order_id=order.order_id) }}"
-                    onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
-                <button type="submit" class="ods-btn-cancel">
+                    id="cancelOrderForm">
+                <button type="button" class="ods-btn-cancel" onclick="showCancelModal()">
                   <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                   Hủy đơn hàng
                 </button>
@@ -227,6 +227,40 @@
                 <svg viewBox="0 0 16 16" fill="none"><path d="M10 4L6 8l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Quay lại tài khoản
               </a>
+            </div>
+
+            <!-- Custom cancel modal -->
+            <div id="cancelModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:99999;align-items:center;justify-content:center;padding:1.5rem">
+              <div style="background:#fff;border-radius:16px;max-width:400px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.2);overflow:hidden;animation:modalPop .25s cubic-bezier(.22,.68,0,1.2)">
+                <!-- Header -->
+                <div style="background:#fff5f5;padding:1.5rem 1.5rem 1.25rem;text-align:center;border-bottom:1.5px solid #fecaca">
+                  <div style="width:52px;height:52px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .875rem">
+                    <svg viewBox="0 0 24 24" fill="none" style="width:24px;height:24px;color:#dc2626"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <h3 style="font-size:1.0625rem;font-weight:700;color:#1a1a18;margin-bottom:.375rem">Xác nhận hủy đơn hàng</h3>
+                  <p style="font-size:.8125rem;color:#7a7060;line-height:1.6">Đơn hàng <strong style="color:#1a1a18">{{ order.order_id }}</strong> sẽ bị hủy.<br>Hành động này <strong style="color:#dc2626">không thể hoàn tác</strong>.</p>
+                </div>
+                <!-- Body -->
+                <div style="padding:1.25rem 1.5rem">
+                  <label style="display:block;font-size:.8125rem;font-weight:500;color:#3a3530;margin-bottom:.5rem">Lý do hủy đơn <span style="color:#a09880;font-weight:400">(tùy chọn)</span></label>
+                  <select id="cancelReason" style="width:100%;padding:.625rem .875rem;border:1.5px solid #e8e3db;border-radius:8px;font-size:.875rem;font-family:inherit;color:#2a2520;background:#fff;outline:none;margin-bottom:.875rem;cursor:pointer">
+                    <option value="">-- Chọn lý do --</option>
+                    <option value="Đặt nhầm sản phẩm">Đặt nhầm sản phẩm</option>
+                    <option value="Muốn thay đổi địa chỉ giao hàng">Muốn thay đổi địa chỉ giao hàng</option>
+                    <option value="Tìm được giá tốt hơn">Tìm được giá tốt hơn</option>
+                    <option value="Đổi ý không muốn mua nữa">Đổi ý không muốn mua nữa</option>
+                    <option value="Khác">Lý do khác</option>
+                  </select>
+                  <div style="display:flex;gap:.625rem">
+                    <button onclick="closeCancelModal()" style="flex:1;padding:.75rem;background:#f5f4f1;border:1.5px solid #e8e3db;border-radius:9px;font-family:inherit;font-size:.875rem;font-weight:600;color:#7a7060;cursor:pointer;transition:all .15s" onmouseover="this.style.background='#e8e3db'" onmouseout="this.style.background='#f5f4f1'">
+                      Không, giữ đơn
+                    </button>
+                    <button onclick="confirmCancel()" style="flex:1;padding:.75rem;background:#dc2626;border:none;border-radius:9px;font-family:inherit;font-size:.875rem;font-weight:600;color:#fff;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">
+                      Xác nhận hủy
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
           </div>
@@ -355,5 +389,41 @@ a{text-decoration:none;color:inherit}
   .ods-actions{display:none}
   .od-body{padding:0}
 }
+@keyframes modalPop {
+  from { opacity:0; transform:scale(.92) translateY(12px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
 </style>
+
+<script>
+function showCancelModal() {
+  var m = document.getElementById('cancelModal');
+  if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+}
+function closeCancelModal() {
+  var m = document.getElementById('cancelModal');
+  if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
+}
+function confirmCancel() {
+  var form   = document.getElementById('cancelOrderForm');
+  var reason = document.getElementById('cancelReason');
+  if (form) {
+    // Thêm lý do vào form nếu chọn
+    if (reason && reason.value) {
+      var inp = document.createElement('input');
+      inp.type = 'hidden'; inp.name = 'cancel_reason'; inp.value = reason.value;
+      form.appendChild(inp);
+    }
+    form.submit();
+  }
+}
+// Đóng khi click ngoài modal
+document.addEventListener('click', function(e) {
+  var m = document.getElementById('cancelModal');
+  if (m && e.target === m) closeCancelModal();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeCancelModal();
+});
+</script>
 {% endblock %}

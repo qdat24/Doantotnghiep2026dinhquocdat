@@ -566,8 +566,22 @@ def check_maintenance_mode():
 def landing_page():
     client_ip = get_client_ip()
     is_allowed, message = rate_limiter.is_allowed(client_ip)
-    return render_template('landing.html', blocked=not is_allowed,
-                           error_message=message if not is_allowed else None)
+
+    # Lấy 1 sản phẩm nổi bật để hiển thị trên landing
+    featured = None
+    try:
+        products = get_all_products(active_only=True)
+        # Ưu tiên sản phẩm có ảnh và đánh giá cao
+        candidates = [p for p in products if p.get('image')]
+        if candidates:
+            featured = sorted(candidates, key=lambda p: float(p.get('rating') or 0), reverse=True)[0]
+    except Exception:
+        featured = None
+
+    return render_template('landing.html',
+                           blocked=not is_allowed,
+                           error_message=message if not is_allowed else None,
+                           featured_product=featured)
 
 
 @app.route('/api/verify', methods=['POST'])
@@ -661,6 +675,11 @@ def products():
         search      = unquote(request.args.get('search',   '').strip())
         price_range = request.args.get('price', '').strip()
         sort        = request.args.get('sort',  '').strip()
+        page        = request.args.get('page',  1, type=int)
+
+        settings = get_cached_settings()
+        per_page = int(settings.get('products_per_page', 12) or 12)
+        if per_page < 4:  per_page = 12
 
         min_price = max_price = None
         if price_range and '-' in price_range:
@@ -671,7 +690,8 @@ def products():
             except ValueError:
                 pass
 
-        products_list = get_products_filtered(
+        # Lấy toàn bộ để đếm total
+        all_products = get_products_filtered(
             category=category or None,
             search=search or None,
             min_price=min_price,
@@ -679,6 +699,12 @@ def products():
             sort_by=sort or None,
             active_only=True,
         )
+        total        = len(all_products)
+        total_pages  = max(1, (total + per_page - 1) // per_page)
+        page         = max(1, min(page, total_pages))
+        offset       = (page - 1) * per_page
+        products_list = all_products[offset : offset + per_page]
+
         categories = get_category_names()
 
         return render_template('products.html',
@@ -687,11 +713,16 @@ def products():
                                selected_category=category,
                                search=search,
                                price_range=price_range,
-                               sort=sort)
+                               sort=sort,
+                               page=page,
+                               total_pages=total_pages,
+                               total_products=total,
+                               per_page=per_page)
     except Exception:
         app.logger.exception('Error in products route')
         return render_template('products.html', products=[], categories=[],
-                               selected_category='', search='', price_range='', sort='')
+                               selected_category='', search='', price_range='', sort='',
+                               page=1, total_pages=1, total_products=0, per_page=12)
 
 
 @app.route('/categories')
@@ -764,13 +795,21 @@ def add_to_cart():
     if not product:
         return jsonify({'success': False, 'message': 'Sản phẩm không tồn tại'}), 404
 
+    # variant_info: chuỗi mô tả lựa chọn, VD: "Màu: Đen | Chất liệu: Gỗ sồi"
+    variant_info = (data.get('variant_info') or '').strip()[:200]
+
     cart = session.setdefault('cart', [])
+    matched = False
     for item in cart:
-        if item.get('product_id') == product_id:
+        if item.get('product_id') == product_id and item.get('variant_info', '') == variant_info:
             item['quantity'] += quantity
+            matched = True
             break
-    else:
-        cart.append({'product_id': product_id, 'quantity': quantity})
+    if not matched:
+        cart_item = {'product_id': product_id, 'quantity': quantity}
+        if variant_info:
+            cart_item['variant_info'] = variant_info
+        cart.append(cart_item)
 
     session.modified = True
     cart_count = sum(i.get('quantity', 0) for i in cart)
@@ -795,8 +834,31 @@ def update_cart():
     return jsonify({'success': True})
 
 
-@app.route('/api/remove-from-cart', methods=['POST'])
-def remove_from_cart():
+@app.route('/api/cart/summary')
+def cart_summary():
+    """Trả về danh sách items trong giỏ cho mini cart popup."""
+    cart_items = []
+    total = 0
+    for item in session.get('cart', []):
+        product = get_product_by_id(item['product_id'])
+        if product:
+            qty      = item.get('quantity', 1)
+            price    = float(product.get('price', 0))
+            subtotal = price * qty
+            total   += subtotal
+            cart_items.append({
+                'product_id': product['id'],
+                'name':       product['name'],
+                'image':      product.get('image', ''),
+                'price':      price,
+                'quantity':   qty,
+                'subtotal':   subtotal,
+            })
+    return jsonify({'success': True, 'items': cart_items, 'total': total,
+                    'count': sum(i['quantity'] for i in cart_items)})
+
+
+
     product_id = (request.json or {}).get('product_id')
     session['cart'] = [i for i in session.get('cart', []) if i['product_id'] != product_id]
     session.modified = True
@@ -878,7 +940,12 @@ def checkout():
         product = get_product_by_id(item['product_id'])
         if product:
             sub = product['price'] * item['quantity']
-            cart_items.append({'product': product, 'quantity': item['quantity'], 'subtotal': sub})
+            cart_items.append({
+                'product': product,
+                'quantity': item['quantity'],
+                'subtotal': sub,
+                'variant_info': item.get('variant_info', ''),
+            })
             total += sub
 
     if not cart_items:
@@ -896,6 +963,22 @@ def checkout():
     session['cart_total']       = total + shipping_fee
     session['pending_order_id'] = None
 
+    # Lấy mã giảm giá đang hoạt động để hiển thị cho khách
+    try:
+        available_coupons = get_all_coupons(active_only=True, limit=20) or []
+        # Chỉ lấy coupon còn hạn và chưa hết lượt
+        from datetime import date
+        today = date.today()
+        valid_coupons = []
+        for c in available_coupons:
+            if c.get('usage_limit') and int(c.get('usage_count') or 0) >= int(c['usage_limit']):
+                continue
+            if c.get('end_date') and c['end_date'] < today:
+                continue
+            valid_coupons.append(c)
+    except Exception:
+        valid_coupons = []
+
     return render_template('checkout.html',
                            cart_items=cart_items,
                            subtotal=total,
@@ -904,7 +987,8 @@ def checkout():
                            customer=customer,
                            shipping_addresses=shipping_addresses,
                            default_address=default_address,
-                           free_shipping_threshold=threshold)
+                           free_shipping_threshold=threshold,
+                           available_coupons=valid_coupons)
 
 
 @app.route('/api/place-order', methods=['POST'])
@@ -1768,6 +1852,12 @@ def _product_data_from_form() -> dict:
     }
 
 
+def _get_variants(product_id):
+    return execute_query(
+        'SELECT * FROM product_variants WHERE product_id=%s ORDER BY type, sort_order, id',
+        (product_id,), fetch=True
+    ) or []
+
 @app.route('/admin/products/add', methods=['GET', 'POST'])
 @admin_required
 def admin_add_product():
@@ -1786,7 +1876,7 @@ def admin_add_product():
         except Exception as exc:
             flash(f'Lỗi: {exc}', 'error')
     return render_template('admin/product_form.html',
-                           product=None, categories=get_category_names(), action='add')
+                           product=None, categories=get_category_names(), action='add', variants=[])
 
 
 @app.route('/admin/products/edit/<int:product_id>', methods=['GET', 'POST'])
@@ -1815,7 +1905,8 @@ def admin_edit_product(product_id):
 
     return render_template('admin/product_form.html',
                            product=product, categories=get_category_names(), action='edit',
-                           product_images=get_product_images(product_id))
+                           product_images=get_product_images(product_id),
+                           variants=_get_variants(product_id))
 
 
 @app.route('/admin/products/delete/<int:product_id>', methods=['POST'])
@@ -1851,7 +1942,39 @@ def admin_restore_product(product_id):
     return redirect(url_for('admin_products'))
 
 
-# Product images
+@app.route('/admin/products/bulk-action', methods=['POST'])
+@admin_required
+def admin_products_bulk_action():
+    action  = request.form.get('action', '')
+    ids_raw = request.form.get('ids', '')
+    try:
+        ids = [int(i) for i in ids_raw.split(',') if i.strip().isdigit()]
+    except Exception:
+        ids = []
+    if not ids:
+        flash('Không có sản phẩm nào được chọn', 'error')
+        return redirect(url_for('admin_products'))
+
+    count = len(ids)
+    if action == 'hide':
+        for pid in ids:
+            execute_query('UPDATE products SET is_active=FALSE WHERE id=%s', (pid,))
+        flash(f'Đã ẩn {count} sản phẩm', 'success')
+    elif action == 'restore':
+        for pid in ids:
+            execute_query('UPDATE products SET is_active=TRUE WHERE id=%s', (pid,))
+        flash(f'Đã hiển thị {count} sản phẩm', 'success')
+    elif action == 'delete':
+        for pid in ids:
+            execute_query('DELETE FROM products WHERE id=%s', (pid,))
+        flash(f'Đã xóa {count} sản phẩm', 'success')
+    else:
+        flash('Hành động không hợp lệ', 'error')
+
+    return redirect(url_for('admin_products'))
+
+
+
 @app.route('/admin/products/<int:product_id>/images')
 @admin_required
 def admin_product_images(product_id):
@@ -1932,7 +2055,76 @@ def admin_set_primary_image(product_id, image_id):
     return redirect(url_for('admin_product_images', product_id=product_id))
 
 
-# Admin orders
+# ══════════════════════════════════════════════
+# Product Variants — color / material
+# ══════════════════════════════════════════════
+
+@app.route('/admin/products/<int:product_id>/variants')
+@admin_required
+def admin_product_variants(product_id):
+    product = get_product_by_id(product_id)
+    if not product:
+        flash('Không tìm thấy sản phẩm', 'error')
+        return redirect(url_for('admin_products'))
+    variants = _get_variants(product_id)
+    return render_template('admin/product_variants.html',
+                           product=product, variants=variants)
+
+@app.route('/admin/products/<int:product_id>/variants/add', methods=['POST'])
+@admin_required
+def admin_add_variant(product_id):
+    try:
+        vtype      = request.form.get('type', 'color')
+        name       = request.form.get('name', '').strip()
+        value      = request.form.get('value', '').strip()
+        image_url  = request.form.get('image_url', '').strip()
+        price_diff = float(request.form.get('price_diff', 0) or 0)
+        stock      = int(request.form.get('stock', 0) or 0)
+        if not name:
+            return jsonify({'success': False, 'message': 'Tên variant không được trống'})
+        execute_query(
+            'INSERT INTO product_variants (product_id,type,name,value,image_url,price_diff,stock) VALUES (%s,%s,%s,%s,%s,%s,%s)',
+            (product_id, vtype, name, value, image_url or None, price_diff, stock)
+        )
+        return jsonify({'success': True, 'message': 'Đã thêm variant'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/admin/products/<int:product_id>/variants/<int:variant_id>/update', methods=['POST'])
+@admin_required
+def admin_update_variant(product_id, variant_id):
+    try:
+        name       = request.form.get('name', '').strip()
+        value      = request.form.get('value', '').strip()
+        image_url  = request.form.get('image_url', '').strip()
+        price_diff = float(request.form.get('price_diff', 0) or 0)
+        stock      = int(request.form.get('stock', 0) or 0)
+        is_active  = request.form.get('is_active') == '1'
+        execute_query(
+            'UPDATE product_variants SET name=%s,value=%s,image_url=%s,price_diff=%s,stock=%s,is_active=%s WHERE id=%s AND product_id=%s',
+            (name, value, image_url or None, price_diff, stock, is_active, variant_id, product_id)
+        )
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/admin/products/<int:product_id>/variants/<int:variant_id>/delete', methods=['POST'])
+@admin_required
+def admin_delete_variant(product_id, variant_id):
+    execute_query('DELETE FROM product_variants WHERE id=%s AND product_id=%s', (variant_id, product_id))
+    return jsonify({'success': True})
+
+@app.route('/api/products/<int:product_id>/variants')
+def api_product_variants(product_id):
+    """Public API — trả về variants cho frontend."""
+    variants = execute_query(
+        'SELECT id,type,name,value,image_url,price_diff,stock FROM product_variants WHERE product_id=%s AND is_active=TRUE ORDER BY type,sort_order,id',
+        (product_id,), fetch=True
+    ) or []
+    return jsonify({'success': True, 'variants': variants})
+
+
+
 @app.route('/admin/orders')
 @admin_required
 def admin_orders():
@@ -2516,7 +2708,52 @@ def check_wishlist_batch():
 
 
 # Coupon
-@app.route('/api/coupon/validate', methods=['POST'])
+@app.route('/api/coupons/available')
+def api_available_coupons():
+    """Trả về danh sách mã giảm giá công khai đang hoạt động."""
+    try:
+        from datetime import date, datetime
+        today = date.today()
+        coupons = get_all_coupons(active_only=True, limit=50) or []
+        result = []
+        for c in coupons:
+            # Bỏ qua nếu hết lượt
+            if c.get('usage_limit') and int(c.get('usage_count') or 0) >= int(c['usage_limit']):
+                continue
+
+            # Xử lý end_date — có thể là date, datetime, string, hoặc None
+            end_date = c.get('end_date')
+            if end_date:
+                try:
+                    if isinstance(end_date, datetime):
+                        end_date = end_date.date()
+                    elif isinstance(end_date, str):
+                        end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+                    if end_date < today:
+                        continue   # Đã hết hạn
+                    end_date_str = end_date.strftime('%d/%m/%Y')
+                except Exception:
+                    end_date_str = str(end_date)
+            else:
+                end_date_str = None
+
+            result.append({
+                'code':             c.get('code', ''),
+                'name':             c.get('name', ''),
+                'description':      c.get('description') or '',
+                'discount_type':    c.get('discount_type', 'percentage'),
+                'discount_value':   float(c.get('discount_value') or 0),
+                'min_order_amount': float(c.get('min_order_amount') or 0),
+                'end_date':         end_date_str,
+            })
+
+        return jsonify({'success': True, 'coupons': result, 'count': len(result)})
+    except Exception as e:
+        app.logger.exception('Error in api_available_coupons')
+        return jsonify({'success': False, 'coupons': [], 'error': str(e)})
+
+
+
 def validate_coupon_route():
     try:
         data         = request.json or {}

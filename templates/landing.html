@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>DQD — Nội thất cao cấp</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -346,7 +347,21 @@
       <!-- Product showcase -->
       <div class="product-showcase">
         <div class="ps-img">
-          <!-- Illustrative furniture silhouette -->
+          {% if featured_product and featured_product.image %}
+          <img src="{{ featured_product.image }}"
+               alt="{{ featured_product.name }}"
+               style="width:100%;height:100%;object-fit:cover"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center">
+            <svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:80px;height:80px">
+              <rect x="10" y="35" width="100" height="28" rx="8" fill="#e8e3db"/>
+              <rect x="18" y="50" width="84" height="18" rx="6" fill="#d0c8bc"/>
+              <rect x="18" y="25" width="84" height="14" rx="6" fill="#c4b8a8"/>
+              <rect x="14" y="63" width="8" height="18" rx="3" fill="#b8a898"/>
+              <rect x="98" y="63" width="8" height="18" rx="3" fill="#b8a898"/>
+            </svg>
+          </div>
+          {% else %}
           <svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="10" y="35" width="100" height="28" rx="8" fill="#e8e3db"/>
             <rect x="18" y="50" width="84" height="18" rx="6" fill="#d0c8bc"/>
@@ -355,17 +370,23 @@
             <rect x="98" y="63" width="8" height="18" rx="3" fill="#b8a898"/>
             <rect x="26" y="63" width="8" height="15" rx="3" fill="#b8a898"/>
             <rect x="86" y="63" width="8" height="15" rx="3" fill="#b8a898"/>
-            <!-- cushion lines -->
             <line x1="60" y1="25" x2="60" y2="39" stroke="#b8a898" stroke-width="1.5" stroke-linecap="round"/>
             <line x1="38" y1="25" x2="38" y2="39" stroke="#b8a898" stroke-width="1" stroke-linecap="round"/>
             <line x1="82" y1="25" x2="82" y2="39" stroke="#b8a898" stroke-width="1" stroke-linecap="round"/>
           </svg>
+          {% endif %}
         </div>
         <div class="ps-body">
-          <div class="ps-cat">Sofa cao cấp</div>
-          <div class="ps-name">Sofa góc L Nordic Premium</div>
+          <div class="ps-cat">{{ featured_product.category if featured_product else 'Sofa cao cấp' }}</div>
+          <div class="ps-name">{{ featured_product.name if featured_product else 'Sofa góc L Nordic Premium' }}</div>
           <div class="ps-price-row">
-            <span class="ps-price">12.500.000 ₫</span>
+            <span class="ps-price">
+              {% if featured_product %}
+                {{ "{:,.0f}".format(featured_product.price) }} ₫
+              {% else %}
+                12.500.000 ₫
+              {% endif %}
+            </span>
             <span class="ps-badge">Còn hàng</span>
           </div>
         </div>
@@ -378,7 +399,7 @@
           <div class="cta-sub">Hàng trăm mẫu nội thất cao cấp đang chờ bạn</div>
         </div>
 
-        <button class="btn-enter" id="enterBtn" onclick="enterWebsite()">
+        <button class="btn-enter" id="enterBtn">
           <svg viewBox="0 0 20 20" fill="none"><path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Vào website
         </button>
@@ -407,9 +428,9 @@
             0345 211 386
           </a>
           <div class="cl-sep"></div>
-          <a href="mailto:quocdat30075@gmail.com" class="cl-item">
+          <a href="quocdat30075@gmail.com" class="cl-item">
             <svg viewBox="0 0 16 16" fill="none"><path d="M1 4h14a1 1 0 011 1v7a1 1 0 01-1 1H1a1 1 0 01-1-1V5a1 1 0 011-1zm7 5L1 5M15 5l-7 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-            quocdat30075@gmail.com
+            <span class="__cf_email__" data-cfemail="68191d070b0c091c5b58585f5d280f05090104460b0705">[email&#160;protected]</span>
           </a>
           <div class="cl-sep"></div>
           <span class="cl-item">
@@ -424,37 +445,43 @@
   </div>
 
   <script>
-    async function enterWebsite() {
-      const btn = document.getElementById('enterBtn');
-      const orig = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" class="spin" style="width:18px;height:18px"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,.3)" stroke-width="3"/><path d="M12 2a10 10 0 0110 10" stroke="white" stroke-width="3" stroke-linecap="round"/></svg> Đang tải...`;
+    (function() {
+      'use strict';
 
-      try {
-        const res = await fetch('/api/verify', {
-          method: 'POST',
+      function enterWebsite() {
+        var btn  = document.getElementById('enterBtn');
+        if (!btn || btn.disabled) return;
+        var orig = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" style="width:18px;height:18px;animation:spin .7s linear infinite"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,.3)" stroke-width="3"/><path d="M12 2a10 10 0 0110 10" stroke="white" stroke-width="3" stroke-linecap="round"/></svg> Đang tải...';
+
+        fetch('/api/verify', {
+          method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ simple_verify: true })
+          body:    JSON.stringify({ simple_verify: true })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(d) {
+          window.location.href = (d && d.redirect_url) ? d.redirect_url : '/';
+        })
+        .catch(function() {
+          window.location.href = '/';
         });
-        const d = await res.json();
-        if (d.success) {
-          window.location.href = d.redirect_url || '/';
-        } else {
-          alert(d.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
-          btn.disabled = false;
-          btn.innerHTML = orig;
-        }
-      } catch(e) {
-        alert('Có lỗi xảy ra. Vui lòng thử lại.');
-        btn.disabled = false;
-        btn.innerHTML = orig;
       }
-    }
 
-    document.getElementById('enterBtn')?.addEventListener('keypress', e => {
-      if (e.key === 'Enter') enterWebsite();
-    });
+      document.addEventListener('DOMContentLoaded', function() {
+        var btn = document.getElementById('enterBtn');
+        if (btn) {
+          btn.addEventListener('click', enterWebsite);
+          btn.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              enterWebsite();
+            }
+          });
+        }
+      });
+    })();
   </script>
-
 </body>
 </html>

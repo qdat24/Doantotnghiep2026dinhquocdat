@@ -2,278 +2,256 @@
 {% block title %}Quản Lý Sản Phẩm{% endblock %}
 
 {% block head %}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
 <div class="pm-root">
 
-  <!-- ── Top bar ── -->
+  <!-- ── Topbar ── -->
   <div class="pm-topbar">
     <div class="pm-topbar-left">
-      <h1>Quản lý sản phẩm</h1>
-      <span class="pm-count">{{ products|length }} sản phẩm</span>
+      <h1>Sản phẩm</h1>
+      <span class="pm-count" id="visibleCount">{{ products|length }} sản phẩm</span>
     </div>
-    <a href="{{ url_for('admin_add_product') }}" class="pm-btn-add">
-      <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      Thêm sản phẩm
-    </a>
+    <div class="pm-topbar-right">
+      <button class="pm-btn-bulk" id="bulkBar" style="display:none" onclick="showBulkActions()">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Thao tác hàng loạt (<span id="selectedCount">0</span>)
+      </button>
+      <a href="{{ url_for('admin_add_product') }}" class="pm-btn-add">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Thêm sản phẩm
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Stats ── -->
+  <div class="pm-stats">
+    <div class="pm-stat" onclick="applyQuickFilter('status','')">
+      <span class="stat-num">{{ products|length }}</span>
+      <span class="stat-lbl">Tổng</span>
+    </div>
+    <div class="pm-stat stat-green" onclick="applyQuickFilter('status','active')">
+      <span class="stat-num" id="statActive">0</span>
+      <span class="stat-lbl">Đang bán</span>
+    </div>
+    <div class="pm-stat stat-red" onclick="applyQuickFilter('status','hidden')">
+      <span class="stat-num" id="statHidden">0</span>
+      <span class="stat-lbl">Đang ẩn</span>
+    </div>
+    <div class="pm-stat stat-orange" onclick="applyQuickFilter('stock','low')">
+      <span class="stat-num" id="statLow">0</span>
+      <span class="stat-lbl">Sắp hết</span>
+    </div>
+    <div class="pm-stat stat-red2" onclick="applyQuickFilter('stock','out')">
+      <span class="stat-num" id="statOut">0</span>
+      <span class="stat-lbl">Hết hàng</span>
+    </div>
   </div>
 
   <!-- ── Filter bar ── -->
   <div class="pm-filterbar">
     <div class="pm-search">
       <svg viewBox="0 0 20 20" fill="none"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M15 15l-3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      <input type="text" id="searchInput" placeholder="Tìm tên sản phẩm, danh mục...">
+      <input type="text" id="searchInput" placeholder="Tìm tên, danh mục, ID..." oninput="filterProducts()">
+      <button class="search-clear" id="searchClear" onclick="clearSearch()" style="display:none">✕</button>
     </div>
 
-    <select id="filterCat" class="pm-select">
-      <option value="">Tất cả danh mục</option>
+    <select id="filterCat" class="pm-select" onchange="filterProducts()">
+      <option value="">Danh mục</option>
       {% set cats = [] %}
       {% for p in products %}{% if p.category not in cats %}{% set _ = cats.append(p.category) %}{% endif %}{% endfor %}
       {% for c in cats %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
     </select>
 
-    <select id="filterStatus" class="pm-select">
-      <option value="">Tất cả trạng thái</option>
-      <option value="active">Đang hoạt động</option>
+    <select id="filterStatus" class="pm-select" onchange="filterProducts()">
+      <option value="">Trạng thái</option>
+      <option value="active">Đang bán</option>
       <option value="hidden">Đang ẩn</option>
     </select>
 
-    <select id="filterStock" class="pm-select">
-      <option value="">Tất cả tồn kho</option>
+    <select id="filterStock" class="pm-select" onchange="filterProducts()">
+      <option value="">Tồn kho</option>
       <option value="in">Còn hàng</option>
-      <option value="low">Sắp hết (&le;10)</option>
+      <option value="low">Sắp hết (≤10)</option>
       <option value="out">Hết hàng</option>
     </select>
 
-    <div class="pm-view-toggle">
-      <button class="view-btn active" id="viewGrid" title="Lưới">
-        <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="2" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="11" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="11" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>
-      </button>
-      <button class="view-btn" id="viewList" title="Danh sách">
-        <svg viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      </button>
+    <select id="sortBy" class="pm-select" onchange="sortProducts()">
+      <option value="">Sắp xếp</option>
+      <option value="price_asc">Giá tăng</option>
+      <option value="price_desc">Giá giảm</option>
+      <option value="stock_asc">Tồn kho thấp</option>
+      <option value="name_az">Tên A–Z</option>
+      <option value="rating_desc">Đánh giá cao</option>
+    </select>
+
+    <button class="pm-btn-reset" onclick="resetFilters()" title="Xóa bộ lọc">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
+  <!-- ── Bulk action bar ── -->
+  <div class="pm-bulk-bar" id="bulkActionBar" style="display:none">
+    <span class="bulk-info"><strong id="bulkCount">0</strong> sản phẩm được chọn</span>
+    <div class="bulk-actions">
+      <button class="bulk-btn bulk-restore" onclick="bulkAction('restore')">✓ Hiển thị tất cả</button>
+      <button class="bulk-btn bulk-hide" onclick="bulkAction('hide')">● Ẩn tất cả</button>
+      <button class="bulk-btn bulk-del" onclick="bulkAction('delete')">🗑 Xóa tất cả</button>
+      <button class="bulk-btn bulk-cancel" onclick="cancelBulk()">Hủy</button>
     </div>
   </div>
 
-  <!-- ── Stats strip ── -->
-  <div class="pm-stats">
-    <div class="pm-stat">
-      <span class="stat-val">{{ products|selectattr('is_active')|list|length }}</span>
-      <span class="stat-label">Đang bán</span>
-    </div>
-    <div class="stat-sep"></div>
-    <div class="pm-stat">
-      <span class="stat-val">{{ products|rejectattr('is_active')|list|length }}</span>
-      <span class="stat-label">Đang ẩn</span>
-    </div>
-    <div class="stat-sep"></div>
-    <div class="pm-stat">
-      <span class="stat-val">{{ products|selectattr('stock', 'eq', 0)|list|length }}</span>
-      <span class="stat-label">Hết hàng</span>
-    </div>
-    <div class="stat-sep"></div>
-    <div class="pm-stat">
-      <span class="stat-val">{{ products|selectattr('stock', 'gt', 0)|selectattr('stock', 'le', 10)|list|length }}</span>
-      <span class="stat-label">Sắp hết</span>
-    </div>
-  </div>
-
-  <!-- ── Product Grid ── -->
+  <!-- ── Table ── -->
   {% if products %}
-  <div class="pm-grid" id="pmGrid">
-    {% for product in products %}
-    <div class="pm-card"
-         data-name="{{ product.name|lower }}"
-         data-cat="{{ product.category }}"
-         data-status="{{ 'active' if product.is_active else 'hidden' }}"
-         data-stock="{{ 'out' if product.stock == 0 else ('low' if product.stock <= 10 else 'in') }}">
-
-      <!-- Image -->
-      <div class="pm-card-img">
-        {% if product.image %}
-        <img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy">
-        {% else %}
-        <div class="pm-no-img">
-          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        {% endif %}
-
-        <!-- Status badge -->
-        <span class="pm-status-badge {% if product.is_active %}badge-active{% else %}badge-hidden{% endif %}">
-          {% if product.is_active %}Đang bán{% else %}Đang ẩn{% endif %}
-        </span>
-
-        <!-- Quick actions on hover -->
-        <div class="pm-card-hover">
-          <a href="{{ url_for('admin_edit_product', product_id=product.id) }}" class="hover-btn" title="Chỉnh sửa">
-            <svg viewBox="0 0 20 20" fill="none"><path d="M14.5 2.5l3 3L7 16H4v-3L14.5 2.5z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </div>
-      </div>
-
-      <!-- Body -->
-      <div class="pm-card-body">
-        <span class="pm-cat-tag">{{ product.category }}</span>
-        <h3 class="pm-prod-name">{{ product.name }}</h3>
-
-        <div class="pm-meta">
-          <div class="pm-rating">
-            <span class="star">★</span>
-            <span>{{ product.rating }}</span>
-            <span class="rc">({{ product.reviews }})</span>
-          </div>
-          <div class="pm-stock-pill
-            {% if product.stock == 0 %}stock-out
-            {% elif product.stock <= 10 %}stock-low
-            {% else %}stock-ok{% endif %}">
-            {% if product.stock == 0 %}Hết hàng
-            {% elif product.stock <= 10 %}Còn {{ product.stock }}
-            {% else %}{{ product.stock }} sp{% endif %}
-          </div>
-        </div>
-
-        <div class="pm-price-row">
-          <span class="pm-price">{{ "{:,.0f}".format(product.price) }} ₫</span>
-          {% if product.original_price > product.price %}
-          <span class="pm-price-old">{{ "{:,.0f}".format(product.original_price) }} ₫</span>
-          <span class="pm-disc">-{{ ((product.original_price - product.price) / product.original_price * 100)|int }}%</span>
-          {% endif %}
-        </div>
-
-        <div class="pm-card-actions">
-          <a href="{{ url_for('admin_edit_product', product_id=product.id) }}" class="act-btn act-edit">
-            <svg viewBox="0 0 16 16" fill="none"><path d="M11.5 1.5l3 3L5 14H2v-3L11.5 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Sửa
-          </a>
-
-          {% if product.is_active %}
-          <form method="POST" action="{{ url_for('admin_delete_product', product_id=product.id) }}"
-                onsubmit="return confirm('Ẩn sản phẩm \"{{ product.name }}\" khỏi website?')">
-            <button type="submit" class="act-btn act-hide">
-              <svg viewBox="0 0 16 16" fill="none"><path d="M2 8s2.5-5 6-5 6 5 6 5-2.5 5-6 5-6-5-6-5z" stroke="currentColor" stroke-width="1.3"/><path d="M2 2l12 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-              Ẩn
-            </button>
-          </form>
-          {% else %}
-          <form method="POST" action="{{ url_for('admin_restore_product', product_id=product.id) }}"
-                onsubmit="return confirm('Khôi phục sản phẩm \"{{ product.name }}\"?')">
-            <button type="submit" class="act-btn act-restore">
-              <svg viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 100 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M2 4v4h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Khôi phục
-            </button>
-          </form>
-          <form method="POST" action="{{ url_for('admin_delete_product', product_id=product.id) }}"
-                onsubmit="return confirm('XÓA VĨNH VIỄN sản phẩm \"{{ product.name }}\"? Không thể hoàn tác!')">
-            <input type="hidden" name="hard_delete" value="true">
-            <button type="submit" class="act-btn act-del">
-              <svg viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V3h6v1M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Xóa
-            </button>
-          </form>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-
-  <!-- ── List view (hidden by default) ── -->
-  <div class="pm-table-wrap" id="pmList" style="display:none">
-    <table class="pm-table">
+  <div class="pm-table-container">
+    <button class="pm-scroll-btn pm-scroll-left" id="scrollLeft" onclick="scrollTable(-240)" title="Cuộn trái">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M10 4L6 8l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="pm-scroll-btn pm-scroll-right" id="scrollRight" onclick="scrollTable(240)" title="Cuộn phải">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  <div class="pm-table-wrap" id="pmTableWrap">
+    <table class="pm-table" id="pmTable">
       <thead>
         <tr>
-          <th style="width:56px">ID</th>
-          <th style="width:72px">Ảnh</th>
-          <th>Tên sản phẩm</th>
-          <th>Danh mục</th>
-          <th>Giá bán</th>
-          <th>Giá gốc</th>
-          <th>Đánh giá</th>
-          <th>Tồn kho</th>
+          <th class="th-check">
+            <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
+          </th>
+          <th class="th-img">Ảnh</th>
+          <th class="th-name" onclick="toggleSort('name')">
+            Tên sản phẩm <span class="sort-icon" data-col="name">↕</span>
+          </th>
+          <th onclick="toggleSort('cat')">Danh mục <span class="sort-icon" data-col="cat">↕</span></th>
+          <th onclick="toggleSort('price')">Giá <span class="sort-icon" data-col="price">↕</span></th>
+          <th onclick="toggleSort('stock')">Tồn kho <span class="sort-icon" data-col="stock">↕</span></th>
+          <th onclick="toggleSort('rating')">Đánh giá <span class="sort-icon" data-col="rating">↕</span></th>
           <th>Trạng thái</th>
           <th>Thao tác</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="pmTbody">
         {% for product in products %}
         <tr class="pm-row"
+            data-id="{{ product.id }}"
             data-name="{{ product.name|lower }}"
-            data-cat="{{ product.category }}"
+            data-cat="{{ product.category|lower }}"
             data-status="{{ 'active' if product.is_active else 'hidden' }}"
-            data-stock="{{ 'out' if product.stock == 0 else ('low' if product.stock <= 10 else 'in') }}">
-          <td class="td-id">{{ product.id }}</td>
-          <td>
+            data-stock-num="{{ product.stock }}"
+            data-stock="{{ 'out' if product.stock == 0 else ('low' if product.stock <= 10 else 'in') }}"
+            data-price="{{ product.price }}"
+            data-rating="{{ product.rating }}">
+
+          <td class="td-check">
+            <input type="checkbox" class="row-check" value="{{ product.id }}" onchange="updateBulkBar()">
+          </td>
+
+          <td class="td-img">
             {% if product.image %}
             <img src="{{ product.image }}" alt="{{ product.name }}" class="tbl-img">
             {% else %}
-            <div class="tbl-no-img">—</div>
+            <div class="tbl-no-img">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
             {% endif %}
           </td>
-          <td><strong class="tbl-name">{{ product.name }}</strong></td>
-          <td><span class="tbl-cat">{{ product.category }}</span></td>
-          <td><strong class="tbl-price">{{ "{:,.0f}".format(product.price) }} ₫</strong></td>
-          <td class="tbl-old">{{ "{:,.0f}".format(product.original_price) }} ₫</td>
-          <td>
-            <span class="tbl-star">★ {{ product.rating }}</span>
-            <span class="tbl-rc">({{ product.reviews }})</span>
+
+          <td class="td-name">
+            <div class="tbl-name-wrap">
+              <a href="{{ url_for('admin_edit_product', product_id=product.id) }}" class="tbl-name">{{ product.name }}</a>
+              <span class="tbl-id">#{{ product.id }}</span>
+            </div>
           </td>
+
           <td>
-            <span class="pm-stock-pill
+            <span class="tbl-cat">{{ product.category }}</span>
+          </td>
+
+          <td class="td-price">
+            <div class="price-wrap">
+              <span class="tbl-price">{{ "{:,.0f}".format(product.price) }}₫</span>
+              {% if product.original_price > product.price %}
+              <span class="tbl-disc">-{{ ((product.original_price - product.price) / product.original_price * 100)|int }}%</span>
+              {% endif %}
+            </div>
+          </td>
+
+          <td>
+            <span class="stock-pill
               {% if product.stock == 0 %}stock-out
               {% elif product.stock <= 10 %}stock-low
               {% else %}stock-ok{% endif %}">
               {% if product.stock == 0 %}Hết hàng
-              {% elif product.stock <= 10 %}{{ product.stock }} còn
+              {% elif product.stock <= 10 %}⚠ {{ product.stock }}
               {% else %}{{ product.stock }}{% endif %}
             </span>
           </td>
+
+          <td class="td-rating">
+            <span class="tbl-star">★ {{ product.rating }}</span>
+            <span class="tbl-rc">({{ product.reviews }})</span>
+          </td>
+
           <td>
-            <span class="pm-status-pill {% if product.is_active %}pill-active{% else %}pill-hidden{% endif %}">
-              {% if product.is_active %}Đang bán{% else %}Ẩn{% endif %}
+            <span class="status-pill {{ 'pill-on' if product.is_active else 'pill-off' }}">
+              {{ 'Đang bán' if product.is_active else 'Đang ẩn' }}
             </span>
           </td>
-          <td>
-            <div class="tbl-actions">
-              <a href="{{ url_for('admin_edit_product', product_id=product.id) }}" class="act-btn act-edit">Sửa</a>
-              {% if product.is_active %}
-              <form method="POST" action="{{ url_for('admin_delete_product', product_id=product.id) }}" style="display:inline"
-                    onsubmit="return confirm('Ẩn sản phẩm này?')">
-                <button type="submit" class="act-btn act-hide">Ẩn</button>
-              </form>
-              {% else %}
-              <form method="POST" action="{{ url_for('admin_restore_product', product_id=product.id) }}" style="display:inline"
-                    onsubmit="return confirm('Khôi phục sản phẩm này?')">
-                <button type="submit" class="act-btn act-restore">Khôi phục</button>
-              </form>
-              <form method="POST" action="{{ url_for('admin_delete_product', product_id=product.id) }}" style="display:inline"
-                    onsubmit="return confirm('XÓA VĨNH VIỄN?')">
-                <input type="hidden" name="hard_delete" value="true">
-                <button type="submit" class="act-btn act-del">Xóa</button>
-              </form>
-              {% endif %}
-            </div>
+
+          <td class="td-actions">
+            <a href="{{ url_for('admin_edit_product', product_id=product.id) }}" class="act-btn act-edit" title="Chỉnh sửa">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M11.5 1.5l3 3L5 14H2v-3L11.5 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Sửa
+            </a>
+
+            {% if product.is_active %}
+            <form method="POST" action="{{ url_for('admin_delete_product', product_id=product.id) }}"
+                  onsubmit="return confirm('Ẩn \"{{ product.name }}\"?')" style="display:inline">
+              <button type="submit" class="act-btn act-hide" title="Ẩn">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M2 8s2.5-5 6-5 6 5 6 5-2.5 5-6 5-6-5-6-5z" stroke="currentColor" stroke-width="1.3"/><path d="M2 2l12 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                Ẩn
+              </button>
+            </form>
+            {% else %}
+            <form method="POST" action="{{ url_for('admin_restore_product', product_id=product.id) }}"
+                  onsubmit="return confirm('Khôi phục?')" style="display:inline">
+              <button type="submit" class="act-btn act-restore">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 100 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M2 4v4h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Hiện
+              </button>
+            </form>
+            <form method="POST" action="{{ url_for('admin_delete_product', product_id=product.id) }}"
+                  onsubmit="return confirm('XÓA VĨNH VIỄN?')" style="display:inline">
+              <input type="hidden" name="hard_delete" value="true">
+              <button type="submit" class="act-btn act-del">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V2h6v2M3 4l1 10h8l1-10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Xóa
+              </button>
+            </form>
+            {% endif %}
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-  </div>
 
-  <!-- Empty state -->
-  <div class="pm-empty" id="pmEmpty" style="display:none">
-    <svg viewBox="0 0 48 48" fill="none"><rect x="8" y="8" width="32" height="32" rx="3" stroke="currentColor" stroke-width="2"/><path d="M16 24h16M24 16v16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <!-- Pagination -->
+    <div class="pm-pagination" id="pmPagination"></div>
+  </div>
+  </div><!-- /.pm-table-container -->
+
+  <div class="pm-empty-filter" id="pmEmpty" style="display:none">
+    <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="2"/><path d="M15 24h18M24 15l9 9-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <p>Không tìm thấy sản phẩm phù hợp</p>
+    <button onclick="resetFilters()">Xóa bộ lọc</button>
   </div>
 
   {% else %}
-  <div class="pm-empty">
-    <svg viewBox="0 0 48 48" fill="none"><rect x="8" y="12" width="32" height="32" rx="3" stroke="currentColor" stroke-width="2"/><path d="M16 12V8a8 8 0 0116 0v4M16 24h16M16 31h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-    <p>Chưa có sản phẩm nào</p>
-    <a href="{{ url_for('admin_add_product') }}" class="pm-btn-add" style="margin-top:1rem">+ Thêm sản phẩm đầu tiên</a>
+  <div class="pm-empty-full">
+    <svg viewBox="0 0 64 64" fill="none"><rect x="12" y="20" width="40" height="36" rx="3" stroke="currentColor" stroke-width="2"/><path d="M22 20V14a10 10 0 0120 0v6M22 36h20M22 44h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <h3>Chưa có sản phẩm nào</h3>
+    <a href="{{ url_for('admin_add_product') }}" class="pm-btn-add">+ Thêm sản phẩm đầu tiên</a>
   </div>
   {% endif %}
 
@@ -285,469 +263,631 @@
 .pm-root {
   font-family: 'Be Vietnam Pro', sans-serif;
   color: #2a2520;
-  padding: 1.5rem 2rem;
-  max-width: 1400px;
 }
 
-/* ── Top bar ── */
+/* ── Topbar ── */
 .pm-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-  gap: 1rem;
-  flex-wrap: wrap;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1.25rem; gap: 1rem; flex-wrap: wrap;
 }
-
-.pm-topbar-left { display: flex; align-items: center; gap: 0.875rem; }
-
-.pm-topbar-left h1 {
-  font-size: 1.375rem;
-  font-weight: 700;
-  color: #1a1a18;
-  letter-spacing: -0.01em;
-}
-
-.pm-count {
-  background: #f0ede8;
-  color: #7a7060;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 99px;
-}
+.pm-topbar-left { display: flex; align-items: center; gap: .75rem; }
+.pm-topbar-left h1 { font-size: 1.375rem; font-weight: 700; color: #1a1a18; }
+.pm-count { background: #f0ede8; color: #7a7060; font-size: .75rem; font-weight: 600; padding: 3px 10px; border-radius: 99px; }
+.pm-topbar-right { display: flex; align-items: center; gap: .625rem; }
 
 .pm-btn-add {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.25rem;
-  background: #1a1a18;
-  color: #fff;
-  border-radius: 8px;
-  font-family: 'Be Vietnam Pro', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: background 0.2s, transform 0.15s;
-  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .6rem 1.125rem; background: #1a1a18; color: #fff;
+  border-radius: 8px; font-size: .8125rem; font-weight: 600;
+  text-decoration: none; transition: background .2s; white-space: nowrap;
 }
-.pm-btn-add svg { width: 16px; height: 16px; }
-.pm-btn-add:hover { background: #2e2e2a; transform: translateY(-1px); }
+.pm-btn-add svg { width: 14px; height: 14px; }
+.pm-btn-add:hover { background: #2e2e2a; }
 
-/* ── Filter bar ── */
-.pm-filterbar {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
-  flex-wrap: wrap;
+.pm-btn-bulk {
+  display: none; align-items: center; gap: .4rem;
+  padding: .6rem 1rem; background: #fff; color: #2a2520;
+  border: 1.5px solid #e0dbd2; border-radius: 8px;
+  font-size: .8125rem; font-weight: 600; cursor: pointer;
 }
-
-.pm-search {
-  flex: 2;
-  min-width: 220px;
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-.pm-search svg {
-  position: absolute;
-  left: 0.75rem;
-  width: 16px;
-  height: 16px;
-  color: #a09880;
-  pointer-events: none;
-}
-.pm-search input {
-  width: 100%;
-  padding: 0.65rem 0.875rem 0.65rem 2.375rem;
-  border: 1.5px solid #e0dbd2;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-family: 'Be Vietnam Pro', sans-serif;
-  color: #2a2520;
-  background: #fff;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.pm-search input:focus { border-color: #b8922a; box-shadow: 0 0 0 3px rgba(184,146,42,.1); }
-.pm-search input::placeholder { color: #c0b9ae; }
-
-.pm-select {
-  padding: 0.65rem 2rem 0.65rem 0.875rem;
-  border: 1.5px solid #e0dbd2;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-family: 'Be Vietnam Pro', sans-serif;
-  color: #2a2520;
-  background: #fff;
-  outline: none;
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237a7060' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.625rem center;
-  transition: border-color 0.2s;
-  min-width: 150px;
-}
-.pm-select:focus { border-color: #b8922a; outline: none; }
-
-.pm-view-toggle {
-  display: flex;
-  border: 1.5px solid #e0dbd2;
-  border-radius: 8px;
-  overflow: hidden;
-}
-.view-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 36px;
-  background: #fff;
-  border: none;
-  cursor: pointer;
-  color: #a09880;
-  transition: all 0.15s;
-}
-.view-btn svg { width: 16px; height: 16px; }
-.view-btn:first-child { border-right: 1px solid #e0dbd2; }
-.view-btn.active, .view-btn:hover { background: #1a1a18; color: #fff; }
+.pm-btn-bulk svg { width: 14px; height: 14px; }
 
 /* ── Stats ── */
 .pm-stats {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  background: #fff;
-  border: 1.5px solid #e8e3db;
-  border-radius: 10px;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.5rem;
+  display: flex; gap: .75rem; margin-bottom: 1.125rem; flex-wrap: wrap;
 }
-.pm-stat { text-align: center; }
-.stat-val { display: block; font-size: 1.375rem; font-weight: 700; color: #1a1a18; }
-.stat-label { font-size: 0.75rem; color: #7a7060; text-transform: uppercase; letter-spacing: 0.06em; }
-.stat-sep { width: 1px; height: 2rem; background: #e8e3db; }
+.pm-stat {
+  flex: 1; min-width: 80px;
+  background: #fff; border: 1.5px solid #e8e3db;
+  border-radius: 10px; padding: .875rem 1rem;
+  text-align: center; cursor: pointer; transition: all .18s;
+}
+.pm-stat:hover { border-color: #1a1a18; transform: translateY(-1px); }
+.stat-num { display: block; font-size: 1.375rem; font-weight: 700; color: #1a1a18; }
+.stat-lbl { font-size: .7rem; color: #7a7060; text-transform: uppercase; letter-spacing: .06em; }
+.pm-stat.stat-green .stat-num { color: #16a34a; }
+.pm-stat.stat-red .stat-num  { color: #dc2626; }
+.pm-stat.stat-orange .stat-num { color: #d97706; }
+.pm-stat.stat-red2 .stat-num { color: #dc2626; }
 
-/* ── Product Grid ── */
-.pm-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.25rem;
+/* ── Filter bar ── */
+.pm-filterbar {
+  display: flex; align-items: center; gap: .625rem;
+  margin-bottom: 1rem; flex-wrap: wrap;
 }
-
-.pm-card {
-  background: #fff;
-  border: 1.5px solid #ede9e3;
-  border-radius: 12px;
-  overflow: hidden;
-  transition: transform .22s cubic-bezier(.4,0,.2,1), box-shadow .22s;
-  display: flex;
-  flex-direction: column;
-}
-.pm-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0,0,0,.1);
-  border-color: #d8d0c8;
-}
-
-.pm-card-img {
-  position: relative;
-  aspect-ratio: 4/3;
-  overflow: hidden;
-  background: #f5f4f1;
-}
-.pm-card-img img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  transition: transform .4s cubic-bezier(.4,0,.2,1);
-}
-.pm-card:hover .pm-card-img img { transform: scale(1.06); }
-
-.pm-no-img {
-  width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
-  color: #c0b9ae;
-}
-.pm-no-img svg { width: 40px; height: 40px; }
-
-.pm-status-badge {
-  position: absolute; top: 10px; left: 10px;
-  font-size: .6875rem; font-weight: 700;
-  padding: 3px 10px; border-radius: 99px;
-  letter-spacing: .03em;
-}
-.badge-active { background: rgba(22,163,74,.92); color: #fff; }
-.badge-hidden { background: rgba(220,38,38,.88); color: #fff; }
-
-.pm-card-hover {
-  position: absolute; top: 10px; right: 10px;
-  display: flex; flex-direction: column; gap: 6px;
-  opacity: 0; transform: translateX(8px);
-  transition: opacity .2s, transform .2s;
-}
-.pm-card:hover .pm-card-hover { opacity: 1; transform: translateX(0); }
-
-.hover-btn {
-  width: 32px; height: 32px;
-  background: rgba(255,255,255,.96);
-  border-radius: 7px;
-  display: flex; align-items: center; justify-content: center;
-  color: #3a3530; text-decoration: none;
-  transition: all .15s;
-  box-shadow: 0 2px 8px rgba(0,0,0,.12);
-}
-.hover-btn svg { width: 15px; height: 15px; }
-.hover-btn:hover { background: #1a1a18; color: #fff; }
-
-/* Card body */
-.pm-card-body {
-  padding: 1rem;
-  display: flex; flex-direction: column; flex: 1;
-}
-
-.pm-cat-tag {
-  display: inline-block;
-  font-size: .65rem; font-weight: 600;
-  color: #b8922a; background: rgba(184,146,42,.1);
-  text-transform: uppercase; letter-spacing: .08em;
-  padding: 2px 8px; border-radius: 99px;
-  margin-bottom: .5rem; width: fit-content;
-}
-
-.pm-prod-name {
-  font-size: .875rem; font-weight: 600;
-  color: #1a1a18; line-height: 1.4;
-  margin-bottom: .625rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  flex: 1;
-}
-
-.pm-meta {
+.pm-search {
+  flex: 1; min-width: 200px; position: relative;
   display: flex; align-items: center;
-  justify-content: space-between;
-  margin-bottom: .625rem; gap: .5rem;
+}
+.pm-search svg { position: absolute; left: .75rem; width: 15px; height: 15px; color: #a09880; pointer-events: none; }
+.pm-search input {
+  width: 100%; padding: .625rem 2rem .625rem 2.25rem;
+  border: 1.5px solid #e0dbd2; border-radius: 8px;
+  font-size: .875rem; font-family: inherit; color: #2a2520;
+  background: #fff; outline: none; transition: border-color .2s;
+}
+.pm-search input:focus { border-color: #b8922a; box-shadow: 0 0 0 3px rgba(184,146,42,.1); }
+.pm-search input::placeholder { color: #c0b9ae; }
+.search-clear {
+  position: absolute; right: .625rem; background: none; border: none;
+  color: #a09880; cursor: pointer; font-size: .875rem; padding: 2px 4px;
+}
+.search-clear:hover { color: #2a2520; }
+
+.pm-select {
+  padding: .625rem 2rem .625rem .75rem; border: 1.5px solid #e0dbd2;
+  border-radius: 8px; font-size: .8125rem; font-family: inherit;
+  color: #2a2520; background: #fff; outline: none; cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237a7060' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right .5rem center;
+  transition: border-color .2s; min-width: 130px;
+}
+.pm-select:focus { border-color: #b8922a; }
+
+.pm-btn-reset {
+  width: 36px; height: 36px; background: #fff; border: 1.5px solid #e0dbd2;
+  border-radius: 8px; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; color: #a09880; transition: all .15s; flex-shrink: 0;
+}
+.pm-btn-reset svg { width: 13px; height: 13px; }
+.pm-btn-reset:hover { background: #fff5f5; border-color: #fecaca; color: #dc2626; }
+
+/* ── Bulk bar ── */
+.pm-bulk-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #1a1a18; color: #fff; border-radius: 10px;
+  padding: .75rem 1.25rem; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap;
+}
+.bulk-info { font-size: .875rem; }
+.bulk-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+.bulk-btn {
+  padding: .4rem .875rem; border-radius: 7px; border: none;
+  font-family: inherit; font-size: .75rem; font-weight: 600; cursor: pointer;
+  transition: all .15s;
+}
+.bulk-restore { background: #16a34a; color: #fff; }
+.bulk-restore:hover { background: #15803d; }
+.bulk-hide    { background: #ea580c; color: #fff; }
+.bulk-hide:hover { background: #c2410c; }
+.bulk-del     { background: #dc2626; color: #fff; }
+.bulk-del:hover { background: #b91c1c; }
+.bulk-cancel  { background: rgba(255,255,255,.15); color: #fff; }
+.bulk-cancel:hover { background: rgba(255,255,255,.25); }
+
+/* ── Table container with scroll buttons ── */
+.pm-table-container {
+  position: relative;
+}
+.pm-scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 32px; height: 32px;
+  background: #fff;
+  border: 1.5px solid #e0dbd2;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #2a2520;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+  transition: all .18s;
+  opacity: 0;
+  pointer-events: none;
+}
+.pm-scroll-btn svg { width: 14px; height: 14px; }
+.pm-scroll-btn:hover { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+.pm-scroll-left  { left: -14px; }
+.pm-scroll-right { right: -14px; }
+.pm-scroll-btn.visible { opacity: 1; pointer-events: auto; }
+
+/* ── Table ── */
+.pm-table-wrap {
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  background: #fff; border: 1.5px solid #e8e3db;
+  border-radius: 12px;
 }
 
-.pm-rating { display: flex; align-items: center; gap: .25rem; font-size: .8125rem; color: #2a2520; }
-.pm-rating .star { color: #f59e0b; font-size: .875rem; }
-.pm-rating .rc { color: #a09880; font-size: .72rem; }
+.pm-table {
+  width: 100%; border-collapse: collapse; font-size: .8125rem;
+}
 
-.pm-stock-pill {
-  font-size: .68rem; font-weight: 700;
-  padding: 2px 8px; border-radius: 99px;
-  letter-spacing: .02em;
+.pm-table thead tr { background: #faf9f7; }
+.pm-table th {
+  padding: .75rem 1rem; text-align: left;
+  font-size: .7rem; font-weight: 700; color: #7a7060;
+  text-transform: uppercase; letter-spacing: .06em;
+  border-bottom: 1.5px solid #e8e3db;
+  white-space: nowrap; cursor: pointer; user-select: none;
+}
+.pm-table th:not([onclick]) { cursor: default; }
+.pm-table th:hover:not(.th-check):not(.th-img):not([onclick=""]) { color: #1a1a18; }
+
+.sort-icon { opacity: .4; font-size: .75rem; }
+.sort-icon.asc  { opacity: 1; color: #b8922a; }
+.sort-icon.desc { opacity: 1; color: #b8922a; }
+
+.th-check { width: 40px; }
+.th-img   { width: 64px; }
+.th-name  { min-width: 200px; }
+
+.pm-table td {
+  padding: .75rem 1rem; border-bottom: 1px solid #f0ede8;
+  vertical-align: middle; color: #2a2520;
+}
+.pm-row:last-child td { border-bottom: none; }
+.pm-row:hover td { background: #faf9f7; }
+.pm-row.selected td { background: #fffbeb; }
+
+.td-check input { width: 15px; height: 15px; cursor: pointer; accent-color: #b8922a; }
+
+.td-img { padding: .5rem .75rem; }
+.tbl-img {
+  width: 48px; height: 48px; object-fit: cover;
+  border-radius: 8px; border: 1.5px solid #e8e3db;
+  display: block;
+}
+.tbl-no-img {
+  width: 48px; height: 48px; border-radius: 8px;
+  border: 1.5px solid #e8e3db; background: #f5f4f1;
+  display: flex; align-items: center; justify-content: center; color: #c0b9ae;
+}
+.tbl-no-img svg { width: 20px; height: 20px; }
+
+.td-name { max-width: 260px; }
+.tbl-name-wrap { display: flex; flex-direction: column; gap: 2px; }
+.tbl-name {
+  font-weight: 600; color: #1a1a18; text-decoration: none;
+  font-size: .875rem; line-height: 1.3;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  display: block; max-width: 240px;
+}
+.tbl-name:hover { color: #b8922a; }
+.tbl-id { font-size: .7rem; color: #a09880; }
+
+.tbl-cat {
+  display: inline-block; font-size: .72rem; font-weight: 500;
+  color: #7a7060; background: #f0ede8;
+  padding: 2px 8px; border-radius: 4px;
+}
+
+.td-price { white-space: nowrap; }
+.price-wrap { display: flex; align-items: center; gap: .375rem; }
+.tbl-price { font-weight: 700; color: #1a1a18; font-size: .875rem; }
+.tbl-disc {
+  font-size: .65rem; font-weight: 700;
+  background: #fff3cd; color: #b45309;
+  padding: 2px 5px; border-radius: 3px;
+}
+
+.stock-pill {
+  display: inline-block; font-size: .72rem; font-weight: 700;
+  padding: 3px 9px; border-radius: 99px;
 }
 .stock-ok  { background: #f0faf4; color: #16a34a; }
 .stock-low { background: #fffbeb; color: #d97706; }
 .stock-out { background: #fff5f5; color: #dc2626; }
 
-.pm-price-row {
-  display: flex; align-items: center;
-  gap: .375rem; margin-bottom: 1rem; flex-wrap: wrap;
-}
-.pm-price { font-size: 1rem; font-weight: 700; color: #1a1a18; }
-.pm-price-old { font-size: .75rem; color: #a09880; text-decoration: line-through; }
-.pm-disc {
-  font-size: .68rem; font-weight: 700;
-  background: #fff3cd; color: #b45309;
-  padding: 2px 6px; border-radius: 4px;
-}
+.td-rating { white-space: nowrap; }
+.tbl-star { color: #f59e0b; font-weight: 600; font-size: .8125rem; }
+.tbl-rc { color: #a09880; font-size: .72rem; margin-left: 2px; }
 
-/* Card actions */
-.pm-card-actions {
-  display: flex; gap: .375rem; flex-wrap: wrap;
-  padding-top: .75rem;
-  border-top: 1px solid #f0ede8;
-  margin-top: auto;
+.status-pill {
+  display: inline-block; font-size: .72rem; font-weight: 700;
+  padding: 3px 10px; border-radius: 4px;
 }
+.pill-on  { background: #f0faf4; color: #16a34a; }
+.pill-off { background: #fff5f5; color: #dc2626; }
 
-/* Action buttons */
+.td-actions { white-space: nowrap; }
 .act-btn {
   display: inline-flex; align-items: center; gap: .25rem;
-  padding: .4rem .75rem;
-  border-radius: 7px; font-size: .75rem;
-  font-family: 'Be Vietnam Pro', sans-serif; font-weight: 600;
+  padding: .35rem .625rem; border-radius: 6px;
+  font-size: .72rem; font-family: inherit; font-weight: 600;
   cursor: pointer; border: 1.5px solid transparent;
-  text-decoration: none; transition: all .15s;
-  white-space: nowrap; background: none;
+  text-decoration: none; transition: all .15s; background: none;
 }
-.act-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+.act-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
 
 .act-edit    { border-color: #e0dbd4; color: #3a3530; background: #faf9f7; }
 .act-edit:hover    { background: #1a1a18; border-color: #1a1a18; color: #fff; }
-
 .act-hide    { border-color: #fed7aa; color: #c2410c; background: #fff7f3; }
 .act-hide:hover    { background: #ea580c; border-color: #ea580c; color: #fff; }
-
 .act-restore { border-color: #bbf7d0; color: #15803d; background: #f0faf4; }
 .act-restore:hover { background: #16a34a; border-color: #16a34a; color: #fff; }
-
 .act-del     { border-color: #fecaca; color: #dc2626; background: #fff5f5; }
 .act-del:hover     { background: #dc2626; border-color: #dc2626; color: #fff; }
 
-/* ── Table / List view ── */
-.pm-table-wrap {
-  background: #fff;
-  border: 1.5px solid #e8e3db;
-  border-radius: 10px;
-  overflow: hidden;
+/* ── Pagination ── */
+.pm-pagination {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .875rem 1.25rem; border-top: 1.5px solid #f0ede8;
+  flex-wrap: wrap; gap: .75rem;
+}
+.pg-info { font-size: .8rem; color: #7a7060; }
+.pg-btns { display: flex; gap: .375rem; }
+.pg-btn {
+  min-width: 34px; height: 34px; padding: 0 .625rem;
+  border: 1.5px solid #e0dbd2; border-radius: 7px;
+  background: #fff; color: #2a2520; font-size: .8125rem;
+  font-family: inherit; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.pg-btn:hover:not(:disabled) { background: #1a1a18; border-color: #1a1a18; color: #fff; }
+.pg-btn.active { background: #1a1a18; border-color: #1a1a18; color: #fff; pointer-events: none; }
+.pg-btn:disabled { opacity: .4; cursor: not-allowed; }
+.pg-size { font-size: .8rem; color: #7a7060; display: flex; align-items: center; gap: .375rem; }
+.pg-size select {
+  padding: .3rem .5rem; border: 1.5px solid #e0dbd2;
+  border-radius: 6px; font-size: .8rem; font-family: inherit;
+  outline: none; cursor: pointer;
 }
 
-.pm-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.8125rem;
+/* ── Empty ── */
+.pm-empty-filter {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 3rem 1rem; gap: .875rem; color: #a09880;
+  background: #fff; border: 1.5px solid #e8e3db; border-radius: 12px;
+}
+.pm-empty-filter svg { width: 48px; height: 48px; }
+.pm-empty-filter p { font-size: .9375rem; }
+.pm-empty-filter button {
+  padding: .6rem 1.5rem; background: #f0ede8; border: none;
+  border-radius: 8px; font-family: inherit; font-size: .875rem;
+  font-weight: 600; cursor: pointer; color: #2a2520;
 }
 
-.pm-table th {
-  padding: 0.75rem 1rem;
-  text-align: left;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #7a7060;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: #faf9f7;
-  border-bottom: 1.5px solid #e8e3db;
+.pm-empty-full {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 5rem 1rem; gap: 1rem; color: #a09880;
+  background: #fff; border: 1.5px solid #e8e3db; border-radius: 12px;
+}
+.pm-empty-full svg { width: 64px; height: 64px; }
+.pm-empty-full h3 { font-size: 1.125rem; font-weight: 700; color: #1a1a18; }
+
+@media (max-width: 1024px) {
+  .pm-table { font-size: .75rem; }
+  .pm-table th, .pm-table td { padding: .625rem .75rem; }
+  .td-name { max-width: 180px; }
+  .tbl-name { max-width: 160px; }
 }
 
-.pm-table td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #f0ede8;
-  vertical-align: middle;
-  color: #2a2520;
-}
-
-.pm-table tr:last-child td { border-bottom: none; }
-.pm-table tr:hover td { background: #faf9f7; }
-
-.td-id { color: #a09880; font-size: 0.75rem; }
-
-.tbl-img {
-  width: 52px;
-  height: 52px;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 1px solid #e8e3db;
-}
-.tbl-no-img { color: #c0b9ae; }
-
-.tbl-name { font-size: 0.875rem; font-weight: 600; color: #1a1a18; }
-.tbl-cat { font-size: 0.75rem; color: #7a7060; }
-.tbl-price { font-size: 0.9rem; font-weight: 700; color: #1a1a18; }
-.tbl-old { font-size: 0.75rem; color: #a09880; text-decoration: line-through; }
-.tbl-star { color: #f59e0b; font-size: 0.8125rem; }
-.tbl-rc { color: #a09880; font-size: 0.75rem; }
-
-.tbl-actions { display: flex; gap: 0.375rem; flex-wrap: wrap; }
-
-.pm-status-pill {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-.pill-active { background: #f0faf4; color: #16a34a; }
-.pill-hidden { background: #fff5f5; color: #dc2626; }
-
-/* ── Empty state ── */
-.pm-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 1rem;
-  gap: 0.875rem;
-  color: #a09880;
-}
-.pm-empty svg { width: 56px; height: 56px; color: #d0c8bc; }
-.pm-empty p { font-size: 0.9375rem; font-weight: 500; }
-
-/* ── Responsive ── */
 @media (max-width: 768px) {
-  .pm-root { padding: 1rem; }
-  .pm-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
-  .pm-filterbar { gap: 0.5rem; }
+  .pm-filterbar { gap: .5rem; }
   .pm-select { min-width: 0; flex: 1; }
-  .pm-stats { gap: 1rem; padding: 0.875rem 1rem; overflow-x: auto; }
-}
-
-@media (max-width: 480px) {
-  .pm-grid { grid-template-columns: 1fr 1fr; gap: 0.625rem; }
-  .pm-card-body { padding: 0.625rem; }
-  .pm-prod-name { font-size: 0.8125rem; }
-  .pm-price { font-size: 0.9rem; }
+  .pm-stats { gap: .5rem; }
+  .pm-stat { padding: .625rem .75rem; }
+  .stat-num { font-size: 1.125rem; }
+  /* Hide less important columns on mobile */
+  .pm-table .th-hide-mobile,
+  .pm-table .td-hide-mobile { display: none; }
 }
 </style>
 
 <script>
-// Filter logic
-const searchInput  = document.getElementById('searchInput');
-const filterCat    = document.getElementById('filterCat');
-const filterStatus = document.getElementById('filterStatus');
-const filterStock  = document.getElementById('filterStock');
-const pmEmpty      = document.getElementById('pmEmpty');
-const pmGrid       = document.getElementById('pmGrid');
-const pmList       = document.getElementById('pmList');
+// ── Data & State ──────────────────────────────
+var ALL_ROWS = [];
+var VISIBLE  = [];
+var PAGE     = 1;
+var PER_PAGE = 25;
+var SORT_COL = '';
+var SORT_DIR = 'asc';
 
-function filterProducts() {
-  const q      = searchInput.value.toLowerCase().trim();
-  const cat    = filterCat.value;
-  const status = filterStatus.value;
-  const stock  = filterStock.value;
-
-  // Grid cards
-  let visibleGrid = 0;
-  document.querySelectorAll('.pm-card').forEach(card => {
-    const match =
-      (!q      || card.dataset.name.includes(q) || card.dataset.cat.toLowerCase().includes(q)) &&
-      (!cat    || card.dataset.cat === cat) &&
-      (!status || card.dataset.status === status) &&
-      (!stock  || card.dataset.stock === stock);
-    card.style.display = match ? '' : 'none';
-    if (match) visibleGrid++;
-  });
-
-  // Table rows
-  document.querySelectorAll('.pm-row').forEach(row => {
-    const match =
-      (!q      || row.dataset.name.includes(q) || row.dataset.cat.toLowerCase().includes(q)) &&
-      (!cat    || row.dataset.cat === cat) &&
-      (!status || row.dataset.status === status) &&
-      (!stock  || row.dataset.stock === stock);
-    row.style.display = match ? '' : 'none';
-  });
-
-  if (pmEmpty) pmEmpty.style.display = visibleGrid === 0 ? 'flex' : 'none';
+function init() {
+  ALL_ROWS = Array.from(document.querySelectorAll('.pm-row'));
+  VISIBLE  = ALL_ROWS.slice();
+  calcStats();
+  renderPage();
 }
 
-searchInput?.addEventListener('input', filterProducts);
-filterCat?.addEventListener('change', filterProducts);
-filterStatus?.addEventListener('change', filterProducts);
-filterStock?.addEventListener('change', filterProducts);
+// ── Stats (count from DOM) ──
+function calcStats() {
+  var active = 0, hidden = 0, low = 0, out = 0;
+  ALL_ROWS.forEach(function(r) {
+    if (r.dataset.status === 'active') active++;
+    else hidden++;
+    if (r.dataset.stock === 'low') low++;
+    if (r.dataset.stock === 'out') out++;
+  });
+  document.getElementById('statActive').textContent = active;
+  document.getElementById('statHidden').textContent = hidden;
+  document.getElementById('statLow').textContent = low;
+  document.getElementById('statOut').textContent = out;
+}
 
-// View toggle
-const viewGrid = document.getElementById('viewGrid');
-const viewList = document.getElementById('viewList');
+// ── Filter ──
+function filterProducts() {
+  var q      = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  var cat    = document.getElementById('filterCat').value;
+  var status = document.getElementById('filterStatus').value;
+  var stock  = document.getElementById('filterStock').value;
 
-viewGrid?.addEventListener('click', () => {
-  if (pmGrid) pmGrid.style.display = '';
-  if (pmList) pmList.style.display = 'none';
-  viewGrid.classList.add('active');
-  viewList.classList.remove('active');
+  // Show/hide clear button
+  document.getElementById('searchClear').style.display = q ? 'block' : 'none';
+
+  VISIBLE = ALL_ROWS.filter(function(r) {
+    var matchQ = !q || r.dataset.name.indexOf(q) !== -1
+                    || r.dataset.cat.indexOf(q) !== -1
+                    || ('#' + r.dataset.id).indexOf(q) !== -1;
+    return matchQ
+      && (!cat    || r.dataset.cat === cat.toLowerCase())
+      && (!status || r.dataset.status === status)
+      && (!stock  || r.dataset.stock === stock);
+  });
+
+  if (SORT_COL) applySortToVisible();
+
+  PAGE = 1;
+  renderPage();
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClear').style.display = 'none';
+  filterProducts();
+}
+
+function resetFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('filterCat').value = '';
+  document.getElementById('filterStatus').value = '';
+  document.getElementById('filterStock').value = '';
+  document.getElementById('sortBy').value = '';
+  document.getElementById('searchClear').style.display = 'none';
+  SORT_COL = ''; SORT_DIR = 'asc';
+  document.querySelectorAll('.sort-icon').forEach(function(i) { i.textContent = '↕'; i.className = 'sort-icon'; });
+  VISIBLE = ALL_ROWS.slice();
+  PAGE = 1;
+  renderPage();
+}
+
+function applyQuickFilter(type, val) {
+  if (type === 'status') {
+    document.getElementById('filterStatus').value = val;
+  } else if (type === 'stock') {
+    document.getElementById('filterStock').value = val;
+  }
+  filterProducts();
+}
+
+// ── Sort ──
+function toggleSort(col) {
+  if (SORT_COL === col) {
+    SORT_DIR = SORT_DIR === 'asc' ? 'desc' : 'asc';
+  } else {
+    SORT_COL = col; SORT_DIR = 'asc';
+  }
+  document.querySelectorAll('.sort-icon').forEach(function(i) {
+    var c = i.getAttribute('data-col');
+    if (c === col) { i.textContent = SORT_DIR === 'asc' ? '↑' : '↓'; i.className = 'sort-icon ' + SORT_DIR; }
+    else { i.textContent = '↕'; i.className = 'sort-icon'; }
+  });
+  applySortToVisible();
+  PAGE = 1;
+  renderPage();
+}
+
+function applySortToVisible() {
+  VISIBLE.sort(function(a, b) {
+    var av, bv;
+    if (SORT_COL === 'name')   { av = a.dataset.name; bv = b.dataset.name; }
+    else if (SORT_COL === 'cat')   { av = a.dataset.cat;  bv = b.dataset.cat; }
+    else if (SORT_COL === 'price') { av = parseFloat(a.dataset.price); bv = parseFloat(b.dataset.price); }
+    else if (SORT_COL === 'stock') { av = parseInt(a.dataset.stockNum); bv = parseInt(b.dataset.stockNum); }
+    else if (SORT_COL === 'rating'){ av = parseFloat(a.dataset.rating); bv = parseFloat(b.dataset.rating); }
+    else return 0;
+    if (av < bv) return SORT_DIR === 'asc' ? -1 : 1;
+    if (av > bv) return SORT_DIR === 'asc' ? 1 : -1;
+    return 0;
+  });
+}
+
+function sortProducts() {
+  var v = document.getElementById('sortBy').value;
+  if (!v) { SORT_COL = ''; SORT_DIR = 'asc'; VISIBLE = ALL_ROWS.slice(); }
+  else if (v === 'price_asc')  { SORT_COL = 'price'; SORT_DIR = 'asc'; }
+  else if (v === 'price_desc') { SORT_COL = 'price'; SORT_DIR = 'desc'; }
+  else if (v === 'stock_asc')  { SORT_COL = 'stock'; SORT_DIR = 'asc'; }
+  else if (v === 'name_az')    { SORT_COL = 'name';  SORT_DIR = 'asc'; }
+  else if (v === 'rating_desc'){ SORT_COL = 'rating'; SORT_DIR = 'desc'; }
+  if (SORT_COL) applySortToVisible();
+  PAGE = 1;
+  renderPage();
+}
+
+// ── Pagination & Render ──
+function renderPage() {
+  var tbody  = document.getElementById('pmTbody');
+  var pgWrap = document.getElementById('pmPagination');
+  var empty  = document.getElementById('pmEmpty');
+
+  // Hide all
+  ALL_ROWS.forEach(function(r) { r.style.display = 'none'; });
+
+  if (VISIBLE.length === 0) {
+    if (empty) empty.style.display = 'flex';
+    if (pgWrap) pgWrap.innerHTML = '';
+    document.getElementById('visibleCount').textContent = '0 sản phẩm';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+
+  // Reorder DOM
+  VISIBLE.forEach(function(r) { tbody.appendChild(r); });
+
+  var total  = VISIBLE.length;
+  var start  = (PAGE - 1) * PER_PAGE;
+  var end    = Math.min(start + PER_PAGE, total);
+  var pages  = Math.ceil(total / PER_PAGE);
+
+  for (var i = start; i < end; i++) {
+    VISIBLE[i].style.display = '';
+  }
+
+  document.getElementById('visibleCount').textContent = total + ' sản phẩm';
+
+  // Pagination controls
+  if (!pgWrap) return;
+  if (pages <= 1 && total <= PER_PAGE) { pgWrap.innerHTML = ''; return; }
+
+  var html = '<span class="pg-info">Hiển thị ' + (start+1) + '–' + end + ' / ' + total + '</span>';
+  html += '<div class="pg-btns">';
+  html += '<button class="pg-btn" onclick="goPage(' + (PAGE-1) + ')"' + (PAGE===1?' disabled':'') + '>‹</button>';
+
+  for (var p = 1; p <= pages; p++) {
+    if (pages > 7 && p > 2 && p < pages - 1 && Math.abs(p - PAGE) > 1) {
+      if (p === 3 || p === pages - 2) html += '<span class="pg-btn" style="pointer-events:none">…</span>';
+      continue;
+    }
+    html += '<button class="pg-btn' + (p===PAGE?' active':'') + '" onclick="goPage(' + p + ')">' + p + '</button>';
+  }
+  html += '<button class="pg-btn" onclick="goPage(' + (PAGE+1) + ')"' + (PAGE===pages?' disabled':'') + '>›</button>';
+  html += '</div>';
+  html += '<div class="pg-size">Mỗi trang: <select onchange="changePerPage(this.value)">';
+  [10,25,50,100].forEach(function(n) {
+    html += '<option value="' + n + '"' + (n===PER_PAGE?' selected':'') + '>' + n + '</option>';
+  });
+  html += '</select></div>';
+  pgWrap.innerHTML = html;
+}
+
+function goPage(p) {
+  var pages = Math.ceil(VISIBLE.length / PER_PAGE);
+  if (p < 1 || p > pages) return;
+  PAGE = p;
+  renderPage();
+  var wrap = document.getElementById('pmTableWrap');
+  if (wrap) wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function changePerPage(n) {
+  PER_PAGE = parseInt(n);
+  PAGE = 1;
+  renderPage();
+}
+
+// ── Bulk select ──
+function toggleSelectAll(cb) {
+  var start = (PAGE - 1) * PER_PAGE;
+  var end   = Math.min(start + PER_PAGE, VISIBLE.length);
+  for (var i = start; i < end; i++) {
+    var chk = VISIBLE[i].querySelector('.row-check');
+    if (chk) chk.checked = cb.checked;
+    VISIBLE[i].classList.toggle('selected', cb.checked);
+  }
+  updateBulkBar();
+}
+
+function updateBulkBar() {
+  var checked = document.querySelectorAll('.row-check:checked');
+  var bar     = document.getElementById('bulkActionBar');
+  var btn     = document.getElementById('bulkBar');
+  var cnt     = checked.length;
+
+  document.querySelectorAll('.pm-row').forEach(function(r) {
+    var chk = r.querySelector('.row-check');
+    r.classList.toggle('selected', chk && chk.checked);
+  });
+
+  if (cnt > 0) {
+    bar.style.display = 'flex';
+    btn.style.display = 'inline-flex';
+    document.getElementById('bulkCount').textContent = cnt;
+    document.getElementById('selectedCount').textContent = cnt;
+  } else {
+    bar.style.display = 'none';
+    btn.style.display = 'none';
+    document.getElementById('selectAll').checked = false;
+  }
+}
+
+function showBulkActions() {
+  document.getElementById('bulkActionBar').scrollIntoView({ behavior: 'smooth' });
+}
+
+function cancelBulk() {
+  document.querySelectorAll('.row-check, #selectAll').forEach(function(c) { c.checked = false; });
+  document.querySelectorAll('.pm-row').forEach(function(r) { r.classList.remove('selected'); });
+  document.getElementById('bulkActionBar').style.display = 'none';
+  document.getElementById('bulkBar').style.display = 'none';
+}
+
+function bulkAction(action) {
+  var ids = Array.from(document.querySelectorAll('.row-check:checked')).map(function(c) { return c.value; });
+  if (!ids.length) return;
+  var msg = action === 'delete'
+    ? 'XÓA VĨNH VIỄN ' + ids.length + ' sản phẩm? Không thể hoàn tác!'
+    : (action === 'hide' ? 'Ẩn ' + ids.length + ' sản phẩm?' : 'Hiển thị ' + ids.length + ' sản phẩm?');
+  if (!confirm(msg)) return;
+  // Submit form
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '/admin/products/bulk-action';
+  var inp1 = document.createElement('input'); inp1.type = 'hidden'; inp1.name = 'action'; inp1.value = action;
+  var inp2 = document.createElement('input'); inp2.type = 'hidden'; inp2.name = 'ids'; inp2.value = ids.join(',');
+  form.appendChild(inp1); form.appendChild(inp2);
+  document.body.appendChild(form); form.submit();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  init();
+  initScrollBtns();
 });
 
-viewList?.addEventListener('click', () => {
-  if (pmGrid) pmGrid.style.display = 'none';
-  if (pmList) pmList.style.display = '';
-  viewList.classList.add('active');
-  viewGrid.classList.remove('active');
-});
+function initScrollBtns() {
+  var wrap = document.getElementById('pmTableWrap');
+  if (!wrap) return;
+
+  var btnL = document.getElementById('scrollLeft');
+  var btnR = document.getElementById('scrollRight');
+
+  function updateBtns() {
+    var canLeft  = wrap.scrollLeft > 10;
+    var canRight = wrap.scrollLeft < (wrap.scrollWidth - wrap.clientWidth - 10);
+    if (btnL) btnL.classList.toggle('visible', canLeft);
+    if (btnR) btnR.classList.toggle('visible', canRight);
+  }
+
+  wrap.addEventListener('scroll', updateBtns);
+  window.addEventListener('resize', updateBtns);
+  setTimeout(updateBtns, 300);
+}
+
+window.scrollTable = function(amount) {
+  var wrap = document.getElementById('pmTableWrap');
+  if (wrap) wrap.scrollBy({ left: amount, behavior: 'smooth' });
+  setTimeout(function() {
+    var btnL = document.getElementById('scrollLeft');
+    var btnR = document.getElementById('scrollRight');
+    var canLeft  = wrap.scrollLeft > 10;
+    var canRight = wrap.scrollLeft < (wrap.scrollWidth - wrap.clientWidth - 10);
+    if (btnL) btnL.classList.toggle('visible', canLeft);
+    if (btnR) btnR.classList.toggle('visible', canRight);
+  }, 350);
+};
 </script>
-
 {% endblock %}

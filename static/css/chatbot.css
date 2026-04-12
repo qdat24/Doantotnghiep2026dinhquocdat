@@ -1,511 +1,118 @@
-/* ============================================
-   DQD Nội Thất — Chatbot Widget Styles
-   ============================================
+/*
+  DQD Chatbot CSS — targets chatbot.js selectors
+  chatbot.js tạo: #dqd-chat, .dqd-toggle, #dqd-window, .dqd-window
+  KHÔNG phải .chatbot-container, .chatbot-toggle-btn (đó là phiên bản cũ)
+*/
 
-   FIX 1: Màu xanh #3498db → DQD tokens (dark #1a1a18, gold, sage)
-   FIX 2: display:none + .active pattern (tránh hidden attribute conflict)
-   FIX 3: Dark mode dùng warm DQD palette (#2a2119 / #3d3229)
-   FIX 4: @keyframes pulse / fadeIn duplicate → đổi tên riêng
-   FIX 5: Font → Be Vietnam Pro (nhất quán với toàn site)
-   FIX 6: Touch target ≥ 44px trên mobile
-   FIX 7: prefers-reduced-motion guard cho animations
-   ============================================ */
+/* ══ Position stack từ dưới lên ══
+   bottom 20px  → 🌐 Lang (#dqd-lang-btn)
+   bottom 80px  → 💬 Chatbot (#dqd-chat)
+*/
 
-/* ── Variables ──────────────────────────────── */
-.chatbot-container {
-  --cb-dk:      #1a1a18;
-  --cb-gold:    #b8922a;
-  --cb-gold-lt: #d4a94a;
-  --cb-sage:    #9db892;
-  --cb-bd:      #e8e3db;
-  --cb-lt:      #f5f4f1;
-  --cb-tx:      #2a2520;
-  --cb-mu:      #7a7060;
-  --cb-radius:  18px;
-  --cb-shadow:  0 10px 40px rgba(26,26,24,.2);
-
-  position: fixed;
-  bottom: 160px;  /* stack trên dark-mode + lang switcher */
-  right: 16px;
-  left: auto;     /* bỏ left:20px */
-  z-index: 9000;
-  font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+#dqd-chat {
+  position: fixed !important;
+  bottom: 80px !important;
+  right: 20px !important;
+  left: auto !important;
+  z-index: 9100 !important;
+  font-family: 'Be Vietnam Pro', sans-serif;
 }
 
-/* ── Chatbot window mở sang trái (vì nút đã ở bên phải) ── */
-  font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+/* Cửa sổ chat mở lên trên nút */
+#dqd-chat .dqd-window,
+#dqd-chat #dqd-window {
+  bottom: 60px !important;
+  right: 0 !important;
+  left: auto !important;
+  max-height: 560px;
 }
 
-/* ── Toggle button ──────────────────────────── */
-.chatbot-toggle-btn {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  /* FIX 1: Dùng DQD dark thay blue */
-  background: var(--cb-dk);
-  color: #fff;
-  border: 1.5px solid rgba(255,255,255,.12);
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(26,26,24,.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  transition: transform .25s ease, box-shadow .25s ease;
-  position: relative;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
+/* Nút toggle */
+#dqd-chat .dqd-toggle {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 50% !important;
+  background: #1a1a18 !important;
+  border: none !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #fff !important;
+  box-shadow: 0 4px 18px rgba(0,0,0,.28) !important;
+  transition: transform .2s, box-shadow .2s !important;
+  position: relative !important;
 }
-.chatbot-toggle-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 28px rgba(26,26,24,.4);
+#dqd-chat .dqd-toggle:hover {
+  transform: scale(1.08) !important;
+  box-shadow: 0 6px 22px rgba(0,0,0,.35) !important;
 }
-.chatbot-toggle-btn:active { transform: scale(.95); }
-
-/* Unread badge */
-.chatbot-toggle-btn .notification-badge {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background: #dc2626;
-  color: #fff;
-  border-radius: 99px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .6875rem;
-  font-weight: 700;
-  border: 2px solid #fff;
-  line-height: 1;
+#dqd-chat .dqd-toggle svg {
+  width: 24px !important;
+  height: 24px !important;
 }
 
-/* ── Window ─────────────────────────────────── */
-/* FIX 2: display:none + .active — tránh conflict với hidden attribute */
-.chatbot-window {
-  position: absolute;
-  bottom: 76px;
-  right: 0;      /* mở về bên phải (cùng cạnh với nút) */
-  left: auto;
-  width: 380px;
-  height: 600px;
-  background: #fff;
-  border-radius: var(--cb-radius);
-  box-shadow: var(--cb-shadow);
-  border: 1px solid var(--cb-bd);
-  display: none;
-  flex-direction: column;
-  overflow: hidden;
-}
-.chatbot-window.active {
-  display: flex;          /* show via JS: el.classList.add('active') */
+/* Badge unread */
+#dqd-chat .dqd-badge {
+  position: absolute !important;
+  top: -3px !important;
+  right: -3px !important;
+  background: #dc2626 !important;
+  color: #fff !important;
+  border-radius: 99px !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  font-size: .65rem !important;
+  font-weight: 700 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 2px solid #fff !important;
+  padding: 0 4px !important;
 }
 
-/* FIX 7: animation chỉ chạy khi user không yêu cầu reduced motion */
-@media (prefers-reduced-motion: no-preference) {
-  @keyframes cbSlideUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .chatbot-window.active {
-    animation: cbSlideUp .25s ease-out;
-  }
-}
-
-/* ── Header ─────────────────────────────────── */
-.chatbot-header {
-  /* FIX 1: DQD dark thay blue */
-  background: var(--cb-dk);
-  color: #fff;
-  padding: 1.25rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-shrink: 0;
-}
-.chatbot-header h3 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: .625rem;
-  color: #fff;
-}
-.chatbot-header .status {
-  font-size: .6875rem;
-  opacity: .75;
-  display: flex;
-  align-items: center;
-  gap: .375rem;
-  margin-top: 2px;
-}
-/* FIX 4: đổi tên @keyframes tránh duplicate với style.css */
-@keyframes cbPulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: .4; }
-}
-.chatbot-header .status-dot {
-  width: 7px;
-  height: 7px;
-  background: #22c55e;
-  border-radius: 50%;
-  animation: cbPulse 2s ease-in-out infinite;
-}
-
-.chatbot-close-btn {
-  background: rgba(255,255,255,.12);
-  border: none;
-  color: #fff;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background .2s ease, transform .2s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-.chatbot-close-btn:hover {
-  background: rgba(255,255,255,.22);
-  transform: rotate(90deg);
-}
-
-/* ── Messages area ──────────────────────────── */
-.chatbot-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.25rem;
-  background: var(--cb-lt);
-  display: flex;
-  flex-direction: column;
-  gap: .875rem;
-  scrollbar-width: thin;
-  scrollbar-color: var(--cb-bd) transparent;
-}
-.chatbot-messages::-webkit-scrollbar        { width: 4px; }
-.chatbot-messages::-webkit-scrollbar-track  { background: transparent; }
-.chatbot-messages::-webkit-scrollbar-thumb  { background: var(--cb-bd); border-radius: 4px; }
-.chatbot-messages::-webkit-scrollbar-thumb:hover { background: var(--cb-mu); }
-
-/* FIX 4: đổi tên tránh duplicate với style.css */
-@media (prefers-reduced-motion: no-preference) {
-  @keyframes cbFadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .chatbot-message { animation: cbFadeIn .25s ease-out; }
-}
-
-.chatbot-message {
-  display: flex;
-  gap: .625rem;
-  align-items: flex-end;
-}
-.chatbot-message.user { flex-direction: row-reverse; }
-
-/* Avatar */
-.chatbot-message .avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: 1rem;
-  border: 1.5px solid var(--cb-bd);
-}
-.chatbot-message.bot .avatar {
-  background: rgba(184,146,42,.1);
-  color: var(--cb-gold);
-  border-color: rgba(184,146,42,.2);
-}
-.chatbot-message.user .avatar {
-  /* FIX 1: warm gray thay blue */
-  background: #e8e3db;
-  color: var(--cb-mu);
-  border-color: var(--cb-bd);
-}
-
-/* Bubbles */
-.chatbot-message .message-content {
-  max-width: 76%;
-  padding: .75rem 1rem;
-  border-radius: 14px;
-  font-size: .875rem;
-  line-height: 1.55;
-  word-break: break-word;
-}
-.chatbot-message.bot .message-content {
-  background: #fff;
-  color: var(--cb-tx);
-  border: 1.5px solid var(--cb-bd);
-  border-bottom-left-radius: 4px;
-}
-.chatbot-message.user .message-content {
-  /* FIX 1: DQD dark thay blue */
-  background: var(--cb-dk);
-  color: #fff;
-  border-bottom-right-radius: 4px;
-}
-.chatbot-message .message-time {
-  font-size: .6875rem;
-  color: var(--cb-mu);
-  margin-top: .25rem;
-  text-align: right;
-}
-.chatbot-message.user .message-time { text-align: left; }
-
-/* ── Quick replies ───────────────────────────── */
-.chatbot-quick-replies {
-  padding: .625rem .875rem;
-  background: #fff;
-  border-top: 1px solid var(--cb-bd);
-  display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
-  max-height: 96px;
-  overflow-y: auto;
-  flex-shrink: 0;
-}
-.chatbot-quick-reply {
-  padding: .375rem .875rem;
-  background: var(--cb-lt);
-  border: 1.5px solid var(--cb-bd);
-  border-radius: 99px;
-  font-family: inherit;
-  font-size: .75rem;
-  font-weight: 600;
-  color: var(--cb-mu);
-  cursor: pointer;
-  transition: all .18s ease;
-  white-space: nowrap;
-  -webkit-tap-highlight-color: transparent;
-}
-.chatbot-quick-reply:hover {
-  /* FIX 1: sage thay blue */
-  background: var(--cb-dk);
-  border-color: var(--cb-dk);
-  color: #fff;
-  transform: translateY(-1px);
-}
-
-/* ── Input area ─────────────────────────────── */
-.chatbot-input-area {
-  padding: .875rem;
-  background: #fff;
-  border-top: 1px solid var(--cb-bd);
-  display: flex;
-  gap: .625rem;
-  align-items: center;
-  flex-shrink: 0;
-}
-.chatbot-input {
-  flex: 1;
-  padding: .6875rem 1rem;
-  border: 1.5px solid var(--cb-bd);
-  border-radius: var(--r-full, 9999px);
-  font-family: inherit;
-  font-size: .875rem;
-  color: var(--cb-tx);
-  outline: none;
-  transition: border-color .2s ease, box-shadow .2s ease;
-  background: var(--cb-lt);
-}
-.chatbot-input:hover { border-color: #d4cfc7; }
-.chatbot-input:focus {
-  border-color: var(--cb-gold);
-  box-shadow: 0 0 0 3px rgba(184,146,42,.12);
-  background: #fff;
-}
-.chatbot-input::placeholder { color: var(--cb-mu); }
-
-.chatbot-send-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  /* FIX 1: DQD dark thay blue */
-  background: var(--cb-dk);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  flex-shrink: 0;
-  transition: transform .2s ease, box-shadow .2s ease;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-.chatbot-send-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 4px 14px rgba(26,26,24,.3);
-}
-.chatbot-send-btn:active  { transform: scale(.95); }
-.chatbot-send-btn:disabled {
-  opacity: .45;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* ── Dark mode ──────────────────────────────── */
-/* FIX 3: warm DQD palette thay cold #1a1a1a / #0a0a0a */
-body.dark-mode .chatbot-window {
-  background: #2e251d;
-  border-color: #4a3f35;
-}
-body.dark-mode .chatbot-header { background: #1a140e; }
-
-body.dark-mode .chatbot-messages { background: #221c15; }
-body.dark-mode .chatbot-messages::-webkit-scrollbar-thumb { background: #4a3f35; }
-
-body.dark-mode .chatbot-message.bot .message-content {
-  background: #3d3229;
-  border-color: #4a3f35;
-  color: #e8e4dd;
-}
-body.dark-mode .chatbot-message.user .message-content {
-  background: #4a3f35;
-  color: #f5f3ef;
-}
-body.dark-mode .chatbot-message.bot .avatar {
-  background: rgba(184,146,42,.12);
-  border-color: rgba(184,146,42,.25);
-}
-body.dark-mode .chatbot-message.user .avatar {
-  background: #3d3229;
-  border-color: #4a3f35;
-  color: #a39b92;
-}
-body.dark-mode .chatbot-message .message-time { color: #6b6761; }
-
-body.dark-mode .chatbot-quick-replies {
-  background: #2e251d;
-  border-top-color: #3d3229;
-}
-body.dark-mode .chatbot-quick-reply {
-  background: #3d3229;
-  border-color: #4a3f35;
-  color: #c8bfb0;
-}
-body.dark-mode .chatbot-quick-reply:hover {
-  background: #4a3f35;
-  border-color: rgba(157,184,146,.4);
-  color: #9db892;
-  transform: translateY(-1px);
-}
-
-body.dark-mode .chatbot-input-area {
-  background: #2e251d;
-  border-top-color: #3d3229;
-}
-body.dark-mode .chatbot-input {
-  background: #3d3229;
-  border-color: #4a3f35;
-  color: #e8e4dd;
-}
-body.dark-mode .chatbot-input:hover { border-color: #6b5644; }
-body.dark-mode .chatbot-input:focus {
-  border-color: #b8922a;
-  box-shadow: 0 0 0 3px rgba(184,146,42,.12);
-  background: #4a3f35;
-}
-body.dark-mode .chatbot-input::placeholder { color: #6b6761; }
-body.dark-mode .chatbot-send-btn { background: #3d3229; }
-body.dark-mode .chatbot-send-btn:hover {
-  background: #4a3f35;
-  box-shadow: 0 4px 14px rgba(0,0,0,.4);
-}
-
-body.dark-mode .chatbot-close-btn {
-  background: rgba(255,255,255,.1);
-}
-body.dark-mode .chatbot-close-btn:hover {
-  background: rgba(255,255,255,.18);
-}
-
-/* ── Responsive ─────────────────────────────── */
-@media (max-width: 768px) {
-  .chatbot-container {
-    bottom: 130px;   /* trên dark-mode + lang */
-    right: 12px;
-    left: auto;
-  }
-  .chatbot-toggle-btn {
-    width: 52px;
-    height: 52px;
-    font-size: 20px;
-  }
-  .chatbot-window {
-    position: fixed;    /* trên mobile: fixed thay vì absolute */
-    right: 10px;
-    left: 10px;
-    bottom: 200px;
-    width: auto;
-    height: calc(100vh - 220px);
-    max-height: 560px;
-  }
-  .chatbot-quick-reply { min-height: 34px; }
-  .chatbot-input       { min-height: 44px; font-size: .9375rem; }
-  .chatbot-send-btn    { width: 44px; height: 44px; }
-}
-
-@media (max-width: 480px) {
-  .chatbot-window {
-    right: 8px;
-    left: 8px;
-    height: calc(100vh - 210px);
-  }
-  .chatbot-header      { padding: 1rem; }
-  .chatbot-header h3   { font-size: .9375rem; }
-  .chatbot-messages    { padding: 1rem; gap: .75rem; }
-  .chatbot-message .message-content {
-    max-width: 84%;
-    font-size: .8125rem;
-  }
-}
-
-@media (max-height: 500px) and (orientation: landscape) {
-  .chatbot-window {
-    height: calc(100vh - 70px);
-    max-height: none;
-  }
-  .chatbot-messages { padding: .75rem; gap: .5rem; }
-}
-
-/* ══════════════════════════════════════════════
-   FIX OVERLAP: Stack 3 nút floating bottom-right
-   Thứ tự từ dưới lên: lang → darkmode → chatbot
-   ══════════════════════════════════════════════ */
-
-/* Nút ngôn ngữ (vnVI) — thấp nhất */
-.lang-toggle, #langToggle, .language-btn,
-[class*="lang-switch"], [id*="lang-toggle"],
-.vn-lang-btn {
+/* Nút ngôn ngữ */
+#dqd-lang-btn {
   position: fixed !important;
   bottom: 20px !important;
-  right: 16px !important;
+  right: 20px !important;
   left: auto !important;
   z-index: 8990 !important;
 }
 
-/* Nút dark mode — giữa */
-.dark-mode-toggle, #darkModeToggle,
-.theme-toggle, .dark-toggle,
-[class*="dark-mode-btn"], [id*="dark-mode"] {
+/* Nút dark mode (nếu còn) */
+#dqd-theme-btn {
   position: fixed !important;
-  bottom: 80px !important;
-  right: 16px !important;
+  bottom: 72px !important;
+  right: 20px !important;
   left: auto !important;
   z-index: 8991 !important;
 }
 
-/* Chatbot — trên cùng (đã set bottom:160px ở trên) */
-.chatbot-container {
-  bottom: 140px !important;
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  #dqd-chat {
+    bottom: 70px !important;
+    right: 14px !important;
+  }
+  #dqd-lang-btn  { bottom: 14px !important; right: 14px !important; }
+  #dqd-theme-btn { bottom: 62px !important; right: 14px !important; }
+
+  #dqd-chat .dqd-window,
+  #dqd-chat #dqd-window {
+    position: fixed !important;
+    right: 10px !important;
+    left: 10px !important;
+    width: auto !important;
+    bottom: 130px !important;
+    max-height: calc(100vh - 150px) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  #dqd-chat .dqd-window,
+  #dqd-chat #dqd-window {
+    right: 8px !important;
+    left: 8px !important;
+  }
 }

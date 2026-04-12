@@ -148,7 +148,6 @@
 .ap-input::placeholder, .ap-textarea::placeholder { color: #c0b9ae; }
 .ap-textarea { resize: vertical; }
 
-/* Price input with suffix */
 .ap-input-suffix {
   position: relative;
   display: flex;
@@ -164,7 +163,6 @@
   pointer-events: none;
 }
 
-/* Select wrapper */
 .ap-select-wrap { position: relative; }
 .ap-select { padding-right: 2.25rem; cursor: pointer; }
 .ap-sel-arr {
@@ -178,7 +176,6 @@
   pointer-events: none;
 }
 
-/* Checkbox */
 .ap-check-label {
   display: flex;
   align-items: center;
@@ -193,29 +190,17 @@
 }
 .ap-check-label:hover { border-color: var(--gold); }
 .ap-check-label input[type="checkbox"] {
-  width: 17px;
-  height: 17px;
+  width: 17px; height: 17px;
   accent-color: var(--gold);
-  flex-shrink: 0;
-  margin: 0;
-  cursor: pointer;
+  flex-shrink: 0; margin: 0; cursor: pointer;
 }
 .ap-check-label span { font-size: .8125rem; font-weight: 500; color: var(--dark); }
 
-/* Rating stars visual */
 .ap-star-row {
-  display: flex;
-  align-items: center;
-  gap: .25rem;
-  margin-top: .25rem;
+  display: flex; align-items: center; gap: .25rem; margin-top: .25rem;
 }
-.ap-star {
-  width: 16px;
-  height: 16px;
-  color: #d97706;
-}
+.ap-star { width: 16px; height: 16px; color: #d97706; }
 
-/* Image preview card */
 /* ── Gallery inline ── */
 .ap-gallery-section {
   margin-top: 1rem;
@@ -241,48 +226,31 @@
   min-height: 80px;
 }
 .ap-img-item {
-  position: relative;
-  aspect-ratio: 1;
-  border-radius: 8px;
-  overflow: hidden;
+  position: relative; aspect-ratio: 1;
+  border-radius: 8px; overflow: hidden;
   border: 2px solid var(--border);
   background: var(--light);
   transition: border-color .18s;
 }
 .ap-img-item:hover { border-color: var(--gold); }
 .ap-img-primary { border-color: var(--dark) !important; }
-.ap-img-item img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-}
+.ap-img-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ap-img-primary-badge {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  background: var(--dark);
-  color: #fff;
-  font-size: .6rem;
-  font-weight: 700;
-  text-align: center;
-  padding: 3px;
-  text-transform: uppercase;
-  letter-spacing: .06em;
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: var(--dark); color: #fff;
+  font-size: .6rem; font-weight: 700;
+  text-align: center; padding: 3px;
+  text-transform: uppercase; letter-spacing: .06em;
 }
 .ap-img-actions {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .375rem;
-  opacity: 0;
-  transition: opacity .18s;
+  display: flex; align-items: center; justify-content: center;
+  gap: .375rem; opacity: 0; transition: opacity .18s;
 }
 .ap-img-item:hover .ap-img-actions { opacity: 1; }
 .ap-img-btn {
-  width: 30px; height: 30px;
-  border-radius: 6px;
+  width: 30px; height: 30px; border-radius: 6px;
   border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all .15s;
@@ -299,28 +267,21 @@
   align-items: center; justify-content: center;
   gap: .5rem; padding: 1.5rem;
   color: #c0b9ae; font-size: .78rem;
-  border: 1.5px dashed var(--border);
-  border-radius: 8px;
+  border: 1.5px dashed var(--border); border-radius: 8px;
 }
 .ap-img-empty svg { width: 32px; height: 32px; }
 
 .ap-add-img-form {
   background: var(--light);
   border: 1.5px solid var(--border);
-  border-radius: 8px;
-  padding: .875rem;
+  border-radius: 8px; padding: .875rem;
 }
 .ap-add-img-inputs {
-  display: flex;
-  gap: .5rem;
-  align-items: center;
-  flex-wrap: wrap;
+  display: flex; gap: .5rem; align-items: center; flex-wrap: wrap;
 }
 .ap-add-img-inputs .ap-input {
-  flex: 1;
-  min-width: 180px;
-  padding: .5rem .75rem;
-  font-size: .8125rem;
+  flex: 1; min-width: 180px;
+  padding: .5rem .75rem; font-size: .8125rem;
 }
 .ap-check-primary {
   display: flex; align-items: center; gap: .375rem;
@@ -340,118 +301,94 @@
 .ap-btn-add-img svg { width: 13px; height: 13px; }
 .ap-btn-add-img:hover { background: #2e2e2a; }
 .ap-btn-add-img:disabled { opacity: .6; cursor: not-allowed; }
-
 .ap-img-item.removing {
   opacity: 0; transform: scale(.85);
   transition: opacity .2s, transform .2s;
 }
 
-/* ── Gallery inline end ── */
-  position: relative;
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--light);
-  border: 1.5px dashed var(--border);
+/* Image preview */
+.ap-img-preview-wrap {
+  position: relative; border-radius: 10px; overflow: hidden;
+  background: var(--light); border: 1.5px dashed var(--border);
   min-height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
 }
 .ap-img-preview {
-  width: 100%;
-  max-height: 260px;
-  object-fit: contain;
-  padding: .75rem;
+  width: 100%; max-height: 260px;
+  object-fit: contain; padding: .75rem;
 }
 .ap-img-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: .625rem;
-  color: var(--muted);
-  padding: 2rem;
-  text-align: center;
-  width: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; gap: .625rem;
+  color: var(--muted); padding: 2rem; text-align: center; width: 100%;
 }
 .ap-img-placeholder svg { width: 40px; height: 40px; color: #d0c8bc; }
 .ap-img-placeholder p { font-size: .78rem; line-height: 1.5; }
 
-/* Discount badge preview */
+/* Discount preview */
 .ap-discount-preview {
-  display: flex;
-  align-items: center;
-  gap: .625rem;
-  padding: .75rem 1rem;
-  background: var(--light);
-  border-radius: 8px;
-  font-size: .8125rem;
-  margin-top: .25rem;
+  display: flex; align-items: center; gap: .625rem;
+  padding: .75rem 1rem; background: var(--light);
+  border-radius: 8px; font-size: .8125rem; margin-top: .25rem;
 }
 .ap-disc-badge {
-  background: var(--dark);
-  color: var(--white);
-  font-size: .7rem;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 99px;
+  background: var(--dark); color: var(--white);
+  font-size: .7rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 99px;
 }
 .ap-disc-orig { color: var(--muted); text-decoration: line-through; }
 .ap-disc-save { color: var(--green); font-weight: 700; }
 
 /* ── Submit bar ── */
 .ap-submit-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1.125rem 1.25rem;
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  position: sticky;
-  bottom: 1rem;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; padding: 1.125rem 1.25rem;
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 10px; position: sticky; bottom: 1rem;
   box-shadow: 0 4px 16px rgba(0,0,0,.08);
   grid-column: 1 / -1;
 }
 .ap-submit-info { font-size: .78rem; color: var(--muted); }
-.ap-submit-btns { display: flex; gap: .625rem; }
+.ap-submit-btns { display: flex; gap: .625rem; align-items: center; flex-wrap: wrap; }
 .ap-btn-save {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
+  display: inline-flex; align-items: center; gap: .5rem;
   padding: .75rem 1.5rem;
-  background: var(--dark);
-  color: var(--white);
-  border: none;
-  border-radius: 8px;
-  font-family: var(--font);
-  font-size: .875rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background .18s;
+  background: var(--dark); color: var(--white);
+  border: none; border-radius: 8px;
+  font-family: var(--font); font-size: .875rem; font-weight: 700;
+  cursor: pointer; transition: background .18s;
 }
 .ap-btn-save:hover { background: #2e2e2a; }
 .ap-btn-save:disabled { opacity: .65; cursor: not-allowed; }
 .ap-btn-save svg { width: 16px; height: 16px; }
 .ap-btn-cancel {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
+  display: inline-flex; align-items: center; gap: .5rem;
   padding: .75rem 1.25rem;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-family: var(--font);
-  font-size: .875rem;
-  font-weight: 600;
-  color: var(--muted);
-  text-decoration: none;
-  background: var(--white);
-  transition: all .18s;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  font-family: var(--font); font-size: .875rem; font-weight: 600;
+  color: var(--muted); text-decoration: none;
+  background: var(--white); transition: all .18s;
 }
 .ap-btn-cancel svg { width: 14px; height: 14px; }
 .ap-btn-cancel:hover { border-color: var(--red); color: var(--red); }
 
-/* Responsive */
+/* ── Variant button ── */
+.ap-btn-variant {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .75rem 1.125rem;
+  background: #fffbeb; color: #b45309;
+  border: 1.5px solid #fde68a; border-radius: 8px;
+  font-family: var(--font); font-size: .8125rem; font-weight: 600;
+  text-decoration: none; transition: all .18s; white-space: nowrap;
+}
+.ap-btn-variant:hover { background: #fef3c7; border-color: #b8922a; color: #92400e; }
+.ap-btn-variant svg { width: 15px; height: 15px; }
+.ap-btn-variant .vbadge {
+  background: #b8922a; color: #fff;
+  font-size: .65rem; font-weight: 700;
+  padding: 1px 6px; border-radius: 99px; margin-left: .25rem;
+}
+
 @media (max-width: 1024px) {
   .ap-layout { grid-template-columns: 1fr; }
   .ap-side { order: -1; }
@@ -544,7 +481,6 @@
                 </div>
               </div>
             </div>
-            <!-- Discount preview -->
             <div class="ap-discount-preview" id="discPreview" style="display:none">
               <span class="ap-disc-badge" id="discPct">-0%</span>
               <span class="ap-disc-orig" id="discOrig"></span>
@@ -579,7 +515,6 @@
       <!-- RIGHT: Sidebar -->
       <div class="ap-col-right ap-side">
 
-        <!-- Status (edit only) -->
         {% if action == 'edit' %}
         <div class="ap-card">
           <div class="ap-card-head">
@@ -603,7 +538,6 @@
           </div>
           <div class="ap-card-body">
 
-            <!-- Ảnh chính -->
             <div class="ap-img-preview-wrap" id="imgPreviewWrap">
               {% if product and product.image %}
               <img src="{{ product.image }}" alt="{{ product.name }}" class="ap-img-preview" id="imgPreview" onerror="showImgPlaceholder()">
@@ -622,15 +556,12 @@
               <small>Dán link từ Unsplash, Google Drive hoặc hosting ảnh</small>
             </div>
 
-            <!-- Gallery ảnh phụ — chỉ hiện khi edit -->
             {% if action == 'edit' and product %}
             <div class="ap-gallery-section">
               <div class="ap-gallery-head">
                 <span>Ảnh gallery phụ</span>
                 <span class="ap-gallery-hint">Hover vào ảnh để đặt làm ảnh chính hoặc xóa</span>
               </div>
-
-              <!-- Grid ảnh hiện có -->
               <div class="ap-img-grid" id="imgGrid">
                 {% set imgs = product_images if product_images is defined else [] %}
                 {% if imgs %}
@@ -638,21 +569,19 @@
                   <div class="ap-img-item {% if img.is_primary %}ap-img-primary{% endif %}"
                        id="img-item-{{ img.id }}" data-id="{{ img.id }}">
                     <img src="{{ img.image_url }}" alt="{{ img.alt_text or '' }}"
-                         onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23f5f4f1%22 width=%22100%22 height=%22100%22/><text y=%2250%22 font-size=%2240%22 text-anchor=%22middle%22 x=%2250%22 dominant-baseline=%22middle%22>📷</text></svg>'">
+                         onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23f5f4f1%22 width=%22100%22 height=%22100%22/></svg>'">
                     {% if img.is_primary %}
                     <span class="ap-img-primary-badge">Ảnh chính</span>
                     {% endif %}
                     <div class="ap-img-actions">
                       {% if not img.is_primary %}
                       <button type="button" class="ap-img-btn ap-img-btn-primary"
-                              onclick="setPrimaryImage({{ img.id }}, {{ product.id }})"
-                              title="Đặt làm ảnh chính">
+                              onclick="setPrimaryImage({{ img.id }}, {{ product.id }})" title="Đặt làm ảnh chính">
                         <svg viewBox="0 0 16 16" fill="none"><path d="M8 1l1.8 3.6 4 .6-2.9 2.8.7 4L8 10l-3.6 2 .7-4-2.9-2.8 4-.6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
                       </button>
                       {% endif %}
                       <button type="button" class="ap-img-btn ap-img-btn-del"
-                              onclick="deleteImage({{ img.id }}, {{ product.id }})"
-                              title="Xóa ảnh">
+                              onclick="deleteImage({{ img.id }}, {{ product.id }})" title="Xóa ảnh">
                         <svg viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V3h6v1M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                       </button>
                     </div>
@@ -660,13 +589,11 @@
                   {% endfor %}
                 {% else %}
                 <div class="ap-img-empty" id="imgEmpty">
-                  <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.4"/><circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 15l5-5 4 4 3-3 5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                  <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.4"/></svg>
                   <p>Chưa có ảnh phụ</p>
                 </div>
                 {% endif %}
               </div>
-
-              <!-- Form thêm ảnh mới -->
               <div class="ap-add-img-form">
                 <div class="ap-add-img-inputs">
                   <input type="url" id="newImgUrl" class="ap-input"
@@ -720,7 +647,7 @@
 
       </div><!-- end right -->
 
-      <!-- Submit bar (spans full width) -->
+      <!-- Submit bar -->
       <div class="ap-submit-bar">
         <div class="ap-submit-info">
           {% if action == 'edit' %}Đang sửa: <strong>{{ product.name }}</strong>{% else %}Tất cả trường có <span style="color:var(--red)">*</span> là bắt buộc{% endif %}
@@ -730,6 +657,15 @@
             <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
             Hủy
           </a>
+          {% if action == 'edit' %}
+          <a href="{{ url_for('admin_product_variants', product_id=product.id) }}" class="ap-btn-variant">
+            <svg viewBox="0 0 16 16" fill="none"><circle cx="5" cy="8" r="3" fill="#ef4444" opacity=".9"/><circle cx="11" cy="8" r="3" fill="#3b82f6" opacity=".9"/><circle cx="8" cy="8" r="3" fill="#8b5cf6" opacity=".7"/></svg>
+            Màu & Chất liệu
+            {% if variants %}
+            <span class="vbadge">{{ variants|length }}</span>
+            {% endif %}
+          </a>
+          {% endif %}
           <button type="submit" class="ap-btn-save" id="saveBtn">
             <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             {% if action == 'add' %}Thêm sản phẩm{% else %}Lưu thay đổi{% endif %}
@@ -745,51 +681,49 @@
 <script>
 /* ── Image preview ── */
 const imgInput = document.getElementById('imageUrlInput');
-const imgPreview = document.getElementById('imgPreview');
 const imgPlaceholder = document.getElementById('imgPlaceholder');
 
 function showImgPlaceholder() {
+  const imgPreview = document.getElementById('imgPreview');
   if (imgPreview) imgPreview.style.display = 'none';
   if (imgPlaceholder) imgPlaceholder.style.display = 'flex';
 }
 
 function updateImgPreview(url) {
   if (!url) { showImgPlaceholder(); return; }
-  if (!imgPreview) {
-    const img = document.createElement('img');
-    img.className = 'ap-img-preview';
-    img.id = 'imgPreview';
-    img.onerror = showImgPlaceholder;
-    document.getElementById('imgPreviewWrap').prepend(img);
-  }
-  const el = document.getElementById('imgPreview');
-  if (el) {
-    el.src = url;
-    el.style.display = 'block';
+  let el = document.getElementById('imgPreview');
+  if (!el) {
+    el = document.createElement('img');
+    el.className = 'ap-img-preview';
+    el.id = 'imgPreview';
     el.onerror = showImgPlaceholder;
+    document.getElementById('imgPreviewWrap').prepend(el);
   }
+  el.src = url;
+  el.style.display = 'block';
+  el.onerror = showImgPlaceholder;
   if (imgPlaceholder) imgPlaceholder.style.display = 'none';
 }
 
 imgInput?.addEventListener('input', function() { updateImgPreview(this.value.trim()); });
 
 /* ── Discount preview ── */
-const priceInput = document.getElementById('priceInput');
-const origInput  = document.getElementById('origPriceInput');
+const priceInput  = document.getElementById('priceInput');
+const origInput   = document.getElementById('origPriceInput');
 const discPreview = document.getElementById('discPreview');
 
 function fmtVND(n) { return new Intl.NumberFormat('vi-VN').format(n) + ' ₫'; }
 
 function updateDiscount() {
   const price = parseFloat(priceInput?.value) || 0;
-  const orig  = parseFloat(origInput?.value) || 0;
+  const orig  = parseFloat(origInput?.value)  || 0;
   if (orig > price && price > 0 && orig > 0) {
-    const pct = Math.round((orig - price) / orig * 100);
+    const pct  = Math.round((orig - price) / orig * 100);
     const save = orig - price;
-    document.getElementById('discPct').textContent  = '-' + pct + '%';
-    document.getElementById('discOrig').textContent = fmtVND(orig);
+    document.getElementById('discPct').textContent   = '-' + pct + '%';
+    document.getElementById('discOrig').textContent  = fmtVND(orig);
     document.getElementById('discFinal').textContent = fmtVND(price);
-    document.getElementById('discSave').textContent = 'Tiết kiệm ' + fmtVND(save);
+    document.getElementById('discSave').textContent  = 'Tiết kiệm ' + fmtVND(save);
     discPreview.style.display = 'flex';
   } else {
     discPreview.style.display = 'none';
@@ -799,20 +733,21 @@ priceInput?.addEventListener('input', updateDiscount);
 origInput?.addEventListener('input', updateDiscount);
 updateDiscount();
 
-/* ── Star rating preview ── */
+/* ── Star rating ── */
 const ratingInput = document.getElementById('ratingInput');
 function updateStars(val) {
   const r = parseFloat(val) || 0;
   for (let i = 0; i < 5; i++) {
     const s = document.getElementById('star-' + i);
     if (!s) continue;
+    const path = s.querySelector('path');
     if (i < Math.floor(r)) {
-      s.querySelector('path').setAttribute('fill', '#d97706');
-      s.querySelector('path').setAttribute('stroke', 'none');
+      path.setAttribute('fill', '#d97706');
+      path.setAttribute('stroke', 'none');
     } else {
-      s.querySelector('path').setAttribute('fill', 'none');
-      s.querySelector('path').setAttribute('stroke', '#d0c8bc');
-      s.querySelector('path').setAttribute('stroke-width', '1.2');
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', '#d0c8bc');
+      path.setAttribute('stroke-width', '1.2');
     }
   }
 }
@@ -829,16 +764,11 @@ document.getElementById('productForm').addEventListener('submit', function() {
     btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> {% if action == "add" %}Thêm sản phẩm{% else %}Lưu thay đổi{% endif %}';
   }, 5000);
 });
-
-/* ── Spin keyframe ── */
 const style = document.createElement('style');
 style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
 document.head.appendChild(style);
 
-/* ══════════════════════════════════════
-   GALLERY FUNCTIONS — AJAX, no page reload
-   ══════════════════════════════════════ */
-
+/* ── Gallery AJAX ── */
 function showImgMsg(msg, ok) {
   const el = document.getElementById('addImgMsg');
   if (!el) return;
@@ -849,69 +779,58 @@ function showImgMsg(msg, ok) {
 }
 
 async function addImage(productId) {
-  const urlEl   = document.getElementById('newImgUrl');
-  const altEl   = document.getElementById('newImgAlt');
-  const primEl  = document.getElementById('newImgPrimary');
-  const btn     = document.querySelector('.ap-btn-add-img');
-  const url     = urlEl?.value.trim();
-  const alt     = altEl?.value.trim();
+  const urlEl  = document.getElementById('newImgUrl');
+  const altEl  = document.getElementById('newImgAlt');
+  const primEl = document.getElementById('newImgPrimary');
+  const btn    = document.querySelector('.ap-btn-add-img');
+  const url    = urlEl?.value.trim();
+  const alt    = altEl?.value.trim();
   const primary = primEl?.checked;
 
   if (!url) { showImgMsg('Vui lòng nhập URL ảnh', false); urlEl?.focus(); return; }
-
   btn.disabled = true; btn.textContent = '...';
 
   try {
-    const res  = await fetch(`/admin/products/${productId}/images/add`, {
+    const res = await fetch(`/admin/products/${productId}/images/add`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ image_url: url, alt_text: alt, is_primary: primary ? 'on' : '' }),
     });
-
     if (res.ok) {
       showImgMsg('✓ Đã thêm ảnh!', true);
       addImageToGrid({ url, alt, primary, productId });
-      // Nếu là ảnh chính → cập nhật preview ảnh chính luôn
       if (primary) {
         const mainInput   = document.getElementById('imageUrlInput');
         const mainPreview = document.getElementById('imgPreview');
         if (mainInput)   mainInput.value = url;
         if (mainPreview) { mainPreview.src = url; mainPreview.style.display = 'block'; }
         document.getElementById('imgPlaceholder')?.style.setProperty('display','none');
-        // Bỏ badge "Ảnh chính" ở các item khác
         document.querySelectorAll('.ap-img-primary').forEach(el => {
           el.classList.remove('ap-img-primary');
           el.querySelector('.ap-img-primary-badge')?.remove();
         });
       }
-      // Reset form
-      if (urlEl)  urlEl.value  = '';
-      if (altEl)  altEl.value  = '';
+      if (urlEl)  urlEl.value   = '';
+      if (altEl)  altEl.value   = '';
       if (primEl) primEl.checked = false;
       document.getElementById('imgEmpty')?.remove();
     } else {
       showImgMsg('Lỗi thêm ảnh, thử lại', false);
     }
-  } catch {
-    showImgMsg('Lỗi kết nối', false);
-  }
+  } catch { showImgMsg('Lỗi kết nối', false); }
   btn.disabled = false;
   btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Thêm ảnh';
 }
 
 function addImageToGrid({ url, alt, primary, productId }) {
-  const grid  = document.getElementById('imgGrid');
+  const grid = document.getElementById('imgGrid');
   if (!grid) return;
-
-  // Tạo ID tạm (sẽ reload nếu cần)
   const tmpId = 'tmp-' + Date.now();
-
-  const item = document.createElement('div');
-  item.className = 'ap-img-item' + (primary ? ' ap-img-primary' : '');
-  item.id        = 'img-item-' + tmpId;
+  const item  = document.createElement('div');
+  item.className  = 'ap-img-item' + (primary ? ' ap-img-primary' : '');
+  item.id         = 'img-item-' + tmpId;
   item.dataset.id = tmpId;
-
-  item.innerHTML = `
+  item.innerHTML  = `
     <img src="${url}" alt="${alt}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23f5f4f1%22 width=%22100%22 height=%22100%22/></svg>'">
     ${primary ? '<span class="ap-img-primary-badge">Ảnh chính</span>' : ''}
     <div class="ap-img-actions">
@@ -921,21 +840,17 @@ function addImageToGrid({ url, alt, primary, productId }) {
       <button type="button" class="ap-img-btn ap-img-btn-del" title="Xóa ảnh" onclick="reloadPage()">
         <svg viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V3h6v1M6 7v5M10 7v5M3 4l1 9h8l1-9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-    </div>
-  `;
+    </div>`;
   grid.appendChild(item);
 }
 
 async function deleteImage(imageId, productId) {
   if (!confirm('Xóa ảnh này?')) return;
-
   const item = document.getElementById('img-item-' + imageId);
   item?.classList.add('removing');
-
   try {
     const res = await fetch(`/admin/products/${productId}/images/${imageId}/delete`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
     if (res.ok) {
       setTimeout(() => { item?.remove(); checkEmptyGrid(); }, 220);
@@ -943,37 +858,29 @@ async function deleteImage(imageId, productId) {
       item?.classList.remove('removing');
       alert('Lỗi xóa ảnh, thử lại');
     }
-  } catch {
-    item?.classList.remove('removing');
-    alert('Lỗi kết nối');
-  }
+  } catch { item?.classList.remove('removing'); alert('Lỗi kết nối'); }
 }
 
 async function setPrimaryImage(imageId, productId) {
   try {
     const res = await fetch(`/admin/products/${productId}/images/${imageId}/set-primary`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
     if (res.ok) {
-      // Cập nhật UI: bỏ badge cũ, thêm badge mới
       document.querySelectorAll('.ap-img-primary').forEach(el => {
         el.classList.remove('ap-img-primary');
         el.querySelector('.ap-img-primary-badge')?.remove();
-        // Thêm lại nút "Đặt làm chính" cho item cũ
         const actions = el.querySelector('.ap-img-actions');
         if (actions && !actions.querySelector('.ap-img-btn-primary')) {
           const oldId = el.dataset.id;
           const btn   = document.createElement('button');
-          btn.type    = 'button';
-          btn.className = 'ap-img-btn ap-img-btn-primary';
-          btn.title   = 'Đặt làm ảnh chính';
+          btn.type = 'button'; btn.className = 'ap-img-btn ap-img-btn-primary';
+          btn.title = 'Đặt làm ảnh chính';
           btn.onclick = () => setPrimaryImage(oldId, productId);
           btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none"><path d="M8 1l1.8 3.6 4 .6-2.9 2.8.7 4L8 10l-3.6 2 .7-4-2.9-2.8 4-.6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
           actions.prepend(btn);
         }
       });
-
       const newItem = document.getElementById('img-item-' + imageId);
       if (newItem) {
         newItem.classList.add('ap-img-primary');
@@ -983,23 +890,16 @@ async function setPrimaryImage(imageId, productId) {
           badge.textContent = 'Ảnh chính';
           newItem.appendChild(badge);
         }
-        // Xóa nút "Đặt làm chính" khỏi item mới
         newItem.querySelector('.ap-img-btn-primary')?.remove();
-
-        // Cập nhật ô preview ảnh chính
-        const imgSrc      = newItem.querySelector('img')?.src;
+        const imgSrc = newItem.querySelector('img')?.src;
         const mainInput   = document.getElementById('imageUrlInput');
         const mainPreview = document.getElementById('imgPreview');
         if (imgSrc && mainInput)   mainInput.value = imgSrc;
         if (imgSrc && mainPreview) { mainPreview.src = imgSrc; mainPreview.style.display = 'block'; }
         document.getElementById('imgPlaceholder')?.style.setProperty('display', 'none');
       }
-    } else {
-      alert('Lỗi đặt ảnh chính, thử lại');
-    }
-  } catch {
-    alert('Lỗi kết nối');
-  }
+    } else { alert('Lỗi đặt ảnh chính, thử lại'); }
+  } catch { alert('Lỗi kết nối'); }
 }
 
 function checkEmptyGrid() {

@@ -1,0 +1,341 @@
+{% extends "admin/base.html" %}
+{% block title %}Variants — {{ product.name }}{% endblock %}
+
+{% block content %}
+<div style="font-family:'Be Vietnam Pro',sans-serif;color:#2a2520;max-width:900px">
+
+  <!-- Breadcrumb -->
+  <div style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:#7a7060;margin-bottom:1.25rem">
+    <a href="/admin/products" style="color:#7a7060;text-decoration:none">Sản phẩm</a>
+    <span>›</span>
+    <a href="/admin/products/edit/{{ product.id }}" style="color:#7a7060;text-decoration:none">{{ product.name }}</a>
+    <span>›</span>
+    <span style="color:#1a1a18;font-weight:600">Màu & Chất liệu</span>
+  </div>
+
+  <!-- Header -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem">
+    <div>
+      <h1 style="font-size:1.25rem;font-weight:700;color:#1a1a18">Quản lý Màu & Chất liệu</h1>
+      <p style="font-size:.8125rem;color:#7a7060;margin-top:.2rem">{{ product.name }}</p>
+    </div>
+    <a href="/admin/products/edit/{{ product.id }}" style="display:inline-flex;align-items:center;gap:.375rem;padding:.6rem 1.125rem;background:#f5f4f1;border:1.5px solid #e8e3db;border-radius:8px;font-size:.8125rem;font-weight:600;color:#2a2520;text-decoration:none">
+      ← Quay lại sản phẩm
+    </a>
+  </div>
+
+  <!-- Add variant form -->
+  <div style="background:#fff;border:1.5px solid #e8e3db;border-radius:12px;padding:1.5rem;margin-bottom:1.5rem">
+    <h2 style="font-size:.9375rem;font-weight:700;color:#1a1a18;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem">
+      <svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;color:#b8922a"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Thêm lựa chọn mới
+    </h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+      <!-- Type -->
+      <div>
+        <label style="display:block;font-size:.8rem;font-weight:600;color:#3a3530;margin-bottom:.375rem">Loại</label>
+        <div style="display:flex;gap:.5rem">
+          <button type="button" class="type-btn active" data-type="color" onclick="setType('color',this)" style="flex:1;padding:.6rem;border:1.5px solid #1a1a18;border-radius:8px;background:#1a1a18;color:#fff;font-size:.8125rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s">
+            🎨 Màu sắc
+          </button>
+          <button type="button" class="type-btn" data-type="material" onclick="setType('material',this)" style="flex:1;padding:.6rem;border:1.5px solid #e8e3db;border-radius:8px;background:#fff;color:#7a7060;font-size:.8125rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s">
+            🪵 Chất liệu
+          </button>
+        </div>
+        <input type="hidden" id="newType" value="color">
+      </div>
+
+      <!-- Name -->
+      <div>
+        <label style="display:block;font-size:.8rem;font-weight:600;color:#3a3530;margin-bottom:.375rem">Tên hiển thị <span style="color:#dc2626">*</span></label>
+        <input type="text" id="newName" placeholder="VD: Đen, Trắng, Gỗ sồi..." style="width:100%;padding:.625rem .875rem;border:1.5px solid #e8e3db;border-radius:8px;font-size:.875rem;font-family:inherit;outline:none" onfocus="this.style.borderColor='#b8922a'" onblur="this.style.borderColor='#e8e3db'">
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem">
+      <!-- Value -->
+      <div id="colorValueWrap">
+        <label style="display:block;font-size:.8rem;font-weight:600;color:#3a3530;margin-bottom:.375rem">Mã màu</label>
+        <div style="display:flex;gap:.5rem;align-items:center">
+          <input type="color" id="newColorPicker" value="#1a1a18" style="width:40px;height:38px;border:1.5px solid #e8e3db;border-radius:6px;cursor:pointer;padding:2px" oninput="document.getElementById('newValue').value=this.value">
+          <input type="text" id="newValue" placeholder="#1a1a18" style="flex:1;padding:.625rem .75rem;border:1.5px solid #e8e3db;border-radius:8px;font-size:.875rem;font-family:monospace;outline:none" oninput="syncColor(this.value)">
+        </div>
+      </div>
+      <div id="materialValueWrap" style="display:none">
+        <label style="display:block;font-size:.8rem;font-weight:600;color:#3a3530;margin-bottom:.375rem">Giá trị / Slug</label>
+        <input type="text" id="newMaterialValue" placeholder="VD: oak, pine, fabric..." style="width:100%;padding:.625rem .875rem;border:1.5px solid #e8e3db;border-radius:8px;font-size:.875rem;font-family:inherit;outline:none">
+      </div>
+
+      <!-- Price diff -->
+      <div>
+        <label style="display:block;font-size:.8rem;font-weight:600;color:#3a3530;margin-bottom:.375rem">Chênh lệch giá (₫)</label>
+        <input type="number" id="newPriceDiff" value="0" placeholder="0 = giá gốc" style="width:100%;padding:.625rem .875rem;border:1.5px solid #e8e3db;border-radius:8px;font-size:.875rem;font-family:inherit;outline:none" onfocus="this.style.borderColor='#b8922a'" onblur="this.style.borderColor='#e8e3db'">
+        <div style="font-size:.7rem;color:#a09880;margin-top:.25rem">+100000 = đắt hơn 100k</div>
+      </div>
+
+      <!-- Stock -->
+      <div>
+        <label style="display:block;font-size:.8rem;font-weight:600;color:#3a3530;margin-bottom:.375rem">Tồn kho</label>
+        <input type="number" id="newStock" value="0" min="0" style="width:100%;padding:.625rem .875rem;border:1.5px solid #e8e3db;border-radius:8px;font-size:.875rem;font-family:inherit;outline:none" onfocus="this.style.borderColor='#b8922a'" onblur="this.style.borderColor='#e8e3db'">
+      </div>
+    </div>
+
+    <!-- Image URL -->
+    <div style="margin-bottom:1rem">
+      <label style="display:block;font-size:.8rem;font-weight:600;color:#3a3530;margin-bottom:.375rem">Ảnh cho lựa chọn này</label>
+      <div style="display:flex;gap:.75rem;align-items:flex-start">
+        <input type="text" id="newImageUrl" placeholder="URL ảnh (https://...)" style="flex:1;padding:.625rem .875rem;border:1.5px solid #e8e3db;border-radius:8px;font-size:.875rem;font-family:inherit;outline:none" oninput="previewNewImg(this.value)" onfocus="this.style.borderColor='#b8922a'" onblur="this.style.borderColor='#e8e3db'">
+        <div id="newImgPreview" style="width:60px;height:60px;border-radius:8px;border:1.5px dashed #e8e3db;background:#f5f4f1;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">
+          <svg viewBox="0 0 24 24" fill="none" style="width:20px;height:20px;color:#c0b9ae"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <button onclick="addVariant()" style="padding:.7rem 1.5rem;background:#1a1a18;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:.875rem;font-weight:600;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#2e2e2a'" onmouseout="this.style.background='#1a1a18'">
+      + Thêm lựa chọn
+    </button>
+  </div>
+
+  <!-- Existing variants -->
+  <div id="variantsList">
+    {% set colors = variants|selectattr('type','eq','color')|list %}
+    {% set materials = variants|selectattr('type','eq','material')|list %}
+
+    {% if colors %}
+    <div style="background:#fff;border:1.5px solid #e8e3db;border-radius:12px;margin-bottom:1rem;overflow:hidden">
+      <div style="background:#f5f4f1;padding:.875rem 1.25rem;border-bottom:1.5px solid #e8e3db;display:flex;align-items:center;gap:.5rem">
+        <span style="font-size:.9rem;font-weight:700;color:#1a1a18">🎨 Màu sắc</span>
+        <span style="background:#e8e3db;color:#7a7060;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:99px">{{ colors|length }}</span>
+      </div>
+      <div style="padding:.75rem">
+        {% for v in colors %}
+        <div class="variant-row" id="vr_{{ v.id }}" style="display:flex;align-items:center;gap:.875rem;padding:.75rem;border-radius:9px;border:1.5px solid #f0ede8;margin-bottom:.5rem;background:#faf9f7;transition:border-color .15s">
+          <!-- Color swatch -->
+          <div style="width:36px;height:36px;border-radius:50%;background:{{ v.value }};border:2px solid rgba(0,0,0,.1);flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.12)"></div>
+          <!-- Image preview -->
+          {% if v.image_url %}
+          <img src="{{ v.image_url }}" alt="{{ v.name }}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:1.5px solid #e8e3db;flex-shrink:0" onerror="this.style.display='none'">
+          {% else %}
+          <div style="width:48px;height:48px;background:#f0ede8;border-radius:6px;border:1.5px dashed #e0dbd2;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;color:#a09880;text-align:center">Chưa có ảnh</div>
+          {% endif %}
+          <!-- Info -->
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:.875rem;color:#1a1a18">{{ v.name }}</div>
+            <div style="font-size:.72rem;color:#7a7060;display:flex;gap:.75rem;margin-top:.2rem;flex-wrap:wrap">
+              <span>{{ v.value }}</span>
+              {% if v.price_diff != 0 %}<span style="color:{{ '#16a34a' if v.price_diff > 0 else '#dc2626' }}">{{ '+' if v.price_diff > 0 else '' }}{{ '{:,.0f}'.format(v.price_diff) }}₫</span>{% endif %}
+              <span>Tồn: {{ v.stock }}</span>
+            </div>
+          </div>
+          <!-- Status -->
+          <span style="font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:99px;{% if v.is_active %}background:#f0faf4;color:#16a34a{% else %}background:#fff5f5;color:#dc2626{% endif %}">
+            {{ 'Hiện' if v.is_active else 'Ẩn' }}
+          </span>
+          <!-- Actions -->
+          <button onclick="editVariant({{ v.id }}, {{ v|tojson|safe }})" style="padding:.4rem .75rem;background:#f5f4f1;border:1.5px solid #e8e3db;border-radius:7px;font-size:.75rem;font-weight:600;cursor:pointer;color:#2a2520;font-family:inherit;white-space:nowrap">✏ Sửa</button>
+          <button onclick="deleteVariant({{ v.id }}, '{{ v.name }}')" style="padding:.4rem .75rem;background:#fff5f5;border:1.5px solid #fecaca;border-radius:7px;font-size:.75rem;font-weight:600;cursor:pointer;color:#dc2626;font-family:inherit;white-space:nowrap">🗑 Xóa</button>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if materials %}
+    <div style="background:#fff;border:1.5px solid #e8e3db;border-radius:12px;overflow:hidden">
+      <div style="background:#f5f4f1;padding:.875rem 1.25rem;border-bottom:1.5px solid #e8e3db;display:flex;align-items:center;gap:.5rem">
+        <span style="font-size:.9rem;font-weight:700;color:#1a1a18">🪵 Chất liệu</span>
+        <span style="background:#e8e3db;color:#7a7060;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:99px">{{ materials|length }}</span>
+      </div>
+      <div style="padding:.75rem">
+        {% for v in materials %}
+        <div class="variant-row" id="vr_{{ v.id }}" style="display:flex;align-items:center;gap:.875rem;padding:.75rem;border-radius:9px;border:1.5px solid #f0ede8;margin-bottom:.5rem;background:#faf9f7">
+          <!-- Material icon -->
+          <div style="width:36px;height:36px;border-radius:8px;background:#e8e3db;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0">🪵</div>
+          {% if v.image_url %}
+          <img src="{{ v.image_url }}" alt="{{ v.name }}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:1.5px solid #e8e3db;flex-shrink:0" onerror="this.style.display='none'">
+          {% else %}
+          <div style="width:48px;height:48px;background:#f0ede8;border-radius:6px;border:1.5px dashed #e0dbd2;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;color:#a09880;text-align:center">Chưa có ảnh</div>
+          {% endif %}
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:.875rem;color:#1a1a18">{{ v.name }}</div>
+            <div style="font-size:.72rem;color:#7a7060;display:flex;gap:.75rem;margin-top:.2rem;flex-wrap:wrap">
+              <span>{{ v.value }}</span>
+              {% if v.price_diff != 0 %}<span style="color:{{ '#16a34a' if v.price_diff > 0 else '#dc2626' }}">{{ '+' if v.price_diff > 0 else '' }}{{ '{:,.0f}'.format(v.price_diff) }}₫</span>{% endif %}
+              <span>Tồn: {{ v.stock }}</span>
+            </div>
+          </div>
+          <span style="font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:99px;{% if v.is_active %}background:#f0faf4;color:#16a34a{% else %}background:#fff5f5;color:#dc2626{% endif %}">
+            {{ 'Hiện' if v.is_active else 'Ẩn' }}
+          </span>
+          <button onclick="editVariant({{ v.id }}, {{ v|tojson|safe }})" style="padding:.4rem .75rem;background:#f5f4f1;border:1.5px solid #e8e3db;border-radius:7px;font-size:.75rem;font-weight:600;cursor:pointer;color:#2a2520;font-family:inherit;white-space:nowrap">✏ Sửa</button>
+          <button onclick="deleteVariant({{ v.id }}, '{{ v.name }}')" style="padding:.4rem .75rem;background:#fff5f5;border:1.5px solid #fecaca;border-radius:7px;font-size:.75rem;font-weight:600;cursor:pointer;color:#dc2626;font-family:inherit;white-space:nowrap">🗑 Xóa</button>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if not variants %}
+    <div style="text-align:center;padding:3rem 1rem;background:#fff;border:1.5px solid #e8e3db;border-radius:12px;color:#a09880">
+      <div style="font-size:2.5rem;margin-bottom:.875rem">🎨</div>
+      <div style="font-weight:600;font-size:.9375rem;color:#2a2520;margin-bottom:.375rem">Chưa có lựa chọn nào</div>
+      <div style="font-size:.8125rem">Thêm màu sắc hoặc chất liệu phía trên</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Edit modal -->
+  <div id="editModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center;padding:1.5rem">
+    <div style="background:#fff;border-radius:14px;max-width:480px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.2);padding:1.5rem">
+      <h3 style="font-size:1rem;font-weight:700;color:#1a1a18;margin-bottom:1.25rem">Chỉnh sửa lựa chọn</h3>
+      <input type="hidden" id="editId">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.875rem;margin-bottom:.875rem">
+        <div>
+          <label style="display:block;font-size:.78rem;font-weight:600;color:#3a3530;margin-bottom:.3rem">Tên</label>
+          <input type="text" id="editName" style="width:100%;padding:.6rem .75rem;border:1.5px solid #e8e3db;border-radius:7px;font-size:.875rem;font-family:inherit;outline:none">
+        </div>
+        <div>
+          <label style="display:block;font-size:.78rem;font-weight:600;color:#3a3530;margin-bottom:.3rem">Giá trị / Màu</label>
+          <div style="display:flex;gap:.375rem;align-items:center">
+            <input type="color" id="editColorPicker" style="width:36px;height:34px;border:1.5px solid #e8e3db;border-radius:5px;cursor:pointer;padding:2px" oninput="document.getElementById('editValue').value=this.value">
+            <input type="text" id="editValue" style="flex:1;padding:.6rem .75rem;border:1.5px solid #e8e3db;border-radius:7px;font-size:.875rem;font-family:monospace;outline:none">
+          </div>
+        </div>
+        <div>
+          <label style="display:block;font-size:.78rem;font-weight:600;color:#3a3530;margin-bottom:.3rem">Chênh lệch giá (₫)</label>
+          <input type="number" id="editPriceDiff" style="width:100%;padding:.6rem .75rem;border:1.5px solid #e8e3db;border-radius:7px;font-size:.875rem;font-family:inherit;outline:none">
+        </div>
+        <div>
+          <label style="display:block;font-size:.78rem;font-weight:600;color:#3a3530;margin-bottom:.3rem">Tồn kho</label>
+          <input type="number" id="editStock" style="width:100%;padding:.6rem .75rem;border:1.5px solid #e8e3db;border-radius:7px;font-size:.875rem;font-family:inherit;outline:none">
+        </div>
+      </div>
+      <div style="margin-bottom:.875rem">
+        <label style="display:block;font-size:.78rem;font-weight:600;color:#3a3530;margin-bottom:.3rem">URL ảnh</label>
+        <div style="display:flex;gap:.5rem;align-items:center">
+          <input type="text" id="editImageUrl" placeholder="https://..." style="flex:1;padding:.6rem .75rem;border:1.5px solid #e8e3db;border-radius:7px;font-size:.875rem;font-family:inherit;outline:none" oninput="previewEditImg(this.value)">
+          <img id="editImgPreview" style="width:40px;height:40px;object-fit:cover;border-radius:6px;border:1.5px solid #e8e3db;display:none">
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1.25rem">
+        <input type="checkbox" id="editActive" style="width:16px;height:16px;accent-color:#b8922a">
+        <label for="editActive" style="font-size:.8125rem;font-weight:500;color:#3a3530">Hiển thị lựa chọn này</label>
+      </div>
+      <div style="display:flex;gap:.625rem">
+        <button onclick="closeEditModal()" style="flex:1;padding:.7rem;background:#f5f4f1;border:1.5px solid #e8e3db;border-radius:9px;font-family:inherit;font-size:.875rem;font-weight:600;color:#7a7060;cursor:pointer">Hủy</button>
+        <button onclick="saveEdit()" style="flex:2;padding:.7rem;background:#1a1a18;border:none;border-radius:9px;font-family:inherit;font-size:.875rem;font-weight:600;color:#fff;cursor:pointer">Lưu thay đổi</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var PRODUCT_ID = {{ product.id }};
+
+/* ── Type toggle ── */
+function setType(type, btn) {
+  document.getElementById('newType').value = type;
+  document.querySelectorAll('.type-btn').forEach(function(b) {
+    b.style.background = '#fff'; b.style.color = '#7a7060'; b.style.borderColor = '#e8e3db';
+  });
+  btn.style.background = '#1a1a18'; btn.style.color = '#fff'; btn.style.borderColor = '#1a1a18';
+  document.getElementById('colorValueWrap').style.display   = type === 'color' ? '' : 'none';
+  document.getElementById('materialValueWrap').style.display = type === 'material' ? '' : 'none';
+}
+
+function syncColor(hex) {
+  var cp = document.getElementById('newColorPicker');
+  if (/^#[0-9a-fA-F]{6}$/.test(hex)) cp.value = hex;
+}
+
+function previewNewImg(url) {
+  var wrap = document.getElementById('newImgPreview');
+  if (!url) { wrap.innerHTML = '<svg viewBox="0 0 24 24" fill="none" style="width:20px;height:20px;color:#c0b9ae"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>'; return; }
+  wrap.innerHTML = '<img src="'+url+'" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.innerHTML=\'?\'">';
+}
+
+function previewEditImg(url) {
+  var img = document.getElementById('editImgPreview');
+  if (url) { img.src = url; img.style.display = 'block'; }
+  else img.style.display = 'none';
+}
+
+/* ── Add ── */
+function addVariant() {
+  var type  = document.getElementById('newType').value;
+  var name  = document.getElementById('newName').value.trim();
+  var value = type === 'color'
+    ? document.getElementById('newValue').value.trim() || document.getElementById('newColorPicker').value
+    : document.getElementById('newMaterialValue').value.trim();
+  var imageUrl   = document.getElementById('newImageUrl').value.trim();
+  var priceDiff  = document.getElementById('newPriceDiff').value;
+  var stock      = document.getElementById('newStock').value;
+
+  if (!name) { alert('Vui lòng nhập tên'); return; }
+
+  var fd = new FormData();
+  fd.append('type', type); fd.append('name', name); fd.append('value', value);
+  fd.append('image_url', imageUrl); fd.append('price_diff', priceDiff); fd.append('stock', stock);
+
+  fetch('/admin/products/'+PRODUCT_ID+'/variants/add', { method:'POST', body: fd })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.success) { location.reload(); }
+      else alert('Lỗi: ' + d.message);
+    });
+}
+
+/* ── Edit ── */
+function editVariant(id, data) {
+  document.getElementById('editId').value        = id;
+  document.getElementById('editName').value      = data.name || '';
+  document.getElementById('editValue').value     = data.value || '';
+  document.getElementById('editPriceDiff').value = data.price_diff || 0;
+  document.getElementById('editStock').value     = data.stock || 0;
+  document.getElementById('editImageUrl').value  = data.image_url || '';
+  document.getElementById('editActive').checked  = data.is_active != 0;
+  previewEditImg(data.image_url);
+  if (/^#[0-9a-fA-F]{3,6}$/.test(data.value)) document.getElementById('editColorPicker').value = data.value;
+  document.getElementById('editModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function saveEdit() {
+  var id = document.getElementById('editId').value;
+  var fd = new FormData();
+  fd.append('name',        document.getElementById('editName').value);
+  fd.append('value',       document.getElementById('editValue').value);
+  fd.append('image_url',   document.getElementById('editImageUrl').value);
+  fd.append('price_diff',  document.getElementById('editPriceDiff').value);
+  fd.append('stock',       document.getElementById('editStock').value);
+  fd.append('is_active',   document.getElementById('editActive').checked ? '1' : '0');
+
+  fetch('/admin/products/'+PRODUCT_ID+'/variants/'+id+'/update', { method:'POST', body: fd })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.success) { location.reload(); }
+      else alert('Lỗi: ' + d.message);
+    });
+}
+
+/* ── Delete ── */
+function deleteVariant(id, name) {
+  if (!confirm('Xóa lựa chọn "'+name+'"?')) return;
+  fetch('/admin/products/'+PRODUCT_ID+'/variants/'+id+'/delete', { method:'POST' })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { if (d.success) location.reload(); });
+}
+
+document.addEventListener('click', function(e) {
+  var m = document.getElementById('editModal');
+  if (m && e.target === m) closeEditModal();
+});
+</script>
+{% endblock %}
