@@ -198,7 +198,15 @@
       <div class="osi-list">
         {% for item in order.get('items',[]) %}
         <div class="osi-row">
-          <span class="osi-name">{{ item.product_name or item.name or 'Sản phẩm' }} <span class="osi-qty">×{{ item.quantity }}</span></span>
+          <div class="osi-item-info">
+            <span class="osi-name">{{ item.product_name or item.name or 'Sản phẩm' }} <span class="osi-qty">×{{ item.quantity }}</span></span>
+            {% if item.get('variant_info') %}
+            <span class="osi-variant">
+              <svg viewBox="0 0 12 12" fill="none" style="width:9px;height:9px;flex-shrink:0"><circle cx="3" cy="6" r="2" fill="#ef4444" opacity=".8"/><circle cx="9" cy="6" r="2" fill="#3b82f6" opacity=".8"/></svg>
+              {{ item.variant_info }}
+            </span>
+            {% endif %}
+          </div>
           <span class="osi-price">{{ "{:,.0f}".format(item.subtotal or (item.price * item.quantity)) }} ₫</span>
         </div>
         {% endfor %}
@@ -348,6 +356,13 @@ a{text-decoration:none;color:inherit}
   .btn-dark-full,.btn-outline-full{justify-content:center;width:100%}
   .oic-row{flex-direction:column;gap:.25rem}
   .oic-row>strong{text-align:left}
+}
+
+.osi-item-info { display: flex; flex-direction: column; gap: .2rem; flex: 1; min-width: 0; }
+.osi-variant {
+  font-size: .72rem; color: #7a7060;
+  display: flex; align-items: center; gap: .3rem;
+  font-weight: 500;
 }
 </style>
 

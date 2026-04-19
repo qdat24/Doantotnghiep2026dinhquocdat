@@ -327,7 +327,7 @@
 
             <!-- Quick add button (hiện khi hover) -->
             <button class="fp-quick-add"
-                    onclick="event.stopPropagation();addToCart({{ product.id }})"
+                    onclick="event.stopPropagation();window._safeAddToCartWithPicker({{ product.id }}, '{{ product.name|replace("'", "") }}', this.closest('.fp-card, .product-card, [class*=card]')?.querySelector('img')?.src || '')" 
                     title="Thêm vào giỏ">
               <svg viewBox="0 0 20 20" fill="none"><path d="M6 16a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2zM2 2h1.5l1.5 9h9l1.5-6H5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Thêm vào giỏ
@@ -1544,4 +1544,27 @@ a{text-decoration:none}
 })();
 </script>
 
+
+<script>
+/* Bootstrap: đảm bảo addToCartWithPicker hoạt động dù main.js load muộn */
+(function() {
+  function waitAndCall(fn, args, tries) {
+    if (window.addToCartWithPicker && window._vpReady) {
+      window.addToCartWithPicker.apply(window, args);
+    } else if ((tries || 0) < 50) {
+      setTimeout(function() { waitAndCall(fn, args, (tries||0)+1); }, 100);
+    } else {
+      // Fallback: add trực tiếp không qua picker
+      if (window.addToCart) window.addToCart(args[0], 1);
+    }
+  }
+  window._safeAddToCartWithPicker = function(productId, productName) {
+    if (window.addToCartWithPicker && window._vpReady) {
+      window.addToCartWithPicker(productId, productName);
+    } else {
+      waitAndCall(null, [productId, productName], 0);
+    }
+  };
+})();
+</script>
 {% endblock %}

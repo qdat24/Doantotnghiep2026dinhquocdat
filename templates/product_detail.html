@@ -897,6 +897,7 @@ document.getElementById('sort-reviews')?.addEventListener('change', e => { curre
 })();
 </script>
 
+<script>
 /* ── Add to cart with variant validation ── */
 window._getSelectedVariants = function() {
   var parts = [];
@@ -966,5 +967,6 @@ window.addToCartFromDetail = function(productId, buyNow) {
     addToCart(productId, qty, variantInfo);
   }
 };
+</script>
 
 {% endblock %}

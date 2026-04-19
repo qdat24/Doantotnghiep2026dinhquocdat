@@ -516,9 +516,13 @@ function _recalcSummary() {
     }
   }
 
-  // Nếu giỏ trống → reload để hiện empty state
+  // Nếu giỏ trống → cập nhật UI ngay rồi reload
   if (count === 0) {
-    setTimeout(() => location.reload(), 400);
+    if (subEl) subEl.textContent = fmtVND(0) + ' ₫';
+    if (totalEl) totalEl.textContent = fmtVND(0) + ' ₫';
+    const cntEl2 = document.querySelector('.item-count');
+    if (cntEl2) cntEl2.textContent = '0';
+    setTimeout(() => location.reload(), 600);
   }
 }
 
@@ -544,18 +548,24 @@ function removeFromCart(productId) {
           item.style.opacity    = '0';
           item.style.transform  = 'translateX(20px)';
 
+          // Lấy chiều cao trước để animate
+          const itemH = item.getBoundingClientRect().height;
           setTimeout(() => {
-            item.style.maxHeight = item.offsetHeight + 'px';
-            requestAnimationFrame(() => { item.style.maxHeight = '0'; item.style.padding = '0'; item.style.margin = '0'; });
+            item.style.transition = 'max-height .3s ease, padding .3s ease, margin .3s ease, opacity .25s';
+            item.style.maxHeight = itemH + 'px';
+            requestAnimationFrame(() => {
+              item.style.maxHeight = '0';
+              item.style.padding   = '0';
+              item.style.margin    = '0';
+            });
             setTimeout(() => {
-              item.remove();
-              _recalcSummary();
-              // Badge
+              item.remove();           // Xóa khỏi DOM trước
+              _recalcSummary();        // Tính lại sau khi DOM đã cập nhật
               const newCount = Math.max(0, _getCurrentCount() - qty);
               _setBadge(newCount);
-              window.showToast?.('Đã xóa sản phẩm khỏi giỏ hàng', 'success');
-            }, 300);
-          }, 250);
+              if (typeof window.showToast === 'function') window.showToast('Đã xóa sản phẩm khỏi giỏ hàng', 'success');
+            }, 320);
+          }, 200);
         }
       } else {
         alert(data.message || 'Có lỗi xảy ra!');

@@ -578,10 +578,20 @@ def landing_page():
     except Exception:
         featured = None
 
+    # Lấy top 3 sản phẩm nổi bật để hiển thị trên landing
+    featured_products = []
+    try:
+        if candidates:
+            top = sorted(candidates, key=lambda p: (float(p.get('rating') or 0), int(p.get('reviews') or 0)), reverse=True)
+            featured_products = top[:3]
+    except Exception:
+        featured_products = []
+
     return render_template('landing.html',
                            blocked=not is_allowed,
                            error_message=message if not is_allowed else None,
-                           featured_product=featured)
+                           featured_product=featured,
+                           featured_products=featured_products)
 
 
 @app.route('/api/verify', methods=['POST'])
@@ -847,12 +857,13 @@ def cart_summary():
             subtotal = price * qty
             total   += subtotal
             cart_items.append({
-                'product_id': product['id'],
-                'name':       product['name'],
-                'image':      product.get('image', ''),
-                'price':      price,
-                'quantity':   qty,
-                'subtotal':   subtotal,
+                'product_id':   product['id'],
+                'name':         product['name'],
+                'image':        product.get('image', ''),
+                'price':        price,
+                'quantity':     qty,
+                'subtotal':     subtotal,
+                'variant_info': item.get('variant_info', ''),
             })
     return jsonify({'success': True, 'items': cart_items, 'total': total,
                     'count': sum(i['quantity'] for i in cart_items)})
@@ -889,6 +900,20 @@ def update_cart_item(product_id):
     return jsonify({'success': True})
 
 
+@app.route('/api/remove-from-cart', methods=['POST'])
+def api_remove_from_cart():
+    data = request.get_json(force=True, silent=True) or {}
+    try:
+        product_id = int(data.get('product_id', 0))
+    except (TypeError, ValueError):
+        return jsonify({'success': False, 'message': 'ID không hợp lệ'}), 400
+    cart = session.get('cart', [])
+    session['cart'] = [i for i in cart if i.get('product_id') != product_id]
+    session.modified = True
+    cart_count = sum(i.get('quantity', 0) for i in session['cart'])
+    return jsonify({'success': True, 'cart_count': cart_count})
+
+
 @app.route('/cart/remove/<int:product_id>', methods=['POST'])
 def remove_cart_item(product_id):
     session['cart'] = [i for i in session.get('cart', []) if i['product_id'] != product_id]
@@ -911,7 +936,12 @@ def cart():
         product = get_product_by_id(item['product_id'])
         if product:
             sub = product['price'] * item['quantity']
-            cart_items.append({'product': product, 'quantity': item['quantity'], 'subtotal': sub})
+            cart_items.append({
+                'product':      product,
+                'quantity':     item['quantity'],
+                'subtotal':     sub,
+                'variant_info': item.get('variant_info', ''),
+            })
             total += sub
 
     shipping_fee = calculate_shipping_fee(total)
@@ -1015,11 +1045,12 @@ def place_order():
             subtotal = price * item['quantity']
             total   += subtotal
             order_items.append({
-                'product_id': product['id'],
-                'name':       product['name'],
-                'price':      product['price'],
-                'quantity':   item['quantity'],
-                'subtotal':   subtotal,
+                'product_id':   product['id'],
+                'name':         product['name'],
+                'price':        product['price'],
+                'quantity':     item['quantity'],
+                'subtotal':     subtotal,
+                'variant_info': item.get('variant_info', ''),
             })
 
     # Coupon
@@ -1062,6 +1093,14 @@ def place_order():
 
     if not create_order(order_data):
         return jsonify({'success': False, 'message': 'Không thể tạo đơn hàng'})
+
+    # Lưu variant_info vào từng order_item
+    for oi in order_items:
+        if oi.get('variant_info'):
+            execute_query(
+                'UPDATE order_items SET variant_info=%s WHERE order_id=%s AND product_id=%s LIMIT 1',
+                (oi['variant_info'], order_id, oi['product_id'])
+            )
 
     pm = data.get('payment_method')
     if pm in ('bank_transfer', 'credit_card', 'usdt', 'paypal'):
@@ -1109,6 +1148,21 @@ def order_success():
     order = get_order_by_id(order_id)
     if not order:
         return 'Không tìm thấy đơn hàng', 404
+
+    # Đọc variant_info từ DB cho từng item
+    try:
+        if order.get('items'):
+            db_items = execute_query(
+                'SELECT product_id, variant_info FROM order_items WHERE order_id=%s',
+                (order_id,), fetch=True
+            ) or []
+            vi_map = {r['product_id']: r.get('variant_info', '') for r in db_items}
+            for item in order['items']:
+                pid = item.get('product_id')
+                if pid and not item.get('variant_info'):
+                    item['variant_info'] = vi_map.get(pid, '')
+    except Exception:
+        pass
 
     payment_transaction = get_payment_transaction_by_order(order_id)
     pm = str(
@@ -2754,6 +2808,7 @@ def api_available_coupons():
 
 
 
+@app.route('/api/coupon/validate', methods=['POST'])
 def validate_coupon_route():
     try:
         data         = request.json or {}

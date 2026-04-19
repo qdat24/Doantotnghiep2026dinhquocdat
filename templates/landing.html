@@ -5,483 +5,792 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>DQD — Nội thất cao cấp</title>
+  <title>DQD Nội Thất — Không gian sống đẹp hơn mỗi ngày</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --font: 'Be Vietnam Pro', sans-serif;
-      --dark: #1a1a18;
-      --gold: #b8922a;
-      --border: #e8e3db;
-      --text: #2a2520;
-      --muted: #7a7060;
-      --light: #f5f4f1;
-      --cream: #faf9f7;
+      --dark:   #0e0d0b;
+      --gold:   #c4a25c;
+      --gold2:  #e8c97a;
+      --cream:  #f7f3ed;
+      --warm:   #2a2118;
+      --muted:  #8a7d6a;
+      --border: rgba(196,162,92,.18);
     }
-
-    html, body {
-      height: 100%;
-      font-family: var(--font);
-    }
-
-    /* Split layout: left dark / right cream */
+    html { font-size: 16px; scroll-behavior: smooth; }
     body {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      min-height: 100vh;
-      overflow: hidden;
-    }
-
-    /* ── LEFT: Dark side ── */
-    .side-dark {
+      font-family: 'Be Vietnam Pro', sans-serif;
       background: var(--dark);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 3rem;
+      color: var(--cream);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── Custom cursor ── */
+    .cursor {
+      position: fixed; width: 10px; height: 10px;
+      background: var(--gold); border-radius: 50%;
+      pointer-events: none; z-index: 99999;
+      transform: translate(-50%, -50%);
+      transition: transform .08s, width .3s, height .3s, opacity .3s;
+    }
+    .cursor-ring {
+      position: fixed; width: 36px; height: 36px;
+      border: 1.5px solid rgba(196,162,92,.5); border-radius: 50%;
+      pointer-events: none; z-index: 99998;
+      transform: translate(-50%, -50%);
+      transition: transform .18s cubic-bezier(.22,.68,0,1.2), width .3s, height .3s, opacity .3s;
+    }
+    body.hovering .cursor { width: 16px; height: 16px; }
+    body.hovering .cursor-ring { width: 56px; height: 56px; opacity: .5; }
+
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 9997;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      pointer-events: none;
+      opacity: .6;
+    }
+
+    /* ── HERO ── */
+    .hero {
       position: relative;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 52fr 48fr;
       overflow: hidden;
     }
 
-    /* Radial gold glow */
-    .side-dark::before {
+    /* Diagonal split */
+    .hero::after {
       content: '';
       position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 60% 60% at 10% 90%, rgba(184,146,42,.14) 0%, transparent 55%),
-        radial-gradient(ellipse 40% 40% at 90% 20%, rgba(184,146,42,.07) 0%, transparent 50%);
-      pointer-events: none;
+      top: 0; left: 52%; bottom: 0;
+      width: 1.5px;
+      background: linear-gradient(to bottom, transparent 5%, var(--gold) 30%, rgba(196,162,92,.25) 70%, transparent 95%);
+      transform: rotate(1.5deg);
+      z-index: 2;
     }
 
-    /* Geometric shapes */
-    .geo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
-    .geo-circle {
-      position: absolute;
-      border-radius: 50%;
-      border: 1px solid rgba(196,160,100,.1);
-    }
-    .gc1 { width: 320px; height: 320px; top: -80px; right: -80px; }
-    .gc2 { width: 200px; height: 200px; bottom: 60px; left: -50px; }
-    .gc3 { width: 120px; height: 120px; top: 45%; right: 30px; border-color: rgba(196,160,100,.07); }
-
-    .dark-content {
+    /* Left panel */
+    .hero-left {
       position: relative;
-      z-index: 1;
       display: flex;
       flex-direction: column;
-      height: 100%;
       justify-content: space-between;
+      padding: 2.75rem 3.5rem;
+      z-index: 3;
+      max-width: 580px;
     }
+
+    /* Right panel — product image */
+    .hero-right {
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-right img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: saturate(.85) contrast(1.05);
+      transform: scale(1.04);
+      transition: transform 8s ease;
+    }
+    .hero-right::before {
+      content: '';
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(to right, var(--dark) 0%, transparent 30%),
+                  linear-gradient(to top, var(--dark) 0%, transparent 35%),
+                  linear-gradient(160deg, rgba(14,13,11,.4) 0%, transparent 60%);
+    }
+    /* Floating price tag on image */
+    .hero-price-tag {
+      position: absolute;
+      bottom: 2.5rem; left: 3rem; z-index: 5;
+      background: rgba(14,13,11,.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: .875rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity .6s .8s, transform .6s .8s;
+    }
+    .hero-price-tag.show { opacity: 1; transform: translateY(0); }
+    .hpt-label { font-size: .65rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .hpt-price { font-size: 1.125rem; font-weight: 600; color: var(--gold2); }
+    .hpt-badge { background: #16a34a; color: #fff; font-size: .65rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; }
 
     /* Logo */
     .logo {
-      display: flex;
-      align-items: center;
-      gap: .75rem;
+      display: flex; align-items: center; gap: .875rem;
+      text-decoration: none;
+      opacity: 0; animation: slideDown .7s .1s forwards;
     }
-    .logo-mark {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
+    .logo-icon {
+      width: 42px; height: 42px; border-radius: 9px;
       background: var(--gold);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
     }
-    .logo-mark svg { width: 24px; height: 24px; color: #fff; }
-    .logo-name { font-size: 1.125rem; font-weight: 700; color: #fff; letter-spacing: .06em; }
+    .logo-icon svg { width: 22px; height: 22px; color: #fff; }
+    .logo-text { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: #fff; letter-spacing: .04em; }
+    .logo-sub { font-size: .6rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-top: .1rem; }
 
-    /* Hero text */
-    .dark-hero { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 3rem 0; }
-    .dark-hero .eyebrow {
-      font-size: .72rem;
-      font-weight: 600;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-      color: rgba(196,160,100,.7);
+    /* Hero content */
+    .hero-content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 2rem 0; }
+
+    .eyebrow {
+      font-size: .7rem; font-weight: 500; letter-spacing: .2em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: .75rem;
+      opacity: 0; animation: slideUp .7s .25s forwards;
+    }
+    .eyebrow::before {
+      content: ''; width: 28px; height: 1px; background: var(--gold); flex-shrink: 0;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.25rem, 4.5vw, 4.25rem);
+      font-weight: 300;
+      line-height: 1.12;
+      letter-spacing: -.015em;
+      color: #fff;
+      margin-bottom: 1.75rem;
+      opacity: 0; animation: slideUp .8s .35s forwards;
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--gold2);
+      display: block;
+    }
+
+    .hero-desc {
+      font-size: .9375rem; font-weight: 300; color: rgba(247,243,237,.5);
+      line-height: 1.8; max-width: 380px; margin-bottom: 2rem;
+      opacity: 0; animation: slideUp .8s .45s forwards;
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: flex; gap: 2rem; margin-bottom: 2rem;
+      opacity: 0; animation: slideUp .8s .5s forwards;
+    }
+    .stat { }
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; font-weight: 600; color: var(--gold2);
+      line-height: 1;
+    }
+    .stat-label { font-size: .7rem; font-weight: 400; color: var(--muted); margin-top: .25rem; letter-spacing: .08em; text-transform: uppercase; }
+
+    /* CTA buttons */
+    .cta-row {
+      display: flex; gap: 1rem; align-items: center;
+      opacity: 0; animation: slideUp .8s .6s forwards;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: .625rem;
+      padding: .9375rem 2rem;
+      background: var(--gold);
+      color: var(--dark);
+      border: none; border-radius: 99px;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: .875rem; font-weight: 600;
+      cursor: none; text-decoration: none;
+      transition: background .2s, transform .15s, box-shadow .2s;
+      box-shadow: 0 8px 28px rgba(196,162,92,.3);
+    }
+    .btn-primary:hover {
+      background: var(--gold2);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 36px rgba(196,162,92,.4);
+    }
+    .btn-primary svg { width: 16px; height: 16px; }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .9375rem 1.5rem;
+      background: transparent;
+      color: rgba(247,243,237,.65);
+      border: 1px solid rgba(247,243,237,.15);
+      border-radius: 99px;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: .875rem; font-weight: 400;
+      cursor: none; text-decoration: none;
+      transition: all .2s;
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-ghost svg { width: 14px; height: 14px; }
+
+    /* Trust badges bottom */
+    .trust-row {
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+      opacity: 0; animation: slideUp .8s .7s forwards;
+    }
+    .trust-it {
+      display: flex; align-items: center; gap: .4rem;
+      font-size: .72rem; color: rgba(247,243,237,.35);
+    }
+    .trust-it svg { width: 12px; height: 12px; color: var(--gold); flex-shrink: 0; }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      background: var(--gold);
+      padding: .75rem 0;
+      overflow: hidden;
+      position: relative; z-index: 4;
+    }
+    .marquee-track {
+      display: flex;
+      animation: marquee 22s linear infinite;
+      width: max-content;
+    }
+    .marquee-track span {
+      font-size: .72rem; font-weight: 700; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--dark);
+      padding: 0 2rem;
+      white-space: nowrap;
+    }
+    .marquee-track span::before { content: '✦ '; }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ── CATEGORIES ── */
+    .section { padding: 6rem 3.5rem; max-width: 1280px; margin: 0 auto; }
+    .section-eyebrow {
+      font-size: .68rem; font-weight: 500; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--gold);
+      display: flex; align-items: center; gap: .75rem;
       margin-bottom: 1.25rem;
     }
-    .dark-hero h1 {
-      font-size: clamp(2rem, 3.5vw, 3rem);
-      font-weight: 700;
-      color: #f5f0e8;
-      line-height: 1.15;
-      letter-spacing: -.02em;
-      margin-bottom: 1.5rem;
+    .section-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--gold); }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 300; line-height: 1.1;
+      color: #fff; margin-bottom: 3rem;
+      letter-spacing: -.01em;
     }
-    .dark-hero h1 em {
-      font-style: normal;
-      color: #c4a064;
-      font-weight: 300;
-    }
-    .dark-hero p {
-      font-size: .9375rem;
-      color: rgba(255,255,255,.5);
-      line-height: 1.8;
-      font-weight: 300;
-      max-width: 340px;
-    }
+    .section-title em { font-style: italic; color: var(--gold2); }
 
-    /* Trust badges */
-    .trust-strip {
-      display: flex;
-      flex-direction: column;
-      gap: .75rem;
-    }
-    .trust-item {
-      display: flex;
-      align-items: center;
-      gap: .75rem;
-      font-size: .8125rem;
-      color: rgba(255,255,255,.45);
-    }
-    .trust-item svg { width: 15px; height: 15px; color: var(--gold); flex-shrink: 0; }
-
-    /* ── RIGHT: Cream side ── */
-    .side-cream {
-      background: var(--cream);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* Subtle pattern */
-    .side-cream::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 60% 60% at 90% 10%, rgba(184,146,42,.05) 0%, transparent 50%);
-    }
-
-    .cream-inner {
-      position: relative;
-      z-index: 1;
-      max-width: 400px;
-      width: 100%;
-    }
-
-    /* Product showcase card */
-    .product-showcase {
-      background: #fff;
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
       border-radius: 16px;
-      border: 1.5px solid var(--border);
-      overflow: hidden;
-      margin-bottom: 2rem;
-      box-shadow: 0 8px 32px rgba(0,0,0,.06);
-    }
-    .ps-img {
-      width: 100%;
-      aspect-ratio: 4/3;
-      background: var(--light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
       overflow: hidden;
     }
-    .ps-img svg { width: 80px; height: 80px; color: #d0c8bc; opacity: .5; }
-    .ps-body { padding: 1.25rem 1.5rem; border-top: 1.5px solid var(--border); }
-    .ps-cat { font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: .25rem; }
-    .ps-name { font-size: .9375rem; font-weight: 600; color: var(--text); margin-bottom: .5rem; }
-    .ps-price-row { display: flex; align-items: center; justify-content: space-between; }
-    .ps-price { font-size: 1.0625rem; font-weight: 700; color: var(--dark); }
-    .ps-badge { background: var(--light); color: #16a34a; font-size: .68rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; border: 1px solid #bbf7d0; }
-
-    /* CTA section */
-    .cta-section { display: flex; flex-direction: column; gap: 1rem; }
-    .cta-title { font-size: 1.0625rem; font-weight: 700; color: var(--dark); margin-bottom: .25rem; }
-    .cta-sub { font-size: .8125rem; color: var(--muted); margin-bottom: .25rem; }
-
-    .btn-enter {
-      width: 100%;
-      padding: .9375rem;
-      background: var(--dark);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-family: var(--font);
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: .625rem;
-      transition: background .2s, transform .15s;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
+    .cat-card {
+      position: relative;
+      aspect-ratio: 3/4;
+      background: #1a1610;
+      overflow: hidden;
+      cursor: none;
+      text-decoration: none;
     }
-    .btn-enter svg { width: 18px; height: 18px; }
-    .btn-enter:hover { background: #2e2e2a; transform: translateY(-1px); }
-    .btn-enter:disabled { opacity: .65; cursor: not-allowed; transform: none; }
+    .cat-card:first-child { border-radius: 16px 0 0 16px; }
+    .cat-card:last-child { border-radius: 0 16px 16px 0; }
 
-    /* Features row */
-    .features-row {
+    .cat-bg {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      transform: scale(1.06);
+      transition: transform .65s cubic-bezier(.22,.68,0,1.1), filter .65s;
+      filter: saturate(.7) brightness(.7);
+    }
+    .cat-card:hover .cat-bg { transform: scale(1); filter: saturate(1) brightness(.75); }
+    .cat-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(14,13,11,.92) 0%, rgba(14,13,11,.1) 55%);
+      transition: background .4s;
+    }
+    .cat-card:hover .cat-overlay { background: linear-gradient(to top, rgba(14,13,11,.95) 0%, rgba(14,13,11,.2) 55%); }
+
+    .cat-content {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 1.75rem 1.5rem;
+    }
+    .cat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem; font-weight: 300;
+      color: rgba(196,162,92,.2); line-height: 1;
+      margin-bottom: .5rem;
+    }
+    .cat-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.375rem; font-weight: 400;
+      color: #fff; margin-bottom: .375rem;
+    }
+    .cat-sub { font-size: .72rem; color: rgba(247,243,237,.45); letter-spacing: .06em; }
+
+    .cat-arrow {
+      position: absolute; top: 1.25rem; right: 1.25rem;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(196,162,92,.3); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold); transition: all .3s;
+      transform: translateX(4px) translateY(-4px);
+      opacity: 0;
+    }
+    .cat-card:hover .cat-arrow { opacity: 1; transform: translateX(0) translateY(0); }
+    .cat-arrow svg { width: 14px; height: 14px; }
+
+    /* ── FEATURED PRODUCTS ── */
+    .products-section {
+      padding: 0 3.5rem 6rem;
+      max-width: 1280px; margin: 0 auto;
+    }
+    .prod-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: .625rem;
-      margin-top: .5rem;
+      gap: 1.25rem;
     }
-    .feat-card {
-      background: #fff;
-      border: 1.5px solid var(--border);
-      border-radius: 9px;
-      padding: .875rem .75rem;
-      text-align: center;
-      transition: border-color .18s, transform .18s;
-    }
-    .feat-card:hover { border-color: #d0c8bc; transform: translateY(-2px); }
-    .feat-card svg { width: 22px; height: 22px; color: var(--gold); margin-bottom: .5rem; }
-    .feat-card strong { display: block; font-size: .72rem; font-weight: 700; color: var(--dark); margin-bottom: .2rem; }
-    .feat-card span { font-size: .65rem; color: var(--muted); line-height: 1.4; }
-
-    /* Contact line */
-    .contact-line {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 1.25rem;
-      flex-wrap: wrap;
-    }
-    .cl-item {
-      display: flex;
-      align-items: center;
-      gap: .375rem;
-      font-size: .75rem;
-      color: var(--muted);
+    .prod-card {
+      background: rgba(247,243,237,.04);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: none;
       text-decoration: none;
-      transition: color .18s;
+      transition: border-color .3s, background .3s, transform .3s;
     }
-    .cl-item svg { width: 13px; height: 13px; }
-    .cl-item:hover { color: var(--dark); }
-    .cl-sep { width: 1px; height: 12px; background: var(--border); }
+    .prod-card:hover { border-color: rgba(196,162,92,.4); background: rgba(247,243,237,.07); transform: translateY(-4px); }
+    .prod-img {
+      aspect-ratio: 4/3; overflow: hidden;
+      background: #1a1610;
+    }
+    .prod-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.22,.68,0,1.1); filter: saturate(.9); }
+    .prod-card:hover .prod-img img { transform: scale(1.06); }
 
-    /* Animations */
-    .side-dark, .cream-inner { opacity: 0; }
-    .side-dark { animation: fadeLeft .7s cubic-bezier(.22,.68,0,1.1) .05s forwards; }
-    .cream-inner { animation: fadeRight .7s cubic-bezier(.22,.68,0,1.1) .2s forwards; }
-    @keyframes fadeLeft  { to { opacity: 1; } }
-    @keyframes fadeRight { to { opacity: 1; } }
+    .prod-body { padding: 1.25rem; }
+    .prod-cat { font-size: .62rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: .375rem; }
+    .prod-name { font-family: 'Cormorant Garamond', serif; font-size: 1.125rem; font-weight: 400; color: #fff; margin-bottom: .75rem; line-height: 1.3; }
+    .prod-footer { display: flex; align-items: center; justify-content: space-between; }
+    .prod-price { font-size: .9375rem; font-weight: 600; color: var(--gold2); }
+    .prod-old { font-size: .72rem; color: var(--muted); text-decoration: line-through; margin-top: .1rem; }
+    .prod-btn {
+      width: 34px; height: 34px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold); transition: all .2s;
+      background: transparent;
+    }
+    .prod-card:hover .prod-btn { background: var(--gold); border-color: var(--gold); color: var(--dark); }
+    .prod-btn svg { width: 14px; height: 14px; }
 
-    .product-showcase { animation: floatCard 4s ease-in-out infinite; }
-    @keyframes floatCard {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
+    /* ── CONTACT ── */
+    .contact-bar {
+      margin: 0 3.5rem 6rem;
+      background: linear-gradient(135deg, rgba(196,162,92,.12) 0%, rgba(196,162,92,.04) 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3rem;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 2rem;
+      max-width: 1280px; margin-left: auto; margin-right: auto;
+      position: relative; overflow: hidden;
+    }
+    .contact-bar::before {
+      content: '';
+      position: absolute; top: -50%; right: -10%;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(196,162,92,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .contact-text { position: relative; z-index: 1; }
+    .contact-text h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.25rem; font-weight: 300; color: #fff;
+      margin-bottom: .5rem;
+    }
+    .contact-text p { font-size: .875rem; color: var(--muted); }
+    .contact-links { display: flex; gap: 1rem; align-items: center; position: relative; z-index: 1; flex-wrap: wrap; }
+    .contact-link {
+      display: flex; align-items: center; gap: .625rem;
+      padding: .75rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      font-size: .8125rem; color: rgba(247,243,237,.65);
+      text-decoration: none; cursor: none;
+      transition: all .2s;
+    }
+    .contact-link svg { width: 14px; height: 14px; color: var(--gold); }
+    .contact-link:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── FOOTER ── */
+    .landing-footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 3.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: .75rem; color: var(--muted);
     }
 
-    /* Spinner */
+    /* ── ANIMATIONS ── */
+    @keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .spin { animation: spin .7s linear infinite; }
+
+    .reveal {
+      opacity: 0; transform: translateY(32px);
+      transition: opacity .8s cubic-bezier(.22,.68,0,1.1), transform .8s cubic-bezier(.22,.68,0,1.1);
+    }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
 
     /* Responsive */
-    @media(max-width: 768px) {
-      body { grid-template-columns: 1fr; grid-template-rows: auto 1fr; overflow: auto; }
-      .side-dark { padding: 2rem 1.5rem; min-height: auto; }
-      .dark-hero { padding: 1.5rem 0; }
-      .dark-hero h1 { font-size: 1.75rem; }
-      .trust-strip { flex-direction: row; flex-wrap: wrap; gap: .625rem; }
-      .side-cream { padding: 2rem 1.5rem; align-items: flex-start; }
-      .product-showcase { animation: none; }
+    @media(max-width: 1024px) {
+      .cat-grid { grid-template-columns: repeat(2, 1fr); }
+      .cat-card:first-child { border-radius: 16px 0 0 0; }
+      .cat-card:nth-child(2) { border-radius: 0 16px 0 0; }
+      .cat-card:nth-child(3) { border-radius: 0 0 0 16px; }
+      .cat-card:last-child { border-radius: 0 0 16px 0; }
     }
-    @media(max-width: 420px) {
-      .features-row { grid-template-columns: 1fr 1fr; }
-      .features-row .feat-card:last-child { grid-column: 1/-1; }
+    @media(max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { display: none; }
+      .hero::after { display: none; }
+      .prod-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media(max-width: 640px) {
+      .hero-left { padding: 2rem 1.5rem; }
+      .section, .products-section { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .prod-grid { grid-template-columns: 1fr; }
+      .contact-bar { flex-direction: column; margin-left: 1.5rem; margin-right: 1.5rem; }
+      .landing-footer { flex-direction: column; gap: .75rem; text-align: center; padding: 1.5rem; }
+      body { cursor: auto; }
+      .cursor, .cursor-ring { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- LEFT: Dark hero -->
-  <div class="side-dark">
-    <div class="geo">
-      <div class="geo-circle gc1"></div>
-      <div class="geo-circle gc2"></div>
-      <div class="geo-circle gc3"></div>
-    </div>
-    <div class="dark-content">
+<!-- Custom cursors -->
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="ring"></div>
 
-      <div class="logo">
-        <div class="logo-mark">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 21v-7h6v7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <span class="logo-name">DQD</span>
+<!-- ══ HERO ══ -->
+<section class="hero">
+
+  <div class="hero-left">
+
+    <a href="/" class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 9.5L12 3l9 6.5V21H3V9.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 21v-7h6v7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
-
-      <div class="dark-hero">
-        <div class="eyebrow">Nội thất cao cấp · Hà Đông, Hà Nội</div>
-        <h1>Không gian sống<br><em>đẹp hơn mỗi ngày</em></h1>
-        <p>Bộ sưu tập nội thất được tuyển chọn kỹ lưỡng — tinh tế, bền chắc và phù hợp với mọi phong cách sống.</p>
+      <div>
+        <div class="logo-text">DQD</div>
+        <div class="logo-sub">Nội thất cao cấp</div>
       </div>
+    </a>
 
-      <div class="trust-strip">
-        <div class="trust-item">
-          <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Miễn phí vận chuyển đơn từ 5 triệu
-        </div>
-        <div class="trust-item">
-          <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Bảo hành chính hãng 1–3 năm
-        </div>
-        <div class="trust-item">
-          <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Đổi trả trong 30 ngày nếu có lỗi
-        </div>
-      </div>
+    <div class="hero-content">
+      <div class="eyebrow">Hà Đông · Hà Nội · Est. 2026</div>
+      <h1>Không gian sống<br><em>đẹp hơn</em> mỗi ngày</h1>
+      <p class="hero-desc">Bộ sưu tập nội thất được tuyển chọn kỹ lưỡng — tinh tế, bền chắc và phù hợp với mọi phong cách sống hiện đại.</p>
 
-    </div>
-  </div>
-
-  <!-- RIGHT: Cream card -->
-  <div class="side-cream">
-    <div class="cream-inner">
-
-      <!-- Product showcase -->
-      <div class="product-showcase">
-        <div class="ps-img">
-          {% if featured_product and featured_product.image %}
-          <img src="{{ featured_product.image }}"
-               alt="{{ featured_product.name }}"
-               style="width:100%;height:100%;object-fit:cover"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center">
-            <svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:80px;height:80px">
-              <rect x="10" y="35" width="100" height="28" rx="8" fill="#e8e3db"/>
-              <rect x="18" y="50" width="84" height="18" rx="6" fill="#d0c8bc"/>
-              <rect x="18" y="25" width="84" height="14" rx="6" fill="#c4b8a8"/>
-              <rect x="14" y="63" width="8" height="18" rx="3" fill="#b8a898"/>
-              <rect x="98" y="63" width="8" height="18" rx="3" fill="#b8a898"/>
-            </svg>
-          </div>
-          {% else %}
-          <svg viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="10" y="35" width="100" height="28" rx="8" fill="#e8e3db"/>
-            <rect x="18" y="50" width="84" height="18" rx="6" fill="#d0c8bc"/>
-            <rect x="18" y="25" width="84" height="14" rx="6" fill="#c4b8a8"/>
-            <rect x="14" y="63" width="8" height="18" rx="3" fill="#b8a898"/>
-            <rect x="98" y="63" width="8" height="18" rx="3" fill="#b8a898"/>
-            <rect x="26" y="63" width="8" height="15" rx="3" fill="#b8a898"/>
-            <rect x="86" y="63" width="8" height="15" rx="3" fill="#b8a898"/>
-            <line x1="60" y1="25" x2="60" y2="39" stroke="#b8a898" stroke-width="1.5" stroke-linecap="round"/>
-            <line x1="38" y1="25" x2="38" y2="39" stroke="#b8a898" stroke-width="1" stroke-linecap="round"/>
-            <line x1="82" y1="25" x2="82" y2="39" stroke="#b8a898" stroke-width="1" stroke-linecap="round"/>
-          </svg>
-          {% endif %}
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-num">500+</div>
+          <div class="stat-label">Sản phẩm</div>
         </div>
-        <div class="ps-body">
-          <div class="ps-cat">{{ featured_product.category if featured_product else 'Sofa cao cấp' }}</div>
-          <div class="ps-name">{{ featured_product.name if featured_product else 'Sofa góc L Nordic Premium' }}</div>
-          <div class="ps-price-row">
-            <span class="ps-price">
-              {% if featured_product %}
-                {{ "{:,.0f}".format(featured_product.price) }} ₫
-              {% else %}
-                12.500.000 ₫
-              {% endif %}
-            </span>
-            <span class="ps-badge">Còn hàng</span>
-          </div>
+        <div class="stat">
+          <div class="stat-num">2K+</div>
+          <div class="stat-label">Khách hàng</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">4.9★</div>
+          <div class="stat-label">Đánh giá</div>
         </div>
       </div>
 
-      <!-- CTA -->
-      <div class="cta-section">
-        <div>
-          <div class="cta-title">Khám phá bộ sưu tập DQD</div>
-          <div class="cta-sub">Hàng trăm mẫu nội thất cao cấp đang chờ bạn</div>
-        </div>
-
-        <button class="btn-enter" id="enterBtn">
+      <div class="cta-row">
+        <a href="/" class="btn-primary" id="enterBtn">
           <svg viewBox="0 0 20 20" fill="none"><path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Vào website
-        </button>
-
-        <div class="features-row">
-          <div class="feat-card">
-            <svg viewBox="0 0 20 20" fill="none"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3m-1 11h6m-3-3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <strong>Giao nhanh</strong>
-            <span>Miễn phí đơn 5tr+</span>
-          </div>
-          <div class="feat-card">
-            <svg viewBox="0 0 20 20" fill="none"><path d="M10 2l6 2.5v5c0 4-2.5 7-6 8.5C4.5 16.5 2 13.5 2 9.5v-5L10 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <strong>Bảo hành</strong>
-            <span>1–3 năm chính hãng</span>
-          </div>
-          <div class="feat-card">
-            <svg viewBox="0 0 20 20" fill="none"><path d="M4 10a6 6 0 100 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 6v4h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <strong>Đổi trả</strong>
-            <span>30 ngày dễ dàng</span>
-          </div>
-        </div>
-
-        <div class="contact-line">
-          <a href="tel:0345211386" class="cl-item">
-            <svg viewBox="0 0 16 16" fill="none"><path d="M5 2h-1A1.5 1.5 0 002.5 3.5v1C2.5 10.4 6.6 14.5 13.5 14.5h1A1.5 1.5 0 0016 13v-1.5a.5.5 0 00-.3-.46l-2.5-1a.5.5 0 00-.56.12l-1 1.25a8 8 0 01-3.5-3.5l1.25-1a.5.5 0 00.12-.57l-1-2.5A.5.5 0 005 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
-            0345 211 386
-          </a>
-          <div class="cl-sep"></div>
-          <a href="quocdat30075@gmail.com" class="cl-item">
-            <svg viewBox="0 0 16 16" fill="none"><path d="M1 4h14a1 1 0 011 1v7a1 1 0 01-1 1H1a1 1 0 01-1-1V5a1 1 0 011-1zm7 5L1 5M15 5l-7 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-            <span class="__cf_email__" data-cfemail="68191d070b0c091c5b58585f5d280f05090104460b0705">[email&#160;protected]</span>
-          </a>
-          <div class="cl-sep"></div>
-          <span class="cl-item">
-            <svg viewBox="0 0 16 16" fill="none"><path d="M8 2a4 4 0 016 3.5c0 3.5-6 9-6 9S2 9 2 5.5A4 4 0 018 2z" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="5.5" r="1.5" stroke="currentColor" stroke-width="1.2"/></svg>
-            Hà Đông, Hà Nội
-          </span>
-        </div>
-
+        </a>
+        <a href="/products" class="btn-ghost">
+          <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="9" rx="1" stroke="currentColor" stroke-width="1.2"/><circle cx="5.5" cy="7.5" r="1" stroke="currentColor" stroke-width="1"/><path d="M2 11l3-3 2.5 2.5L11 7l3 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Xem bộ sưu tập
+        </a>
       </div>
+    </div>
 
+    <div class="trust-row">
+      <div class="trust-it">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Miễn phí ship đơn 5tr+
+      </div>
+      <div class="trust-it">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Bảo hành 1–3 năm
+      </div>
+      <div class="trust-it">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Đổi trả 30 ngày
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hero-right">
+    {% if featured_product and featured_product.image %}
+    <img src="{{ featured_product.image }}" alt="{{ featured_product.name }}" id="heroImg">
+    {% else %}
+    <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200" alt="Nội thất DQD" id="heroImg">
+    {% endif %}
+
+    <div class="hero-price-tag" id="priceTag">
+      <div>
+        <div class="hpt-label">Sản phẩm nổi bật</div>
+        <div class="hpt-price">
+          {% if featured_product %}{{ "{:,.0f}".format(featured_product.price) }} ₫{% else %}15.000.000 ₫{% endif %}
+        </div>
+      </div>
+      <span class="hpt-badge">Còn hàng</span>
     </div>
   </div>
 
-  <script>
-    (function() {
-      'use strict';
+</section>
 
-      function enterWebsite() {
-        var btn  = document.getElementById('enterBtn');
-        if (!btn || btn.disabled) return;
-        var orig = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" style="width:18px;height:18px;animation:spin .7s linear infinite"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,.3)" stroke-width="3"/><path d="M12 2a10 10 0 0110 10" stroke="white" stroke-width="3" stroke-linecap="round"/></svg> Đang tải...';
+<!-- ══ MARQUEE ══ -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marquee">
+    <span>Phòng Khách</span>
+    <span>Phòng Ngủ</span>
+    <span>Nhà Bếp</span>
+    <span>Văn Phòng</span>
+    <span>Phòng Ăn</span>
+    <span>Nội Thất Cao Cấp</span>
+    <span>Giao Hàng Toàn Quốc</span>
+    <span>Bảo Hành Chính Hãng</span>
+    <span>Phòng Khách</span>
+    <span>Phòng Ngủ</span>
+    <span>Nhà Bếp</span>
+    <span>Văn Phòng</span>
+    <span>Phòng Ăn</span>
+    <span>Nội Thất Cao Cấp</span>
+    <span>Giao Hàng Toàn Quốc</span>
+    <span>Bảo Hành Chính Hãng</span>
+  </div>
+</div>
 
-        fetch('/api/verify', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ simple_verify: true })
-        })
-        .then(function(res) { return res.json(); })
-        .then(function(d) {
-          window.location.href = (d && d.redirect_url) ? d.redirect_url : '/';
-        })
-        .catch(function() {
-          window.location.href = '/';
-        });
+<!-- ══ CATEGORIES ══ -->
+<div class="section">
+  <div class="section-eyebrow reveal">Danh mục</div>
+  <div class="section-title reveal reveal-delay-1">Khám phá<br>không gian <em>sống</em></div>
+
+  <div class="cat-grid reveal reveal-delay-2">
+    <a href="/products?category=Phòng Khách" class="cat-card">
+      <div class="cat-bg" style="background-image:url('https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600')"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-arrow"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4h8v8M4 12L12 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="cat-content">
+        <div class="cat-num">01</div>
+        <div class="cat-name">Phòng Khách</div>
+        <div class="cat-sub">Sofa · Bàn trà · Kệ TV</div>
+      </div>
+    </a>
+    <a href="/products?category=Phòng Ngủ" class="cat-card">
+      <div class="cat-bg" style="background-image:url('https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=600')"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-arrow"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4h8v8M4 12L12 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="cat-content">
+        <div class="cat-num">02</div>
+        <div class="cat-name">Phòng Ngủ</div>
+        <div class="cat-sub">Giường · Tủ · Đầu giường</div>
+      </div>
+    </a>
+    <a href="/products?category=Nhà Bếp" class="cat-card">
+      <div class="cat-bg" style="background-image:url('https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=600')"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-arrow"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4h8v8M4 12L12 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="cat-content">
+        <div class="cat-num">03</div>
+        <div class="cat-name">Nhà Bếp</div>
+        <div class="cat-sub">Tủ bếp · Bàn đảo · Kệ</div>
+      </div>
+    </a>
+    <a href="/products?category=Văn Phòng" class="cat-card">
+      <div class="cat-bg" style="background-image:url('https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600')"></div>
+      <div class="cat-overlay"></div>
+      <div class="cat-arrow"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4h8v8M4 12L12 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="cat-content">
+        <div class="cat-num">04</div>
+        <div class="cat-name">Văn Phòng</div>
+        <div class="cat-sub">Bàn làm việc · Ghế · Kệ</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- ══ FEATURED PRODUCTS ══ -->
+<div class="products-section">
+  <div class="section-eyebrow reveal">Sản phẩm nổi bật</div>
+  <div class="section-title reveal reveal-delay-1" style="margin-bottom:2rem">Được khách hàng<br><em>yêu thích nhất</em></div>
+
+  <div class="prod-grid">
+    {% if featured_products %}
+      {% for p in featured_products[:3] %}
+      <a href="/product/{{ p.id }}" class="prod-card reveal reveal-delay-{{ loop.index }}">
+        <div class="prod-img">
+          <img src="{{ p.image }}" alt="{{ p.name }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600'">
+        </div>
+        <div class="prod-body">
+          <div class="prod-cat">{{ p.category }}</div>
+          <div class="prod-name">{{ p.name }}</div>
+          <div class="prod-footer">
+            <div>
+              <div class="prod-price">{{ "{:,.0f}".format(p.price) }} ₫</div>
+              {% if p.original_price and p.original_price > p.price %}
+              <div class="prod-old">{{ "{:,.0f}".format(p.original_price) }} ₫</div>
+              {% endif %}
+            </div>
+            <div class="prod-btn">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M4 4h8v8M4 12L12 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    {% else %}
+      <!-- Fallback: 3 placeholder cards dẫn đến trang sản phẩm -->
+      <a href="/products" class="prod-card reveal reveal-delay-1">
+        <div class="prod-img" style="background:#1a1610;display:flex;align-items:center;justify-content:center">
+          <svg viewBox="0 0 80 60" fill="none" style="width:64px;height:48px;opacity:.2"><rect x="5" y="20" width="70" height="22" rx="6" fill="currentColor"/><rect x="12" y="14" width="56" height="10" rx="4" fill="currentColor" opacity=".6"/></svg>
+        </div>
+        <div class="prod-body">
+          <div class="prod-cat">Phòng Khách</div>
+          <div class="prod-name">Sofa cao cấp</div>
+          <div class="prod-footer">
+            <div><div class="prod-price">Xem giá</div></div>
+            <div class="prod-btn"><svg viewBox="0 0 16 16" fill="none"><path d="M4 4h8v8M4 12L12 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+        </div>
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ══ CONTACT BAR ══ -->
+<div class="contact-bar reveal">
+  <div class="contact-text">
+    <h2>Cần tư vấn?<br>Chúng tôi luôn sẵn sàng.</h2>
+    <p>Liên hệ ngay để được hỗ trợ chọn nội thất phù hợp</p>
+  </div>
+  <div class="contact-links">
+    <a href="tel:0345211386" class="contact-link">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M5 2h-1A1.5 1.5 0 002.5 3.5v1C2.5 10.4 6.6 14.5 13.5 14.5h1A1.5 1.5 0 0016 13v-1.5a.5.5 0 00-.3-.46l-2.5-1a.5.5 0 00-.56.12l-1 1.25a8 8 0 01-3.5-3.5l1.25-1a.5.5 0 00.12-.57l-1-2.5A.5.5 0 005 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+      0345 211 386
+    </a>
+    <a href="mailto:quocdat30075@gmail.com" class="contact-link">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M1 4h14v9a1 1 0 01-1 1H2a1 1 0 01-1-1V4zm0 0l7 5 7-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      quocdat30075@gmail.com
+    </a>
+    <a href="/products" class="btn-primary" style="border-radius:99px;font-size:.8125rem">
+      Xem tất cả sản phẩm
+      <svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M3 8h10M8 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer class="landing-footer">
+  <span>© 2026 DQD Nội Thất · Hà Đông, Hà Nội</span>
+  <span>Thiết kế với ♥ dành cho không gian sống của bạn</span>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  /* ── Custom cursor ── */
+  var cur  = document.getElementById('cur');
+  var ring = document.getElementById('ring');
+  var mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', function(e) {
+    mx = e.clientX; my = e.clientY;
+    if (cur) { cur.style.left = mx + 'px'; cur.style.top = my + 'px'; }
+  });
+
+  function animRing() {
+    rx += (mx - rx) * .12;
+    ry += (my - ry) * .12;
+    if (ring) { ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; }
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+
+  document.querySelectorAll('a, button, .cat-card, .prod-card').forEach(function(el) {
+    el.addEventListener('mouseenter', function() { document.body.classList.add('hovering'); });
+    el.addEventListener('mouseleave', function() { document.body.classList.remove('hovering'); });
+  });
+
+  /* ── Hero image zoom on load ── */
+  var heroImg = document.getElementById('heroImg');
+  if (heroImg) {
+    heroImg.addEventListener('load', function() {
+      this.style.transform = 'scale(1)';
+    });
+  }
+
+  /* ── Price tag reveal ── */
+  var priceTag = document.getElementById('priceTag');
+  if (priceTag) setTimeout(function() { priceTag.classList.add('show'); }, 900);
+
+  /* ── Enter button ── */
+  var enterBtn = document.getElementById('enterBtn');
+  if (enterBtn) {
+    enterBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var orig = this.innerHTML;
+      this.style.opacity = '.7';
+      this.style.pointerEvents = 'none';
+      this.innerHTML = '<svg viewBox="0 0 24 24" fill="none" style="width:16px;height:16px;animation:spin .7s linear infinite"><circle cx="12" cy="12" r="10" stroke="rgba(14,13,11,.4)" stroke-width="3"/><path d="M12 2a10 10 0 0110 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg> Đang tải...';
+
+      fetch('/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ simple_verify: true })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(d) { window.location.href = (d && d.redirect_url) ? d.redirect_url : '/'; })
+      .catch(function() { window.location.href = '/'; });
+    });
+  }
+
+  /* ── Scroll reveal ── */
+  var revealEls = document.querySelectorAll('.reveal');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        observer.unobserve(entry.target);
       }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(function(el) { observer.observe(el); });
 
-      document.addEventListener('DOMContentLoaded', function() {
-        var btn = document.getElementById('enterBtn');
-        if (btn) {
-          btn.addEventListener('click', enterWebsite);
-          btn.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              enterWebsite();
-            }
-          });
-        }
-      });
-    })();
-  </script>
+  /* ── Parallax hero image ── */
+  var heroRight = document.querySelector('.hero-right');
+  if (heroRight && heroImg) {
+    window.addEventListener('scroll', function() {
+      var y = window.scrollY;
+      heroImg.style.transform = 'scale(1.04) translateY(' + (y * 0.12) + 'px)';
+    }, { passive: true });
+  }
+
+})();
+</script>
 </body>
 </html>

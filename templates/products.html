@@ -51,7 +51,7 @@ window.quickView = function(productId) {
             <p class="qv-desc">${p.description||'Sản phẩm chất lượng cao, thiết kế hiện đại và sang trọng.'}</p>
             ${feats.length ? `<ul class="qv-feats">${feats.map(f=>`<li>${f}</li>`).join('')}</ul>` : ''}
             <div class="qv-actions">
-              <button class="qv-btn-cart" onclick="addToCart(${p.id}, event); closeQuickView();">
+              <button class="qv-btn-cart" onclick="closeQuickView(); setTimeout(function(){ addToCartWithPicker(${p.id}, '${(p.name||'').replace(/'/g,'')}'); }, 200);">
                 <svg viewBox="0 0 20 20" fill="none"><path d="M6 16a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2zM2 2h1.5l1.5 9h9l1.5-6H5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Thêm vào giỏ
               </button>
@@ -227,7 +227,7 @@ window.filterByCategory = function(cat) {
             {% endif %}
           </div>
           <button class="sp-cart-btn" data-id="{{ product.id }}"
-                  onclick="event.stopPropagation(); event.preventDefault(); addToCart({{ product.id }}, event)">
+                  onclick="event.stopPropagation(); event.preventDefault(); window._safeAddToCartWithPicker({{ product.id }}, '{{ product.name|replace("'","") }}', this.closest('.sp-card, [class*=card]')?.querySelector('img')?.src || '')">
             <svg viewBox="0 0 20 20" fill="none"><path d="M6 16a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2zM2 2h1.5l1.5 9h9l1.5-6H5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Thêm vào giỏ
           </button>
@@ -521,36 +521,9 @@ a{text-decoration:none}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-  // ── Add to cart ──
-  window.addToCart = function(productId, event) {
-    if (event) { event.stopPropagation(); event.preventDefault(); }
-    productId = parseInt(productId);
-    if (!productId) return;
-
-    const btn = document.querySelector(`.sp-cart-btn[data-id="${productId}"]`);
-    const orig = btn ? btn.innerHTML : '';
-    if (btn) { btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,.3)" stroke-width="3"/><path d="M12 2a10 10 0 0110 10" stroke="white" stroke-width="3" stroke-linecap="round"/></svg> Đang thêm...'; btn.disabled = true; }
-
-    fetch('/api/add-to-cart', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','Accept':'application/json'},
-      body: JSON.stringify({product_id: productId, quantity: 1})
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success) {
-        if (btn) { btn.classList.add('added'); btn.innerHTML = '✓ Đã thêm vào giỏ'; }
-        if (typeof updateCartCount === 'function') updateCartCount(data.cart_count);
-        showToast('Đã thêm sản phẩm vào giỏ hàng!', 'success');
-        setTimeout(() => { if (btn) { btn.classList.remove('added'); btn.innerHTML = orig; btn.disabled = false; } }, 2200);
-      } else throw new Error(data.message||'Lỗi');
-    })
-    .catch(err => {
-      if (btn) { btn.classList.add('error'); btn.innerHTML = '✕ Lỗi'; }
-      showToast(err.message||'Có lỗi xảy ra. Vui lòng thử lại!', 'error');
-      setTimeout(() => { if (btn) { btn.classList.remove('error'); btn.innerHTML = orig; btn.disabled = false; } }, 2200);
-    });
-  };
+  // ── Add to cart — dùng main.js addToCart + picker ──
+  // KHÔNG override window.addToCart để tránh conflict với main.js
+  // Các nút dùng addToCartWithPicker trực tiếp qua onclick
 
   // ── Toast ──
   window.showToast = function(msg, type) {
@@ -574,4 +547,27 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+
+<script>
+/* Bootstrap: đảm bảo addToCartWithPicker hoạt động dù main.js load muộn */
+(function() {
+  function waitAndCall(fn, args, tries) {
+    if (window.addToCartWithPicker && window._vpReady) {
+      window.addToCartWithPicker.apply(window, args);
+    } else if ((tries || 0) < 50) {
+      setTimeout(function() { waitAndCall(fn, args, (tries||0)+1); }, 100);
+    } else {
+      // Fallback: add trực tiếp không qua picker
+      if (window.addToCart) window.addToCart(args[0], 1);
+    }
+  }
+  window._safeAddToCartWithPicker = function(productId, productName) {
+    if (window.addToCartWithPicker && window._vpReady) {
+      window.addToCartWithPicker(productId, productName);
+    } else {
+      waitAndCall(null, [productId, productName], 0);
+    }
+  };
+})();
+</script>
 {% endblock %}
