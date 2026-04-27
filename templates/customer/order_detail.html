@@ -197,6 +197,33 @@
                 {% elif order.status == 'cancelled' %}✗ Đã hủy
                 {% endif %}
               </div>
+
+              {% if order.status == 'cancelled' %}
+              {% set cancel_reason = '' %}
+              {% if order.admin_note and '[KH HUỶ]' not in order.admin_note %}
+                {% set cancel_reason = order.admin_note %}
+              {% elif order.cancel_note %}
+                {% set cancel_reason = order.cancel_note | replace('Khách huỷ đơn — Lý do: ', '') %}
+              {% endif %}
+              <div style="margin-top:.875rem;background:#fff5f5;border:1.5px solid #fecaca;border-radius:10px;padding:1rem">
+                <div style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:700;color:#dc2626;margin-bottom:.5rem">
+                  <svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px;flex-shrink:0"><path d="M8 2l6 11H2L8 2z" stroke="#dc2626" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 7v3M8 11.5v.5" stroke="#dc2626" stroke-width="1.4" stroke-linecap="round"/></svg>
+                  Đơn hàng đã bị hủy
+                </div>
+                {% if cancel_reason %}
+                <div style="font-size:.8125rem;color:#7a7060;margin-bottom:.5rem">
+                  <span style="font-weight:600;color:#3a3530">Lý do:</span>
+                  {{ cancel_reason }}
+                </div>
+                {% else %}
+                <div style="font-size:.8125rem;color:#7a7060;margin-bottom:.5rem">Đơn hàng đã bị hủy. Vui lòng liên hệ shop để biết thêm chi tiết.</div>
+                {% endif %}
+                <a href="tel:0345211386" style="display:inline-flex;align-items:center;gap:.375rem;font-size:.78rem;font-weight:600;color:#dc2626;text-decoration:none">
+                  <svg viewBox="0 0 16 16" fill="none" style="width:12px;height:12px"><path d="M5 2h-1A1.5 1.5 0 002.5 3.5v1C2.5 10.4 6.6 14.5 13.5 14.5h1A1.5 1.5 0 0016 13v-1.5a.5.5 0 00-.3-.46l-2.5-1a.5.5 0 00-.56.12l-1 1.25a8 8 0 01-3.5-3.5l1.25-1a.5.5 0 00.12-.57l-1-2.5A.5.5 0 005 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+                  Liên hệ hỗ trợ: 0345 211 386
+                </a>
+              </div>
+              {% endif %}
             </div>
 
             <!-- Payment status badge -->

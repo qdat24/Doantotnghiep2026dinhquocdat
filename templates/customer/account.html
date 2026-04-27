@@ -155,7 +155,7 @@
               <div class="order-total">{{ "{:,.0f}".format(order.total) }} ₫</div>
               <div class="order-actions">
                 <a href="{{ url_for('customer_order_detail', order_id=order.order_id) }}" class="btn-outline">Xem chi tiết</a>
-                {% if order.status == 'pending' %}
+                {% if order.status in ['pending', 'confirmed'] %}
                 <form method="POST" action="{{ url_for('customer_cancel_order', order_id=order.order_id) }}"
                       id="cancelForm_{{ order.order_id }}"
                       onsubmit="return false">
@@ -299,16 +299,22 @@
       {% if notifications %}
         <div class="notif-list">
           {% for n in notifications %}
-          <div class="notif-card {% if not n.is_read %}notif-unread{% endif %}">
+          {% set is_cancel = '❌' in n.title or 'hủy' in n.title.lower() %}
+          {% set is_done   = '🎉' in n.title %}
+          {% set is_ship   = '🚚' in n.title %}
+          <div class="notif-card {% if not n.is_read %}notif-unread{% endif %}"
+               style="{% if is_cancel and not n.is_read %}border-color:#fecaca;background:#fff5f5;{% elif is_done and not n.is_read %}border-color:#bbf7d0;background:#f0faf4;{% endif %}">
             <div class="notif-body">
-              <h4>{{ n.title }}</h4>
+              <h4 style="{% if is_cancel %}color:#dc2626;{% elif is_done %}color:#16a34a;{% endif %}">
+                {{ n.title }}
+              </h4>
               <p>{{ n.message }}</p>
               <span class="notif-date">{{ n.created_at.strftime('%d/%m/%Y %H:%M') if n.created_at else '' }}</span>
             </div>
             <div class="notif-actions">
-              {% if n.link %}<a href="{{ n.link }}" class="btn-outline btn-sm">Xem</a>{% endif %}
+              {% if n.link %}<a href="{{ n.link }}" class="btn-outline btn-sm" style="{% if is_cancel %}border-color:#fca5a5;color:#dc2626;{% endif %}">Xem đơn</a>{% endif %}
               {% if not n.is_read %}
-              <button onclick="markNotificationRead({{ n.id }})" class="btn-outline btn-sm">Đánh dấu đã đọc</button>
+              <button onclick="markNotificationRead({{ n.id }})" class="btn-outline btn-sm">Đã đọc</button>
               {% endif %}
             </div>
           </div>

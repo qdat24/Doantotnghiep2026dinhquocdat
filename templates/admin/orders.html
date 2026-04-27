@@ -202,7 +202,11 @@
               {% elif order.status == 'completed' %}
               <span class="os-badge os-completed"><span class="os-dot"></span>Hoàn thành</span>
               {% elif order.status == 'cancelled' %}
-              <span class="os-badge os-cancelled"><span class="os-dot"></span>Đã hủy</span>
+              <span class="os-badge os-cancelled" style="cursor:{% if order.admin_note %}help{% else %}default{% endif %}"
+                    {% if order.admin_note %}title="{{ order.admin_note | replace('[KH HUỶ] ', '') }}"{% endif %}>
+                <span class="os-dot"></span>Đã hủy
+                {% if order.admin_note and '[KH HUỶ]' in order.admin_note %} ⚠{% endif %}
+              </span>
               {% else %}
               <span class="os-badge" style="background:var(--light);color:var(--muted)">{{ order.status }}</span>
               {% endif %}

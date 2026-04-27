@@ -172,7 +172,29 @@
           <div class="od-info-row"><span>Email</span><strong>{{ order.email if order.email else '—' }}</strong></div>
           <div class="od-info-row"><span>Địa chỉ giao hàng</span><strong>{{ order.address }}</strong></div>
           {% if order.note %}
-          <div class="od-info-row"><span>Ghi chú</span><strong>{{ order.note }}</strong></div>
+          <div class="od-info-row"><span>Ghi chú KH</span><strong>{{ order.note }}</strong></div>
+          {% endif %}
+          {% if order.admin_note and '[KH HUỶ]' in order.admin_note %}
+          <div class="od-info-row" style="background:#fff5f5;border-radius:8px;padding:.625rem .875rem;margin-top:.5rem;border:1.5px solid #fecaca">
+            <span style="color:#dc2626;font-weight:700;display:flex;align-items:center;gap:.375rem">
+              <svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px;flex-shrink:0"><path d="M8 2l6 11H2L8 2z" stroke="#dc2626" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 7v3M8 11.5v.5" stroke="#dc2626" stroke-width="1.3" stroke-linecap="round"/></svg>
+              Lý do khách huỷ đơn
+            </span>
+            <strong style="color:#991b1b">{{ order.admin_note | replace('[KH HUỶ] Khách huỷ đơn — Lý do: ', '') | replace('[KH HUỶ] Khách hàng tự huỷ đơn', 'Không ghi rõ lý do') }}</strong>
+          </div>
+          {% elif order.cancel_note %}
+          <div class="od-info-row" style="background:#fff5f5;border-radius:8px;padding:.625rem .875rem;margin-top:.5rem;border:1.5px solid #fecaca">
+            <span style="color:#dc2626;font-weight:700;display:flex;align-items:center;gap:.375rem">
+              <svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px;flex-shrink:0"><path d="M8 2l6 11H2L8 2z" stroke="#dc2626" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 7v3M8 11.5v.5" stroke="#dc2626" stroke-width="1.3" stroke-linecap="round"/></svg>
+              Lý do huỷ đơn
+            </span>
+            <div style="display:flex;flex-direction:column;gap:.2rem">
+              <strong style="color:#991b1b">{{ order.cancel_note | replace('Khách huỷ đơn — Lý do: ', '') }}</strong>
+              {% if order.cancel_by %}<span style="font-size:.72rem;color:#7a7060">Bởi: {{ order.cancel_by }} {% if order.cancel_time %}· {{ order.cancel_time }}{% endif %}</span>{% endif %}
+            </div>
+          </div>
+          {% elif order.admin_note %}
+          <div class="od-info-row"><span>Ghi chú nội bộ</span><strong>{{ order.admin_note }}</strong></div>
           {% endif %}
         </div>
       </div>
@@ -306,14 +328,15 @@
           </form>
           <div class="od-act-divider"></div>
           <form method="POST" action="{{ url_for('admin_update_order_status', order_id=order.order_id) }}"
-                onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
+                id="adminCancelForm" style="display:none">
             <input type="hidden" name="status" value="cancelled">
             <input type="hidden" name="payment_status" value="{{ order.payment_status }}">
-            <button type="submit" class="od-act-btn btn-cancel">
-              <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-              Hủy đơn hàng
-            </button>
+            <input type="hidden" name="note" id="adminCancelNoteInput" value="">
           </form>
+          <button type="button" class="od-act-btn btn-cancel" onclick="showAdminCancelModal()">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Hủy đơn hàng
+          </button>
         </div>
 
         {% elif order.status == 'confirmed' %}
@@ -328,14 +351,15 @@
           </form>
           <div class="od-act-divider"></div>
           <form method="POST" action="{{ url_for('admin_update_order_status', order_id=order.order_id) }}"
-                onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
+                id="adminCancelForm" style="display:none">
             <input type="hidden" name="status" value="cancelled">
             <input type="hidden" name="payment_status" value="{{ order.payment_status }}">
-            <button type="submit" class="od-act-btn btn-cancel">
-              <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-              Hủy đơn hàng
-            </button>
+            <input type="hidden" name="note" id="adminCancelNoteInput" value="">
           </form>
+          <button type="button" class="od-act-btn btn-cancel" onclick="showAdminCancelModal()">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Hủy đơn hàng
+          </button>
         </div>
 
         {% elif order.status == 'shipping' %}
@@ -577,6 +601,84 @@ document.addEventListener('click', function(e) {
 });
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeRollbackModal();
+});
+</script>
+
+<!-- ── Admin Cancel Order Modal ── -->
+<div id="adminCancelModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:99999;align-items:center;justify-content:center;padding:1.5rem">
+  <div style="background:#fff;border-radius:16px;max-width:440px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.22);overflow:hidden;animation:acPop .25s cubic-bezier(.22,.68,0,1.2)">
+    <div style="background:#fff5f5;padding:1.5rem;border-bottom:1.5px solid #fecaca;display:flex;gap:1rem;align-items:flex-start">
+      <div style="width:44px;height:44px;background:#fee2e2;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px;color:#dc2626"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <div style="font-size:1rem;font-weight:700;color:#1a1a18;margin-bottom:.3rem">Xác nhận hủy đơn hàng</div>
+        <div style="font-size:.8125rem;color:#7a7060;line-height:1.6">Đơn <strong style="color:#1a1a18">{{ order.order_id }}</strong> sẽ bị hủy.<br>Khách hàng sẽ nhận thông báo ngay lập tức.</div>
+      </div>
+    </div>
+    <div style="padding:1.25rem 1.5rem">
+      <div style="margin-bottom:.875rem">
+        <label style="display:block;font-size:.8rem;font-weight:600;color:#3a3530;margin-bottom:.4rem">Lý do hủy <span style="color:#dc2626">*</span></label>
+        <select id="adminCancelReason" style="width:100%;padding:.625rem .875rem;border:1.5px solid #e8e3db;border-radius:8px;font-size:.875rem;font-family:inherit;color:#2a2520;background:#fff;outline:none;cursor:pointer"
+                onchange="document.getElementById('adminCancelReasonErr').style.display='none'">
+          <option value="">-- Chọn lý do --</option>
+          <option value="Hàng tồn kho không đủ">Hàng tồn kho không đủ</option>
+          <option value="Khách hàng yêu cầu hủy">Khách hàng yêu cầu hủy</option>
+          <option value="Địa chỉ giao hàng không hợp lệ">Địa chỉ giao hàng không hợp lệ</option>
+          <option value="Sản phẩm ngừng kinh doanh">Sản phẩm ngừng kinh doanh</option>
+          <option value="Phát hiện gian lận">Phát hiện gian lận</option>
+          <option value="Khác">Lý do khác</option>
+        </select>
+        <div id="adminCancelReasonErr" style="display:none;color:#dc2626;font-size:.75rem;font-weight:600;margin-top:.3rem">⚠ Vui lòng chọn lý do hủy</div>
+      </div>
+      <div style="margin-bottom:1.125rem">
+        <label style="display:block;font-size:.8rem;font-weight:600;color:#3a3530;margin-bottom:.4rem">Ghi chú thêm <span style="color:#a09880;font-weight:400">(tùy chọn)</span></label>
+        <textarea id="adminCancelNote" rows="2" placeholder="Mô tả thêm lý do để thông báo cho khách hàng..."
+                  style="width:100%;padding:.625rem .875rem;border:1.5px solid #e8e3db;border-radius:8px;font-size:.8125rem;font-family:inherit;color:#2a2520;resize:vertical;outline:none"
+                  onfocus="this.style.borderColor='#b8922a'" onblur="this.style.borderColor='#e8e3db'"></textarea>
+      </div>
+      <div style="display:flex;gap:.625rem">
+        <button onclick="closeAdminCancelModal()" style="flex:1;padding:.75rem;background:#f5f4f1;border:1.5px solid #e8e3db;border-radius:9px;font-family:inherit;font-size:.875rem;font-weight:600;color:#7a7060;cursor:pointer">Không, giữ đơn</button>
+        <button onclick="confirmAdminCancel()" style="flex:1;padding:.75rem;background:#dc2626;border:none;border-radius:9px;font-family:inherit;font-size:.875rem;font-weight:600;color:#fff;cursor:pointer">Xác nhận hủy đơn</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes acPop {
+  from { opacity:0; transform:scale(.92) translateY(12px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+</style>
+
+<script>
+function showAdminCancelModal() {
+  document.getElementById('adminCancelModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('adminCancelReason').value = '';
+  document.getElementById('adminCancelNote').value = '';
+  document.getElementById('adminCancelReasonErr').style.display = 'none';
+}
+function closeAdminCancelModal() {
+  document.getElementById('adminCancelModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function confirmAdminCancel() {
+  var reason = document.getElementById('adminCancelReason').value;
+  var note   = document.getElementById('adminCancelNote').value.trim();
+  if (!reason) {
+    document.getElementById('adminCancelReasonErr').style.display = 'block';
+    return;
+  }
+  var fullNote = reason + (note ? '. ' + note : '');
+  document.getElementById('adminCancelNoteInput').value = fullNote;
+  closeAdminCancelModal();
+  document.getElementById('adminCancelForm').submit();
+}
+document.addEventListener('click', function(e) {
+  var m = document.getElementById('adminCancelModal');
+  if (m && e.target === m) closeAdminCancelModal();
 });
 </script>
 

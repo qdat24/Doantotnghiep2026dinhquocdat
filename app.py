@@ -1732,6 +1732,31 @@ def customer_order_detail(order_id):
         flash('Bạn không có quyền xem đơn hàng này', 'error')
         return redirect(url_for('customer_account'))
     history = get_order_status_history(order_id)
+
+    # Đọc admin_note và lý do hủy từ DB
+    try:
+        extra = execute_query(
+            'SELECT admin_note FROM orders WHERE order_id=%s',
+            (order_id,), fetch=True, fetch_one=True
+        ) or {}
+        if extra.get('admin_note') and not order.get('admin_note'):
+            order['admin_note'] = extra['admin_note']
+    except Exception:
+        pass
+
+    # Lấy lý do hủy từ lịch sử nếu đơn đã bị hủy
+    if order.get('status') == 'cancelled':
+        try:
+            cancel_log = execute_query(
+                "SELECT note, changed_by FROM order_status_history WHERE order_id=%s AND status='cancelled' ORDER BY created_at DESC LIMIT 1",
+                (order_id,), fetch=True, fetch_one=True
+            ) or {}
+            if cancel_log.get('note'):
+                order['cancel_note'] = cancel_log['note']
+                order['cancel_by']   = cancel_log.get('changed_by', '')
+        except Exception:
+            pass
+
     return render_template('customer/order_detail.html', order=order, order_history=history)
 
 
@@ -1745,11 +1770,25 @@ def customer_cancel_order(order_id):
     if order.get('customer_id') != session.get('customer_id'):
         flash('Không có quyền', 'error')
         return redirect(url_for('customer_account'))
-    if order['status'] != 'pending':
-        flash('Chỉ huỷ được đơn đang chờ xử lý', 'error')
+    if order['status'] not in ('pending', 'confirmed'):
+        flash('Chỉ có thể hủy đơn đang chờ xử lý hoặc đã xác nhận', 'error')
         return redirect(url_for('customer_order_detail', order_id=order_id))
 
-    if update_order_status(order_id, 'cancelled', order['payment_status']):
+    # Lấy lý do huỷ từ form (dropdown trong modal)
+    cancel_reason = request.form.get('cancel_reason', '').strip()
+    customer_name = session.get('customer_name', 'Khách hàng')
+    note = f'Khách huỷ đơn — Lý do: {cancel_reason}' if cancel_reason else f'Khách hàng tự huỷ đơn'
+
+    if update_order_status(order_id, 'cancelled', order['payment_status'],
+                           note=note, changed_by=f'customer:{customer_name}'):
+        # Lưu thêm vào cột admin_note để admin dễ thấy
+        try:
+            execute_query(
+                'UPDATE orders SET admin_note=%s WHERE order_id=%s',
+                (f'[KH HUỶ] {note}', order_id)
+            )
+        except Exception:
+            pass
         flash('Đã hủy đơn hàng thành công', 'success')
     else:
         flash('Có lỗi xảy ra khi hủy đơn', 'error')
@@ -2192,19 +2231,85 @@ def admin_order_detail(order_id):
     if not order:
         flash('Không tìm thấy đơn hàng', 'error')
         return redirect(url_for('admin_orders'))
+
+    # Đọc thêm admin_note, cancel_reason từ DB (db_helper có thể không SELECT các cột này)
+    try:
+        extra = execute_query(
+            'SELECT admin_note, coupon_code, discount_amount FROM orders WHERE order_id=%s',
+            (order_id,), fetch=True, fetch_one=True
+        ) or {}
+        if extra.get('admin_note') and not order.get('admin_note'):
+            order['admin_note'] = extra['admin_note']
+        if extra.get('coupon_code') and not order.get('coupon_code'):
+            order['coupon_code'] = extra['coupon_code']
+        if extra.get('discount_amount') and not order.get('discount_amount'):
+            order['discount_amount'] = extra['discount_amount']
+    except Exception:
+        pass
+
+    # Đọc lịch sử trạng thái để lấy note huỷ đơn
+    try:
+        cancel_log = execute_query(
+            "SELECT note, changed_by, created_at FROM order_status_history WHERE order_id=%s AND status='cancelled' ORDER BY created_at DESC LIMIT 1",
+            (order_id,), fetch=True, fetch_one=True
+        ) or {}
+        if cancel_log.get('note'):
+            order['cancel_note']   = cancel_log['note']
+            order['cancel_by']     = cancel_log.get('changed_by', '')
+            order['cancel_time']   = cancel_log.get('created_at', '')
+    except Exception:
+        pass
+
     return render_template('admin/order_detail.html', order=order)
 
 
 @app.route('/admin/orders/<order_id>/update-status', methods=['POST'])
 @admin_required
 def admin_update_order_status(order_id):
-    ok = update_order_status(
-        order_id,
-        request.form.get('status'),
-        request.form.get('payment_status'),
-        request.form.get('note', ''),
-        session.get('admin_username', 'admin'),
-    )
+    new_status     = request.form.get('status', '').strip()
+    payment_status = request.form.get('payment_status', '')
+    admin_note     = request.form.get('note', '').strip() or request.form.get('admin_note', '').strip()
+    admin_user     = session.get('admin_username', 'admin')
+
+    ok = update_order_status(order_id, new_status, payment_status, admin_note, admin_user)
+
+    # ── Gửi thông báo đến khách hàng khi admin thay đổi trạng thái quan trọng ──
+    if ok:
+        try:
+            order_row = execute_query(
+                'SELECT customer_id, order_id FROM orders WHERE order_id=%s',
+                (order_id,), fetch=True, fetch_one=True
+            ) or {}
+            cid = order_row.get('customer_id')
+
+            # Map trạng thái → nội dung thông báo
+            notif_map = {
+                'confirmed': ('✅ Đơn hàng đã được xác nhận',
+                              f'Đơn hàng {order_id} của bạn đã được xác nhận và đang được chuẩn bị.'),
+                'shipping':  ('🚚 Đơn hàng đang được giao',
+                              f'Đơn hàng {order_id} đang trên đường đến bạn. Vui lòng để ý điện thoại!'),
+                'completed': ('🎉 Đơn hàng đã hoàn thành',
+                              f'Đơn hàng {order_id} đã giao thành công. Cảm ơn bạn đã mua sắm tại DQD!'),
+                'cancelled': ('❌ Đơn hàng đã bị hủy',
+                              f'Đơn hàng {order_id} đã bị hủy'
+                              + (f'. Lý do: {admin_note}' if admin_note else '.') +
+                              ' Liên hệ 0345211386 nếu có thắc mắc.'),
+                'pending':   ('🔄 Đơn hàng chuyển về chờ xử lý',
+                              f'Đơn hàng {order_id} đã được chuyển về trạng thái chờ xử lý'
+                              + (f'. Ghi chú: {admin_note}' if admin_note else '.')),
+            }
+
+            if cid and new_status in notif_map:
+                title, message = notif_map[new_status]
+                execute_query(
+                    '''INSERT INTO notifications
+                       (user_id, user_type, type, title, message, link, is_read)
+                       VALUES (%s, 'customer', 'order', %s, %s, %s, FALSE)''',
+                    (cid, title, message, f'/order/{order_id}')
+                )
+        except Exception as e:
+            app.logger.warning(f'Notification error: {e}')
+
     flash('Cập nhật thành công!' if ok else 'Lỗi cập nhật', 'success' if ok else 'error')
     return redirect(url_for('admin_order_detail', order_id=order_id))
 
